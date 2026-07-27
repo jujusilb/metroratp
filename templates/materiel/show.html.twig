@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Materiel{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Matériel</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ materiel.id }}</td>
+                </tr>
+                <tr>
+                    <th>Label</th>
+                    <td>{{ materiel.label }}</td>
+                </tr>
+                <tr>
+                    <th>Année de production</th>
+                    <td>{{ materiel.anneeProduction }}</td>
+                </tr>
+                <tr>
+                    <th>Type de matériel</th>
+                    <td>
+                        {% if materiel.typeMateriel %}
+                            <a href="{{ path('app_type_materiel_show', {'id': materiel.typeMateriel.id}) }}" class="link-body-emphasis">
+                                {{ materiel.typeMateriel.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="h5 mt-4 mb-3">Lignes desservies</h2>
+
+        {% if materiel.materielLignes|length > 0 %}
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Ligne</th>
+                        <th>Arrivée</th>
+                        <th>Fin</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for materiel_ligne in materiel.materielLignes %}
+                    <tr>
+                        <td>
+                            {% if materiel_ligne.ligne %}
+                                <a href="{{ path('app_ligne_show', {'id': materiel_ligne.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ materiel_ligne.ligne.couleur|default('#6c757d') }};">
+                                    {{ materiel_ligne.ligne.label }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ materiel_ligne.arrivee ? materiel_ligne.arrivee|date('Y-m-d') : '' }}</td>
+                        <td>{{ materiel_ligne.fin ? materiel_ligne.fin|date('Y-m-d') : '' }}</td>
+                        <td>
+                            <a href="{{ path('app_materiel_ligne_show', {'id': materiel_ligne.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">Aucune ligne desservie enregistrée pour ce matériel.</p>
+        {% endif %}
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_materiel_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            <a href="{{ path('app_materiel_edit', {'id': materiel.id}) }}" class="btn btn-warning">Modifier</a>
+        </div>
+
+        {{ include('materiel/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

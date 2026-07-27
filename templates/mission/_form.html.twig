@@ -1,0 +1,9 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.numero) }}
+    {{ form_row(form.service) }}
+    {{ form_row(form.tronconDesserte) }}
+    {{ form_row(form.direction) }}
+
+    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

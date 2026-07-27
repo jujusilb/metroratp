@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Missions — Ligne {{ ligne.label }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <span class="ligne-badge" style="background-color: {{ ligne.couleur|default('#6c757d') }};">{{ ligne.label }}</span>
+            <div>
+                <h1 class="mb-0 h3">
+                    {% if missions|length > 0 %}
+                        Direction {{ missions[0].direction.station.label }}
+                        <span class="badge text-bg-secondary">{{ missions[0].service.label }}</span>
+                    {% endif %}
+                </h1>
+            </div>
+        </div>
+
+        {% if missions|length > 0 %}
+            <ul class="list-group list-group-flush shadow-sm rounded-3 mb-3 parcours-list" style="--ligne-couleur: {{ ligne.couleur|default('#6c757d') }};">
+                <li class="list-group-item border-start border-4 ps-3">
+                    <a href="{{ path('app_station_show', {'id': missions[0].depart.station.id}) }}" class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover">
+                        {{ missions[0].depart.station.label }}
+                    </a>
+                </li>
+                {% for mission in missions %}
+                    <li class="list-group-item border-start border-4 ps-3 d-flex align-items-center justify-content-between">
+                        <a href="{{ path('app_station_show', {'id': mission.arrivee.station.id}) }}" class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover">
+                            {{ mission.arrivee.station.label }}
+                        </a>
+                        <span class="d-flex align-items-center gap-2">
+                            {% if mission.numero %}<span class="badge rounded-pill text-bg-light text-muted border">#{{ mission.numero }}</span>{% endif %}
+                            <a href="{{ path('app_mission_show', {'id': mission.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucune mission trouvée pour cette sélection.</p>
+        {% endif %}
+
+        <a href="{{ path('app_mission_choix_direction', {'id': ligne.id}) }}" class="btn btn-secondary">Retour aux directions</a>
+    </div>
+{% endblock %}

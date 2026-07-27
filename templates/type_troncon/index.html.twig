@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Type de tronçon{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Type de tronçon</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for type_troncon in type_troncons %}
+                <tr>
+                    <td>{{ type_troncon.label }}</td>
+                    <td>
+                        <a href="{{ path('app_type_troncon_show', {'id': type_troncon.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_type_troncon_edit', {'id': type_troncon.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="2">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_type_troncon_new') }}" class="btn btn-primary">Créer nouveau type de tronçon</a>
+    </div>
+{% endblock %}

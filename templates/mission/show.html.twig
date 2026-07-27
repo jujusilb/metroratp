@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mission{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Mission</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ mission.id }}</td>
+                </tr>
+                <tr>
+                    <th>Numéro</th>
+                    <td>{{ mission.numero }}</td>
+                </tr>
+                <tr>
+                    <th>Service</th>
+                    <td>{{ mission.service.label }}</td>
+                </tr>
+                <tr>
+                    <th>Départ</th>
+                    <td>{{ mission.depart.station.label }}</td>
+                </tr>
+                <tr>
+                    <th>Arrivée</th>
+                    <td>{{ mission.arrivee.station.label }}</td>
+                </tr>
+                <tr>
+                    <th>Direction</th>
+                    <td>{{ mission.direction.station.label }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_mission_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-warning">Modifier</a>
+        </div>
+
+        {{ include('mission/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

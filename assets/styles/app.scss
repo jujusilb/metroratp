@@ -1,0 +1,158 @@
+@import '~bootstrap/scss/bootstrap';
+
+// Header "station de métro" : fond de carreaux blancs biseautés (carrelage typique des
+// couloirs/stations, format "brique" rectangulaire, pas carré), surmonte d'un panneau bleu
+// marine façon plaque emaillee de nom de station (ex: plaque "Riquet").
+//
+// Le carrelage est un motif SVG (un carreau = 5 polygones : fond/joint gris, face haute et
+// face gauche plus claires, face basse et face droite plus sombres, pour simuler le biseau)
+// repete en background-image. Plus fiable visuellement qu'un degrade CSS pur.
+// Guillemets simples partout a l'interieur (attributs XML compris) : XML n'interprete pas
+// l'echappement CSS/JS `\"`, donc si Sass echappe des guillemets doubles internes en `\"`
+// dans la sortie finale, le SVG devient invalide et le navigateur ne l'affiche pas du tout.
+// Joint reduit a 1px (sillon fin) au lieu de 2px, et couleur adoucie : rendu precedent
+// trop marque, ressemblait a un quadrillage plutot qu'a un carrelage.
+$metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'30\' viewBox=\'0 0 60 30\'>' +
+    '<rect width=\'60\' height=\'30\' fill=\'%23d2cfc6\'/>' +
+    '<polygon points=\'1,1 59,1 56,4 4,4\' fill=\'%23ffffff\'/>' +
+    '<polygon points=\'1,1 4,4 4,26 1,29\' fill=\'%23f5f3ee\'/>' +
+    '<polygon points=\'4,4 56,4 56,26 4,26\' fill=\'%23ffffff\'/>' +
+    '<polygon points=\'59,1 59,29 56,26 56,4\' fill=\'%23b0ada4\'/>' +
+    '<polygon points=\'1,29 59,29 56,26 4,26\' fill=\'%23a19e94\'/>' +
+    '</svg>';
+
+.metro-header {
+    // Header double par rapport a la version precedente (80px), les carreaux gardent leur
+    // taille d'origine (60x30px) : on voit donc plus de rangees, pas des carreaux plus gros.
+    // Ajuste a 8 carreaux (240px) pour laisser une petite marge autour du panneau de 7
+    // carreaux, plutot que pile 160px qui le ferait deborder.
+    --metro-header-height: 240px;
+    --metro-tile-width: 60px;
+    --metro-tile-height: 30px;
+    // Taille du texte du panneau, mise a l'echelle a partir de la meme unite que le
+    // carrelage plutot qu'une valeur fixe independante (7 carreaux de reference).
+    --metro-panel-text-size: calc(var(--metro-tile-height) * 7 * 0.45);
+
+    height: var(--metro-header-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-image: url('data:image/svg+xml,#{$metro-tile-svg}');
+    background-repeat: repeat;
+    background-size: var(--metro-tile-width) var(--metro-tile-height);
+    box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.metro-header__panel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    // Padding vertical volontairement reduit par rapport a l'horizontal : rend le panneau
+    // nettement rectangulaire (large et bas) plutot que carre, comme une vraie plaque de
+    // station. La hauteur du panneau decoule du texte + ce padding, plus de hauteur fixee.
+    padding: calc(var(--metro-panel-text-size) * 0.12) calc(var(--metro-panel-text-size) * 0.6);
+    // Bleu marine profond des plaques emaillees RATP historiques, pas un bleu vif "web".
+    background-color: #10234a;
+    background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 40%);
+    border-radius: 6px;
+    // Pas de lisere blanc : l'effet de plaque en relief vient de l'ombre (portee vers le bas,
+    // legere lueur claire en haut) plutot que d'un cadre net.
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.45),
+        0 1px 0 rgba(255, 255, 255, 0.25) inset,
+        0 -2px 4px rgba(0, 0, 0, 0.3) inset;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow:
+            0 6px 14px rgba(0, 0, 0, 0.5),
+            0 1px 0 rgba(255, 255, 255, 0.25) inset,
+            0 -2px 4px rgba(0, 0, 0, 0.3) inset;
+    }
+}
+
+.metro-header__panel-text {
+    color: #fff;
+    font-family: 'Baloo 2', 'Comic Sans MS', 'Segoe UI', sans-serif;
+    font-weight: 700;
+    font-size: var(--metro-panel-text-size);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+// Bootstrap card-header/footer corners follow --bs-card-border-radius automatically,
+// so bumping this one variable (Bootstrap's own mechanism) is enough to round the whole card.
+.ligne-card {
+    --bs-card-border-radius: 1rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+    }
+
+    .card-header {
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-footer {
+        background-color: transparent;
+    }
+}
+
+.ligne-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.25rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    flex-shrink: 0;
+}
+
+.ligne-badge-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0 0.4rem;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-decoration: none;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
+    transition: transform 0.1s ease;
+
+    &:hover {
+        transform: scale(1.12);
+        color: #fff;
+    }
+}
+
+.parcours {
+    --ligne-couleur: #6c757d;
+}
+
+.parcours-list {
+    .list-group-item {
+        border-left-color: var(--ligne-couleur) !important;
+        font-weight: 500;
+        transition: background-color 0.1s ease;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+    }
+}
+

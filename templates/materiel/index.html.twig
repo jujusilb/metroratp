@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Matériel{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Matériel</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>Type</th>
+                    <th>Année de production</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for materiel in materiels %}
+                <tr>
+                    <td>{{ materiel.label }}</td>
+                    <td>
+                        {% if materiel.typeMateriel %}
+                            <a href="{{ path('app_type_materiel_show', {'id': materiel.typeMateriel.id}) }}" class="link-body-emphasis">
+                                {{ materiel.typeMateriel.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ materiel.anneeProduction }}</td>
+                    <td>
+                        <a href="{{ path('app_materiel_show', {'id': materiel.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_materiel_edit', {'id': materiel.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_materiel_new') }}" class="btn btn-primary">Créer nouveau matériel</a>
+    </div>
+{% endblock %}

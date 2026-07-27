@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Périodes d'ouverture{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Périodes d'ouverture</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Desserte</th>
+                    <th>Ordre</th>
+                    <th>Ouverture</th>
+                    <th>Fermeture</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for periode_ouverture in periode_ouvertures %}
+                <tr>
+                    <td>
+                        {% if periode_ouverture.desserte %}
+                            <a href="{{ path('app_desserte_show', {'id': periode_ouverture.desserte.id}) }}" class="link-body-emphasis">
+                                {{ periode_ouverture.desserte.station.label|default('#' ~ periode_ouverture.desserte.id) }}
+                                {% if periode_ouverture.desserte.ligne %}
+                                    <span class="ligne-badge-sm" style="background-color: {{ periode_ouverture.desserte.ligne.couleur|default('#6c757d') }};">
+                                        {{ periode_ouverture.desserte.ligne.label }}
+                                    </span>
+                                {% endif %}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ periode_ouverture.ordre }}</td>
+                    <td>{{ periode_ouverture.ouverture ? periode_ouverture.ouverture|date('Y-m-d') : '' }}</td>
+                    <td>{{ periode_ouverture.fermeture ? periode_ouverture.fermeture|date('Y-m-d') : '' }}</td>
+                    <td>
+                        {% if periode_ouverture.fermeture %}
+                            <span class="badge text-bg-secondary">Fermée</span>
+                        {% else %}
+                            <span class="badge text-bg-success">Ouverte</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_periode_ouverture_show', {'id': periode_ouverture.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_periode_ouverture_edit', {'id': periode_ouverture.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_periode_ouverture_new') }}" class="btn btn-primary">Créer nouvelle période d'ouverture</a>
+    </div>
+{% endblock %}

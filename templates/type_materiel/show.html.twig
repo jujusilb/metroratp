@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TypeMateriel{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Type de matériel</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ type_materiel.id }}</td>
+                </tr>
+                <tr>
+                    <th>Label</th>
+                    <td>{{ type_materiel.label }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="h5 mt-4 mb-3">Matériels de ce type</h2>
+
+        {% if type_materiel.materiels|length > 0 %}
+            <ul class="list-group mb-4">
+                {% for materiel in type_materiel.materiels %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ path('app_materiel_show', {'id': materiel.id}) }}" class="link-body-emphasis">
+                            {{ materiel.label }}
+                        </a>
+                        {% if materiel.anneeProduction %}
+                            <span class="text-muted">{{ materiel.anneeProduction }}</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucun matériel enregistré pour ce type.</p>
+        {% endif %}
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_type_materiel_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            <a href="{{ path('app_type_materiel_edit', {'id': type_materiel.id}) }}" class="btn btn-warning">Modifier</a>
+        </div>
+
+        {{ include('type_materiel/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tronçon{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Tronçon</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Parcours</th>
+                    <th>Départ</th>
+                    <th>Arrivée</th>
+                    <th>Direction</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for troncon in troncons %}
+                {% set sens = troncon.sensCirculation %}
+                {% if sens|length > 0 %}
+                    {% for s in sens %}
+                        <tr>
+                            {% if loop.first %}
+                                <td rowspan="{{ sens|length }}">{{ troncon.parcours }}</td>
+                            {% endif %}
+                            <td>
+                                {% if s.depart and s.depart.station %}
+                                    <a href="{{ path('app_station_show', {'id': s.depart.station.id}) }}" class="link-body-emphasis">{{ s.depart.station.label }}</a>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if s.arrivee and s.arrivee.station %}
+                                    <a href="{{ path('app_station_show', {'id': s.arrivee.station.id}) }}" class="link-body-emphasis">{{ s.arrivee.station.label }}</a>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if s.direction and s.direction.station %}
+                                    <span class="text-muted">{{ s.direction.station.label }}</span>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            {% if loop.first %}
+                                <td rowspan="{{ sens|length }}">
+                                    <a href="{{ path('app_troncon_show', {'id': troncon.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                                    <a href="{{ path('app_troncon_edit', {'id': troncon.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td>{{ troncon.parcours }}</td>
+                        <td colspan="3" class="text-muted">Aucun sens de circulation enregistré</td>
+                        <td>
+                            <a href="{{ path('app_troncon_show', {'id': troncon.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                            <a href="{{ path('app_troncon_edit', {'id': troncon.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_troncon_new') }}" class="btn btn-primary">Créer nouveau tronçon</a>
+    </div>
+{% endblock %}

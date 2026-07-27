@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Matériel-Ligne{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Matériel-Ligne</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Matériel</th>
+                    <th>Ligne</th>
+                    <th>Arrivée</th>
+                    <th>Fin</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for materiel_ligne in materiel_lignes %}
+                <tr>
+                    <td>
+                        {% if materiel_ligne.materiel %}
+                            <a href="{{ path('app_materiel_show', {'id': materiel_ligne.materiel.id}) }}" class="link-body-emphasis">
+                                {{ materiel_ligne.materiel.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if materiel_ligne.ligne %}
+                            <a href="{{ path('app_ligne_show', {'id': materiel_ligne.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ materiel_ligne.ligne.couleur|default('#6c757d') }};">
+                                {{ materiel_ligne.ligne.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ materiel_ligne.arrivee ? materiel_ligne.arrivee|date('Y-m-d') : '' }}</td>
+                    <td>{{ materiel_ligne.fin ? materiel_ligne.fin|date('Y-m-d') : '' }}</td>
+                    <td>
+                        <a href="{{ path('app_materiel_ligne_show', {'id': materiel_ligne.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_materiel_ligne_edit', {'id': materiel_ligne.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_materiel_ligne_new') }}" class="btn btn-primary">Créer nouveau matériel-ligne</a>
+    </div>
+{% endblock %}

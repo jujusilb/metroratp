@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ligne {{ ligne.label }}{% endblock %}
+
+{% macro renderSegment(segment) %}
+    <ul class="list-group list-group-flush shadow-sm rounded-3 mb-3 parcours-list">
+        {% for station in segment.stations %}
+            <li class="list-group-item border-start border-4 ps-3 d-flex align-items-center gap-2{{ station.rejoint ? ' bg-light fst-italic text-muted' : '' }}">
+                {% if station.correspondances|length > 0 %}
+                    <span class="d-flex gap-1">
+                        {% for correspondance in station.correspondances %}
+                            <a href="{{ path('app_ligne_show', {'id': correspondance.ligneId}) }}" class="ligne-badge-sm" style="background-color: {{ correspondance.couleur|default('#6c757d') }};" title="Correspondance ligne {{ correspondance.label }}">{{ correspondance.label }}</a>
+                        {% endfor %}
+                    </span>
+                {% endif %}
+                {% if station.stationId %}
+                    <a href="{{ path('app_station_show', {'id': station.stationId}) }}" class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover">{{ station.label }}</a>
+                {% else %}
+                    <span>{{ station.label }}</span>
+                {% endif %}
+                {% if station.rejoint %}
+                    <span class="badge rounded-pill text-bg-secondary ms-auto">rejoint la ligne principale</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if segment.branches|length > 0 %}
+        <div class="row g-3 mb-3">
+            {% for branche in segment.branches %}
+                <div class="col-md">
+                    {{ _self.renderSegment(branche) }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% block body %}
+    <div class="container py-4">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <span class="ligne-badge" style="background-color: {{ ligne.couleur|default('#6c757d') }};">{{ ligne.label }}</span>
+            <h1 class="mb-0">Ligne {{ ligne.label }}</h1>
+        </div>
+
+        <p class="text-muted">{{ ligne.nombreStations }} station{{ ligne.nombreStations > 1 ? 's' : '' }}</p>
+
+        <div class="parcours" style="--ligne-couleur: {{ ligne.couleur|default('#6c757d') }};">
+            {% set segments = ligne.parcoursSegments %}
+            {% if segments|length > 0 %}
+                {% for segment in segments %}
+                    {{ _self.renderSegment(segment) }}
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">Parcours non disponible pour cette ligne.</p>
+            {% endif %}
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <a href="{{ path('app_ligne_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            <a href="{{ path('app_ligne_edit', {'id': ligne.id}) }}" class="btn btn-warning">Modifier</a>
+        </div>
+
+        {{ include('ligne/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

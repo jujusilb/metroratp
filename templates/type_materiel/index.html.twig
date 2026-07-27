@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Type de matériel{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Type de matériel</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for type_materiel in type_materiels %}
+                <tr>
+                    <td>{{ type_materiel.label }}</td>
+                    <td>
+                        <a href="{{ path('app_type_materiel_show', {'id': type_materiel.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_type_materiel_edit', {'id': type_materiel.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="2">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_type_materiel_new') }}" class="btn btn-primary">Créer nouveau type de matériel</a>
+    </div>
+{% endblock %}

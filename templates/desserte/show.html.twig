@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desserte{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Desserte</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ desserte.id }}</td>
+                </tr>
+                <tr>
+                    <th>Station</th>
+                    <td>
+                        {% if desserte.station %}
+                            <a href="{{ path('app_station_show', {'id': desserte.station.id}) }}" class="link-body-emphasis">
+                                {{ desserte.station.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Ligne</th>
+                    <td>
+                        {% if desserte.ligne %}
+                            <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ desserte.ligne.couleur|default('#6c757d') }};">
+                                {{ desserte.ligne.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Style de la station</th>
+                    <td>
+                        {% if desserte.styleStation %}
+                            <a href="{{ path('app_style_station_show', {'id': desserte.styleStation.id}) }}" class="link-body-emphasis">
+                                {{ desserte.styleStation.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Statut</th>
+                    <td>
+                        {% if desserte.ouverte %}
+                            <span class="badge text-bg-success">Ouverte</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Fermée depuis le {{ desserte.dernierePeriode.fermeture|date('Y-m-d') }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="h5 mt-4 mb-3">Périodes d'ouverture</h2>
+
+        {% if desserte.periodesOuvertureOrdonnees|length > 0 %}
+            <table class="table align-middle mb-4">
+                <thead>
+                    <tr>
+                        <th>Ordre</th>
+                        <th>Ouverture</th>
+                        <th>Fermeture</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for periode in desserte.periodesOuvertureOrdonnees %}
+                    <tr>
+                        <td>{{ periode.ordre }}</td>
+                        <td>{{ periode.ouverture ? periode.ouverture|date('Y-m-d') : '' }}</td>
+                        <td>{{ periode.fermeture ? periode.fermeture|date('Y-m-d') : '' }}</td>
+                        <td>
+                            <a href="{{ path('app_periode_ouverture_show', {'id': periode.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                            <a href="{{ path('app_periode_ouverture_edit', {'id': periode.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">Aucune période d'ouverture enregistrée pour cette desserte.</p>
+        {% endif %}
+
+        <a href="{{ path('app_periode_ouverture_new', {'desserte': desserte.id}) }}" class="btn btn-outline-primary btn-sm mb-4">Ajouter une période d'ouverture</a>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_desserte_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            <a href="{{ path('app_desserte_edit', {'id': desserte.id}) }}" class="btn btn-warning">Modifier</a>
+        </div>
+
+        {{ include('desserte/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desserte{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Desserte</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Station</th>
+                    <th>Ligne</th>
+                    <th>Style</th>
+                    <th>Première ouverture</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for desserte in dessertes %}
+                <tr>
+                    <td>
+                        {% if desserte.station %}
+                            <a href="{{ path('app_station_show', {'id': desserte.station.id}) }}" class="link-body-emphasis">
+                                {{ desserte.station.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if desserte.ligne %}
+                            <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ desserte.ligne.couleur|default('#6c757d') }};">
+                                {{ desserte.ligne.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if desserte.styleStation %}
+                            <a href="{{ path('app_style_station_show', {'id': desserte.styleStation.id}) }}" class="link-body-emphasis">
+                                {{ desserte.styleStation.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ desserte.premiereOuverture ? desserte.premiereOuverture|date('Y-m-d') : '' }}</td>
+                    <td>
+                        {% if desserte.ouverte %}
+                            <span class="badge text-bg-success">Ouverte</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Fermée le {{ desserte.dernierePeriode.fermeture|date('Y-m-d') }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_desserte_show', {'id': desserte.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_desserte_edit', {'id': desserte.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_desserte_new') }}" class="btn btn-primary">Créer nouvelle desserte</a>
+    </div>
+{% endblock %}

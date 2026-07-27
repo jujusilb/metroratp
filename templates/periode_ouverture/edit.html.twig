@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la période d'ouverture{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Modifier la période d'ouverture</h1>
+
+        {{ include('periode_ouverture/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+        <div class="d-flex gap-2 mt-3">
+            <a href="{{ path('app_periode_ouverture_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+
+        {{ include('periode_ouverture/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Métro RATP{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Métro de Paris</h1>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+            {% for ligne in lignes %}
+                <div class="col">
+                    <a href="{{ path('app_ligne_show', {'id': ligne.id}) }}" class="text-decoration-none">
+                        <div class="card h-100 shadow-sm border-0 ligne-card">
+                            <div class="card-header text-center fw-bold fs-4" style="background-color: {{ ligne.couleur|default('#6c757d') }};">
+                                {{ ligne.label }}
+                            </div>
+                            <div class="card-body text-center d-flex flex-column justify-content-center">
+                                {% set termini = ligne.terminusLabels %}
+                                {% if termini|length > 0 %}
+                                    {% for terminus in termini %}
+                                        <div>{{ terminus }}</div>
+                                        {% if not loop.last %}
+                                            <div class="text-muted">&harr;</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="text-muted">Données non disponibles</div>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer text-center text-muted">
+                                {{ ligne.nombreStations }} station{{ ligne.nombreStations > 1 ? 's' : '' }}
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

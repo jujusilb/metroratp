@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Missions — Choisir une ligne{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Missions — Choisir une ligne</h1>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+            {% for ligne in lignes %}
+                <div class="col">
+                    <a href="{{ path('app_mission_choix_direction', {'id': ligne.id}) }}" class="text-decoration-none">
+                        <div class="card h-100 shadow-sm border-0 ligne-card">
+                            <div class="card-header text-center fw-bold fs-4" style="background-color: {{ ligne.couleur|default('#6c757d') }};">
+                                {{ ligne.label }}
+                            </div>
+                            <div class="card-body text-center d-flex align-items-center justify-content-center">
+                                <span class="text-muted">Voir les missions</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

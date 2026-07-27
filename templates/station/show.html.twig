@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Station {{ station.label }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ station.label }}</h1>
+
+        <h2 class="h5">Dessertes</h2>
+        {% if station.dessertes|length > 0 %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Ligne</th>
+                            <th>Date d'ouverture</th>
+                            <th>Style de station</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for desserte in station.dessertes %}
+                            <tr>
+                                <td>
+                                    {% if desserte.ligne %}
+                                        <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ desserte.ligne.couleur|default('#6c757d') }};">
+                                            {{ desserte.ligne.label }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ desserte.premiereOuverture ? desserte.premiereOuverture|date('d/m/Y') : '—' }}</td>
+                                <td>{{ desserte.styleStation ? desserte.styleStation.label : '—' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">Aucune desserte enregistrée pour cette station.</p>
+        {% endif %}
+
+        <h2 class="h5 mt-4">Sorties</h2>
+        {% if station.sorties|length > 0 %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Accès</th>
+                            <th>Accessible PMR</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sortie in station.sorties %}
+                            <tr>
+                                <td>{{ sortie.acces ? sortie.acces.numero : '—' }}</td>
+                                <td>
+                                    {% if sortie.acces %}
+                                        <a href="{{ path('app_acces_show', {'id': sortie.acces.id}) }}" class="link-body-emphasis">
+                                            {{ sortie.acces.label }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if sortie.acces and sortie.acces.isAccessible %}
+                                        <span class="badge text-bg-success">Oui</span>
+                                    {% else %}
+                                        <span class="badge text-bg-secondary">Non</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ path('app_sortie_show', {'id': sortie.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">Aucune sortie enregistrée pour cette station.</p>
+        {% endif %}
+
+        <div class="mt-4 d-flex gap-2">
+            <a href="{{ path('app_station_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            <a href="{{ path('app_station_edit', {'id': station.id}) }}" class="btn btn-warning">Modifier</a>
+        </div>
+
+        {{ include('station/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

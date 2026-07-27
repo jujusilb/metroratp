@@ -1,0 +1,8 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.station) }}
+    {{ form_row(form.ligne) }}
+    {{ form_row(form.styleStation) }}
+
+    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}
