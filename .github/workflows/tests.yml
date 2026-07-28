@@ -1,0 +1,69 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  php-tests:
+    name: Tests PHP (PHPUnit)
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:10.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: metroratp
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      APP_ENV: test
+      DATABASE_URL: "mysql://root:@127.0.0.1:3306/metroratp?serverVersion=10.4.32-MariaDB&charset=utf8mb4"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, iconv, mbstring, pdo_mysql, intl
+          coverage: none
+
+      - name: Installer les dependances Composer
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      # Le schema de base (acces, ligne, station...) n'a jamais ete cree via une migration
+      # Doctrine (elles capturent seulement les evolutions de ce projet), donc schema:create
+      # est la bonne commande pour partir d'une base vide, comme pour la base de test locale.
+      - name: Creer le schema de la base de test
+        run: php bin/console doctrine:schema:create --env=test --no-interaction
+
+      - name: Lancer PHPUnit
+        run: vendor/bin/phpunit --no-coverage
+
+  js-tests:
+    name: Tests JS (Jest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dependances npm
+        run: npm ci
+
+      - name: Lancer Jest
+        run: npm test
