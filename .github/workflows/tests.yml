@@ -40,6 +40,12 @@ jobs:
       - name: Installer les dependances Composer
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      # config/packages/doctrine.yaml ajoute automatiquement un suffixe "_test" au nom de la
+      # base en environnement de test (dbname_suffix), donc la base ciblee est "metroratp_test",
+      # pas "metroratp" (creee par le service ci-dessus) : il faut la creer explicitement.
+      - name: Creer la base de test
+        run: php bin/console doctrine:database:create --env=test --if-not-exists --no-interaction
+
       # Le schema de base (acces, ligne, station...) n'a jamais ete cree via une migration
       # Doctrine (elles capturent seulement les evolutions de ce projet), donc schema:create
       # est la bonne commande pour partir d'une base vide, comme pour la base de test locale.
@@ -59,7 +65,10 @@ jobs:
       - name: Installer Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # @symfony/webpack-encore et @kocal/friendly-errors-webpack-plugin exigent Node
+          # >=22.13 (engines) ; Node 20 donnait aussi une version de npm trop ancienne par
+          # rapport a celle utilisee en local, ce qui desynchronisait package-lock.json.
+          node-version: '22'
           cache: 'npm'
 
       - name: Installer les dependances npm
