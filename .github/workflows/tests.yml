@@ -40,6 +40,21 @@ jobs:
       - name: Installer les dependances Composer
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      # Les tests fonctionnels (WebTestCase) rendent de vraies pages qui appellent
+      # encore_entry_link_tags()/script_tags() dans le layout de base : sans un build
+      # Webpack, ces pages plantent faute de public/build/entrypoints.json.
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Installer les dependances npm
+        run: npm ci
+
+      - name: Builder les assets front (Encore)
+        run: npx encore dev
+
       # config/packages/doctrine.yaml ajoute automatiquement un suffixe "_test" au nom de la
       # base en environnement de test (dbname_suffix), donc la base ciblee est "metroratp_test",
       # pas "metroratp" (creee par le service ci-dessus) : il faut la creer explicitement.
