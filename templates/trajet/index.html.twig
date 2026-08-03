@@ -12,6 +12,8 @@
             (369 tronçons sur 376 ; les autres utilisent une estimation de 2 min faute de correspondance trouvée).
             Les temps de correspondance restent des <strong>estimations</strong> (temps de marche connu sinon 3 min
             par défaut, plus 2 min d'attente moyenne du prochain train) — ce ne sont pas des données officielles RATP.
+            La carte utilise les coordonnées du plan schématique officiel Île-de-France Mobilités
+            (300 stations sur 315 positionnées ; les extensions les plus récentes n'y figurent pas encore).
         </p>
 
         <form method="get" class="row g-3 mb-4">
@@ -55,7 +57,13 @@
                 <span class="badge text-bg-light text-dark fs-6">{{ resultat.etapes|length }} étapes</span>
             </div>
 
-            <div id="trajet-graphe" data-graphe="{{ grapheJson }}" style="height: 400px; border: 1px solid #dee2e6; border-radius: 6px;" class="mb-4"></div>
+            {% if carteJson %}
+                <p class="small text-muted mb-1">Molette pour zoomer, cliquer-glisser pour se déplacer</p>
+                <div id="trajet-carte" data-carte="{{ carteJson }}" style="border: 1px solid #dee2e6; border-radius: 6px;" class="mb-2">
+                    <svg id="trajet-carte-svg" viewBox="0 0 900 620" style="width: 100%; height: 500px; display: block; cursor: grab; touch-action: none;"></svg>
+                </div>
+                <div id="trajet-carte-legende" class="row row-cols-1 row-cols-md-3 g-1 mb-4 small"></div>
+            {% endif %}
 
             <ul class="list-group mb-4">
                 {% for segment in segments %}

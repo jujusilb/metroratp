@@ -23,10 +23,12 @@ final class TrajetControllerTest extends DatabaseTestCase
         $this->resetDatabase($this->manager);
     }
 
-    private function createStation(string $label): Station
+    private function createStation(string $label, ?float $schemaX = null, ?float $schemaY = null): Station
     {
         $station = new Station();
         $station->setLabel($label);
+        $station->setSchemaX($schemaX);
+        $station->setSchemaY($schemaY);
         $this->manager->persist($station);
 
         return $station;
@@ -97,8 +99,28 @@ final class TrajetControllerTest extends DatabaseTestCase
         $crawler = $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getId(), $b->getId()));
 
         self::assertResponseStatusCodeSame(200);
-        self::assertSelectorExists('#trajet-graphe');
+        self::assertSelectorExists('#trajet-carte');
         self::assertSelectorTextContains('body', '2 min');
+    }
+
+    public function testAvecCoordonneesSchematiquesAlimenteLaCarte(): void
+    {
+        $ligne = $this->createLigne();
+        $a = $this->createDesserte($ligne, $this->createStation('A', 10.0, 20.0));
+        $b = $this->createDesserte($ligne, $this->createStation('B', 15.0, 25.0));
+        $this->linkTroncon($a, $b);
+        $this->manager->flush();
+        $this->manager->clear();
+
+        $crawler = $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getId(), $b->getId()));
+
+        self::assertResponseStatusCodeSame(200);
+        $carteJson = $crawler->filter('#trajet-carte')->attr('data-carte');
+        self::assertNotNull($carteJson);
+        $carte = json_decode($carteJson, true, 512, \JSON_THROW_ON_ERROR);
+        self::assertCount(1, $carte['reseau']);
+        self::assertEqualsWithDelta(10.0, $carte['reseau'][0]['x1'], 0.001);
+        self::assertSame('A', $carte['trajet'][0]['labelDepart']);
     }
 
     public function testSansCheminPossibleAfficheUnMessageDErreur(): void

@@ -19,6 +19,17 @@ class Station
     private ?string $label = null;
 
     /**
+     * Position sur le plan schematique officiel du reseau (coordonnees Ile-de-France Mobilites,
+     * pas des coordonnees geographiques) : voir la commande app:importer-coordonnees-schema.
+     * Null si la station n'a pas ete trouvee dans la source (ex: extension recente).
+     */
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $schemaX = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $schemaY = null;
+
+    /**
      * @var Collection<int, Sortie>
      */
     #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'station')]
@@ -49,6 +60,30 @@ class Station
     public function setLabel(string $label): static
     {
         $this->label = $label;
+
+        return $this;
+    }
+
+    public function getSchemaX(): ?float
+    {
+        return $this->schemaX;
+    }
+
+    public function setSchemaX(?float $schemaX): static
+    {
+        $this->schemaX = $schemaX;
+
+        return $this;
+    }
+
+    public function getSchemaY(): ?float
+    {
+        return $this->schemaY;
+    }
+
+    public function setSchemaY(?float $schemaY): static
+    {
+        $this->schemaY = $schemaY;
 
         return $this;
     }
