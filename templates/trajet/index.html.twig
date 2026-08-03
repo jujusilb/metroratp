@@ -8,9 +8,10 @@
 
         <p class="text-muted small">
             Plus court chemin calculé avec l'algorithme de Dijkstra, sur le réseau des tronçons et des correspondances.
-            Les temps affichés sont des <strong>estimations</strong> (2 min par tronçon ; pour une correspondance,
-            temps de marche connu sinon 3 min par défaut, plus 2 min d'attente moyenne du prochain train) —
-            ce ne sont pas des données officielles RATP.
+            Les temps de tronçon sont calculés à partir des horaires théoriques du GTFS Île-de-France Mobilités
+            (369 tronçons sur 376 ; les autres utilisent une estimation de 2 min faute de correspondance trouvée).
+            Les temps de correspondance restent des <strong>estimations</strong> (temps de marche connu sinon 3 min
+            par défaut, plus 2 min d'attente moyenne du prochain train) — ce ne sont pas des données officielles RATP.
         </p>
 
         <form method="get" class="row g-3 mb-4">

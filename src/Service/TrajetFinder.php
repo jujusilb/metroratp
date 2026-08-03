@@ -14,8 +14,10 @@ use App\Service\Trajet\ResultatTrajet;
 /**
  * Calcule le plus court chemin entre deux dessertes (algorithme de Dijkstra), sur un graphe
  * ou les noeuds sont les dessertes (un quai = station+ligne) et les aretes sont :
- *  - les troncons (rester sur la meme ligne, poids fixe DUREE_TRONCON_MINUTES, coherent avec
- *    le temps moyen inter-station generalement cite pour le reseau parisien) ;
+ *  - les troncons (rester sur la meme ligne), dont le poids est la duree reelle calculee a
+ *    partir des horaires theoriques GTFS IDFM (Troncon::getDureeReelleSecondes(), voir la
+ *    commande app:importer-durees-troncon) quand elle est connue (369 troncons sur 376),
+ *    sinon le poids fixe DUREE_TRONCON_MINUTES par defaut ;
  *  - les correspondances (changer de ligne a la meme station), dont le poids cumule :
  *      1. le temps de marche estime (distance renseignee, sinon DUREE_CORRESPONDANCE_DEFAUT_MINUTES) ;
  *      2. une penalite d'attente du prochain train, DUREE_ATTENTE_CORRESPONDANCE_MINUTES.
@@ -131,6 +133,10 @@ class TrajetFinder
 
         foreach ($this->tronconRepository->findAllWithDetails() as $troncon) {
             /** @var Troncon $troncon */
+            $duree = null !== $troncon->getDureeReelleSecondes()
+                ? $troncon->getDureeReelleSecondes() / 60
+                : self::DUREE_TRONCON_MINUTES;
+
             foreach ($troncon->getSensCirculation() as $sens) {
                 if (null === $sens['depart'] || null === $sens['arrivee']) {
                     continue;
@@ -139,8 +145,8 @@ class TrajetFinder
                 $ajouterArc(
                     $sens['depart'],
                     $sens['arrivee'],
-                    self::DUREE_TRONCON_MINUTES,
-                    new Etape($sens['depart'], $sens['arrivee'], Etape::TYPE_TRONCON, self::DUREE_TRONCON_MINUTES, troncon: $troncon),
+                    $duree,
+                    new Etape($sens['depart'], $sens['arrivee'], Etape::TYPE_TRONCON, $duree, troncon: $troncon),
                 );
             }
         }
