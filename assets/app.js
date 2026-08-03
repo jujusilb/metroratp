@@ -4,7 +4,7 @@ import 'bootstrap';
 // style arrondi de la Parisine (police propriete RATP, non disponible sous licence libre).
 import '@fontsource/baloo-2/700.css';
 import { initStyleStationPicker } from './js/style-station-picker';
-import { initTrajetGraph } from './js/trajet-graph';
+import { initTrajetCarte } from './js/trajet-carte';
 
 document.addEventListener('DOMContentLoaded', () => {
     const styleStationDessertes = document.getElementById('style_station_dessertes');
@@ -15,8 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const trajetGrapheContainer = document.getElementById('trajet-graphe');
-    if (trajetGrapheContainer && trajetGrapheContainer.dataset.graphe) {
-        initTrajetGraph(trajetGrapheContainer, JSON.parse(trajetGrapheContainer.dataset.graphe));
+    const trajetCarteContainer = document.getElementById('trajet-carte');
+    if (trajetCarteContainer && trajetCarteContainer.dataset.carte) {
+        const svg = document.getElementById('trajet-carte-svg');
+        const legende = document.getElementById('trajet-carte-legende');
+        initTrajetCarte(svg, legende, JSON.parse(trajetCarteContainer.dataset.carte));
     }
 });

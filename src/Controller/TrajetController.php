@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Desserte;
+use App\Entity\Troncon;
 use App\Repository\DesserteRepository;
+use App\Repository\TronconRepository;
 use App\Service\Trajet\Etape;
 use App\Service\TrajetFinder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TrajetController extends AbstractController
 {
     #[Route(name: 'app_trajet_index', methods: ['GET'])]
-    public function index(Request $request, DesserteRepository $desserteRepository, TrajetFinder $trajetFinder): Response
+    public function index(Request $request, DesserteRepository $desserteRepository, TronconRepository $tronconRepository, TrajetFinder $trajetFinder): Response
     {
         $dessertes = [];
         foreach ($desserteRepository->findAllWithDetails() as $desserte) {
@@ -26,7 +28,7 @@ final class TrajetController extends AbstractController
         $destinationId = $request->query->getInt('destination') ?: null;
 
         $resultat = null;
-        $graphe = null;
+        $carte = null;
         $erreur = null;
 
         if (null !== $origineId && null !== $destinationId) {
@@ -35,7 +37,10 @@ final class TrajetController extends AbstractController
             if (null === $resultat) {
                 $erreur = 'Aucun trajet trouvé entre ces deux dessertes.';
             } else {
-                $graphe = $this->construireGraphePourAffichage($resultat->etapes, $dessertes[$origineId] ?? null);
+                $carte = [
+                    'reseau' => $this->construireReseauPourAffichage($tronconRepository),
+                    'trajet' => $this->construireTrajetPourAffichage($resultat->etapes),
+                ];
             }
         }
 
@@ -46,7 +51,7 @@ final class TrajetController extends AbstractController
             'resultat' => $resultat,
             'segments' => null !== $resultat ? $this->construireSegmentsPourAffichage($resultat->etapes) : [],
             'erreur' => $erreur,
-            'grapheJson' => null !== $graphe ? json_encode($graphe, JSON_THROW_ON_ERROR) : null,
+            'carteJson' => null !== $carte ? json_encode($carte, JSON_THROW_ON_ERROR) : null,
         ]);
     }
 
@@ -100,51 +105,96 @@ final class TrajetController extends AbstractController
     }
 
     /**
-     * Construit les donnees noeuds/aretes attendues par vis-network, pour le chemin trouve
-     * uniquement (pas tout le reseau : illisible et inutile pour un seul trajet).
+     * Le reseau complet des troncons, positionnes sur le plan schematique officiel IDFM
+     * (Station::schemaX/Y, voir app:importer-coordonnees-schema). Sert de fond de carte
+     * (attenue) pour situer le trajet trouve dans son contexte. Les troncons dont une des deux
+     * stations n'a pas de coordonnees connues sont ignores (~2% du reseau, cf commande import).
+     *
+     * @return list<array{x1: float, y1: float, x2: float, y2: float, couleur: string}>
+     */
+    private function construireReseauPourAffichage(TronconRepository $tronconRepository): array
+    {
+        $troncons = [];
+        $vus = [];
+
+        foreach ($tronconRepository->findAllWithDetails() as $troncon) {
+            /** @var Troncon $troncon */
+            foreach ($troncon->getSensCirculation() as $sens) {
+                $depart = $sens['depart'];
+                $arrivee = $sens['arrivee'];
+                if (null === $depart || null === $arrivee) {
+                    continue;
+                }
+
+                $stationDepart = $depart->getStation();
+                $stationArrivee = $arrivee->getStation();
+                if (null === $stationDepart || null === $stationArrivee) {
+                    continue;
+                }
+                if (null === $stationDepart->getSchemaX() || null === $stationArrivee->getSchemaX()) {
+                    continue;
+                }
+
+                $couleur = $depart->getLigne()?->getCouleur() ?? '6c757d';
+                $cle = min($stationDepart->getId(), $stationArrivee->getId())
+                    . '-' . max($stationDepart->getId(), $stationArrivee->getId())
+                    . '-' . $couleur;
+                if (isset($vus[$cle])) {
+                    continue;
+                }
+                $vus[$cle] = true;
+
+                $troncons[] = [
+                    'x1' => $stationDepart->getSchemaX(),
+                    'y1' => $stationDepart->getSchemaY(),
+                    'x2' => $stationArrivee->getSchemaX(),
+                    'y2' => $stationArrivee->getSchemaY(),
+                    'couleur' => '#' . ltrim($couleur, '#'),
+                ];
+            }
+        }
+
+        return $troncons;
+    }
+
+    /**
+     * Les etapes du trajet trouve, avec les coordonnees schematiques de chaque station
+     * (etapes dont une station n'a pas de coordonnees connues sont ignorees : le trajet textuel
+     * reste complet, seule cette representation graphique en manquera un morceau).
      *
      * @param Etape[] $etapes
-     * @return array{nodes: list<array<string, mixed>>, edges: list<array<string, mixed>>}
+     * @return list<array{labelDepart: string, x1: float, y1: float, labelArrivee: string, x2: float, y2: float, couleur: string, type: string}>
      */
-    private function construireGraphePourAffichage(array $etapes, ?Desserte $origine): array
+    private function construireTrajetPourAffichage(array $etapes): array
     {
-        $nodes = [];
-        $edges = [];
-
-        $ajouterNode = function (Desserte $desserte) use (&$nodes): void {
-            $id = $desserte->getId();
-            if (isset($nodes[$id])) {
-                return;
-            }
-
-            $nodes[$id] = [
-                'id' => $id,
-                'label' => sprintf(
-                    "%s\n(%s)",
-                    $desserte->getStation()?->getLabel() ?? '?',
-                    $desserte->getLigne()?->getLabel() ?? '?',
-                ),
-                'color' => $desserte->getLigne()?->getCouleur() ?? '#6c757d',
-            ];
-        };
-
-        if (null !== $origine) {
-            $ajouterNode($origine);
-        }
+        $resultat = [];
 
         foreach ($etapes as $etape) {
-            $ajouterNode($etape->depart);
-            $ajouterNode($etape->arrivee);
+            $stationDepart = $etape->depart->getStation();
+            $stationArrivee = $etape->arrivee->getStation();
+            if (null === $stationDepart || null === $stationArrivee) {
+                continue;
+            }
+            if (null === $stationDepart->getSchemaX() || null === $stationArrivee->getSchemaX()) {
+                continue;
+            }
 
-            $edges[] = [
-                'from' => $etape->depart->getId(),
-                'to' => $etape->arrivee->getId(),
-                'label' => sprintf('%s min', round($etape->dureeMinutes, 1)),
-                'dashes' => Etape::TYPE_CORRESPONDANCE === $etape->type,
-                'color' => Etape::TYPE_CORRESPONDANCE === $etape->type ? '#dc3545' : '#495057',
+            $couleur = Etape::TYPE_CORRESPONDANCE === $etape->type
+                ? '#dc3545'
+                : '#' . ltrim($etape->depart->getLigne()?->getCouleur() ?? '6c757d', '#');
+
+            $resultat[] = [
+                'labelDepart' => $stationDepart->getLabel(),
+                'x1' => $stationDepart->getSchemaX(),
+                'y1' => $stationDepart->getSchemaY(),
+                'labelArrivee' => $stationArrivee->getLabel(),
+                'x2' => $stationArrivee->getSchemaX(),
+                'y2' => $stationArrivee->getSchemaY(),
+                'couleur' => $couleur,
+                'type' => $etape->type,
             ];
         }
 
-        return ['nodes' => array_values($nodes), 'edges' => $edges];
+        return $resultat;
     }
 }
