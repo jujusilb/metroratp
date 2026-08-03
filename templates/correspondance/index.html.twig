@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Correspondances{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Correspondances</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Desserte A</th>
+                    <th>Desserte B</th>
+                    <th>Distance</th>
+                    <th>Temps estimé</th>
+                    <th>En zone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for correspondance in correspondances %}
+                <tr>
+                    <td>
+                        {% if correspondance.desserteA %}
+                            <a href="{{ path('app_station_show', {'id': correspondance.desserteA.station.id}) }}" class="link-body-emphasis">
+                                {{ correspondance.desserteA.station.label }}
+                            </a>
+                            {% if correspondance.desserteA.ligne %}
+                                <a href="{{ path('app_ligne_show', {'id': correspondance.desserteA.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ correspondance.desserteA.ligne.couleur|default('#6c757d') }};">
+                                    {{ correspondance.desserteA.ligne.label }}
+                                </a>
+                            {% endif %}
+                            {% if correspondance.directionA %}
+                                <br><span class="text-muted small">dir. {{ correspondance.directionA.station.label }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if correspondance.desserteB %}
+                            <a href="{{ path('app_station_show', {'id': correspondance.desserteB.station.id}) }}" class="link-body-emphasis">
+                                {{ correspondance.desserteB.station.label }}
+                            </a>
+                            {% if correspondance.desserteB.ligne %}
+                                <a href="{{ path('app_ligne_show', {'id': correspondance.desserteB.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ correspondance.desserteB.ligne.couleur|default('#6c757d') }};">
+                                    {{ correspondance.desserteB.ligne.label }}
+                                </a>
+                            {% endif %}
+                            {% if correspondance.directionB %}
+                                <br><span class="text-muted small">dir. {{ correspondance.directionB.station.label }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ correspondance.distance ? correspondance.distance ~ ' m' : '—' }}</td>
+                    <td>{{ correspondance.tempsEstimeMinutes ? correspondance.tempsEstimeMinutes ~ ' min' : '—' }}</td>
+                    <td>
+                        {% if correspondance.inZone %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Non</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_correspondance_show', {'id': correspondance.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_correspondance_edit', {'id': correspondance.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_correspondance_new') }}" class="btn btn-primary">Créer nouvelle correspondance</a>
+    </div>
+{% endblock %}

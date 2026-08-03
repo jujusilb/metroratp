@@ -2,7 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Direction;
+use App\Entity\Ligne;
 use App\Entity\Mission;
+use App\Entity\Service;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -29,7 +32,8 @@ class MissionRepository extends ServiceEntityRepository
             ->innerJoin('depart.ligne', 'ligne')->addSelect('ligne')
             ->innerJoin('depart.station', 'departStation')->addSelect('departStation')
             ->innerJoin('m.direction', 'direction')->addSelect('direction')
-            ->innerJoin('direction.station', 'directionStation')->addSelect('directionStation')
+            ->innerJoin('direction.desserteTerminus', 'directionDesserte')->addSelect('directionDesserte')
+            ->innerJoin('directionDesserte.station', 'directionStation')->addSelect('directionStation')
             ->leftJoin('troncon.tronconDessertes', 'allTd')->addSelect('allTd')
             ->leftJoin('allTd.desserte', 'allTdDesserte')->addSelect('allTdDesserte')
             ->leftJoin('allTdDesserte.station', 'allTdStation')->addSelect('allTdStation')
@@ -44,7 +48,7 @@ class MissionRepository extends ServiceEntityRepository
     /**
      * Lignes ayant au moins une mission, pour l'ecran de selection.
      *
-     * @return \App\Entity\Ligne[]
+     * @return Ligne[]
      */
     public function findLignesWithMissions(): array
     {
@@ -59,7 +63,7 @@ class MissionRepository extends ServiceEntityRepository
 
         return $em->createQueryBuilder()
             ->select('ligne')
-            ->from(\App\Entity\Ligne::class, 'ligne')
+            ->from(Ligne::class, 'ligne')
             ->where('EXISTS (' . $subQuery . ')')
             ->orderBy('ligne.id', 'ASC')
             ->getQuery()
@@ -68,9 +72,9 @@ class MissionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Les directions (dessertes terminus) vers lesquelles il existe des missions sur cette ligne.
+     * Les directions vers lesquelles il existe des missions sur cette ligne.
      *
-     * @return \App\Entity\Desserte[]
+     * @return Direction[]
      */
     public function findDirectionsForLigne(int $ligneId): array
     {
@@ -78,18 +82,18 @@ class MissionRepository extends ServiceEntityRepository
         $subQuery = $em->createQueryBuilder()
             ->select('m2.id')
             ->from(Mission::class, 'm2')
-            ->innerJoin('m2.tronconDesserte', 'td2')
-            ->innerJoin('td2.desserte', 'depart2')
             ->where('m2.direction = direction')
-            ->andWhere('depart2.ligne = :ligneId')
             ->getDQL();
 
         return $em->createQueryBuilder()
             ->select('direction')
+            ->addSelect('directionDesserte')
             ->addSelect('directionStation')
-            ->from(\App\Entity\Desserte::class, 'direction')
-            ->innerJoin('direction.station', 'directionStation')
-            ->where('EXISTS (' . $subQuery . ')')
+            ->from(Direction::class, 'direction')
+            ->innerJoin('direction.desserteTerminus', 'directionDesserte')
+            ->innerJoin('directionDesserte.station', 'directionStation')
+            ->where('direction.ligne = :ligneId')
+            ->andWhere('EXISTS (' . $subQuery . ')')
             ->setParameter('ligneId', $ligneId)
             ->orderBy('directionStation.label', 'ASC')
             ->getQuery()
@@ -101,7 +105,7 @@ class MissionRepository extends ServiceEntityRepository
      * Les services qui desservent cette direction sur cette ligne (plus d'un = embranchement,
      * chaque service menant a un terminus different au sein de cette meme direction generale).
      *
-     * @return \App\Entity\Service[]
+     * @return Service[]
      */
     public function findServicesForDirection(int $ligneId, int $directionId): array
     {
@@ -118,7 +122,7 @@ class MissionRepository extends ServiceEntityRepository
 
         return $em->createQueryBuilder()
             ->select('service')
-            ->from(\App\Entity\Service::class, 'service')
+            ->from(Service::class, 'service')
             ->where('EXISTS (' . $subQuery . ')')
             ->setParameter('ligneId', $ligneId)
             ->setParameter('directionId', $directionId)

@@ -18,6 +18,15 @@ class Troncon
     #[ORM\Column(length: 15, nullable: true)]
     private ?string $parcours = null;
 
+    /**
+     * Duree reelle moyenne (en secondes) entre les deux dessertes de ce troncon, calculee a
+     * partir des horaires theoriques GTFS IDFM (voir commande app:importer-durees-troncon).
+     * Null si aucune correspondance n'a ete trouvee : TrajetFinder retombe alors sur son
+     * poids fixe par defaut.
+     */
+    #[ORM\Column(nullable: true)]
+    private ?int $dureeReelleSecondes = null;
+
     #[ORM\ManyToOne(inversedBy: 'troncons')]
     private ?TypeTroncon $typeTroncon = null;
 
@@ -45,6 +54,18 @@ class Troncon
     public function setParcours(?string $parcours): static
     {
         $this->parcours = $parcours;
+
+        return $this;
+    }
+
+    public function getDureeReelleSecondes(): ?int
+    {
+        return $this->dureeReelleSecondes;
+    }
+
+    public function setDureeReelleSecondes(?int $dureeReelleSecondes): static
+    {
+        $this->dureeReelleSecondes = $dureeReelleSecondes;
 
         return $this;
     }

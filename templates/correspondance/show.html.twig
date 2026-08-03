@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Correspondance{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Correspondance</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ correspondance.id }}</td>
+                </tr>
+                <tr>
+                    <th>Desserte A</th>
+                    <td>
+                        {% if correspondance.desserteA %}
+                            <a href="{{ path('app_desserte_show', {'id': correspondance.desserteA.id}) }}" class="link-body-emphasis">
+                                {{ correspondance.desserteA.station.label }}
+                            </a>
+                            {% if correspondance.desserteA.ligne %}
+                                <a href="{{ path('app_ligne_show', {'id': correspondance.desserteA.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ correspondance.desserteA.ligne.couleur|default('#6c757d') }};">
+                                    {{ correspondance.desserteA.ligne.label }}
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Direction (côté A)</th>
+                    <td>
+                        {% if correspondance.directionA %}
+                            {{ correspondance.directionA.station.label }}
+                        {% else %}
+                            <span class="text-muted">Toutes directions</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Desserte B</th>
+                    <td>
+                        {% if correspondance.desserteB %}
+                            <a href="{{ path('app_desserte_show', {'id': correspondance.desserteB.id}) }}" class="link-body-emphasis">
+                                {{ correspondance.desserteB.station.label }}
+                            </a>
+                            {% if correspondance.desserteB.ligne %}
+                                <a href="{{ path('app_ligne_show', {'id': correspondance.desserteB.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ correspondance.desserteB.ligne.couleur|default('#6c757d') }};">
+                                    {{ correspondance.desserteB.ligne.label }}
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Direction (côté B)</th>
+                    <td>
+                        {% if correspondance.directionB %}
+                            {{ correspondance.directionB.station.label }}
+                        {% else %}
+                            <span class="text-muted">Toutes directions</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Distance</th>
+                    <td>{{ correspondance.distance ? correspondance.distance ~ ' m' : '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Temps estimé</th>
+                    <td>
+                        {% if correspondance.tempsEstimeMinutes %}
+                            {{ correspondance.tempsEstimeMinutes }} min
+                            <span class="text-muted">(estimation à partir de la distance, pas une donnée officielle)</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>En zone</th>
+                    <td>
+                        {% if correspondance.inZone %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Non</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_correspondance_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            <a href="{{ path('app_correspondance_edit', {'id': correspondance.id}) }}" class="btn btn-warning">Modifier</a>
+        </div>
+
+        {{ include('correspondance/_delete_form.html.twig') }}
+    </div>
+{% endblock %}
