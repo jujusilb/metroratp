@@ -3,6 +3,7 @@
 namespace App\Tests\Entity;
 
 use App\Entity\Desserte;
+use App\Entity\Direction;
 use App\Entity\Ligne;
 use App\Entity\Station;
 use App\Entity\Troncon;
@@ -59,6 +60,16 @@ trait GraphFixtureTrait
         $station->addDesserte($desserte);
 
         return $desserte;
+    }
+
+    private function createDirection(Ligne $ligne, Desserte $desserteTerminus): Direction
+    {
+        $direction = new Direction();
+        $direction->setLigne($ligne);
+        $direction->setDesserteTerminus($desserteTerminus);
+        $this->setEntityId($direction, self::$nextId++);
+
+        return $direction;
     }
 
     private function createTroncon(): Troncon

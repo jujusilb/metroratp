@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Desserte;
+use App\Entity\Direction;
 use App\Entity\Ligne;
 use App\Entity\Mission;
 use App\Entity\Service;
@@ -58,6 +59,16 @@ final class MissionControllerTest extends DatabaseTestCase
         return $desserte;
     }
 
+    private function createDirection(Ligne $ligne, Desserte $desserteTerminus): Direction
+    {
+        $direction = new Direction();
+        $direction->setLigne($ligne);
+        $direction->setDesserteTerminus($desserteTerminus);
+        $this->manager->persist($direction);
+
+        return $direction;
+    }
+
     private function createTypeDesserte(string $label): TypeDesserte
     {
         $typeDesserte = new TypeDesserte();
@@ -91,7 +102,7 @@ final class MissionControllerTest extends DatabaseTestCase
      * Construit une ligne a 3 stations (A -> B -> C) avec 2 troncons et 2 missions,
      * pour tester le parcours complet (choix_ligne -> choix_direction -> choix_service -> trajet).
      *
-     * @return array{ligne: Ligne, missions: Mission[], stations: Station[], direction: Desserte, service: Service}
+     * @return array{ligne: Ligne, missions: Mission[], stations: Station[], direction: Direction, service: Service}
      */
     private function createLigneAvecTrajet(): array
     {
@@ -121,19 +132,20 @@ final class MissionControllerTest extends DatabaseTestCase
         $this->createTronconDesserte($t2, $dC, $arriveeType);
 
         $service = $this->createService();
+        $direction = $this->createDirection($ligne, $dC);
 
         $mission1 = new Mission();
         $mission1->setNumero(1);
         $mission1->setService($service);
         $mission1->setTronconDesserte($td1Depart);
-        $mission1->setDirection($dC);
+        $mission1->setDirection($direction);
         $this->manager->persist($mission1);
 
         $mission2 = new Mission();
         $mission2->setNumero(2);
         $mission2->setService($service);
         $mission2->setTronconDesserte($td2Depart);
-        $mission2->setDirection($dC);
+        $mission2->setDirection($direction);
         $this->manager->persist($mission2);
 
         $this->manager->flush();
@@ -146,7 +158,7 @@ final class MissionControllerTest extends DatabaseTestCase
             'ligne' => $ligne,
             'missions' => [$mission1, $mission2],
             'stations' => [$stationA, $stationB, $stationC],
-            'direction' => $dC,
+            'direction' => $direction,
             'service' => $service,
         ];
     }

@@ -40,7 +40,7 @@ final class MissionTest extends TestCase
         $mission->setNumero(1);
         $mission->setService($service);
         $mission->setTronconDesserte($tronconDesserteDepart);
-        $mission->setDirection($b);
+        $mission->setDirection($this->createDirection($ligne, $b));
 
         self::assertSame($troncon, $mission->getTroncon());
         self::assertSame($a, $mission->getDepart());
@@ -71,7 +71,7 @@ final class MissionTest extends TestCase
         $mission->setNumero(1);
         $mission->setService($service);
         $mission->setTronconDesserte($tronconDesserte);
-        $mission->setDirection($a);
+        $mission->setDirection($this->createDirection($ligne, $a));
 
         self::assertNull($mission->getArrivee());
     }

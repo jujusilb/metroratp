@@ -30,13 +30,13 @@ class Mission
     private ?TronconDesserte $tronconDesserte = null;
 
     /**
-     * La station terminus vers laquelle va cette mission (ex: "direction La Defense"),
-     * telle qu'affichee sur les quais. Remplace l'ancienne table "sens" (Nord/Sud), qui
-     * ne suffisait pas pour les lignes a embranchements (plusieurs terminus possibles).
+     * La direction vers laquelle va cette mission (ex: "direction La Defense"), telle
+     * qu'affichee sur les quais. Remplace l'ancienne table "sens" (Nord/Sud), qui ne
+     * suffisait pas pour les lignes a embranchements (plusieurs terminus possibles).
      */
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Desserte $direction = null;
+    private ?Direction $direction = null;
 
     public function getId(): ?int
     {
@@ -79,12 +79,12 @@ class Mission
         return $this;
     }
 
-    public function getDirection(): ?Desserte
+    public function getDirection(): ?Direction
     {
         return $this->direction;
     }
 
-    public function setDirection(?Desserte $direction): static
+    public function setDirection(?Direction $direction): static
     {
         $this->direction = $direction;
 

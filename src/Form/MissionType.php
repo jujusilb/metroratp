@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Desserte;
+use App\Entity\Direction;
 use App\Entity\Mission;
 use App\Entity\Service;
 use App\Entity\TronconDesserte;
@@ -32,8 +32,12 @@ class MissionType extends AbstractType
                 ),
             ])
             ->add('direction', EntityType::class, [
-                'class' => Desserte::class,
-                'choice_label' => fn (Desserte $d): string => $d->getStation()?->getLabel() ?? ('#' . $d->getId()),
+                'class' => Direction::class,
+                'choice_label' => fn (Direction $d): string => sprintf(
+                    '%s - %s',
+                    $d->getLigne()?->getLabel() ?? '?',
+                    $d->getStation()?->getLabel() ?? ('#' . $d->getId()),
+                ),
             ])
         ;
     }

@@ -3,7 +3,9 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Acces;
+use App\Entity\Correspondance;
 use App\Entity\Desserte;
+use App\Entity\Direction;
 use App\Entity\Ligne;
 use App\Entity\Materiel;
 use App\Entity\MaterielLigne;
@@ -39,6 +41,8 @@ abstract class DatabaseTestCase extends WebTestCase
             MaterielLigne::class,
             Sortie::class,
             PeriodeOuverture::class,
+            Correspondance::class,
+            Direction::class,
             Desserte::class,
             Materiel::class,
             Troncon::class,
