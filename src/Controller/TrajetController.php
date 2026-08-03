@@ -44,9 +44,59 @@ final class TrajetController extends AbstractController
             'origineId' => $origineId,
             'destinationId' => $destinationId,
             'resultat' => $resultat,
+            'segments' => null !== $resultat ? $this->construireSegmentsPourAffichage($resultat->etapes) : [],
             'erreur' => $erreur,
             'grapheJson' => null !== $graphe ? json_encode($graphe, JSON_THROW_ON_ERROR) : null,
         ]);
+    }
+
+    /**
+     * Regroupe les etapes consecutives de type "troncon" (meme ligne, sans changement) en un
+     * seul segment affichant la chaine complete des stations traversees, plutot qu'une ligne
+     * par troncon individuel. Les correspondances restent des segments a part.
+     *
+     * @param Etape[] $etapes
+     * @return list<array{type: string, dessertes?: Desserte[], depart?: Desserte, arrivee?: Desserte, duree: float}>
+     */
+    private function construireSegmentsPourAffichage(array $etapes): array
+    {
+        $segments = [];
+        $tronconCourant = null;
+
+        foreach ($etapes as $etape) {
+            if (Etape::TYPE_CORRESPONDANCE === $etape->type) {
+                if (null !== $tronconCourant) {
+                    $segments[] = $tronconCourant;
+                    $tronconCourant = null;
+                }
+
+                $segments[] = [
+                    'type' => Etape::TYPE_CORRESPONDANCE,
+                    'depart' => $etape->depart,
+                    'arrivee' => $etape->arrivee,
+                    'duree' => $etape->dureeMinutes,
+                ];
+
+                continue;
+            }
+
+            if (null === $tronconCourant) {
+                $tronconCourant = [
+                    'type' => Etape::TYPE_TRONCON,
+                    'dessertes' => [$etape->depart, $etape->arrivee],
+                    'duree' => $etape->dureeMinutes,
+                ];
+            } else {
+                $tronconCourant['dessertes'][] = $etape->arrivee;
+                $tronconCourant['duree'] += $etape->dureeMinutes;
+            }
+        }
+
+        if (null !== $tronconCourant) {
+            $segments[] = $tronconCourant;
+        }
+
+        return $segments;
     }
 
     /**
@@ -89,7 +139,7 @@ final class TrajetController extends AbstractController
             $edges[] = [
                 'from' => $etape->depart->getId(),
                 'to' => $etape->arrivee->getId(),
-                'label' => sprintf('%s min', $etape->dureeMinutes),
+                'label' => sprintf('%s min', round($etape->dureeMinutes, 1)),
                 'dashes' => Etape::TYPE_CORRESPONDANCE === $etape->type,
                 'color' => Etape::TYPE_CORRESPONDANCE === $etape->type ? '#dc3545' : '#495057',
             ];
