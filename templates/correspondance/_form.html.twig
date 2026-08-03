@@ -1,0 +1,11 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.desserteA) }}
+    {{ form_row(form.directionA) }}
+    {{ form_row(form.desserteB) }}
+    {{ form_row(form.directionB) }}
+    {{ form_row(form.distance) }}
+    {{ form_row(form.inZone) }}
+
+    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

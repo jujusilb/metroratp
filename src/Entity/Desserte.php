@@ -37,10 +37,24 @@ class Desserte
     #[ORM\OneToMany(targetEntity: TronconDesserte::class, mappedBy: 'desserte')]
     private Collection $tronconDessertes;
 
+    /**
+     * @var Collection<int, Correspondance>
+     */
+    #[ORM\OneToMany(targetEntity: Correspondance::class, mappedBy: 'desserteA')]
+    private Collection $correspondancesA;
+
+    /**
+     * @var Collection<int, Correspondance>
+     */
+    #[ORM\OneToMany(targetEntity: Correspondance::class, mappedBy: 'desserteB')]
+    private Collection $correspondancesB;
+
     public function __construct()
     {
         $this->tronconDessertes = new ArrayCollection();
         $this->periodesOuverture = new ArrayCollection();
+        $this->correspondancesA = new ArrayCollection();
+        $this->correspondancesB = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -133,6 +147,33 @@ class Desserte
         }
 
         return count($ids);
+    }
+
+    /**
+     * Toutes les correspondances de cette desserte, quel que soit son role (A ou B) dans la
+     * paire, triees par distance croissante (les correspondances sans distance connue en
+     * dernier).
+     *
+     * @return Correspondance[]
+     */
+    public function getCorrespondances(): array
+    {
+        $correspondances = [...$this->correspondancesA, ...$this->correspondancesB];
+
+        usort(
+            $correspondances,
+            static fn (Correspondance $a, Correspondance $b): int => ($a->getDistance() ?? PHP_INT_MAX) <=> ($b->getDistance() ?? PHP_INT_MAX)
+        );
+
+        return $correspondances;
+    }
+
+    /**
+     * L'autre desserte d'une correspondance donnee (celle qui n'est pas $this).
+     */
+    public function getAutreDesserte(Correspondance $correspondance): ?Desserte
+    {
+        return $correspondance->getDesserteA() === $this ? $correspondance->getDesserteB() : $correspondance->getDesserteA();
     }
 
     /**
