@@ -13,7 +13,9 @@ export function preparerDonneesGraphe(graphe) {
         id: node.id,
         label: node.label,
         color: { background: node.color, border: '#fff' },
-        font: { color: '#fff', multi: false },
+        // Avec shape 'dot', vis-network affiche le label sous le point (pas dedans) : il faut
+        // donc une couleur lisible sur le fond de la page, pas sur le fond du noeud.
+        font: { color: '#212529', multi: false },
     }));
 
     const edges = graphe.edges.map((edge) => ({
@@ -48,22 +50,27 @@ export function initTrajetGraph(container, graphe) {
         edges: new DataSet(edges),
     };
 
+    // Le resultat de Dijkstra est une sequence lineaire (chaque station n'a qu'un seul
+    // predecesseur et successeur) : un layout physique force-directed n'a pas de sens ici
+    // (il eparpille les noeuds sans respecter l'ordre du trajet). Un layout hierarchique
+    // dirige, base sur l'ordre reel des aretes, affiche le trajet comme une ligne lisible.
     const options = {
         nodes: {
             shape: 'dot',
             size: 18,
+            font: { size: 14 },
         },
         edges: {
-            smooth: { type: 'continuous' },
+            smooth: { type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 },
         },
-        physics: {
-            stabilization: true,
-            barnesHut: {
-                springLength: 120,
-            },
-        },
+        physics: false,
         layout: {
-            improvedLayout: true,
+            hierarchical: {
+                direction: 'LR',
+                sortMethod: 'directed',
+                levelSeparation: 150,
+                nodeSpacing: 80,
+            },
         },
     };
 
