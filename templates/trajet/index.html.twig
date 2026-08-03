@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calculer un trajet{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Calculer un trajet</h1>
+
+        <p class="text-muted small">
+            Plus court chemin calculé avec l'algorithme de Dijkstra, sur le réseau des tronçons et des correspondances.
+            Les temps affichés sont des <strong>estimations</strong> (2 min par tronçon ; pour une correspondance,
+            temps de marche connu sinon 3 min par défaut, plus 2 min d'attente moyenne du prochain train) —
+            ce ne sont pas des données officielles RATP.
+        </p>
+
+        <form method="get" class="row g-3 mb-4">
+            <div class="col-md-5">
+                <label for="origine" class="form-label">Départ</label>
+                <select name="origine" id="origine" class="form-select">
+                    <option value="">-- Choisir une station --</option>
+                    {% for desserte in dessertes %}
+                        <option value="{{ desserte.id }}" {{ desserte.id == origineId ? 'selected' : '' }}>
+                            {{ desserte.ligne ? desserte.ligne.label : '?' }} - {{ desserte.station ? desserte.station.label : '?' }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label for="destination" class="form-label">Arrivée</label>
+                <select name="destination" id="destination" class="form-select">
+                    <option value="">-- Choisir une station --</option>
+                    {% for desserte in dessertes %}
+                        <option value="{{ desserte.id }}" {{ desserte.id == destinationId ? 'selected' : '' }}>
+                            {{ desserte.ligne ? desserte.ligne.label : '?' }} - {{ desserte.station ? desserte.station.label : '?' }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Calculer</button>
+            </div>
+        </form>
+
+        {% if erreur %}
+            <div class="alert alert-warning">{{ erreur }}</div>
+        {% endif %}
+
+        {% if resultat %}
+            <div class="d-flex gap-3 mb-3">
+                <span class="badge text-bg-primary fs-6">{{ resultat.dureeMinutesTotale }} min</span>
+                <span class="badge text-bg-secondary fs-6">{{ resultat.nombreCorrespondances }} correspondance{{ resultat.nombreCorrespondances > 1 ? 's' : '' }}</span>
+                <span class="badge text-bg-light text-dark fs-6">{{ resultat.etapes|length }} étapes</span>
+            </div>
+
+            <div id="trajet-graphe" data-graphe="{{ grapheJson }}" style="height: 500px; border: 1px solid #dee2e6; border-radius: 6px;" class="mb-4"></div>
+
+            <ul class="list-group mb-4">
+                {% for etape in resultat.etapes %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center {{ etape.type == 'correspondance' ? 'border-start border-danger border-3' : '' }}">
+                        <span>
+                            {% if etape.type == 'correspondance' %}
+                                <span class="badge text-bg-danger me-2">Correspondance</span>
+                            {% endif %}
+                            <a href="{{ path('app_station_show', {'id': etape.depart.station.id}) }}" class="link-body-emphasis">{{ etape.depart.station.label }}</a>
+                            <span class="ligne-badge-sm" style="background-color: {{ etape.depart.ligne.couleur|default('#6c757d') }};">{{ etape.depart.ligne.label }}</span>
+                            →
+                            <a href="{{ path('app_station_show', {'id': etape.arrivee.station.id}) }}" class="link-body-emphasis">{{ etape.arrivee.station.label }}</a>
+                            <span class="ligne-badge-sm" style="background-color: {{ etape.arrivee.ligne.couleur|default('#6c757d') }};">{{ etape.arrivee.ligne.label }}</span>
+                        </span>
+                        <span class="text-muted">{{ etape.dureeMinutes }} min</span>
+                    </li>
+                {% else %}
+                    <li class="list-group-item text-muted">Départ et arrivée identiques.</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}
