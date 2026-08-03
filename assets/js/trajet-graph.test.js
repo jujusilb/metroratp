@@ -16,7 +16,7 @@ describe('preparerDonneesGraphe', () => {
                 id: 1,
                 label: 'Châtelet\n(1)',
                 color: { background: '#ffcd00', border: '#fff' },
-                font: { color: '#fff', multi: false },
+                font: { color: '#212529', multi: false },
             },
         ]);
     });
