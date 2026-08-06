@@ -52,7 +52,9 @@
 
         <div class="d-flex gap-2">
             <a href="{{ path('app_periode_ouverture_index') }}" class="btn btn-secondary">Retour à la liste</a>
-            <a href="{{ path('app_periode_ouverture_edit', {'id': periode_ouverture.id}) }}" class="btn btn-warning">Modifier</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_periode_ouverture_edit', {'id': periode_ouverture.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
         </div>
 
         {{ include('periode_ouverture/_delete_form.html.twig') }}

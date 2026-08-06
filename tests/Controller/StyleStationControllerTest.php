@@ -24,6 +24,7 @@ final class StyleStationControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->styleStationRepository = $this->manager->getRepository(StyleStation::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     public function testIndex(): void

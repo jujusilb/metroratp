@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateurs{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Utilisateurs</h1>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Nom d'utilisateur</th>
+                        <th>Email</th>
+                        <th>Nom complet</th>
+                        <th>Ville</th>
+                        <th>Rôle</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for utilisateur in utilisateurs %}
+                    <tr>
+                        <td>{{ utilisateur.username }}</td>
+                        <td>{{ utilisateur.email }}</td>
+                        <td>
+                            {% if utilisateur.prenom or utilisateur.nom %}
+                                {{ [utilisateur.prenom, utilisateur.nom]|filter(v => v)|join(' ') }}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ utilisateur.ville|default('—') }}</td>
+                        <td>
+                            {% if 'ROLE_ADMIN' in utilisateur.roles %}
+                                <span class="badge text-bg-danger">Administrateur</span>
+                            {% else %}
+                                <span class="badge text-bg-secondary">Utilisateur</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('app_utilisateur_show', {'id': utilisateur.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                            <a href="{{ path('app_utilisateur_edit', {'id': utilisateur.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">Aucun enregistrement trouvé</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="{{ path('app_utilisateur_new') }}" class="btn btn-primary">Créer nouvel utilisateur</a>
+    </div>
+{% endblock %}

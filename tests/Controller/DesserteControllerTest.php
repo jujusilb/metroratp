@@ -23,6 +23,7 @@ final class DesserteControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->desserteRepository = $this->manager->getRepository(Desserte::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     private function createStation(): Station

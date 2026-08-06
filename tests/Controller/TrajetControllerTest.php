@@ -21,6 +21,7 @@ final class TrajetControllerTest extends DatabaseTestCase
         $this->client = static::createClient();
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     private function createStation(string $label, ?float $schemaX = null, ?float $schemaY = null): Station

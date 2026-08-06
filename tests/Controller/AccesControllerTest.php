@@ -21,6 +21,7 @@ final class AccesControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->accesRepository = $this->manager->getRepository(Acces::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     public function testIndex(): void

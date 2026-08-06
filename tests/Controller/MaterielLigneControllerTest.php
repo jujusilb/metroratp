@@ -24,6 +24,7 @@ final class MaterielLigneControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->materielLigneRepository = $this->manager->getRepository(MaterielLigne::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     private function createMateriel(): Materiel

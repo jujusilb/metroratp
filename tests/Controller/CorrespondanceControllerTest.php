@@ -25,6 +25,7 @@ final class CorrespondanceControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->correspondanceRepository = $this->manager->getRepository(Correspondance::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     private function createDesserte(string $stationLabel): Desserte

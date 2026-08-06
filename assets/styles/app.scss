@@ -156,3 +156,10 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     }
 }
 
+// Ouvre le sous-menu "Mon profil / Déconnexion" au survol plutôt qu'au clic
+// (le comportement au clic de Bootstrap reste actif en complément, ex: tactile).
+.profil-dropdown:hover > .dropdown-menu {
+    display: block;
+    margin-top: 0;
+}
+

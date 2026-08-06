@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Repository\LigneRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -10,10 +9,18 @@ use Symfony\Component\Routing\Attribute\Route;
 final class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home', methods: ['GET'])]
-    public function index(LigneRepository $ligneRepository): Response
+    public function index(): Response
     {
-        return $this->render('home/index.html.twig', [
-            'lignes' => $ligneRepository->findBy([], ['id' => 'ASC']),
-        ]);
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_trajet_index');
+        }
+
+        return $this->render('home/index.html.twig');
+    }
+
+    #[Route('/mentions-legales', name: 'app_mentions_legales', methods: ['GET'])]
+    public function mentionsLegales(): Response
+    {
+        return $this->render('home/mentions_legales.html.twig');
     }
 }

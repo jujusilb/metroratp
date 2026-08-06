@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Mon profil</h1>
+
+        <table class="table w-auto">
+            <tbody>
+                <tr>
+                    <th>Nom d'utilisateur</th>
+                    <td>{{ utilisateur.username }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ utilisateur.email }}</td>
+                </tr>
+                <tr>
+                    <th>Prénom</th>
+                    <td>{{ utilisateur.prenom|default('—') }}</td>
+                </tr>
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ utilisateur.nom|default('—') }}</td>
+                </tr>
+                <tr>
+                    <th>Téléphone</th>
+                    <td>{{ utilisateur.telephone|default('—') }}</td>
+                </tr>
+                <tr>
+                    <th>Adresse</th>
+                    <td>
+                        {% if utilisateur.adresseLigne1 or utilisateur.adresseLigne2 or utilisateur.codePostal or utilisateur.ville %}
+                            {{ utilisateur.adresseLigne1 }}<br>
+                            {% if utilisateur.adresseLigne2 %}{{ utilisateur.adresseLigne2 }}<br>{% endif %}
+                            {{ utilisateur.codePostal }} {{ utilisateur.ville }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_mon_profil_edit') }}" class="btn btn-warning">Modifier mon profil</a>
+    </div>
+{% endblock %}

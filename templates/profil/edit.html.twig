@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon profil{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Modifier mon profil</h1>
+
+        {{ include('profil/_form.html.twig') }}
+
+        <a href="{{ path('app_mon_profil') }}" class="btn btn-secondary mt-3">Retour à mon profil</a>
+    </div>
+{% endblock %}

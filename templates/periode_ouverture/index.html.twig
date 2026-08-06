@@ -46,7 +46,9 @@
                     </td>
                     <td>
                         <a href="{{ path('app_periode_ouverture_show', {'id': periode_ouverture.id}) }}" class="btn btn-info btn-sm">Affichage</a>
-                        <a href="{{ path('app_periode_ouverture_edit', {'id': periode_ouverture.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_periode_ouverture_edit', {'id': periode_ouverture.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% else %}
@@ -57,6 +59,8 @@
             </tbody>
         </table>
 
-        <a href="{{ path('app_periode_ouverture_new') }}" class="btn btn-primary">Créer nouvelle période d'ouverture</a>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_periode_ouverture_new') }}" class="btn btn-primary">Créer nouvelle période d'ouverture</a>
+        {% endif %}
     </div>
 {% endblock %}

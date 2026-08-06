@@ -23,6 +23,7 @@ final class SortieControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->sortieRepository = $this->manager->getRepository(Sortie::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     private function createAcces(): Acces

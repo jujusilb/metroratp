@@ -22,6 +22,7 @@ final class StationControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->stationRepository = $this->manager->getRepository(Station::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     public function testIndex(): void

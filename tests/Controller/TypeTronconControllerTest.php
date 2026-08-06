@@ -22,6 +22,7 @@ final class TypeTronconControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->typeTronconRepository = $this->manager->getRepository(TypeTroncon::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     public function testIndex(): void

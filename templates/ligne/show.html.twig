@@ -57,7 +57,9 @@
 
         <div class="mt-4 d-flex gap-2">
             <a href="{{ path('app_ligne_index') }}" class="btn btn-secondary">Retour à la liste</a>
-            <a href="{{ path('app_ligne_edit', {'id': ligne.id}) }}" class="btn btn-warning">Modifier</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_ligne_edit', {'id': ligne.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
         </div>
 
         {{ include('ligne/_delete_form.html.twig') }}

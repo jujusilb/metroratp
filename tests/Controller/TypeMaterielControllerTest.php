@@ -22,6 +22,7 @@ final class TypeMaterielControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->typeMaterielRepository = $this->manager->getRepository(TypeMateriel::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     public function testIndex(): void

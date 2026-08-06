@@ -29,6 +29,7 @@ final class MissionControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->missionRepository = $this->manager->getRepository(Mission::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     private function createStation(string $label): Station

@@ -87,7 +87,9 @@
 
         <div class="d-flex gap-2">
             <a href="{{ path('app_type_troncon_index') }}" class="btn btn-secondary">Retour à la liste</a>
-            <a href="{{ path('app_type_troncon_edit', {'id': type_troncon.id}) }}" class="btn btn-warning">Modifier</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_type_troncon_edit', {'id': type_troncon.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
         </div>
 
         {{ include('type_troncon/_delete_form.html.twig') }}

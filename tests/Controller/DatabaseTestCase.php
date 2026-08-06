@@ -20,8 +20,11 @@ use App\Entity\TronconDesserte;
 use App\Entity\TypeDesserte;
 use App\Entity\TypeMateriel;
 use App\Entity\TypeTroncon;
+use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * Chaque test controleur ne nettoie que "sa" table dans son propre setUp(), mais les entites
@@ -36,6 +39,7 @@ abstract class DatabaseTestCase extends WebTestCase
     protected function resetDatabase(EntityManagerInterface $manager): void
     {
         $entityClasses = [
+            Utilisateur::class,
             Mission::class,
             TronconDesserte::class,
             MaterielLigne::class,
@@ -63,5 +67,26 @@ abstract class DatabaseTestCase extends WebTestCase
         }
 
         $manager->flush();
+    }
+
+    /**
+     * Le site est verrouille derriere une connexion (voir security.yaml : tout /new, /edit et
+     * les requetes POST necessitent ROLE_ADMIN, le reste ROLE_USER). Se connecter en admin
+     * couvre les deux cas et suffit pour les tests fonctionnels existants.
+     */
+    protected function connecterEnAdmin(KernelBrowser $client, EntityManagerInterface $manager): Utilisateur
+    {
+        $admin = new Utilisateur();
+        $admin->setUsername('admin_test');
+        $admin->setEmail('admin_test@example.test');
+        $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setPassword(static::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($admin, 'peu-importe'));
+
+        $manager->persist($admin);
+        $manager->flush();
+
+        $client->loginUser($admin);
+
+        return $admin;
     }
 }

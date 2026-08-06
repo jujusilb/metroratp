@@ -24,6 +24,7 @@ final class PeriodeOuvertureControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->periodeOuvertureRepository = $this->manager->getRepository(PeriodeOuverture::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     private function createDesserte(): Desserte

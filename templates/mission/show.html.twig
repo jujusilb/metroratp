@@ -37,7 +37,9 @@
 
         <div class="d-flex gap-2">
             <a href="{{ path('app_mission_index') }}" class="btn btn-secondary">Retour à la liste</a>
-            <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-warning">Modifier</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
         </div>
 
         {{ include('mission/_delete_form.html.twig') }}

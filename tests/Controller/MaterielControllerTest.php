@@ -22,6 +22,7 @@ final class MaterielControllerTest extends DatabaseTestCase
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->materielRepository = $this->manager->getRepository(Materiel::class);
         $this->resetDatabase($this->manager);
+        $this->connecterEnAdmin($this->client, $this->manager);
     }
 
     private function createTypeMateriel(): TypeMateriel

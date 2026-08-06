@@ -31,7 +31,9 @@
                     <td>{{ materiel.anneeProduction }}</td>
                     <td>
                         <a href="{{ path('app_materiel_show', {'id': materiel.id}) }}" class="btn btn-info btn-sm">Affichage</a>
-                        <a href="{{ path('app_materiel_edit', {'id': materiel.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_materiel_edit', {'id': materiel.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% else %}
@@ -42,6 +44,8 @@
             </tbody>
         </table>
 
-        <a href="{{ path('app_materiel_new') }}" class="btn btn-primary">Créer nouveau matériel</a>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_materiel_new') }}" class="btn btn-primary">Créer nouveau matériel</a>
+        {% endif %}
     </div>
 {% endblock %}
