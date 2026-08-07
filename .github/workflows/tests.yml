@@ -152,7 +152,7 @@ jobs:
           ssh -p "$SSH_PORT" -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" "
             set -e
             cd '$APP_PATH'
-            composer install --no-dev --optimize-autoloader --no-interaction
+            composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-redis
             php bin/console doctrine:migrations:migrate --no-interaction
             php bin/console cache:clear
             if [ ! -L '$PUBLIC_LINK' ]; then
