@@ -34,6 +34,7 @@ final class UtilisateurController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $utilisateur->setPassword($passwordHasher->hashPassword($utilisateur, $form->get('plainPassword')->getData()));
+            // Un nouveau compte n'est jamais admin/superadmin au depart : toujours modifiable.
             $utilisateur->setRoles($form->get('estAdmin')->getData() ? ['ROLE_ADMIN'] : []);
 
             $entityManager->persist($utilisateur);
@@ -59,9 +60,12 @@ final class UtilisateurController extends AbstractController
     #[Route('/{id}/edit', name: 'app_utilisateur_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Utilisateur $utilisateur, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
+        $peutModifierAdmin = $this->peutModifierRoleAdmin($utilisateur);
+
         $form = $this->createForm(UtilisateurType::class, $utilisateur, [
             'password_requis' => false,
             'admin_par_defaut' => \in_array('ROLE_ADMIN', $utilisateur->getRoles(), true),
+            'admin_modifiable' => $peutModifierAdmin,
         ]);
         $form->handleRequest($request);
 
@@ -70,7 +74,12 @@ final class UtilisateurController extends AbstractController
             if ($plainPassword) {
                 $utilisateur->setPassword($passwordHasher->hashPassword($utilisateur, $plainPassword));
             }
-            $utilisateur->setRoles($form->get('estAdmin')->getData() ? ['ROLE_ADMIN'] : []);
+            // Champ desactive cote formulaire quand non modifiable, mais on l'ignore aussi
+            // explicitement ici : un admin ne doit jamais pouvoir retrograder un autre admin
+            // (ou un superadmin), meme en forgeant la requete.
+            if ($peutModifierAdmin) {
+                $utilisateur->setRoles($form->get('estAdmin')->getData() ? ['ROLE_ADMIN'] : []);
+            }
 
             $entityManager->flush();
 
@@ -83,10 +92,31 @@ final class UtilisateurController extends AbstractController
         ]);
     }
 
+    /**
+     * Un simple admin peut promouvoir un utilisateur en admin, mais jamais retrograder un
+     * admin (ou toucher a un superadmin). Seul un superadmin peut retirer ROLE_ADMIN.
+     */
+    private function peutModifierRoleAdmin(Utilisateur $cible): bool
+    {
+        if (\in_array('ROLE_SUPERADMIN', $cible->getRoles(), true)) {
+            return false;
+        }
+
+        if (\in_array('ROLE_ADMIN', $cible->getRoles(), true)) {
+            return $this->isGranted('ROLE_SUPERADMIN');
+        }
+
+        return true;
+    }
+
     #[Route('/{id}', name: 'app_utilisateur_delete', methods: ['POST'])]
     public function delete(Request $request, Utilisateur $utilisateur, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$utilisateur->getId(), $request->getPayload()->getString('_token'))) {
+        // Sinon un simple admin contournerait l'interdiction de retrograder un admin en le
+        // supprimant purement et simplement.
+        if ($this->peutModifierRoleAdmin($utilisateur)
+            && $this->isCsrfTokenValid('delete'.$utilisateur->getId(), $request->getPayload()->getString('_token'))
+        ) {
             $entityManager->remove($utilisateur);
             $entityManager->flush();
         }

@@ -50,8 +50,12 @@ class UtilisateurType extends AbstractType
             $builder->add('estAdmin', CheckboxType::class, [
                 'mapped' => false,
                 'required' => false,
+                'disabled' => !$options['admin_modifiable'],
                 'data' => $options['admin_par_defaut'],
                 'label' => 'Administrateur (accès à la gestion des utilisateurs)',
+                'help' => $options['admin_modifiable']
+                    ? null
+                    : "Seul un super-administrateur peut retirer le rôle administrateur (ou modifier un compte super-administrateur).",
             ]);
         }
     }
@@ -62,6 +66,7 @@ class UtilisateurType extends AbstractType
             'data_class' => Utilisateur::class,
             'password_requis' => true,
             'admin_par_defaut' => false,
+            'admin_modifiable' => true,
             'montrer_admin' => true,
         ]);
     }

@@ -32,7 +32,9 @@
                         </td>
                         <td>{{ utilisateur.ville|default('—') }}</td>
                         <td>
-                            {% if 'ROLE_ADMIN' in utilisateur.roles %}
+                            {% if 'ROLE_SUPERADMIN' in utilisateur.roles %}
+                                <span class="badge text-bg-dark">Super-administrateur</span>
+                            {% elseif 'ROLE_ADMIN' in utilisateur.roles %}
                                 <span class="badge text-bg-danger">Administrateur</span>
                             {% else %}
                                 <span class="badge text-bg-secondary">Utilisateur</span>

@@ -1,6 +1,11 @@
-{% if is_granted('ROLE_ADMIN') %}
+{% set cible_est_superadmin = 'ROLE_SUPERADMIN' in utilisateur.roles %}
+{% set cible_est_admin = 'ROLE_ADMIN' in utilisateur.roles %}
+{% set peut_supprimer = is_granted('ROLE_ADMIN') and not cible_est_superadmin and (not cible_est_admin or is_granted('ROLE_SUPERADMIN')) %}
+{% if peut_supprimer %}
 <form method="post" action="{{ path('app_utilisateur_delete', {'id': utilisateur.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ utilisateur.id) }}">
     <button class="btn btn-danger">Supprimer</button>
 </form>
+{% elseif cible_est_admin or cible_est_superadmin %}
+<p class="text-muted small">Seul un super-administrateur peut supprimer un compte administrateur.</p>
 {% endif %}

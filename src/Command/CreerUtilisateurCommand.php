@@ -35,6 +35,7 @@ class CreerUtilisateurCommand extends Command
             ->addArgument('email', InputArgument::REQUIRED, 'Email')
             ->addArgument('password', InputArgument::REQUIRED, 'Mot de passe en clair (sera hache)')
             ->addOption('admin', null, InputOption::VALUE_NONE, 'Attribue ROLE_ADMIN à ce compte')
+            ->addOption('superadmin', null, InputOption::VALUE_NONE, 'Attribue ROLE_SUPERADMIN à ce compte (au-dessus de ROLE_ADMIN, non attribuable depuis le site)')
         ;
     }
 
@@ -42,20 +43,26 @@ class CreerUtilisateurCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        $roles = [];
+        $libelle = '';
+        if ($input->getOption('superadmin')) {
+            $roles = ['ROLE_SUPERADMIN'];
+            $libelle = ' (super-administrateur)';
+        } elseif ($input->getOption('admin')) {
+            $roles = ['ROLE_ADMIN'];
+            $libelle = ' (administrateur)';
+        }
+
         $utilisateur = new Utilisateur();
         $utilisateur->setUsername($input->getArgument('username'));
         $utilisateur->setEmail($input->getArgument('email'));
-        $utilisateur->setRoles($input->getOption('admin') ? ['ROLE_ADMIN'] : []);
+        $utilisateur->setRoles($roles);
         $utilisateur->setPassword($this->passwordHasher->hashPassword($utilisateur, $input->getArgument('password')));
 
         $this->entityManager->persist($utilisateur);
         $this->entityManager->flush();
 
-        $io->success(sprintf(
-            "Utilisateur '%s' cree%s.",
-            $utilisateur->getUsername(),
-            $input->getOption('admin') ? ' (administrateur)' : ''
-        ));
+        $io->success(sprintf("Utilisateur '%s' cree%s.", $utilisateur->getUsername(), $libelle));
 
         return Command::SUCCESS;
     }

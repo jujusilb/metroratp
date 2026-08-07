@@ -62,7 +62,7 @@
                     <li class="nav-item dropdown profil-dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="badge rounded-pill text-bg-light text-dark">
-                                {{ app.user.userIdentifier }}{{ is_granted('ROLE_ADMIN') ? ' (admin)' : '' }}
+                                {{ app.user.userIdentifier }}{{ is_granted('ROLE_SUPERADMIN') ? ' (super admin)' : (is_granted('ROLE_ADMIN') ? ' (admin)' : '') }}
                             </span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">

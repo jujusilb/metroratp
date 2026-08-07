@@ -10,6 +10,14 @@ security:
                 class: App\Entity\Utilisateur
                 property: username
 
+    # ROLE_SUPERADMIN herite de ROLE_ADMIN qui herite de ROLE_USER : un superadmin passe
+    # tous les is_granted('ROLE_ADMIN') et ('ROLE_USER'). Seul ROLE_SUPERADMIN peut retirer
+    # ROLE_ADMIN a quelqu'un (voir UtilisateurController) ; un simple admin peut seulement
+    # promouvoir un utilisateur en admin, jamais le retrograder.
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+        ROLE_SUPERADMIN: ROLE_ADMIN
+
     firewalls:
         dev:
             # Ensure dev tools and static assets are always allowed

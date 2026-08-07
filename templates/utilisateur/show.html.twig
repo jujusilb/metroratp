@@ -6,7 +6,9 @@
     <div class="container py-4">
         <h1 class="mb-4">
             {{ utilisateur.username }}
-            {% if 'ROLE_ADMIN' in utilisateur.roles %}
+            {% if 'ROLE_SUPERADMIN' in utilisateur.roles %}
+                <span class="badge text-bg-dark align-middle">Super-administrateur</span>
+            {% elseif 'ROLE_ADMIN' in utilisateur.roles %}
                 <span class="badge text-bg-danger align-middle">Administrateur</span>
             {% endif %}
         </h1>

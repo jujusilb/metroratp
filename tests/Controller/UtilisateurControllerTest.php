@@ -29,16 +29,24 @@ final class UtilisateurControllerTest extends DatabaseTestCase
 
     private function createAdmin(): Utilisateur
     {
-        $admin = new Utilisateur();
-        $admin->setUsername('admin');
-        $admin->setEmail('admin@example.test');
-        $admin->setRoles(['ROLE_ADMIN']);
-        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'mot-de-passe-admin'));
+        return $this->createUtilisateurAvecRoles('admin', ['ROLE_ADMIN']);
+    }
 
-        $this->manager->persist($admin);
+    /**
+     * @param list<string> $roles
+     */
+    private function createUtilisateurAvecRoles(string $username, array $roles): Utilisateur
+    {
+        $utilisateur = new Utilisateur();
+        $utilisateur->setUsername($username);
+        $utilisateur->setEmail($username.'@example.test');
+        $utilisateur->setRoles($roles);
+        $utilisateur->setPassword($this->passwordHasher->hashPassword($utilisateur, 'mot-de-passe'));
+
+        $this->manager->persist($utilisateur);
         $this->manager->flush();
 
-        return $admin;
+        return $utilisateur;
     }
 
     public function testAccesRefuseSansConnexion(): void
@@ -128,5 +136,79 @@ final class UtilisateurControllerTest extends DatabaseTestCase
 
         self::assertResponseRedirects('/utilisateur');
         self::assertSame(1, $this->utilisateurRepository->count([])); // il reste l'admin
+    }
+
+    public function testUnAdminNePeutPasRetrograderUnAutreAdmin(): void
+    {
+        $admin = $this->createUtilisateurAvecRoles('admin1', ['ROLE_ADMIN']);
+        $autreAdmin = $this->createUtilisateurAvecRoles('admin2', ['ROLE_ADMIN']);
+        $this->client->loginUser($admin);
+
+        // Le champ estAdmin est desactive dans le HTML : un navigateur ne l'enverrait pas.
+        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $autreAdmin->getId()));
+        $this->client->submitForm('Mettre à jour', [
+            'utilisateur[username]' => 'admin2',
+            'utilisateur[email]' => 'admin2@example.test',
+        ]);
+
+        self::assertResponseRedirects('/utilisateur');
+
+        $modifie = $this->utilisateurRepository->findOneBy(['username' => 'admin2']);
+        self::assertSame(['ROLE_ADMIN', 'ROLE_USER'], $modifie->getRoles());
+    }
+
+    public function testUnSuperadminPeutRetrograderUnAdmin(): void
+    {
+        $superadmin = $this->createUtilisateurAvecRoles('superadmin', ['ROLE_SUPERADMIN']);
+        $admin = $this->createUtilisateurAvecRoles('admin', ['ROLE_ADMIN']);
+        $this->client->loginUser($superadmin);
+
+        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $admin->getId()));
+        $this->client->submitForm('Mettre à jour', [
+            'utilisateur[username]' => 'admin',
+            'utilisateur[email]' => 'admin@example.test',
+            'utilisateur[estAdmin]' => false,
+        ]);
+
+        self::assertResponseRedirects('/utilisateur');
+
+        $modifie = $this->utilisateurRepository->findOneBy(['username' => 'admin']);
+        self::assertSame(['ROLE_USER'], $modifie->getRoles());
+    }
+
+    public function testUnAdminPeutPromouvoirUnUtilisateurSimple(): void
+    {
+        $admin = $this->createUtilisateurAvecRoles('admin', ['ROLE_ADMIN']);
+        $simple = $this->createUtilisateurAvecRoles('simple', []);
+        $this->client->loginUser($admin);
+
+        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $simple->getId()));
+        $this->client->submitForm('Mettre à jour', [
+            'utilisateur[username]' => 'simple',
+            'utilisateur[email]' => 'simple@example.test',
+            'utilisateur[estAdmin]' => true,
+        ]);
+
+        self::assertResponseRedirects('/utilisateur');
+
+        $modifie = $this->utilisateurRepository->findOneBy(['username' => 'simple']);
+        self::assertSame(['ROLE_ADMIN', 'ROLE_USER'], $modifie->getRoles());
+    }
+
+    public function testUnAdminNePeutPasSupprimerUnAutreAdmin(): void
+    {
+        $admin = $this->createUtilisateurAvecRoles('admin1', ['ROLE_ADMIN']);
+        $autreAdmin = $this->createUtilisateurAvecRoles('admin2', ['ROLE_ADMIN']);
+        $this->client->loginUser($admin);
+
+        // Le formulaire de suppression n'est meme pas affiche pour une cible admin ; on
+        // verifie ici que le controleur refuse aussi la requete si elle est forgee.
+        $this->client->request('GET', sprintf('%s%s', $this->path, $autreAdmin->getId()));
+        self::assertSelectorTextContains('body', 'Seul un super-administrateur peut supprimer un compte administrateur');
+
+        $this->client->request('POST', sprintf('%s%s', $this->path, $autreAdmin->getId()));
+
+        self::assertResponseRedirects('/utilisateur');
+        self::assertNotNull($this->utilisateurRepository->find($autreAdmin->getId()));
     }
 }
