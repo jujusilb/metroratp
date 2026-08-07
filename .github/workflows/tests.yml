@@ -91,3 +91,72 @@ jobs:
 
       - name: Lancer Jest
         run: npm test
+
+  deploy:
+    name: Deployer sur Hostinger
+    needs: [php-tests, js-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    env:
+      SSH_HOST: 195.35.49.152
+      SSH_PORT: 65002
+      SSH_USER: u396779750
+      # Dossier prive (hors public_html) contenant l'appli complete : public_html/metroratp
+      # est un lien symbolique vers <APP_PATH>/public, cree lors du tout premier deploiement.
+      APP_PATH: /home/u396779750/domains/julien-silberstein.fr/metroratp-app
+      PUBLIC_LINK: /home/u396779750/domains/julien-silberstein.fr/public_html/metroratp
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Installer les dependances npm
+        run: npm ci
+
+      # Hostinger (hebergement mutualise) n'a pas Node.js : les assets sont compiles ici,
+      # puis livres deja construits (public/build) via rsync.
+      - name: Builder les assets front (production)
+        run: npm run build
+
+      - name: Preparer la cle SSH de deploiement
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HOSTINGER_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      # .env.local (secrets prod : APP_SECRET, DATABASE_URL) vit uniquement sur le serveur,
+      # jamais dans Git ni dans ce workflow : on ne le touche pas ici.
+      - name: Synchroniser les fichiers vers Hostinger
+        run: |
+          rsync -az --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.claude' \
+            --exclude='node_modules' \
+            --exclude='var' \
+            --exclude='tests' \
+            --exclude='documentation' \
+            --exclude='.env.local' \
+            -e "ssh -p $SSH_PORT -i ~/.ssh/deploy_key" \
+            ./ "$SSH_USER@$SSH_HOST:$APP_PATH/"
+
+      - name: Installer Composer, migrer la base et publier le lien symbolique
+        run: |
+          ssh -p "$SSH_PORT" -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" "
+            set -e
+            cd '$APP_PATH'
+            composer install --no-dev --optimize-autoloader --no-interaction
+            php bin/console doctrine:migrations:migrate --no-interaction
+            php bin/console cache:clear
+            if [ ! -L '$PUBLIC_LINK' ]; then
+              rm -rf '$PUBLIC_LINK'
+              ln -s '$APP_PATH/public' '$PUBLIC_LINK'
+            fi
+          "
