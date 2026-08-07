@@ -70,20 +70,25 @@
                     {% if segment.type == 'correspondance' %}
                         <li class="list-group-item d-flex justify-content-between align-items-center border-start border-danger border-3">
                             <span>
-                                <span class="badge text-bg-danger me-2">Correspondance</span>
+                                <span class="badge text-bg-danger me-2">
+                                    Correspondance
+                                    <span class="visually-hidden">de la ligne {{ segment.depart.ligne.label }} à la ligne {{ segment.arrivee.ligne.label }}</span>
+                                </span>
                                 <a href="{{ path('app_station_show', {'id': segment.depart.station.id}) }}" class="link-body-emphasis">{{ segment.depart.station.label }}</a>
-                                <span class="ligne-badge-sm" style="background-color: {{ segment.depart.ligne.couleur|default('#6c757d') }};">{{ segment.depart.ligne.label }}</span>
-                                →
-                                <span class="ligne-badge-sm" style="background-color: {{ segment.arrivee.ligne.couleur|default('#6c757d') }};">{{ segment.arrivee.ligne.label }}</span>
+                                <span class="ligne-badge-sm" style="background-color: {{ segment.depart.ligne.couleur|default('#6c757d') }};" aria-hidden="true">{{ segment.depart.ligne.label }}</span>
+                                <span aria-hidden="true">→</span>
+                                <span class="ligne-badge-sm" style="background-color: {{ segment.arrivee.ligne.couleur|default('#6c757d') }};" aria-hidden="true">{{ segment.arrivee.ligne.label }}</span>
                             </span>
                             <span class="text-muted">{{ segment.duree|round(1) }} min</span>
                         </li>
                     {% else %}
                         <li class="list-group-item d-flex justify-content-between align-items-start">
                             <span>
-                                <span class="ligne-badge-sm me-2" style="background-color: {{ segment.dessertes|first.ligne.couleur|default('#6c757d') }};">{{ segment.dessertes|first.ligne.label }}</span>
+                                <span class="ligne-badge-sm me-2" style="background-color: {{ segment.dessertes|first.ligne.couleur|default('#6c757d') }};">
+                                    <span class="visually-hidden">Ligne </span>{{ segment.dessertes|first.ligne.label }}
+                                </span>
                                 {% for desserte in segment.dessertes %}
-                                    <a href="{{ path('app_station_show', {'id': desserte.station.id}) }}" class="link-body-emphasis">{{ desserte.station.label }}</a>{{ not loop.last ? ' → ' : '' }}
+                                    <a href="{{ path('app_station_show', {'id': desserte.station.id}) }}" class="link-body-emphasis">{{ desserte.station.label }}</a>{% if not loop.last %} <span aria-hidden="true">→</span> {% endif %}
                                 {% endfor %}
                             </span>
                             <span class="text-muted text-nowrap ms-2">{{ segment.duree|round(1) }} min</span>
