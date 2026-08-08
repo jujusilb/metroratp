@@ -37,6 +37,10 @@
                     </td>
                 </tr>
                 <tr>
+                    <th>Type de transport</th>
+                    <td>{{ desserte.ligne and desserte.ligne.typeTransport ? desserte.ligne.typeTransport.label : '—' }}</td>
+                </tr>
+                <tr>
                     <th>Style de la station</th>
                     <td>
                         {% if desserte.styleStation %}

@@ -11,6 +11,7 @@
                 <tr>
                     <th>Station</th>
                     <th>Ligne</th>
+                    <th>Type</th>
                     <th>Style</th>
                     <th>Première ouverture</th>
                     <th>Statut</th>
@@ -38,6 +39,7 @@
                             <span class="text-muted">—</span>
                         {% endif %}
                     </td>
+                    <td>{{ desserte.ligne and desserte.ligne.typeTransport ? desserte.ligne.typeTransport.label : '—' }}</td>
                     <td>
                         {% if desserte.styleStation %}
                             <a href="{{ path('app_style_station_show', {'id': desserte.styleStation.id}) }}" class="link-body-emphasis">
@@ -64,7 +66,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="6">Aucun enregistrement trouvé</td>
+                    <td colspan="7">Aucun enregistrement trouvé</td>
                 </tr>
             {% endfor %}
             </tbody>

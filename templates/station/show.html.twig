@@ -13,6 +13,7 @@
                     <thead>
                         <tr>
                             <th>Ligne</th>
+                            <th>Type</th>
                             <th>Date d'ouverture</th>
                             <th>Style de station</th>
                         </tr>
@@ -29,6 +30,7 @@
                                         <span class="text-muted">—</span>
                                     {% endif %}
                                 </td>
+                                <td>{{ desserte.ligne and desserte.ligne.typeTransport ? desserte.ligne.typeTransport.label : '—' }}</td>
                                 <td>{{ desserte.premiereOuverture ? desserte.premiereOuverture|date('d/m/Y') : '—' }}</td>
                                 <td>{{ desserte.styleStation ? desserte.styleStation.label : '—' }}</td>
                             </tr>
