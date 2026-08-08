@@ -120,11 +120,9 @@ final class MissionControllerTest extends DatabaseTestCase
         $dC = $this->createDesserte($ligne, $stationC);
 
         $t1 = new Troncon();
-        $t1->setParcours('A-B');
         $this->manager->persist($t1);
 
         $t2 = new Troncon();
-        $t2->setParcours('B-C');
         $this->manager->persist($t2);
 
         $td1Depart = $this->createTronconDesserte($t1, $dA, $departType);

@@ -14,7 +14,10 @@ class TronconType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('parcours')
+            ->add('distance', null, [
+                'required' => false,
+                'label' => 'Distance (mètres)',
+            ])
             ->add('typeTroncon', EntityType::class, [
                 'class' => TypeTroncon::class,
                 'choice_label' => 'id',

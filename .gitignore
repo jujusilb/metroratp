@@ -25,3 +25,7 @@
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
+
+# Feed GTFS IDFM complet (~1.3 Go) telecharge ponctuellement pour extraire des donnees
+# reelles (durees, distances de troncon...) : source de travail, jamais commit.
+/documentation/IDFM-gtfs/

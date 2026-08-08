@@ -54,7 +54,7 @@ final class TronconControllerTest extends DatabaseTestCase
         self::assertResponseStatusCodeSame(200);
 
         $this->client->submitForm('Enregistrer', [
-            'troncon[parcours]' => 'Testing',
+            'troncon[distance]' => '250',
             'troncon[typeTroncon]' => $typeTroncon->getId(),
         ]);
 
@@ -66,7 +66,7 @@ final class TronconControllerTest extends DatabaseTestCase
     public function testShow(): void
     {
         $fixture = new Troncon();
-        $fixture->setParcours('My Title');
+        $fixture->setDistance(250.0);
         $fixture->setTypeTroncon($this->createTypeTroncon());
 
         $this->manager->persist($fixture);
@@ -81,7 +81,7 @@ final class TronconControllerTest extends DatabaseTestCase
     public function testEdit(): void
     {
         $fixture = new Troncon();
-        $fixture->setParcours('Value');
+        $fixture->setDistance(250.0);
         $fixture->setTypeTroncon($this->createTypeTroncon());
 
         $this->manager->persist($fixture);
@@ -90,20 +90,20 @@ final class TronconControllerTest extends DatabaseTestCase
         $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
 
         $this->client->submitForm('Mettre à jour', [
-            'troncon[parcours]' => 'Something New',
+            'troncon[distance]' => '300',
         ]);
 
         self::assertResponseRedirects('/troncon');
 
         $fixture = $this->tronconRepository->findAll();
 
-        self::assertSame('Something New', $fixture[0]->getParcours());
+        self::assertEqualsWithDelta(300.0, $fixture[0]->getDistance(), 0.001);
     }
 
     public function testRemove(): void
     {
         $fixture = new Troncon();
-        $fixture->setParcours('Value');
+        $fixture->setDistance(250.0);
         $fixture->setTypeTroncon($this->createTypeTroncon());
 
         $this->manager->persist($fixture);

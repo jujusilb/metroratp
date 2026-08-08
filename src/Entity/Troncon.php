@@ -15,8 +15,14 @@ class Troncon
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 15, nullable: true)]
-    private ?string $parcours = null;
+    /**
+     * Distance reelle (en metres) entre les deux dessertes de ce troncon, calculee a partir
+     * des tracés GTFS IDFM (shapes.txt / stop_times.txt, voir commande
+     * app:importer-distances-troncon). Fixe quel que soit le materiel qui circule dessus,
+     * contrairement a dureeReelleSecondes.
+     */
+    #[ORM\Column(nullable: true)]
+    private ?float $distance = null;
 
     /**
      * Duree reelle moyenne (en secondes) entre les deux dessertes de ce troncon, calculee a
@@ -46,14 +52,14 @@ class Troncon
         return $this->id;
     }
 
-    public function getParcours(): ?string
+    public function getDistance(): ?float
     {
-        return $this->parcours;
+        return $this->distance;
     }
 
-    public function setParcours(?string $parcours): static
+    public function setDistance(?float $distance): static
     {
-        $this->parcours = $parcours;
+        $this->distance = $distance;
 
         return $this;
     }
