@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte{% endblock %}
+
+{% block body %}
+    <div class="container py-4" style="max-width: 500px;">
+        <h1 class="mb-4">Créer un compte</h1>
+
+        {{ include('profil/_form.html.twig', {'button_label': 'Créer mon compte'}) }}
+
+        <p class="text-muted small mt-3">
+            Déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a>
+        </p>
+    </div>
+{% endblock %}
