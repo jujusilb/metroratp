@@ -6,6 +6,7 @@ use App\Entity\Acces;
 use App\Entity\Correspondance;
 use App\Entity\Desserte;
 use App\Entity\Direction;
+use App\Entity\Gestionnaire;
 use App\Entity\Ligne;
 use App\Entity\Materiel;
 use App\Entity\MaterielLigne;
@@ -19,6 +20,7 @@ use App\Entity\Troncon;
 use App\Entity\TronconDesserte;
 use App\Entity\TypeDesserte;
 use App\Entity\TypeMateriel;
+use App\Entity\TypeTransport;
 use App\Entity\TypeTroncon;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,6 +57,8 @@ abstract class DatabaseTestCase extends WebTestCase
             TypeDesserte::class,
             Station::class,
             Ligne::class,
+            TypeTransport::class,
+            Gestionnaire::class,
             StyleStation::class,
             TypeMateriel::class,
             TypeTroncon::class,

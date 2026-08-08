@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestionnaire{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Gestionnaire</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ gestionnaire.id }}</td>
+                </tr>
+                <tr>
+                    <th>Label</th>
+                    <td>{{ gestionnaire.label }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="h5 mt-4 mb-3">Lignes gérées</h2>
+
+        {% if gestionnaire.lignes|length > 0 %}
+            <ul class="list-group mb-4">
+                {% for ligne in gestionnaire.lignes %}
+                    <li class="list-group-item">
+                        <a href="{{ path('app_ligne_show', {'id': ligne.id}) }}" class="link-body-emphasis">{{ ligne.label }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucune ligne enregistrée pour ce gestionnaire.</p>
+        {% endif %}
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_gestionnaire_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_gestionnaire_edit', {'id': gestionnaire.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('gestionnaire/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le type de transport{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Modifier le type de transport</h1>
+
+        {{ include('type_transport/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+        <div class="d-flex gap-2 mt-3">
+            <a href="{{ path('app_type_transport_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+
+        {{ include('type_transport/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

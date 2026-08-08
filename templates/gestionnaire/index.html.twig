@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestionnaires{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Gestionnaires</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for gestionnaire in gestionnaires %}
+                <tr>
+                    <td>{{ gestionnaire.label }}</td>
+                    <td>
+                        <a href="{{ path('app_gestionnaire_show', {'id': gestionnaire.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_gestionnaire_edit', {'id': gestionnaire.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="2">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_gestionnaire_new') }}" class="btn btn-primary">Créer nouveau gestionnaire</a>
+        {% endif %}
+    </div>
+{% endblock %}

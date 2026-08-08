@@ -21,6 +21,12 @@ class Ligne
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $couleur = null;
 
+    #[ORM\ManyToOne(inversedBy: 'lignes')]
+    private ?TypeTransport $typeTransport = null;
+
+    #[ORM\ManyToOne(inversedBy: 'lignes')]
+    private ?Gestionnaire $gestionnaire = null;
+
     /**
      * @var Collection<int, Desserte>
      */
@@ -64,6 +70,30 @@ class Ligne
     public function setCouleur(?string $couleur): static
     {
         $this->couleur = $couleur;
+
+        return $this;
+    }
+
+    public function getTypeTransport(): ?TypeTransport
+    {
+        return $this->typeTransport;
+    }
+
+    public function setTypeTransport(?TypeTransport $typeTransport): static
+    {
+        $this->typeTransport = $typeTransport;
+
+        return $this;
+    }
+
+    public function getGestionnaire(): ?Gestionnaire
+    {
+        return $this->gestionnaire;
+    }
+
+    public function setGestionnaire(?Gestionnaire $gestionnaire): static
+    {
+        $this->gestionnaire = $gestionnaire;
 
         return $this;
     }

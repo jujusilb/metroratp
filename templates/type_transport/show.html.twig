@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Type de transport{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Type de transport</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ type_transport.id }}</td>
+                </tr>
+                <tr>
+                    <th>Label</th>
+                    <td>{{ type_transport.label }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="h5 mt-4 mb-3">Lignes de ce type</h2>
+
+        {% if type_transport.lignes|length > 0 %}
+            <ul class="list-group mb-4">
+                {% for ligne in type_transport.lignes %}
+                    <li class="list-group-item">
+                        <a href="{{ path('app_ligne_show', {'id': ligne.id}) }}" class="link-body-emphasis">{{ ligne.label }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucune ligne enregistrée pour ce type.</p>
+        {% endif %}
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_type_transport_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_type_transport_edit', {'id': type_transport.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('type_transport/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

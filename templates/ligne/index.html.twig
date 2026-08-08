@@ -10,6 +10,8 @@
             <thead>
                 <tr>
                     <th>Label</th>
+                    <th>Type</th>
+                    <th>Gestionnaire</th>
                     <th>Terminus</th>
                     <th>Nb stations</th>
                     <th>Actions</th>
@@ -22,6 +24,8 @@
                         {% if ligne.couleur %}<span class="badge" style="background-color: {{ ligne.couleur }};">&nbsp;</span>{% endif %}
                         {{ ligne.label }}
                     </td>
+                    <td>{{ ligne.typeTransport ? ligne.typeTransport.label : '—' }}</td>
+                    <td>{{ ligne.gestionnaire ? ligne.gestionnaire.label : '—' }}</td>
                     <td>
                         {% if ligne.terminusLabels|length > 0 %}
                             {{ ligne.terminusLabels|join(' ↔ ') }}
@@ -39,7 +43,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="4">Aucun enregistrement trouvé</td>
+                    <td colspan="6">Aucun enregistrement trouvé</td>
                 </tr>
             {% endfor %}
             </tbody>

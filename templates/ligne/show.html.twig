@@ -42,7 +42,11 @@
             <h1 class="mb-0">Ligne {{ ligne.label }}</h1>
         </div>
 
-        <p class="text-muted">{{ ligne.nombreStations }} station{{ ligne.nombreStations > 1 ? 's' : '' }}</p>
+        <p class="text-muted">
+            {{ ligne.nombreStations }} station{{ ligne.nombreStations > 1 ? 's' : '' }}
+            {% if ligne.typeTransport %} · {{ ligne.typeTransport.label }}{% endif %}
+            {% if ligne.gestionnaire %} · {{ ligne.gestionnaire.label }}{% endif %}
+        </p>
 
         <div class="parcours" style="--ligne-couleur: {{ ligne.couleur|default('#6c757d') }};">
             {% set segments = ligne.parcoursSegments %}
