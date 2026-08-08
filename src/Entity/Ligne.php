@@ -15,11 +15,19 @@ class Ligne
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 5)]
+    #[ORM\Column(length: 20)]
     private ?string $label = null;
 
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $couleur = null;
+
+    /**
+     * Identifiant IDFM (referentiel-des-lignes / GTFS route_id, ex: "C01742" pour le RER A).
+     * Indispensable au-dela du metro/RER : de nombreuses lignes de bus d'operateurs differents
+     * partagent le meme numero affiche (label), seul cet identifiant est vraiment unique.
+     */
+    #[ORM\Column(length: 20, nullable: true, unique: true)]
+    private ?string $codeExterne = null;
 
     #[ORM\ManyToOne(inversedBy: 'lignes')]
     private ?TypeTransport $typeTransport = null;
@@ -70,6 +78,18 @@ class Ligne
     public function setCouleur(?string $couleur): static
     {
         $this->couleur = $couleur;
+
+        return $this;
+    }
+
+    public function getCodeExterne(): ?string
+    {
+        return $this->codeExterne;
+    }
+
+    public function setCodeExterne(?string $codeExterne): static
+    {
+        $this->codeExterne = $codeExterne;
 
         return $this;
     }

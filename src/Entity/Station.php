@@ -19,6 +19,23 @@ class Station
     private ?string $label = null;
 
     /**
+     * Commune de la station (ZdCTown du referentiel IDFM). Permet de distinguer deux stations
+     * au nom identique dans des communes differentes (ex: l'arret "Mairie" existe dans des
+     * dizaines de communes sans etre le meme endroit).
+     */
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $ville = null;
+
+    /**
+     * Identifiant "zone de correspondance" IDFM (ZdCId, referentiel-arret-tc-idf). Permet de
+     * relier une station a un lieu reel precis meme quand son nom seul est ambigu (ex: de
+     * nombreuses communes ont un arret de bus "Mairie" ou "Eglise" qui ne sont pas le meme
+     * endroit) : indispensable pour un import fiable et rejouable au-dela du metro/RER.
+     */
+    #[ORM\Column(length: 20, nullable: true, unique: true)]
+    private ?string $codeExterne = null;
+
+    /**
      * Position sur le plan schematique officiel du reseau (coordonnees Ile-de-France Mobilites,
      * pas des coordonnees geographiques) : voir la commande app:importer-coordonnees-schema.
      * Null si la station n'a pas ete trouvee dans la source (ex: extension recente).
@@ -60,6 +77,30 @@ class Station
     public function setLabel(string $label): static
     {
         $this->label = $label;
+
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(?string $ville): static
+    {
+        $this->ville = $ville;
+
+        return $this;
+    }
+
+    public function getCodeExterne(): ?string
+    {
+        return $this->codeExterne;
+    }
+
+    public function setCodeExterne(?string $codeExterne): static
+    {
+        $this->codeExterne = $codeExterne;
 
         return $this;
     }

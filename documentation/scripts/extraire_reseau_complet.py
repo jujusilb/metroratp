@@ -13,7 +13,7 @@ from pathlib import Path
 
 GTFS_DIR = Path(r"C:\Users\Jujusilb\Documents\BADE DE DONNEE\PARIS\metro ratp\symfony\site\metroratp\documentation\IDFM-gtfs")
 IDFM_DIR = Path(r"C:\Users\Jujusilb\Documents\BADE DE DONNEE\PARIS\idfmobilite\csv")
-OUT_DIR = Path(r"C:\Users\Jujusilb\AppData\Local\Temp\claude\C--Users-Jujusilb-Documents-BADE-DE-DONNEE-PARIS-metro-ratp-symfony-site-metroratp\3a92a524-ed2c-4362-bda2-4f0b9916cc58\scratchpad")
+OUT_DIR = Path(r"C:\Users\Jujusilb\Documents\BADE DE DONNEE\PARIS\metro ratp\symfony\site\metroratp\documentation\scripts\donnees-extraites")
 
 DEJA_IMPORTEES = {
     "IDFM:C01371", "IDFM:C01372", "IDFM:C01373", "IDFM:C01384", "IDFM:C01386", "IDFM:C01387",

@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">{{ station.label }}</h1>
+        <h1 class="mb-4">{{ station.label }}{% if station.ville %} <small class="text-muted fs-5">({{ station.ville }})</small>{% endif %}</h1>
 
         <h2 class="h5">Dessertes</h2>
         {% if station.dessertes|length > 0 %}
