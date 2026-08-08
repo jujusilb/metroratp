@@ -1,0 +1,773 @@
+stop_id_a,nom_a,stop_id_b,nom_b,duree_moyenne_secondes,nb_observations
+IDFM:22101,"La Défense",IDFM:463170,"Esplanade de la Défense",73,1526
+IDFM:463170,"Esplanade de la Défense",IDFM:463044,"Pont de Neuilly",72,1526
+IDFM:463044,"Pont de Neuilly",IDFM:22100,"Les Sablons",76,1526
+IDFM:22100,"Les Sablons",IDFM:463257,"Porte Maillot",84,1526
+IDFM:463257,"Porte Maillot",IDFM:463121,Argentine,74,1526
+IDFM:463121,Argentine,IDFM:22086,"Charles de Gaulle - Étoile",52,1526
+IDFM:22086,"Charles de Gaulle - Étoile",IDFM:22084,"George V",61,1528
+IDFM:22084,"George V",IDFM:22082,"Franklin D. Roosevelt",56,1528
+IDFM:22082,"Franklin D. Roosevelt",IDFM:22090,"Champs-Élysées - Clemenceau",57,1528
+IDFM:22090,"Champs-Élysées - Clemenceau",IDFM:22085,Concorde,73,1528
+IDFM:22085,Concorde,IDFM:463041,Tuileries,48,1528
+IDFM:463041,Tuileries,IDFM:22079,"Palais Royal - Musée du Louvre",55,1528
+IDFM:22079,"Palais Royal - Musée du Louvre",IDFM:22081,"Louvre - Rivoli",45,1528
+IDFM:22081,"Louvre - Rivoli",IDFM:22087,Châtelet,51,1528
+IDFM:22087,Châtelet,IDFM:463080,"Hôtel de Ville",54,1528
+IDFM:463080,"Hôtel de Ville",IDFM:22074,"Saint-Paul (Le Marais)",62,1528
+IDFM:22074,"Saint-Paul (Le Marais)",IDFM:463019,Bastille,97,1528
+IDFM:463019,Bastille,IDFM:22083,"Gare de Lyon",100,1528
+IDFM:22083,"Gare de Lyon",IDFM:22076,"Reuilly - Diderot",79,1528
+IDFM:22076,"Reuilly - Diderot",IDFM:22080,Nation,76,1528
+IDFM:22080,Nation,IDFM:22077,"Porte de Vincennes",83,1528
+IDFM:22077,"Porte de Vincennes",IDFM:22103,Saint-Mandé,77,1528
+IDFM:22103,Saint-Mandé,IDFM:22105,Bérault,67,1528
+IDFM:22105,Bérault,IDFM:22104,"Château de Vincennes",68,1528
+IDFM:463262,"Porte des Lilas",IDFM:463071,Saint-Fargeau,61,567
+IDFM:463071,Saint-Fargeau,IDFM:462990,Pelleport,58,567
+IDFM:462990,Pelleport,IDFM:462997,Gambetta,64,567
+IDFM:21945,Gambetta,IDFM:21948,Pelleport,53,563
+IDFM:21948,Pelleport,IDFM:21946,Saint-Fargeau,57,563
+IDFM:21946,Saint-Fargeau,IDFM:21947,"Porte des Lilas",63,563
+IDFM:463149,"Château de Vincennes",IDFM:463130,Bérault,75,1583
+IDFM:463130,Bérault,IDFM:463040,Saint-Mandé,67,1583
+IDFM:463040,Saint-Mandé,IDFM:463012,"Porte de Vincennes",80,1583
+IDFM:463012,"Porte de Vincennes",IDFM:462943,Nation,78,1583
+IDFM:462943,Nation,IDFM:463294,"Reuilly - Diderot",84,1583
+IDFM:463294,"Reuilly - Diderot",IDFM:463197,"Gare de Lyon",72,1583
+IDFM:463197,"Gare de Lyon",IDFM:22089,Bastille,112,1585
+IDFM:22089,Bastille,IDFM:463307,"Saint-Paul (Le Marais)",101,1585
+IDFM:463307,"Saint-Paul (Le Marais)",IDFM:22091,"Hôtel de Ville",60,1585
+IDFM:22091,"Hôtel de Ville",IDFM:463160,Châtelet,54,1587
+IDFM:463160,Châtelet,IDFM:463218,"Louvre - Rivoli",50,1587
+IDFM:463218,"Louvre - Rivoli",IDFM:463227,"Palais Royal - Musée du Louvre",43,1587
+IDFM:463227,"Palais Royal - Musée du Louvre",IDFM:22075,Tuileries,53,1587
+IDFM:22075,Tuileries,IDFM:463150,Concorde,47,1587
+IDFM:463150,Concorde,IDFM:463010,"Champs-Élysées - Clemenceau",76,1587
+IDFM:463010,"Champs-Élysées - Clemenceau",IDFM:463181,"Franklin D. Roosevelt",57,1587
+IDFM:463181,"Franklin D. Roosevelt",IDFM:463185,"George V",57,1587
+IDFM:463185,"George V",IDFM:463013,"Charles de Gaulle - Étoile",61,1587
+IDFM:463013,"Charles de Gaulle - Étoile",IDFM:22088,Argentine,59,1587
+IDFM:22088,Argentine,IDFM:22078,"Porte Maillot",66,1587
+IDFM:22078,"Porte Maillot",IDFM:463217,"Les Sablons",83,1622
+IDFM:463217,"Les Sablons",IDFM:22099,"Pont de Neuilly",74,1632
+IDFM:22099,"Pont de Neuilly",IDFM:22102,"Esplanade de la Défense",75,1632
+IDFM:22102,"Esplanade de la Défense",IDFM:463193,"La Défense",78,1632
+IDFM:22072,Nation,IDFM:22124,Avron,91,797
+IDFM:22124,Avron,IDFM:463117,"Alexandre Dumas",57,797
+IDFM:463117,"Alexandre Dumas",IDFM:22113,"Philippe Auguste",52,797
+IDFM:22113,"Philippe Auguste",IDFM:22112,"Père Lachaise",65,797
+IDFM:22112,"Père Lachaise",IDFM:22116,Ménilmontant,63,797
+IDFM:22116,Ménilmontant,IDFM:22126,Couronnes,58,797
+IDFM:22126,Couronnes,IDFM:22128,Belleville,57,797
+IDFM:22128,Belleville,IDFM:22120,"Colonel Fabien",66,799
+IDFM:22120,"Colonel Fabien",IDFM:22118,Jaurès,64,799
+IDFM:22118,Jaurès,IDFM:463009,Stalingrad,71,800
+IDFM:463009,Stalingrad,IDFM:462982,"La Chapelle",56,800
+IDFM:462982,"La Chapelle",IDFM:463094,"Barbès - Rochechouart",82,800
+IDFM:463094,"Barbès - Rochechouart",IDFM:22123,Anvers,54,800
+IDFM:22123,Anvers,IDFM:22114,Pigalle,61,800
+IDFM:22114,Pigalle,IDFM:463113,Blanche,55,800
+IDFM:463113,Blanche,IDFM:463252,"Place de Clichy",58,800
+IDFM:463252,"Place de Clichy",IDFM:463296,Rome,65,800
+IDFM:463296,Rome,IDFM:22106,Villiers,70,800
+IDFM:22106,Villiers,IDFM:22117,Monceau,62,800
+IDFM:22117,Monceau,IDFM:463154,Courcelles,49,800
+IDFM:463154,Courcelles,IDFM:463266,Ternes,58,800
+IDFM:463266,Ternes,IDFM:22094,"Charles de Gaulle - Étoile",58,800
+IDFM:22094,"Charles de Gaulle - Étoile",IDFM:463322,"Victor Hugo",94,800
+IDFM:463322,"Victor Hugo",IDFM:463256,"Porte Dauphine",93,800
+IDFM:22111,"Porte Dauphine",IDFM:22109,"Victor Hugo",83,810
+IDFM:22109,"Victor Hugo",IDFM:463043,"Charles de Gaulle - Étoile",87,813
+IDFM:463043,"Charles de Gaulle - Étoile",IDFM:22108,Ternes,56,816
+IDFM:22108,Ternes,IDFM:22121,Courcelles,55,816
+IDFM:22121,Courcelles,IDFM:463240,Monceau,49,816
+IDFM:463240,Monceau,IDFM:462988,Villiers,62,816
+IDFM:462988,Villiers,IDFM:22110,Rome,66,816
+IDFM:22110,Rome,IDFM:22115,"Place de Clichy",65,816
+IDFM:22115,"Place de Clichy",IDFM:22125,Blanche,57,820
+IDFM:22125,Blanche,IDFM:463088,Pigalle,55,820
+IDFM:463088,Pigalle,IDFM:463120,Anvers,66,820
+IDFM:463120,Anvers,IDFM:22127,"Barbès - Rochechouart",63,820
+IDFM:22127,"Barbès - Rochechouart",IDFM:22119,"La Chapelle",78,820
+IDFM:22119,"La Chapelle",IDFM:22107,Stalingrad,55,820
+IDFM:22107,Stalingrad,IDFM:462981,Jaurès,69,820
+IDFM:462981,Jaurès,IDFM:462984,"Colonel Fabien",63,820
+IDFM:462984,"Colonel Fabien",IDFM:463111,Belleville,69,820
+IDFM:463111,Belleville,IDFM:462983,Couronnes,59,820
+IDFM:462983,Couronnes,IDFM:463243,Ménilmontant,61,820
+IDFM:463243,Ménilmontant,IDFM:463285,"Père Lachaise",65,820
+IDFM:463285,"Père Lachaise",IDFM:463230,"Philippe Auguste",67,820
+IDFM:463230,"Philippe Auguste",IDFM:22122,"Alexandre Dumas",53,820
+IDFM:22122,"Alexandre Dumas",IDFM:463125,Avron,61,820
+IDFM:463125,Avron,IDFM:463067,Nation,110,820
+IDFM:24679,"Front Populaire",IDFM:463281,"Porte de la Chapelle",138,1003
+IDFM:463281,"Porte de la Chapelle",IDFM:463236,"Marx Dormoy",81,1003
+IDFM:463236,"Marx Dormoy",IDFM:462973,"Marcadet - Poissonniers",83,1003
+IDFM:462973,"Marcadet - Poissonniers",IDFM:22054,"Jules Joffrin",59,1003
+IDFM:22054,"Jules Joffrin",IDFM:22055,"Lamarck - Caulaincourt",80,1003
+IDFM:22055,"Lamarck - Caulaincourt",IDFM:463116,Abbesses,61,1003
+IDFM:463116,Abbesses,IDFM:463089,Pigalle,48,1003
+IDFM:463089,Pigalle,IDFM:463304,Saint-Georges,64,1003
+IDFM:463304,Saint-Georges,IDFM:22050,Notre-Dame-de-Lorette,67,1003
+IDFM:22050,Notre-Dame-de-Lorette,IDFM:463317,"Trinité - d'Estienne d'Orves",53,1003
+IDFM:463317,"Trinité - d'Estienne d'Orves",IDFM:21964,Saint-Lazare,62,1003
+IDFM:21964,Saint-Lazare,IDFM:21965,Madeleine,93,1003
+IDFM:21965,Madeleine,IDFM:463164,Concorde,72,1003
+IDFM:463164,Concorde,IDFM:22060,"Assemblée Nationale",80,1003
+IDFM:22060,"Assemblée Nationale",IDFM:463311,Solférino,46,1003
+IDFM:463311,Solférino,IDFM:462950,"Rue du Bac",55,1003
+IDFM:462950,"Rue du Bac",IDFM:21980,"Sèvres - Babylone",54,1003
+IDFM:21980,"Sèvres - Babylone",IDFM:22049,Rennes,50,1003
+IDFM:22049,Rennes,IDFM:22051,Notre-Dame-des-Champs,52,1003
+IDFM:22051,Notre-Dame-des-Champs,IDFM:22038,"Montparnasse Bienvenue",70,1003
+IDFM:22038,"Montparnasse Bienvenue",IDFM:463173,Falguière,58,1003
+IDFM:463173,Falguière,IDFM:22039,Pasteur,62,1003
+IDFM:22039,Pasteur,IDFM:462964,Volontaires,47,1003
+IDFM:462964,Volontaires,IDFM:463321,Vaugirard,56,1003
+IDFM:463321,Vaugirard,IDFM:462949,Convention,57,1003
+IDFM:462949,Convention,IDFM:463261,"Porte de Versailles",91,1003
+IDFM:463261,"Porte de Versailles",IDFM:463153,"Corentin Celton",85,1025
+IDFM:463153,"Corentin Celton",IDFM:463219,"Mairie d'Issy",80,1025
+IDFM:483904,"Mairie d'Aubervilliers",IDFM:483903,"Aimé Césaire",79,1002
+IDFM:483903,"Aimé Césaire",IDFM:24679,"Front Populaire",105,1002
+IDFM:22062,"Mairie d'Issy",IDFM:22061,"Corentin Celton",70,950
+IDFM:22061,"Corentin Celton",IDFM:22042,"Porte de Versailles",94,950
+IDFM:22042,"Porte de Versailles",IDFM:22058,Convention,88,951
+IDFM:22058,Convention,IDFM:22047,Vaugirard,55,951
+IDFM:22047,Vaugirard,IDFM:22048,Volontaires,60,951
+IDFM:22048,Volontaires,IDFM:462947,Pasteur,49,951
+IDFM:462947,Pasteur,IDFM:22056,Falguière,61,951
+IDFM:22056,Falguière,IDFM:462980,"Montparnasse Bienvenue",56,951
+IDFM:462980,"Montparnasse Bienvenue",IDFM:462965,Notre-Dame-des-Champs,66,951
+IDFM:462965,Notre-Dame-des-Champs,IDFM:462968,Rennes,56,951
+IDFM:462968,Rennes,IDFM:462966,"Sèvres - Babylone",49,951
+IDFM:462966,"Sèvres - Babylone",IDFM:22043,"Rue du Bac",52,951
+IDFM:22043,"Rue du Bac",IDFM:22045,Solférino,50,951
+IDFM:22045,Solférino,IDFM:463123,"Assemblée Nationale",45,951
+IDFM:463123,"Assemblée Nationale",IDFM:22057,Concorde,74,951
+IDFM:22057,Concorde,IDFM:463081,Madeleine,72,951
+IDFM:463081,Madeleine,IDFM:462969,Saint-Lazare,86,951
+IDFM:462969,Saint-Lazare,IDFM:22046,"Trinité - d'Estienne d'Orves",53,951
+IDFM:22046,"Trinité - d'Estienne d'Orves",IDFM:463062,Notre-Dame-de-Lorette,49,951
+IDFM:463062,Notre-Dame-de-Lorette,IDFM:22044,Saint-Georges,72,951
+IDFM:22044,Saint-Georges,IDFM:22040,Pigalle,67,951
+IDFM:22040,Pigalle,IDFM:22059,Abbesses,45,951
+IDFM:22059,Abbesses,IDFM:463205,"Lamarck - Caulaincourt",63,951
+IDFM:463205,"Lamarck - Caulaincourt",IDFM:463065,"Jules Joffrin",77,951
+IDFM:463065,"Jules Joffrin",IDFM:22052,"Marcadet - Poissonniers",58,951
+IDFM:22052,"Marcadet - Poissonniers",IDFM:22053,"Marx Dormoy",82,951
+IDFM:22053,"Marx Dormoy",IDFM:22041,"Porte de la Chapelle",84,951
+IDFM:22041,"Porte de la Chapelle",IDFM:463082,"Front Populaire",129,951
+IDFM:463082,"Front Populaire",IDFM:483900,"Aimé Césaire",97,951
+IDFM:483900,"Aimé Césaire",IDFM:483898,"Mairie d'Aubervilliers",76,951
+IDFM:463079,Châtelet,IDFM:21990,"Hôtel de Ville",51,741
+IDFM:21990,"Hôtel de Ville",IDFM:462945,Rambuteau,47,741
+IDFM:462945,Rambuteau,IDFM:21997,"Arts et Métiers",63,741
+IDFM:21997,"Arts et Métiers",IDFM:462960,République,74,741
+IDFM:462960,République,IDFM:463187,Goncourt,48,741
+IDFM:463187,Goncourt,IDFM:21998,Belleville,51,741
+IDFM:21998,Belleville,IDFM:21991,Pyrénées,69,741
+IDFM:21991,Pyrénées,IDFM:463192,Jourdain,45,741
+IDFM:463192,Jourdain,IDFM:463254,"Place des Fêtes",41,741
+IDFM:463254,"Place des Fêtes",IDFM:463319,Télégraphe,58,741
+IDFM:463319,Télégraphe,IDFM:21949,"Porte des Lilas",67,741
+IDFM:21949,"Porte des Lilas",IDFM:463223,"Mairie des Lilas",76,741
+IDFM:463223,"Mairie des Lilas",IDFM:490787,"Serge Gainsbourg",63,742
+IDFM:490787,"Serge Gainsbourg",IDFM:490788,"Romainville - Carnot",77,742
+IDFM:490788,"Romainville - Carnot",IDFM:490789,"Montreuil - Hôpital",88,742
+IDFM:490789,"Montreuil - Hôpital",IDFM:490791,"La Dhuys",80,742
+IDFM:490791,"La Dhuys",IDFM:490792,"Coteaux Beauclair",54,742
+IDFM:490792,"Coteaux Beauclair",IDFM:490793,Rosny-Bois-Perrier,99,742
+IDFM:490772,Rosny-Bois-Perrier,IDFM:490770,"Coteaux Beauclair",97,738
+IDFM:490770,"Coteaux Beauclair",IDFM:490768,"La Dhuys",56,738
+IDFM:490768,"La Dhuys",IDFM:490766,"Montreuil - Hôpital",80,738
+IDFM:490766,"Montreuil - Hôpital",IDFM:490764,"Romainville - Carnot",87,738
+IDFM:490764,"Romainville - Carnot",IDFM:490762,"Serge Gainsbourg",78,739
+IDFM:490762,"Serge Gainsbourg",IDFM:21999,"Mairie des Lilas",65,739
+IDFM:21999,"Mairie des Lilas",IDFM:463263,"Porte des Lilas",74,739
+IDFM:463263,"Porte des Lilas",IDFM:21993,Télégraphe,79,739
+IDFM:21993,Télégraphe,IDFM:21951,"Place des Fêtes",57,739
+IDFM:21951,"Place des Fêtes",IDFM:21995,Jourdain,41,739
+IDFM:21995,Jourdain,IDFM:463287,Pyrénées,44,739
+IDFM:463287,Pyrénées,IDFM:463110,Belleville,67,739
+IDFM:463110,Belleville,IDFM:21996,Goncourt,51,739
+IDFM:21996,Goncourt,IDFM:21937,République,45,739
+IDFM:21937,République,IDFM:463108,"Arts et Métiers",77,739
+IDFM:463108,"Arts et Métiers",IDFM:21992,Rambuteau,58,739
+IDFM:21992,Rambuteau,IDFM:463061,"Hôtel de Ville",46,739
+IDFM:463061,"Hôtel de Ville",IDFM:21966,Châtelet,44,739
+IDFM:21967,"Gare d'Austerlitz",IDFM:463077,Jussieu,108,466
+IDFM:463077,Jussieu,IDFM:463141,"Cardinal Lemoine",56,466
+IDFM:463141,"Cardinal Lemoine",IDFM:463237,"Maubert - Mutualité",57,466
+IDFM:463237,"Maubert - Mutualité",IDFM:21983,"Cluny - La Sorbonne",42,466
+IDFM:21983,"Cluny - La Sorbonne",IDFM:462998,Odéon,41,466
+IDFM:462998,Odéon,IDFM:462994,Mabillon,60,466
+IDFM:462994,Mabillon,IDFM:462967,"Sèvres - Babylone",72,466
+IDFM:462967,"Sèvres - Babylone",IDFM:462959,Vaneau,53,466
+IDFM:462959,Vaneau,IDFM:21970,Duroc,61,466
+IDFM:21970,Duroc,IDFM:21979,Ségur,79,466
+IDFM:21979,Ségur,IDFM:21969,"La Motte-Picquet - Grenelle",93,466
+IDFM:21969,"La Motte-Picquet - Grenelle",IDFM:463124,"Avenue Émile Zola",62,466
+IDFM:463124,"Avenue Émile Zola",IDFM:463076,"Charles Michels",62,466
+IDFM:463076,"Charles Michels",IDFM:21972,"Javel - André Citroën",65,466
+IDFM:21972,"Javel - André Citroën",IDFM:21971,"Église d'Auteuil",91,466
+IDFM:21971,"Église d'Auteuil",IDFM:21907,"Michel-Ange - Auteuil",59,466
+IDFM:21907,"Michel-Ange - Auteuil",IDFM:21974,"Porte d'Auteuil",72,466
+IDFM:21974,"Porte d'Auteuil",IDFM:21988,"Boulogne Jean Jaurès",137,475
+IDFM:21988,"Boulogne Jean Jaurès",IDFM:21989,"Boulogne Pont de Saint-Cloud",99,475
+IDFM:463234,"Porte d'Auteuil",IDFM:21904,"Michel-Ange - Molitor",100,7
+IDFM:21904,"Michel-Ange - Molitor",IDFM:21985,"Chardon Lagache",60,467
+IDFM:21985,"Chardon Lagache",IDFM:21982,Mirabeau,53,467
+IDFM:21982,Mirabeau,IDFM:462958,"Javel - André Citroën",68,467
+IDFM:462958,"Javel - André Citroën",IDFM:21986,"Charles Michels",67,467
+IDFM:21986,"Charles Michels",IDFM:21987,"Avenue Émile Zola",63,467
+IDFM:21987,"Avenue Émile Zola",IDFM:463202,"La Motte-Picquet - Grenelle",62,467
+IDFM:463202,"La Motte-Picquet - Grenelle",IDFM:463315,Ségur,81,467
+IDFM:463315,Ségur,IDFM:463084,Duroc,80,467
+IDFM:463084,Duroc,IDFM:21977,Vaneau,63,467
+IDFM:21977,Vaneau,IDFM:21976,"Sèvres - Babylone",50,467
+IDFM:21976,"Sèvres - Babylone",IDFM:21973,Mabillon,69,467
+IDFM:21973,Mabillon,IDFM:21978,Odéon,63,467
+IDFM:21978,Odéon,IDFM:462944,"Cluny - La Sorbonne",42,467
+IDFM:462944,"Cluny - La Sorbonne",IDFM:21975,"Maubert - Mutualité",41,467
+IDFM:21975,"Maubert - Mutualité",IDFM:21984,"Cardinal Lemoine",63,467
+IDFM:21984,"Cardinal Lemoine",IDFM:21968,Jussieu,54,467
+IDFM:21968,Jussieu,IDFM:463024,"Gare d'Austerlitz",113,467
+IDFM:463136,"Boulogne Pont de Saint-Cloud",IDFM:463137,"Boulogne Jean Jaurès",97,460
+IDFM:463137,"Boulogne Jean Jaurès",IDFM:21904,"Michel-Ange - Molitor",116,460
+IDFM:462942,Nation,IDFM:463298,"Rue des Boulets",64,1338
+IDFM:463298,"Rue des Boulets",IDFM:21934,Charonne,61,1338
+IDFM:21934,Charonne,IDFM:21916,Voltaire,57,1338
+IDFM:21916,Voltaire,IDFM:463299,Saint-Ambroise,66,1338
+IDFM:463299,Saint-Ambroise,IDFM:463054,Oberkampf,69,1338
+IDFM:463054,Oberkampf,IDFM:462963,République,61,1338
+IDFM:462963,République,IDFM:463264,"Strasbourg - Saint-Denis",91,1338
+IDFM:463264,"Strasbourg - Saint-Denis",IDFM:21933,"Bonne Nouvelle",51,1338
+IDFM:21933,"Bonne Nouvelle",IDFM:463049,"Grands Boulevards",51,1338
+IDFM:463049,"Grands Boulevards",IDFM:463036,"Richelieu - Drouot",54,1338
+IDFM:463036,"Richelieu - Drouot",IDFM:21932,"Chaussée d'Antin - La Fayette",52,1338
+IDFM:21932,"Chaussée d'Antin - La Fayette",IDFM:463188,Havre-Caumartin,56,1338
+IDFM:463188,Havre-Caumartin,IDFM:463300,Saint-Augustin,59,1338
+IDFM:463300,Saint-Augustin,IDFM:21924,Miromesnil,71,1338
+IDFM:21924,Miromesnil,IDFM:21912,Saint-Philippe-du-Roule,58,1338
+IDFM:21912,Saint-Philippe-du-Roule,IDFM:21931,"Franklin D. Roosevelt",57,1338
+IDFM:21931,"Franklin D. Roosevelt",IDFM:21935,"Alma - Marceau",80,1338
+IDFM:21935,"Alma - Marceau",IDFM:463190,Iéna,64,1338
+IDFM:463190,Iéna,IDFM:463318,Trocadéro,67,1338
+IDFM:463318,Trocadéro,IDFM:463055,"Rue de la Pompe",63,1338
+IDFM:463055,"Rue de la Pompe",IDFM:21929,"La Muette",100,1338
+IDFM:21929,"La Muette",IDFM:463290,Ranelagh,56,1338
+IDFM:463290,Ranelagh,IDFM:463038,Jasmin,54,1338
+IDFM:463038,Jasmin,IDFM:463238,"Michel-Ange - Auteuil",78,1338
+IDFM:463238,"Michel-Ange - Auteuil",IDFM:21923,"Michel-Ange - Molitor",50,1338
+IDFM:21923,"Michel-Ange - Molitor",IDFM:462956,Exelmans,43,1338
+IDFM:462956,Exelmans,IDFM:463259,"Porte de Saint-Cloud",64,1338
+IDFM:463259,"Porte de Saint-Cloud",IDFM:21940,"Marcel Sembat",106,1353
+IDFM:21940,"Marcel Sembat",IDFM:463035,Billancourt,68,1353
+IDFM:463035,Billancourt,IDFM:463233,"Pont de Sèvres",69,1353
+IDFM:463221,"Mairie de Montreuil",IDFM:463176,"Croix de Chavaux",79,1323
+IDFM:463176,"Croix de Chavaux",IDFM:463053,Robespierre,82,1323
+IDFM:463053,Robespierre,IDFM:21913,"Porte de Montreuil",97,1323
+IDFM:21913,"Porte de Montreuil",IDFM:21936,Maraîchers,64,1337
+IDFM:21936,Maraîchers,IDFM:25084,Buzenval,53,1337
+IDFM:25084,Buzenval,IDFM:462942,Nation,74,1337
+IDFM:21926,Havre-Caumartin,IDFM:463144,"Chaussée d'Antin - La Fayette",56,1397
+IDFM:463144,"Chaussée d'Antin - La Fayette",IDFM:21921,"Richelieu - Drouot",53,1397
+IDFM:21921,"Richelieu - Drouot",IDFM:21909,"Grands Boulevards",56,1397
+IDFM:21909,"Grands Boulevards",IDFM:463133,"Bonne Nouvelle",52,1397
+IDFM:463133,"Bonne Nouvelle",IDFM:21920,"Strasbourg - Saint-Denis",60,1397
+IDFM:21920,"Strasbourg - Saint-Denis",IDFM:21918,République,79,1397
+IDFM:21918,République,IDFM:21925,Oberkampf,64,1397
+IDFM:21925,Oberkampf,IDFM:21910,Saint-Ambroise,69,1397
+IDFM:21910,Saint-Ambroise,IDFM:463325,Voltaire,67,1397
+IDFM:463325,Voltaire,IDFM:463143,Charonne,56,1397
+IDFM:463143,Charonne,IDFM:22442,"Rue des Boulets",63,1397
+IDFM:22442,"Rue des Boulets",IDFM:21919,Nation,67,1397
+IDFM:21919,Nation,IDFM:463039,Buzenval,70,1397
+IDFM:463039,Buzenval,IDFM:463215,Maraîchers,53,1397
+IDFM:463215,Maraîchers,IDFM:463279,"Porte de Montreuil",63,1397
+IDFM:463279,"Porte de Montreuil",IDFM:21942,Robespierre,103,1404
+IDFM:21942,Robespierre,IDFM:21943,"Croix de Chavaux",84,1404
+IDFM:21943,"Croix de Chavaux",IDFM:21941,"Mairie de Montreuil",86,1404
+IDFM:21938,"Pont de Sèvres",IDFM:21939,Billancourt,74,1330
+IDFM:21939,Billancourt,IDFM:462914,"Marcel Sembat",66,1330
+IDFM:462914,"Marcel Sembat",IDFM:21914,"Porte de Saint-Cloud",109,1330
+IDFM:21914,"Porte de Saint-Cloud",IDFM:21930,Exelmans,82,1396
+IDFM:21930,Exelmans,IDFM:463239,"Michel-Ange - Molitor",44,1396
+IDFM:463239,"Michel-Ange - Molitor",IDFM:21922,"Michel-Ange - Auteuil",48,1396
+IDFM:21922,"Michel-Ange - Auteuil",IDFM:21928,Jasmin,74,1396
+IDFM:21928,Jasmin,IDFM:21915,Ranelagh,51,1396
+IDFM:21915,Ranelagh,IDFM:463203,"La Muette",52,1396
+IDFM:463203,"La Muette",IDFM:21908,"Rue de la Pompe",102,1396
+IDFM:21908,"Rue de la Pompe",IDFM:21917,Trocadéro,65,1396
+IDFM:21917,Trocadéro,IDFM:21927,Iéna,66,1396
+IDFM:21927,Iéna,IDFM:463052,"Alma - Marceau",67,1396
+IDFM:463052,"Alma - Marceau",IDFM:463180,"Franklin D. Roosevelt",84,1396
+IDFM:463180,"Franklin D. Roosevelt",IDFM:462915,Saint-Philippe-du-Roule,58,1396
+IDFM:462915,Saint-Philippe-du-Roule,IDFM:462957,Miromesnil,59,1396
+IDFM:462957,Miromesnil,IDFM:21911,Saint-Augustin,69,1396
+IDFM:21911,Saint-Augustin,IDFM:21926,Havre-Caumartin,63,1396
+IDFM:22400,"Villejuif - Louis Aragon",IDFM:22401,"Villejuif Paul Vaillant-Couturier",91,319
+IDFM:22401,"Villejuif Paul Vaillant-Couturier",IDFM:463323,"Villejuif Léo Lagrange",101,319
+IDFM:463323,"Villejuif Léo Lagrange",IDFM:463107,"Le Kremlin-Bicêtre",68,319
+IDFM:463107,"Le Kremlin-Bicêtre",IDFM:22385,"Maison Blanche",114,319
+IDFM:22385,"Maison Blanche",IDFM:22370,Tolbiac,62,630
+IDFM:22370,Tolbiac,IDFM:463026,"Place d'Italie",71,630
+IDFM:463026,"Place d'Italie",IDFM:463216,"Les Gobelins",64,625
+IDFM:463216,"Les Gobelins",IDFM:22391,"Censier - Daubenton",70,625
+IDFM:22391,"Censier - Daubenton",IDFM:22366,"Place Monge",52,625
+IDFM:22366,"Place Monge",IDFM:22386,Jussieu,64,625
+IDFM:22386,Jussieu,IDFM:463265,"Sully - Morland",92,625
+IDFM:463265,"Sully - Morland",IDFM:463231,"Pont Marie (Cité des Arts)",58,625
+IDFM:463231,"Pont Marie (Cité des Arts)",IDFM:22364,Châtelet,77,625
+IDFM:22364,Châtelet,IDFM:463232,"Pont Neuf",69,625
+IDFM:463232,"Pont Neuf",IDFM:463249,"Palais Royal - Musée du Louvre",90,625
+IDFM:463249,"Palais Royal - Musée du Louvre",IDFM:22375,Pyramides,59,625
+IDFM:22375,Pyramides,IDFM:463245,Opéra,69,625
+IDFM:463245,Opéra,IDFM:22388,"Chaussée d'Antin - La Fayette",63,625
+IDFM:22388,"Chaussée d'Antin - La Fayette",IDFM:463206,"Le Peletier",59,625
+IDFM:463206,"Le Peletier",IDFM:22390,Cadet,57,625
+IDFM:22390,Cadet,IDFM:463255,Poissonnière,45,625
+IDFM:463255,Poissonnière,IDFM:463001,"Gare de l'Est",93,625
+IDFM:463001,"Gare de l'Est",IDFM:22367,"Château Landon",57,625
+IDFM:22367,"Château Landon",IDFM:463033,"Louis Blanc",62,625
+IDFM:463033,"Louis Blanc",IDFM:22368,Stalingrad,68,625
+IDFM:22368,Stalingrad,IDFM:22371,Riquet,59,625
+IDFM:22371,Riquet,IDFM:463155,Crimée,55,625
+IDFM:463155,Crimée,IDFM:22389,"Corentin Cariou",62,625
+IDFM:22389,"Corentin Cariou",IDFM:22374,"Porte de la Villette",71,625
+IDFM:22374,"Porte de la Villette",IDFM:463031,"Aubervilliers - Pantin - Quatre Chemins",96,633
+IDFM:463031,"Aubervilliers - Pantin - Quatre Chemins",IDFM:463179,"Fort d'Aubervilliers",114,633
+IDFM:463179,"Fort d'Aubervilliers",IDFM:22395,"La Courneuve - 8 Mai 1945",103,633
+IDFM:22396,"Mairie d'Ivry",IDFM:463251,"Pierre et Marie Curie",96,311
+IDFM:463251,"Pierre et Marie Curie",IDFM:22372,"Porte d'Ivry",87,311
+IDFM:22372,"Porte d'Ivry",IDFM:22373,"Porte de Choisy",59,311
+IDFM:22373,"Porte de Choisy",IDFM:463235,"Porte d'Italie",52,311
+IDFM:463235,"Porte d'Italie",IDFM:22385,"Maison Blanche",59,311
+IDFM:463007,"Porte de la Villette",IDFM:463152,"Corentin Cariou",72,660
+IDFM:463152,"Corentin Cariou",IDFM:22392,Crimée,61,660
+IDFM:22392,Crimée,IDFM:463295,Riquet,53,660
+IDFM:463295,Riquet,IDFM:463008,Stalingrad,58,660
+IDFM:463008,Stalingrad,IDFM:22384,"Louis Blanc",67,660
+IDFM:22384,"Louis Blanc",IDFM:463006,"Château Landon",74,660
+IDFM:463006,"Château Landon",IDFM:22387,"Gare de l'Est",57,660
+IDFM:22387,"Gare de l'Est",IDFM:22377,Poissonnière,92,660
+IDFM:22377,Poissonnière,IDFM:463139,Cadet,47,660
+IDFM:463139,Cadet,IDFM:22382,"Le Peletier",58,660
+IDFM:22382,"Le Peletier",IDFM:463145,"Chaussée d'Antin - La Fayette",58,660
+IDFM:463145,"Chaussée d'Antin - La Fayette",IDFM:22381,Opéra,72,660
+IDFM:22381,Opéra,IDFM:463283,Pyramides,63,660
+IDFM:463283,Pyramides,IDFM:22376,"Palais Royal - Musée du Louvre",56,660
+IDFM:22376,"Palais Royal - Musée du Louvre",IDFM:22379,"Pont Neuf",87,660
+IDFM:22379,"Pont Neuf",IDFM:463060,Châtelet,69,660
+IDFM:463060,Châtelet,IDFM:22378,"Pont Marie (Cité des Arts)",75,660
+IDFM:22378,"Pont Marie (Cité des Arts)",IDFM:22369,"Sully - Morland",61,660
+IDFM:22369,"Sully - Morland",IDFM:463078,Jussieu,90,660
+IDFM:463078,Jussieu,IDFM:463106,"Place Monge",61,660
+IDFM:463106,"Place Monge",IDFM:463157,"Censier - Daubenton",48,660
+IDFM:463157,"Censier - Daubenton",IDFM:22383,"Les Gobelins",69,660
+IDFM:22383,"Les Gobelins",IDFM:22365,"Place d'Italie",64,660
+IDFM:22365,"Place d'Italie",IDFM:463267,Tolbiac,62,668
+IDFM:463267,Tolbiac,IDFM:463224,"Maison Blanche",60,668
+IDFM:463224,"Maison Blanche",IDFM:22398,"Le Kremlin-Bicêtre",109,335
+IDFM:22398,"Le Kremlin-Bicêtre",IDFM:22399,"Villejuif Léo Lagrange",69,335
+IDFM:22399,"Villejuif Léo Lagrange",IDFM:463324,"Villejuif Paul Vaillant-Couturier",92,335
+IDFM:463324,"Villejuif Paul Vaillant-Couturier",IDFM:463269,"Villejuif - Louis Aragon",102,335
+IDFM:463200,"La Courneuve - 8 Mai 1945",IDFM:22393,"Fort d'Aubervilliers",85,650
+IDFM:22393,"Fort d'Aubervilliers",IDFM:22394,"Aubervilliers - Pantin - Quatre Chemins",116,650
+IDFM:22394,"Aubervilliers - Pantin - Quatre Chemins",IDFM:463007,"Porte de la Villette",108,650
+IDFM:463224,"Maison Blanche",IDFM:22380,"Porte d'Italie",59,333
+IDFM:22380,"Porte d'Italie",IDFM:463030,"Porte de Choisy",54,333
+IDFM:463030,"Porte de Choisy",IDFM:463029,"Porte d'Ivry",58,333
+IDFM:463029,"Porte d'Ivry",IDFM:22397,"Pierre et Marie Curie",76,341
+IDFM:22397,"Pierre et Marie Curie",IDFM:463220,"Mairie d'Ivry",107,341
+IDFM:463268,Trocadéro,IDFM:463101,Passy,47,856
+IDFM:463101,Passy,IDFM:22179,Bir-Hakeim,72,856
+IDFM:22179,Bir-Hakeim,IDFM:463099,Dupleix,49,856
+IDFM:463099,Dupleix,IDFM:22162,"La Motte-Picquet - Grenelle",54,856
+IDFM:22162,"La Motte-Picquet - Grenelle",IDFM:463140,Cambronne,45,858
+IDFM:463140,Cambronne,IDFM:22163,Sèvres-Lecourbe,38,858
+IDFM:22163,Sèvres-Lecourbe,IDFM:22166,Pasteur,52,858
+IDFM:22166,Pasteur,IDFM:22156,"Montparnasse Bienvenue",59,858
+IDFM:22156,"Montparnasse Bienvenue",IDFM:463100,"Edgar Quinet",70,858
+IDFM:463100,"Edgar Quinet",IDFM:463292,Raspail,54,858
+IDFM:463292,Raspail,IDFM:463103,Denfert-Rochereau,59,858
+IDFM:463103,Denfert-Rochereau,IDFM:463305,Saint-Jacques,48,858
+IDFM:463305,Saint-Jacques,IDFM:463186,Glacière,48,858
+IDFM:463186,Glacière,IDFM:463105,Corvisart,53,858
+IDFM:463105,Corvisart,IDFM:22168,"Place d'Italie",72,858
+IDFM:22168,"Place d'Italie",IDFM:22169,Nationale,68,858
+IDFM:22169,Nationale,IDFM:463147,Chevaleret,57,858
+IDFM:463147,Chevaleret,IDFM:22161,"Quai de la Gare",47,858
+IDFM:22161,"Quai de la Gare",IDFM:22178,Bercy,48,858
+IDFM:22178,Bercy,IDFM:22182,Dugommier,68,858
+IDFM:22182,Dugommier,IDFM:22181,Daumesnil,61,858
+IDFM:22181,Daumesnil,IDFM:463127,Bel-Air,56,858
+IDFM:463127,Bel-Air,IDFM:463098,Picpus,57,858
+IDFM:463098,Picpus,IDFM:463028,Nation,109,858
+IDFM:22170,Kléber,IDFM:22180,Boissière,52,855
+IDFM:22180,Boissière,IDFM:463268,Trocadéro,50,855
+IDFM:463169,Daumesnil,IDFM:463075,Dugommier,50,854
+IDFM:463075,Dugommier,IDFM:463128,Bercy,61,854
+IDFM:463128,Bercy,IDFM:463288,"Quai de la Gare",72,855
+IDFM:463288,"Quai de la Gare",IDFM:22174,Chevaleret,46,855
+IDFM:22174,Chevaleret,IDFM:463004,Nationale,46,855
+IDFM:463004,Nationale,IDFM:463003,"Place d'Italie",50,855
+IDFM:463003,"Place d'Italie",IDFM:22175,Corvisart,72,855
+IDFM:22175,Corvisart,IDFM:22173,Glacière,67,857
+IDFM:22173,Glacière,IDFM:22160,Saint-Jacques,53,857
+IDFM:22160,Saint-Jacques,IDFM:22158,Denfert-Rochereau,47,857
+IDFM:22158,Denfert-Rochereau,IDFM:22155,Raspail,47,857
+IDFM:22155,Raspail,IDFM:22172,"Edgar Quinet",56,857
+IDFM:22172,"Edgar Quinet",IDFM:462955,"Montparnasse Bienvenue",55,857
+IDFM:462955,"Montparnasse Bienvenue",IDFM:462948,Pasteur,66,857
+IDFM:462948,Pasteur,IDFM:463314,Sèvres-Lecourbe,57,857
+IDFM:463314,Sèvres-Lecourbe,IDFM:22176,Cambronne,55,857
+IDFM:22176,Cambronne,IDFM:463194,"La Motte-Picquet - Grenelle",39,857
+IDFM:463194,"La Motte-Picquet - Grenelle",IDFM:22171,Dupleix,46,857
+IDFM:22171,Dupleix,IDFM:463005,Bir-Hakeim,54,857
+IDFM:463005,Bir-Hakeim,IDFM:22165,Passy,57,857
+IDFM:22165,Passy,IDFM:22164,Trocadéro,77,857
+IDFM:22164,Trocadéro,IDFM:463114,Boissière,50,857
+IDFM:463114,Boissière,IDFM:463102,Kléber,48,857
+IDFM:463102,Kléber,IDFM:463042,"Charles de Gaulle - Étoile",97,857
+IDFM:22073,Nation,IDFM:22167,Picpus,124,853
+IDFM:22167,Picpus,IDFM:22177,Bel-Air,57,853
+IDFM:22177,Bel-Air,IDFM:463169,Daumesnil,55,853
+IDFM:463174,Gallieni,IDFM:463276,"Porte de Bagnolet",66,991
+IDFM:463276,"Porte de Bagnolet",IDFM:462991,Gambetta,79,991
+IDFM:462991,Gambetta,IDFM:463286,"Père Lachaise",91,998
+IDFM:463286,"Père Lachaise",IDFM:22025,"Rue Saint-Maur",62,998
+IDFM:22025,"Rue Saint-Maur",IDFM:22019,Parmentier,54,998
+IDFM:22019,Parmentier,IDFM:462946,République,77,998
+IDFM:462946,République,IDFM:22026,Temple,47,998
+IDFM:22026,Temple,IDFM:463122,"Arts et Métiers",50,998
+IDFM:463122,"Arts et Métiers",IDFM:22018,"Réaumur - Sébastopol",49,998
+IDFM:22018,"Réaumur - Sébastopol",IDFM:22029,Sentier,58,998
+IDFM:22029,Sentier,IDFM:22033,Bourse,49,998
+IDFM:22033,Bourse,IDFM:462989,"Quatre Septembre",55,998
+IDFM:462989,"Quatre Septembre",IDFM:463246,Opéra,60,998
+IDFM:463246,Opéra,IDFM:463189,Havre-Caumartin,54,998
+IDFM:463189,Havre-Caumartin,IDFM:21963,Saint-Lazare,56,998
+IDFM:21963,Saint-Lazare,IDFM:22032,Europe,61,998
+IDFM:22032,Europe,IDFM:462987,Villiers,74,998
+IDFM:462987,Villiers,IDFM:463068,Malesherbes,67,998
+IDFM:463068,Malesherbes,IDFM:463070,Wagram,56,998
+IDFM:463070,Wagram,IDFM:463228,Pereire,48,998
+IDFM:463228,Pereire,IDFM:22023,"Porte de Champerret",69,998
+IDFM:22023,"Porte de Champerret",IDFM:22034,"Louise Michel",68,998
+IDFM:22034,"Louise Michel",IDFM:22036,"Anatole France",59,998
+IDFM:22036,"Anatole France",IDFM:462985,"Pont de Levallois - Bécon",77,998
+IDFM:463258,"Porte de Champerret",IDFM:22021,Pereire,64,991
+IDFM:22021,Pereire,IDFM:22028,Wagram,48,991
+IDFM:22028,Wagram,IDFM:22031,Malesherbes,53,991
+IDFM:22031,Malesherbes,IDFM:22027,Villiers,78,991
+IDFM:22027,Villiers,IDFM:463069,Europe,78,991
+IDFM:463069,Europe,IDFM:462971,Saint-Lazare,62,991
+IDFM:462971,Saint-Lazare,IDFM:21906,Havre-Caumartin,55,991
+IDFM:21906,Havre-Caumartin,IDFM:22030,Opéra,51,991
+IDFM:22030,Opéra,IDFM:22024,"Quatre Septembre",60,991
+IDFM:22024,"Quatre Septembre",IDFM:463090,Bourse,54,991
+IDFM:463090,Bourse,IDFM:462986,Sentier,57,991
+IDFM:462986,Sentier,IDFM:463091,"Réaumur - Sébastopol",52,991
+IDFM:463091,"Réaumur - Sébastopol",IDFM:21994,"Arts et Métiers",53,991
+IDFM:21994,"Arts et Métiers",IDFM:463316,Temple,50,991
+IDFM:463316,Temple,IDFM:21902,République,49,991
+IDFM:21902,République,IDFM:463250,Parmentier,75,991
+IDFM:463250,Parmentier,IDFM:463297,"Rue Saint-Maur",57,991
+IDFM:463297,"Rue Saint-Maur",IDFM:22020,"Père Lachaise",69,991
+IDFM:22020,"Père Lachaise",IDFM:21950,Gambetta,90,991
+IDFM:21950,Gambetta,IDFM:22022,"Porte de Bagnolet",79,991
+IDFM:22022,"Porte de Bagnolet",IDFM:22037,Gallieni,71,991
+IDFM:22035,"Pont de Levallois - Bécon",IDFM:463119,"Anatole France",72,967
+IDFM:463119,"Anatole France",IDFM:463210,"Louise Michel",57,967
+IDFM:463210,"Louise Michel",IDFM:463258,"Porte de Champerret",67,967
+IDFM:22015,"Bobigny - Pablo Picasso",IDFM:463002,"Bobigny-Pantin - Raymond Queneau",187,1316
+IDFM:463002,"Bobigny-Pantin - Raymond Queneau",IDFM:463178,"Église de Pantin",99,1325
+IDFM:463178,"Église de Pantin",IDFM:463017,Hoche,76,1331
+IDFM:463017,Hoche,IDFM:22003,"Porte de Pantin",79,1331
+IDFM:22003,"Porte de Pantin",IDFM:22005,Ourcq,66,1331
+IDFM:22005,Ourcq,IDFM:462999,Laumière,61,1331
+IDFM:462999,Laumière,IDFM:463095,Jaurès,58,1331
+IDFM:463095,Jaurès,IDFM:463032,Stalingrad,50,1331
+IDFM:463032,Stalingrad,IDFM:22007,"Gare du Nord",115,1331
+IDFM:22007,"Gare du Nord",IDFM:463021,"Gare de l'Est",99,1331
+IDFM:463021,"Gare de l'Est",IDFM:463191,"Jacques Bonsergent",81,1331
+IDFM:463191,"Jacques Bonsergent",IDFM:21903,République,65,1331
+IDFM:21903,République,IDFM:21905,Oberkampf,73,1331
+IDFM:21905,Oberkampf,IDFM:22002,Richard-Lenoir,70,1331
+IDFM:22002,Richard-Lenoir,IDFM:22008,Bréguet-Sabin,60,1331
+IDFM:22008,Bréguet-Sabin,IDFM:463018,Bastille,54,1331
+IDFM:463018,Bastille,IDFM:463289,"Quai de la Rapée",93,1331
+IDFM:463289,"Quai de la Rapée",IDFM:463023,"Gare d'Austerlitz",83,1331
+IDFM:463023,"Gare d'Austerlitz",IDFM:22000,Saint-Marcel,80,1331
+IDFM:22000,Saint-Marcel,IDFM:22009,Campo-Formio,50,1331
+IDFM:22009,Campo-Formio,IDFM:463025,"Place d'Italie",113,1331
+IDFM:22006,"Place d'Italie",IDFM:463020,Campo-Formio,81,1297
+IDFM:463020,Campo-Formio,IDFM:463097,Saint-Marcel,49,1312
+IDFM:463097,Saint-Marcel,IDFM:21981,"Gare d'Austerlitz",73,1312
+IDFM:21981,"Gare d'Austerlitz",IDFM:22004,"Quai de la Rapée",82,1314
+IDFM:22004,"Quai de la Rapée",IDFM:22010,Bastille,88,1314
+IDFM:22010,Bastille,IDFM:463138,Bréguet-Sabin,54,1314
+IDFM:463138,Bréguet-Sabin,IDFM:463096,Richard-Lenoir,59,1314
+IDFM:463096,Richard-Lenoir,IDFM:463059,Oberkampf,72,1314
+IDFM:463059,Oberkampf,IDFM:462961,République,83,1314
+IDFM:462961,République,IDFM:22011,"Jacques Bonsergent",62,1314
+IDFM:22011,"Jacques Bonsergent",IDFM:22013,"Gare de l'Est",83,1314
+IDFM:22013,"Gare de l'Est",IDFM:463182,"Gare du Nord",92,1314
+IDFM:463182,"Gare du Nord",IDFM:22001,Stalingrad,106,1314
+IDFM:22001,Stalingrad,IDFM:21952,Jaurès,53,1314
+IDFM:21952,Jaurès,IDFM:22012,Laumière,60,1314
+IDFM:22012,Laumière,IDFM:463027,Ourcq,63,1314
+IDFM:463027,Ourcq,IDFM:463280,"Porte de Pantin",62,1314
+IDFM:463280,"Porte de Pantin",IDFM:22017,Hoche,77,1314
+IDFM:22017,Hoche,IDFM:22016,"Église de Pantin",85,1314
+IDFM:22016,"Église de Pantin",IDFM:22014,"Bobigny-Pantin - Raymond Queneau",93,1314
+IDFM:22014,"Bobigny-Pantin - Raymond Queneau",IDFM:463131,"Bobigny - Pablo Picasso",200,1314
+IDFM:22095,"Charles de Gaulle - Étoile",IDFM:22170,Kléber,94,829
+IDFM:490774,"Saint-Denis - Pleyel",IDFM:480290,"Mairie de Saint-Ouen",82,1969
+IDFM:480290,"Mairie de Saint-Ouen",IDFM:480288,Saint-Ouen,93,1969
+IDFM:480288,Saint-Ouen,IDFM:480541,"Porte de Clichy",106,1971
+IDFM:480541,"Porte de Clichy",IDFM:480286,"Pont Cardinet",68,1973
+IDFM:480286,"Pont Cardinet",IDFM:462972,Saint-Lazare,127,1973
+IDFM:462972,Saint-Lazare,IDFM:21961,Madeleine,64,1975
+IDFM:21961,Madeleine,IDFM:21960,Pyramides,63,1975
+IDFM:21960,Pyramides,IDFM:21959,Châtelet,78,1975
+IDFM:21959,Châtelet,IDFM:463046,"Gare de Lyon",165,1977
+IDFM:463046,"Gare de Lyon",IDFM:463129,Bercy,57,1977
+IDFM:463129,Bercy,IDFM:21956,"Cour Saint-Emilion",75,1979
+IDFM:21956,"Cour Saint-Emilion",IDFM:21955,"Bibliothèque François Mitterrand",65,1979
+IDFM:21955,"Bibliothèque François Mitterrand",IDFM:21954,Olympiades,64,1981
+IDFM:21954,Olympiades,IDFM:490841,"Maison Blanche",90,1981
+IDFM:490841,"Maison Blanche",IDFM:490839,"Hôpital Bicêtre",107,1983
+IDFM:490839,"Hôpital Bicêtre",IDFM:490906,"Villejuif - Gustave Roussy",133,1983
+IDFM:490906,"Villejuif - Gustave Roussy",IDFM:490837,L'Haÿ-les-Roses,128,1985
+IDFM:490837,L'Haÿ-les-Roses,IDFM:490851,"Chevilly-Larue (Marché International)",128,1985
+IDFM:490851,"Chevilly-Larue (Marché International)",IDFM:490833,"Thiais - Orly (Pont de Rungis)",94,1987
+IDFM:490833,"Thiais - Orly (Pont de Rungis)",IDFM:490908,"Aéroport d'Orly",139,1987
+IDFM:490917,"Aéroport d'Orly",IDFM:490852,"Thiais - Orly (Pont de Rungis)",138,1898
+IDFM:490852,"Thiais - Orly (Pont de Rungis)",IDFM:490835,"Chevilly-Larue (Marché International)",95,1898
+IDFM:490835,"Chevilly-Larue (Marché International)",IDFM:490850,L'Haÿ-les-Roses,130,1900
+IDFM:490850,L'Haÿ-les-Roses,IDFM:490916,"Villejuif - Gustave Roussy",129,1900
+IDFM:490916,"Villejuif - Gustave Roussy",IDFM:490849,"Hôpital Bicêtre",128,1902
+IDFM:490849,"Hôpital Bicêtre",IDFM:490848,"Maison Blanche",109,1902
+IDFM:490848,"Maison Blanche",IDFM:463045,Olympiades,90,1904
+IDFM:463045,Olympiades,IDFM:463112,"Bibliothèque François Mitterrand",63,1904
+IDFM:463112,"Bibliothèque François Mitterrand",IDFM:463165,"Cour Saint-Emilion",65,1906
+IDFM:463165,"Cour Saint-Emilion",IDFM:21957,Bercy,74,1906
+IDFM:21957,Bercy,IDFM:21958,"Gare de Lyon",57,1908
+IDFM:21958,"Gare de Lyon",IDFM:463159,Châtelet,164,1908
+IDFM:463159,Châtelet,IDFM:463284,Pyramides,78,1910
+IDFM:463284,Pyramides,IDFM:463064,Madeleine,63,1910
+IDFM:463064,Madeleine,IDFM:21962,Saint-Lazare,64,1910
+IDFM:21962,Saint-Lazare,IDFM:480340,"Pont Cardinet",128,1912
+IDFM:480340,"Pont Cardinet",IDFM:480531,"Porte de Clichy",68,1912
+IDFM:480531,"Porte de Clichy",IDFM:480341,Saint-Ouen,104,1914
+IDFM:480341,Saint-Ouen,IDFM:480330,"Mairie de Saint-Ouen",93,1914
+IDFM:480330,"Mairie de Saint-Ouen",IDFM:490794,"Saint-Denis - Pleyel",82,1914
+IDFM:24681,"Louis Blanc",IDFM:24680,Jaurès,64,618
+IDFM:24680,Jaurès,IDFM:24685,Bolivar,46,618
+IDFM:24685,Bolivar,IDFM:463156,"Buttes Chaumont",69,618
+IDFM:463156,"Buttes Chaumont",IDFM:24686,Botzaris,59,618
+IDFM:24686,Botzaris,IDFM:24682,"Place des Fêtes",71,618
+IDFM:24682,"Place des Fêtes",IDFM:463282,Pré-Saint-Gervais,112,618
+IDFM:463282,Pré-Saint-Gervais,IDFM:24687,Danube,53,573
+IDFM:24687,Danube,IDFM:463134,Botzaris,69,573
+IDFM:463134,Botzaris,IDFM:24683,"Buttes Chaumont",58,573
+IDFM:24683,"Buttes Chaumont",IDFM:463132,Bolivar,70,573
+IDFM:463132,Bolivar,IDFM:463074,Jaurès,46,573
+IDFM:463074,Jaurès,IDFM:463034,"Louis Blanc",70,573
+IDFM:22242,"Saint-Denis - Université",IDFM:22240,"Basilique de Saint-Denis",100,664
+IDFM:22240,"Basilique de Saint-Denis",IDFM:463301,"Saint-Denis - Porte de Paris",82,664
+IDFM:463301,"Saint-Denis - Porte de Paris",IDFM:22239,"Carrefour Pleyel",133,664
+IDFM:22239,"Carrefour Pleyel",IDFM:22243,"Mairie de Saint-Ouen",94,664
+IDFM:22243,"Mairie de Saint-Ouen",IDFM:462977,Garibaldi,81,664
+IDFM:462977,Garibaldi,IDFM:462951,"Porte de Saint-Ouen",89,664
+IDFM:462951,"Porte de Saint-Ouen",IDFM:22228,"Guy Môquet",61,664
+IDFM:22228,"Guy Môquet",IDFM:478395,"La Fourche",74,664
+IDFM:478395,"La Fourche",IDFM:463253,"Place de Clichy",58,664
+IDFM:463253,"Place de Clichy",IDFM:463066,Liège,64,2165
+IDFM:463066,Liège,IDFM:462970,Saint-Lazare,89,2165
+IDFM:462970,Saint-Lazare,IDFM:474397,Miromesnil,103,2165
+IDFM:474397,Miromesnil,IDFM:463011,"Champs-Élysées - Clemenceau",86,2165
+IDFM:463011,"Champs-Élysées - Clemenceau",IDFM:22185,Invalides,84,2165
+IDFM:22185,Invalides,IDFM:463320,Varenne,55,2165
+IDFM:463320,Varenne,IDFM:463303,Saint-François-Xavier,57,2165
+IDFM:463303,Saint-François-Xavier,IDFM:463083,Duroc,54,2165
+IDFM:463083,Duroc,IDFM:462954,"Montparnasse Bienvenue",75,2165
+IDFM:462954,"Montparnasse Bienvenue",IDFM:463184,Gaîté,64,2165
+IDFM:463184,Gaîté,IDFM:463229,Pernety,75,2165
+IDFM:463229,Pernety,IDFM:22223,Plaisance,58,2165
+IDFM:22223,Plaisance,IDFM:22221,"Porte de Vanves",76,2165
+IDFM:22221,"Porte de Vanves",IDFM:22235,"Malakoff - Plateau de Vanves",74,2165
+IDFM:22235,"Malakoff - Plateau de Vanves",IDFM:22236,"Malakoff - Rue Étienne Dolet",86,2165
+IDFM:22236,"Malakoff - Rue Étienne Dolet",IDFM:463087,"Châtillon - Montrouge",80,2165
+IDFM:22237,"Châtillon - Montrouge",IDFM:463214,"Malakoff - Rue Étienne Dolet",68,2199
+IDFM:463214,"Malakoff - Rue Étienne Dolet",IDFM:463213,"Malakoff - Plateau de Vanves",98,2199
+IDFM:463213,"Malakoff - Plateau de Vanves",IDFM:463260,"Porte de Vanves",83,2199
+IDFM:463260,"Porte de Vanves",IDFM:463085,Plaisance,69,2199
+IDFM:463085,Plaisance,IDFM:22222,Pernety,56,2199
+IDFM:22222,Pernety,IDFM:22230,Gaîté,71,2199
+IDFM:22230,Gaîté,IDFM:22157,"Montparnasse Bienvenue",75,2199
+IDFM:22157,"Montparnasse Bienvenue",IDFM:22229,Duroc,71,2199
+IDFM:22229,Duroc,IDFM:22217,Saint-François-Xavier,54,2199
+IDFM:22217,Saint-François-Xavier,IDFM:22226,Varenne,56,2199
+IDFM:22226,Varenne,IDFM:463198,Invalides,59,2199
+IDFM:463198,Invalides,IDFM:22093,"Champs-Élysées - Clemenceau",83,2199
+IDFM:22093,"Champs-Élysées - Clemenceau",IDFM:22224,Miromesnil,75,2199
+IDFM:22224,Miromesnil,IDFM:22218,Saint-Lazare,104,2199
+IDFM:22218,Saint-Lazare,IDFM:22225,Liège,65,2199
+IDFM:22225,Liège,IDFM:22129,"Place de Clichy",69,2199
+IDFM:22129,"Place de Clichy",IDFM:22227,"La Fourche",45,2199
+IDFM:22227,"La Fourche",IDFM:22231,Brochant,90,1540
+IDFM:22231,Brochant,IDFM:22219,"Porte de Clichy",81,1540
+IDFM:22219,"Porte de Clichy",IDFM:22238,"Mairie de Clichy",97,1540
+IDFM:22238,"Mairie de Clichy",IDFM:22234,"Gabriel Péri",150,1540
+IDFM:22234,"Gabriel Péri",IDFM:22232,"Les Agnettes",86,1540
+IDFM:22232,"Les Agnettes",IDFM:22233,"Asnières - Gennevilliers - Les Courtilles",86,1540
+IDFM:22227,"La Fourche",IDFM:462952,"Guy Môquet",89,665
+IDFM:462952,"Guy Môquet",IDFM:22220,"Porte de Saint-Ouen",61,665
+IDFM:22220,"Porte de Saint-Ouen",IDFM:22244,Garibaldi,97,665
+IDFM:22244,Garibaldi,IDFM:463212,"Mairie de Saint-Ouen",80,665
+IDFM:463212,"Mairie de Saint-Ouen",IDFM:462976,"Carrefour Pleyel",97,665
+IDFM:462976,"Carrefour Pleyel",IDFM:22241,"Saint-Denis - Porte de Paris",125,679
+IDFM:22241,"Saint-Denis - Porte de Paris",IDFM:463126,"Basilique de Saint-Denis",75,679
+IDFM:463126,"Basilique de Saint-Denis",IDFM:463302,"Saint-Denis - Université",110,679
+IDFM:463109,"Asnières - Gennevilliers - Les Courtilles",IDFM:463207,"Les Agnettes",73,1508
+IDFM:463207,"Les Agnettes",IDFM:462953,"Gabriel Péri",93,1508
+IDFM:462953,"Gabriel Péri",IDFM:463086,"Mairie de Clichy",147,1508
+IDFM:463086,"Mairie de Clichy",IDFM:463278,"Porte de Clichy",100,1508
+IDFM:463278,"Porte de Clichy",IDFM:462978,Brochant,74,1508
+IDFM:462978,Brochant,IDFM:462975,"La Fourche",75,1508
+IDFM:462975,"La Fourche",IDFM:463253,"Place de Clichy",58,1501
+IDFM:483423,"Bagneux - Lucie Aubrac",IDFM:483277,Barbara,83,2437
+IDFM:483277,Barbara,IDFM:463222,"Mairie de Montrouge",97,2437
+IDFM:463222,"Mairie de Montrouge",IDFM:463092,"Porte d'Orléans",79,2437
+IDFM:463092,"Porte d'Orléans",IDFM:463118,Alésia,74,2480
+IDFM:463118,Alésia,IDFM:463242,Mouton-Duvernet,45,2480
+IDFM:463242,Mouton-Duvernet,IDFM:22151,Denfert-Rochereau,36,2480
+IDFM:22151,Denfert-Rochereau,IDFM:463291,Raspail,54,2480
+IDFM:463291,Raspail,IDFM:22135,Vavin,64,2480
+IDFM:22135,Vavin,IDFM:462996,"Montparnasse Bienvenue",37,2480
+IDFM:462996,"Montparnasse Bienvenue",IDFM:463308,Saint-Placide,65,2486
+IDFM:463308,Saint-Placide,IDFM:462992,Saint-Sulpice,49,2486
+IDFM:462992,Saint-Sulpice,IDFM:22136,Saint-Germain-des-Prés,57,2486
+IDFM:22136,Saint-Germain-des-Prés,IDFM:22145,Odéon,45,2486
+IDFM:22145,Odéon,IDFM:463306,Saint-Michel,57,2486
+IDFM:463306,Saint-Michel,IDFM:463161,Cité,45,2486
+IDFM:463161,Cité,IDFM:463158,Châtelet,60,2486
+IDFM:463158,Châtelet,IDFM:463208,"Les Halles",48,2486
+IDFM:463208,"Les Halles",IDFM:22147,"Etienne Marcel",50,2486
+IDFM:22147,"Etienne Marcel",IDFM:22142,"Réaumur - Sébastopol",52,2486
+IDFM:22142,"Réaumur - Sébastopol",IDFM:22134,"Strasbourg - Saint-Denis",43,2486
+IDFM:22134,"Strasbourg - Saint-Denis",IDFM:22153,"Château d'Eau",43,2486
+IDFM:22153,"Château d'Eau",IDFM:463022,"Gare de l'Est",47,2486
+IDFM:463022,"Gare de l'Est",IDFM:463183,"Gare du Nord",67,2486
+IDFM:463183,"Gare du Nord",IDFM:463093,"Barbès - Rochechouart",75,2486
+IDFM:463093,"Barbès - Rochechouart",IDFM:22152,"Château Rouge",41,2486
+IDFM:22152,"Château Rouge",IDFM:22132,"Marcadet - Poissonniers",41,2486
+IDFM:22132,"Marcadet - Poissonniers",IDFM:463310,Simplon,46,2486
+IDFM:463310,Simplon,IDFM:22141,"Porte de Clignancourt",48,2486
+IDFM:463073,"Porte de Clignancourt",IDFM:22133,Simplon,50,2584
+IDFM:22133,Simplon,IDFM:462974,"Marcadet - Poissonniers",46,2584
+IDFM:462974,"Marcadet - Poissonniers",IDFM:463148,"Château Rouge",43,2584
+IDFM:463148,"Château Rouge",IDFM:22130,"Barbès - Rochechouart",40,2584
+IDFM:22130,"Barbès - Rochechouart",IDFM:22149,"Gare du Nord",86,2584
+IDFM:22149,"Gare du Nord",IDFM:22148,"Gare de l'Est",71,2588
+IDFM:22148,"Gare de l'Est",IDFM:462979,"Château d'Eau",46,2588
+IDFM:462979,"Château d'Eau",IDFM:463313,"Strasbourg - Saint-Denis",43,2588
+IDFM:463313,"Strasbourg - Saint-Denis",IDFM:463072,"Réaumur - Sébastopol",43,2588
+IDFM:463072,"Réaumur - Sébastopol",IDFM:463171,"Etienne Marcel",56,2588
+IDFM:463171,"Etienne Marcel",IDFM:22146,"Les Halles",51,2588
+IDFM:22146,"Les Halles",IDFM:22092,Châtelet,50,2588
+IDFM:22092,Châtelet,IDFM:22150,Cité,58,2588
+IDFM:22150,Cité,IDFM:22137,Saint-Michel,45,2588
+IDFM:22137,Saint-Michel,IDFM:462995,Odéon,53,2588
+IDFM:462995,Odéon,IDFM:462993,Saint-Germain-des-Prés,46,2588
+IDFM:462993,Saint-Germain-des-Prés,IDFM:22139,Saint-Sulpice,56,2588
+IDFM:22139,Saint-Sulpice,IDFM:22138,Saint-Placide,51,2588
+IDFM:22138,Saint-Placide,IDFM:22143,"Montparnasse Bienvenue",67,2588
+IDFM:22143,"Montparnasse Bienvenue",IDFM:463016,Vavin,39,2588
+IDFM:463016,Vavin,IDFM:22131,Raspail,64,2588
+IDFM:22131,Raspail,IDFM:463104,Denfert-Rochereau,56,2588
+IDFM:463104,Denfert-Rochereau,IDFM:22144,Mouton-Duvernet,36,2588
+IDFM:22144,Mouton-Duvernet,IDFM:22154,Alésia,45,2588
+IDFM:22154,Alésia,IDFM:22140,"Porte d'Orléans",55,2588
+IDFM:22140,"Porte d'Orléans",IDFM:26602,"Mairie de Montrouge",80,2588
+IDFM:26602,"Mairie de Montrouge",IDFM:483313,Barbara,97,2588
+IDFM:483313,Barbara,IDFM:483314,"Bagneux - Lucie Aubrac",84,2588
+IDFM:22187,Lourmel,IDFM:22188,Boucicaut,51,746
+IDFM:22188,Boucicaut,IDFM:22189,"Félix Faure",50,746
+IDFM:22189,"Félix Faure",IDFM:463162,Commerce,57,746
+IDFM:463162,Commerce,IDFM:22183,"La Motte-Picquet - Grenelle",62,746
+IDFM:22183,"La Motte-Picquet - Grenelle",IDFM:463177,"École Militaire",83,748
+IDFM:463177,"École Militaire",IDFM:22192,"La Tour-Maubourg",52,748
+IDFM:22192,"La Tour-Maubourg",IDFM:463199,Invalides,66,748
+IDFM:463199,Invalides,IDFM:22096,Concorde,88,748
+IDFM:22096,Concorde,IDFM:22194,Madeleine,61,1335
+IDFM:22194,Madeleine,IDFM:22195,Opéra,54,1338
+IDFM:22195,Opéra,IDFM:463037,"Richelieu - Drouot",60,1338
+IDFM:463037,"Richelieu - Drouot",IDFM:22197,"Grands Boulevards",56,1338
+IDFM:22197,"Grands Boulevards",IDFM:463115,"Bonne Nouvelle",49,1338
+IDFM:463115,"Bonne Nouvelle",IDFM:22159,"Strasbourg - Saint-Denis",52,1338
+IDFM:22159,"Strasbourg - Saint-Denis",IDFM:462962,République,76,1338
+IDFM:462962,République,IDFM:463048,"Filles du Calvaire",65,1338
+IDFM:463048,"Filles du Calvaire",IDFM:463309,"Saint-Sébastien - Froissart",50,1338
+IDFM:463309,"Saint-Sébastien - Froissart",IDFM:463146,"Chemin Vert",51,1338
+IDFM:463146,"Chemin Vert",IDFM:22097,Bastille,57,1338
+IDFM:22097,Bastille,IDFM:463195,Ledru-Rollin,55,1338
+IDFM:463195,Ledru-Rollin,IDFM:463172,"Faidherbe - Chaligny",63,1338
+IDFM:463172,"Faidherbe - Chaligny",IDFM:463293,"Reuilly - Diderot",58,1338
+IDFM:463293,"Reuilly - Diderot",IDFM:463241,Montgallet,56,1338
+IDFM:463241,Montgallet,IDFM:463168,Daumesnil,57,1338
+IDFM:463168,Daumesnil,IDFM:22206,"Michel Bizot",62,1338
+IDFM:22206,"Michel Bizot",IDFM:22207,"Porte Dorée",68,1338
+IDFM:22207,"Porte Dorée",IDFM:463277,"Porte de Charenton",66,1338
+IDFM:463277,"Porte de Charenton",IDFM:463209,Liberté,104,1338
+IDFM:463209,Liberté,IDFM:22210,"Charenton - Écoles",73,1338
+IDFM:22210,"Charenton - Écoles",IDFM:22214,"École Vétérinaire de Maisons-Alfort",101,1338
+IDFM:22214,"École Vétérinaire de Maisons-Alfort",IDFM:22215,"Maisons-Alfort - Stade",84,1338
+IDFM:22215,"Maisons-Alfort - Stade",IDFM:22216,"Maisons-Alfort - Les Juilliottes",99,1338
+IDFM:22216,"Maisons-Alfort - Les Juilliottes",IDFM:22211,"Créteil - L'Échat",89,1302
+IDFM:22211,"Créteil - L'Échat",IDFM:22212,"Créteil - Université",72,1302
+IDFM:22212,"Créteil - Université",IDFM:463056,"Créteil - Préfecture",114,1302
+IDFM:463056,"Créteil - Préfecture",IDFM:21784,"Pointe du Lac",106,1302
+IDFM:22186,Balard,IDFM:22187,Lourmel,63,736
+IDFM:463057,"Pointe du Lac",IDFM:22213,"Créteil - Préfecture",110,1291
+IDFM:22213,"Créteil - Préfecture",IDFM:463167,"Créteil - Université",102,1295
+IDFM:463167,"Créteil - Université",IDFM:463166,"Créteil - L'Échat",77,1295
+IDFM:463166,"Créteil - L'Échat",IDFM:463015,"Maisons-Alfort - Les Juilliottes",83,1295
+IDFM:463015,"Maisons-Alfort - Les Juilliottes",IDFM:463225,"Maisons-Alfort - Stade",90,1295
+IDFM:463225,"Maisons-Alfort - Stade",IDFM:463047,"École Vétérinaire de Maisons-Alfort",84,1295
+IDFM:463047,"École Vétérinaire de Maisons-Alfort",IDFM:463142,"Charenton - Écoles",97,1295
+IDFM:463142,"Charenton - Écoles",IDFM:22209,Liberté,75,1295
+IDFM:22209,Liberté,IDFM:22208,"Porte de Charenton",95,1295
+IDFM:22208,"Porte de Charenton",IDFM:463050,"Porte Dorée",65,1295
+IDFM:463050,"Porte Dorée",IDFM:463226,"Michel Bizot",69,1295
+IDFM:463226,"Michel Bizot",IDFM:22184,Daumesnil,64,1295
+IDFM:22184,Daumesnil,IDFM:22205,Montgallet,59,1298
+IDFM:22205,Montgallet,IDFM:22098,"Reuilly - Diderot",62,1298
+IDFM:22098,"Reuilly - Diderot",IDFM:22204,"Faidherbe - Chaligny",60,1298
+IDFM:22204,"Faidherbe - Chaligny",IDFM:22203,Ledru-Rollin,62,1298
+IDFM:22203,Ledru-Rollin,IDFM:463000,Bastille,58,1298
+IDFM:463000,Bastille,IDFM:22202,"Chemin Vert",53,1298
+IDFM:22202,"Chemin Vert",IDFM:22201,"Saint-Sébastien - Froissart",54,1298
+IDFM:22201,"Saint-Sébastien - Froissart",IDFM:22200,"Filles du Calvaire",49,1298
+IDFM:22200,"Filles du Calvaire",IDFM:22199,République,65,1298
+IDFM:22199,République,IDFM:463312,"Strasbourg - Saint-Denis",92,1298
+IDFM:463312,"Strasbourg - Saint-Denis",IDFM:22198,"Bonne Nouvelle",47,1298
+IDFM:22198,"Bonne Nouvelle",IDFM:463058,"Grands Boulevards",48,1298
+IDFM:463058,"Grands Boulevards",IDFM:22196,"Richelieu - Drouot",55,1298
+IDFM:22196,"Richelieu - Drouot",IDFM:463244,Opéra,63,1298
+IDFM:463244,Opéra,IDFM:463063,Madeleine,50,1298
+IDFM:463063,Madeleine,IDFM:463151,Concorde,63,1298
+IDFM:463151,Concorde,IDFM:22193,Invalides,87,706
+IDFM:22193,Invalides,IDFM:463204,"La Tour-Maubourg",68,706
+IDFM:463204,"La Tour-Maubourg",IDFM:22191,"École Militaire",54,706
+IDFM:22191,"École Militaire",IDFM:463201,"La Motte-Picquet - Grenelle",85,706
+IDFM:463201,"La Motte-Picquet - Grenelle",IDFM:22190,Commerce,79,706
+IDFM:22190,Commerce,IDFM:463163,"Félix Faure",47,706
+IDFM:463163,"Félix Faure",IDFM:463135,Boucicaut,50,706
+IDFM:463135,Boucicaut,IDFM:463211,Lourmel,54,706
+IDFM:463211,Lourmel,IDFM:463051,Balard,66,706
