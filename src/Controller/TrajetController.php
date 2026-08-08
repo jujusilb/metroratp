@@ -44,12 +44,15 @@ final class TrajetController extends AbstractController
             }
         }
 
+        $segments = null !== $resultat ? $this->construireSegmentsPourAffichage($resultat->etapes) : [];
+
         return $this->render('trajet/index.html.twig', [
             'dessertes' => $dessertes,
             'origineId' => $origineId,
             'destinationId' => $destinationId,
             'resultat' => $resultat,
-            'segments' => null !== $resultat ? $this->construireSegmentsPourAffichage($resultat->etapes) : [],
+            'segments' => $segments,
+            'resumeSimple' => null !== $resultat ? $this->construireResumeSimple($segments) : null,
             'erreur' => $erreur,
             'carteJson' => null !== $carte ? json_encode($carte, JSON_THROW_ON_ERROR) : null,
         ]);
@@ -102,6 +105,56 @@ final class TrajetController extends AbstractController
         }
 
         return $segments;
+    }
+
+    /**
+     * Vue compacte du trajet : uniquement les stations de correspondance et les terminus
+     * (pas les arrets intermediaires), pour un apercu rapide "ligne 7 -> 10 -> 12" plutot
+     * que la liste complete de chaque station traversee (voir "segments"/vue detaillee).
+     *
+     * @param list<array{type: string, dessertes?: Desserte[], depart?: Desserte, arrivee?: Desserte, duree: float}> $segments
+     * @return array{lignes: list<array{label: string, couleur: string}>, stations: list<array{id: ?int, label: string}>, segments: list<array{ligne: string, couleur: string, depart: array{id: ?int, label: string}, arrivee: array{id: ?int, label: string}}>}
+     */
+    private function construireResumeSimple(array $segments): array
+    {
+        $segmentsTroncon = array_values(array_filter($segments, static fn (array $s): bool => Etape::TYPE_TRONCON === $s['type']));
+
+        $lignes = [];
+        $stations = [];
+        $segmentsSimples = [];
+
+        foreach ($segmentsTroncon as $index => $segment) {
+            $premiereDesserte = $segment['dessertes'][0];
+            $derniereDesserte = $segment['dessertes'][array_key_last($segment['dessertes'])];
+            $ligne = $premiereDesserte->getLigne();
+            $couleur = '#' . ltrim($ligne?->getCouleur() ?? '6c757d', '#');
+
+            $lignes[] = ['label' => $ligne?->getLabel() ?? '?', 'couleur' => $couleur];
+
+            if (0 === $index) {
+                $stations[] = $this->stationPourResume($premiereDesserte);
+            }
+            $stations[] = $this->stationPourResume($derniereDesserte);
+
+            $segmentsSimples[] = [
+                'ligne' => $ligne?->getLabel() ?? '?',
+                'couleur' => $couleur,
+                'depart' => $this->stationPourResume($premiereDesserte),
+                'arrivee' => $this->stationPourResume($derniereDesserte),
+            ];
+        }
+
+        return ['lignes' => $lignes, 'stations' => $stations, 'segments' => $segmentsSimples];
+    }
+
+    /**
+     * @return array{id: ?int, label: string}
+     */
+    private function stationPourResume(Desserte $desserte): array
+    {
+        $station = $desserte->getStation();
+
+        return ['id' => $station?->getId(), 'label' => $station?->getLabel() ?? '?'];
     }
 
     /**

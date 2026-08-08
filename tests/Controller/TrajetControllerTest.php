@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Correspondance;
 use App\Entity\Desserte;
 use App\Entity\Ligne;
 use App\Entity\Station;
@@ -122,6 +123,40 @@ final class TrajetControllerTest extends DatabaseTestCase
         self::assertCount(1, $carte['reseau']);
         self::assertEqualsWithDelta(10.0, $carte['reseau'][0]['x1'], 0.001);
         self::assertSame('A', $carte['trajet'][0]['labelDepart']);
+    }
+
+    public function testAvecCorrespondanceAfficheLaVueSimpleEtDetaillee(): void
+    {
+        $ligne1 = $this->createLigne();
+        $ligne2 = new Ligne();
+        $ligne2->setLabel('2');
+        $this->manager->persist($ligne2);
+
+        $a = $this->createDesserte($ligne1, $this->createStation('A'));
+        $pivot1 = $this->createDesserte($ligne1, $this->createStation('Pivot'));
+        $pivot2 = $this->createDesserte($ligne2, $pivot1->getStation());
+        $b = $this->createDesserte($ligne2, $this->createStation('B'));
+        $this->linkTroncon($a, $pivot1);
+        $this->linkTroncon($pivot2, $b);
+
+        $correspondance = new Correspondance();
+        $correspondance->setDesserteA($pivot1);
+        $correspondance->setDesserteB($pivot2);
+        $correspondance->setInZone(true);
+        $this->manager->persist($correspondance);
+
+        $this->manager->flush();
+        $this->manager->clear();
+
+        $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getId(), $b->getId()));
+
+        self::assertResponseStatusCodeSame(200);
+        self::assertSelectorExists('#vue-simple');
+        self::assertSelectorExists('#vue-detaillee');
+        self::assertSelectorTextContains('#vue-simple', 'A');
+        self::assertSelectorTextContains('#vue-simple', 'Pivot');
+        self::assertSelectorTextContains('#vue-simple', 'B');
+        self::assertSelectorTextContains('#vue-detaillee', 'Correspondance');
     }
 
     public function testSansCheminPossibleAfficheUnMessageDErreur(): void
