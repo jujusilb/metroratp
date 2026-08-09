@@ -44,6 +44,14 @@
                     <th>Fin</th>
                     <td>{{ materiel_ligne.fin ? materiel_ligne.fin|date('Y-m-d') : '' }}</td>
                 </tr>
+                <tr>
+                    <th>Effectif</th>
+                    <td>{{ materiel_ligne.effectif ?? '' }}</td>
+                </tr>
+                <tr>
+                    <th>Effectif (date du relevé)</th>
+                    <td>{{ materiel_ligne.effectifDate ? materiel_ligne.effectifDate|date('Y-m-d') : '' }}</td>
+                </tr>
             </tbody>
         </table>
 

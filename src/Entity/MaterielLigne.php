@@ -20,6 +20,16 @@ class MaterielLigne
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $fin = null;
 
+    /**
+     * Nombre d'elements de ce materiel en exploitation sur cette ligne (releve manuel, pas une
+     * donnee officielle temps reel — voir effectifDate pour la date du releve).
+     */
+    #[ORM\Column(nullable: true)]
+    private ?int $effectif = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $effectifDate = null;
+
     #[ORM\ManyToOne(inversedBy: 'materielLignes')]
     private ?Materiel $materiel = null;
 
@@ -51,6 +61,30 @@ class MaterielLigne
     public function setFin(?\DateTime $fin): static
     {
         $this->fin = $fin;
+
+        return $this;
+    }
+
+    public function getEffectif(): ?int
+    {
+        return $this->effectif;
+    }
+
+    public function setEffectif(?int $effectif): static
+    {
+        $this->effectif = $effectif;
+
+        return $this;
+    }
+
+    public function getEffectifDate(): ?\DateTime
+    {
+        return $this->effectifDate;
+    }
+
+    public function setEffectifDate(?\DateTime $effectifDate): static
+    {
+        $this->effectifDate = $effectifDate;
 
         return $this;
     }

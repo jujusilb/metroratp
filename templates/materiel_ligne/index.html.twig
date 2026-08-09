@@ -13,6 +13,7 @@
                     <th>Ligne</th>
                     <th>Arrivée</th>
                     <th>Fin</th>
+                    <th>Effectif</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -40,6 +41,11 @@
                     <td>{{ materiel_ligne.arrivee ? materiel_ligne.arrivee|date('Y-m-d') : '' }}</td>
                     <td>{{ materiel_ligne.fin ? materiel_ligne.fin|date('Y-m-d') : '' }}</td>
                     <td>
+                        {% if materiel_ligne.effectif %}
+                            {{ materiel_ligne.effectif }}{{ materiel_ligne.effectifDate ? ' (au ' ~ materiel_ligne.effectifDate|date('d/m/Y') ~ ')' : '' }}
+                        {% endif %}
+                    </td>
+                    <td>
                         <a href="{{ path('app_materiel_ligne_show', {'id': materiel_ligne.id}) }}" class="btn btn-info btn-sm">Affichage</a>
                         {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('app_materiel_ligne_edit', {'id': materiel_ligne.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
@@ -48,7 +54,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="5">Aucun enregistrement trouvé</td>
+                    <td colspan="6">Aucun enregistrement trouvé</td>
                 </tr>
             {% endfor %}
             </tbody>

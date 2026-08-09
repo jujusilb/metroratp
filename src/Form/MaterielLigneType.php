@@ -17,6 +17,8 @@ class MaterielLigneType extends AbstractType
         $builder
             ->add('arrivee')
             ->add('fin')
+            ->add('effectif', null, ['required' => false])
+            ->add('effectifDate', null, ['required' => false])
             ->add('materiel', EntityType::class, [
                 'class' => Materiel::class,
                 'choice_label' => 'id',
