@@ -24,6 +24,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * generer une correspondance pour chaque paire a chaque arret partage creerait des dizaines de
  * milliers de lignes de faible valeur pour repondre au besoin reel (relier les modes lourds).
  *
+ * Regroupement par LABEL de station, pas par id : de grandes gares (Gare du Nord, La Defense,
+ * Saint-Denis, Cite Universitaire, Bondy...) existent en base comme plusieurs Station distinctes
+ * pour le meme lieu reel (ZdCId IDFM different par mode/operateur dans le referentiel officiel) —
+ * une premiere version groupant par station_id ratait systematiquement ces 22 gares, exactement
+ * les gros hubs metro<->RER<->tram les plus utiles a relier. Fusionner ces Station en base serait
+ * plus juste mais risque (voir l'incident de corruption documente dans
+ * ImporterReseauCompletCommand) ; regrouper seulement ICI, sur les ~500 stations mode lourd (pas
+ * les ~14000 nationales), est un perimetre assez restreint pour rester sur.
+ *
  * La distance/temps de marche reste non renseignee (null) : TrajetFinder applique alors son
  * estimation par defaut (3 min, voir DUREE_CORRESPONDANCE_DEFAUT_MINUTES), comme deja indique dans
  * le disclaimer de la page /trajet. Rejouable : ignore les paires qui ont deja une Correspondance
@@ -48,23 +57,25 @@ class ConstruireCorrespondancesInterModesCommand extends Command
 
         $placeholders = implode(',', array_fill(0, \count(self::MODES_LOURDS), '?'));
 
-        // Un desserte_id par (station, ligne) desservie en mode lourd — une station avec 2+
-        // dessertes ici a une correspondance potentielle a creer.
+        // Un desserte_id par (station, ligne) desservie en mode lourd, regroupe par LABEL de
+        // station (pas par id, voir docblock de la classe) — un label avec 2+ dessertes ici a
+        // une correspondance potentielle a creer.
         $dessertesParStation = $connexion->executeQuery(
             <<<SQL
-                SELECT d.station_id, d.id AS desserte_id, d.ligne_id
+                SELECT s.label AS station_label, d.id AS desserte_id, d.ligne_id
                 FROM desserte d
+                INNER JOIN station s ON s.id = d.station_id
                 INNER JOIN ligne l ON l.id = d.ligne_id
                 INNER JOIN type_transport t ON t.id = l.type_transport_id
                 WHERE t.label IN ($placeholders)
-                ORDER BY d.station_id
+                ORDER BY s.label
                 SQL,
             self::MODES_LOURDS,
         )->fetchAllAssociative();
 
         $parStation = [];
         foreach ($dessertesParStation as $row) {
-            $parStation[$row['station_id']][] = ['desserte_id' => (int) $row['desserte_id'], 'ligne_id' => (int) $row['ligne_id']];
+            $parStation[$row['station_label']][] = ['desserte_id' => (int) $row['desserte_id'], 'ligne_id' => (int) $row['ligne_id']];
         }
 
         // Paires (desserteId_min, desserteId_max) deja couvertes par une Correspondance existante.
@@ -79,7 +90,7 @@ class ConstruireCorrespondancesInterModesCommand extends Command
         $nbCreees = 0;
         $nbStationsConcernees = 0;
 
-        foreach ($parStation as $stationId => $dessertes) {
+        foreach ($parStation as $stationLabel => $dessertes) {
             $lignesDistinctes = array_unique(array_column($dessertes, 'ligne_id'));
             if (\count($lignesDistinctes) < 2) {
                 continue; // un seul mode lourd a cette station, rien a relier
