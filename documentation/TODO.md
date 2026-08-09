@@ -18,6 +18,13 @@ pas le modèle de données.
 
 À traiter quand on s'attaquera à la RER C (ou toute autre ligne à embranchements profonds).
 
+**RER D, zone Évry/Corbeil/Juvisy (découvert le 2026-08-09)** : pas un simple aller-retour mais
+un vrai maillage local avec au moins 2 cycles indépendants (Villeneuve-Saint-Georges ↔
+Corbeil-Essonnes via Juvisy *ou* via Melun ; Corbeil-Essonnes ↔ Viry-Châtillon via
+Évry-Val-de-Seine *ou* via Grigny-Centre). Même limite du modèle Direction/tronçon (pense un
+arbre, pas un graphe avec cycles) que pour la RER C. Le reste de la ligne D (tronc Creil ↔
+Villeneuve-Saint-Georges, branche Malesherbes) est un arbre normal et a été construit.
+
 ## Autres pistes notées en cours de route
 
 - Coordonnées du plan schématique (`Station.schemaX/Y`) manquantes pour les stations créées

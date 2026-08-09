@@ -1,0 +1,177 @@
+route_label,zdc_a,zdc_b,nom_a,nom_b,duree_mediane_secondes,nb_observations
+A,65048,73604,Maisons-Laffitte,Achères Ville,350,1141
+A,68105,68266,Bussy-Saint-Georges,Val d'Europe,215,2303
+A,71347,71517,Charles de Gaulle - Étoile,La Défense,214,4685
+A,64883,65190,Poissy,Achères Grand Cormier,350,1026
+A,68105,68129,Bussy-Saint-Georges,Torcy,188,2308
+A,71651,71718,Vincennes,Val de Fontenay,226,2195
+A,65048,65190,Maisons-Laffitte,Achères Grand Cormier,200,1026
+A,64741,70945,Houilles - Carrières-sur-Seine,Nanterre Préfecture,240,2167
+A,66696,66858,Cergy Préfecture,Cergy Saint-Christophe,200,1141
+A,71651,71673,Vincennes,Nation,155,629
+A,64741,64918,Houilles - Carrières-sur-Seine,Sartrouville,160,2167
+A,474151,73626,Châtelet - Les Halles,Gare de Lyon,150,4685
+A,66436,73605,Neuville Université,Conflans Fin d'Oise,150,1141
+A,72929,72998,Sucy - Bonneuil,La Varenne - Chennevières,144,2126
+A,68153,73163,Noisiel,Noisy - Champs,146,2493
+A,478926,71347,Auber,Charles de Gaulle - Étoile,146,4685
+A,66436,66696,Neuville Université,Cergy Préfecture,170,1141
+A,73604,73605,Achères Ville,Conflans Fin d'Oise,130,1141
+A,412697,73163,Noisy-le-Grand - Mont d'Est,Noisy - Champs,135,2543
+A,71630,71651,Fontenay-sous-Bois,Vincennes,136,2490
+A,72881,72929,Boissy-Saint-Léger,Sucy - Bonneuil,146,2126
+A,71718,73190,Val de Fontenay,Neuilly-Plaisance,129,2195
+A,64582,64589,Le Vésinet - Le Pecq,Saint-Germain-en-Laye,197,2133
+A,70902,70940,Rueil-Malmaison,Nanterre Ville,112,2446
+A,70359,73042,Le Parc de Saint-Maur,Champigny,114,2137
+A,412697,73166,Noisy-le-Grand - Mont d'Est,Bry-sur-Marne,123,2144
+A,474151,478926,Châtelet - Les Halles,Auber,115,4685
+A,70640,71590,Joinville-le-Pont,Nogent-sur-Marne,105,2490
+A,66834,66858,Cergy le Haut,Cergy Saint-Christophe,170,1141
+A,68266,68385,Val d'Europe,Marne-la-Vallée Chessy,124,2327
+A,70393,70640,Saint-Maur - Créteil,Joinville-le-Pont,114,2137
+A,71673,73626,Nation,Gare de Lyon,122,629
+A,64483,64514,Chatou - Croissy,Le Vésinet - Centre,108,2252
+A,68123,68129,Lognes,Torcy,104,2491
+A,70940,70956,Nanterre Ville,Nanterre Université,103,2446
+A,72998,73042,La Varenne - Chennevières,Champigny,97,2137
+A,70945,71517,Nanterre Préfecture,La Défense,97,4599
+A,64918,65048,Sartrouville,Maisons-Laffitte,90,2167
+A,68123,68153,Lognes,Noisiel,95,2441
+A,73166,73190,Bry-sur-Marne,Neuilly-Plaisance,90,2144
+A,64514,64582,Le Vésinet - Centre,Le Vésinet - Le Pecq,94,2252
+A,64483,70902,Chatou - Croissy,Rueil-Malmaison,93,2252
+A,71590,71630,Nogent-sur-Marne,Fontenay-sous-Bois,90,2490
+A,70359,70393,Le Parc de Saint-Maur,Saint-Maur - Créteil,80,2137
+A,70945,70956,Nanterre Préfecture,Nanterre Université,99,2419
+B,73568,73596,Parc des Expositions,Aéroport CDG 1 (Terminal 3),280,1488
+B,71410,72211,Gare du Nord,La Plaine Stade de France,280,2982
+B,68916,69065,Villeparisis - Mitry-le-Neuf,Mitry - Claye,230,1469
+B,72598,72641,La Courneuve - Aubervilliers,Le Bourget,180,2969
+B,72646,73439,Aulnay-sous-Bois,Sevran - Livry,170,1469
+B,62890,62951,Gif-Sur-Yvette,Courcelle-sur-Yvette,158,1481
+B,68916,73482,Villeparisis - Mitry-le-Neuf,Vert Galant,160,1468
+B,72646,73491,Aulnay-sous-Bois,Sevran Beaudottes,170,1488
+B,73439,73482,Sevran - Livry,Vert Galant,140,1468
+B,474151,71410,Châtelet - Les Halles,Gare du Nord,180,1245
+B,72641,72652,Le Bourget,Drancy,140,2969
+B,62951,62978,Courcelle-sur-Yvette,Saint-Rémy-lès-Chevreuse,142,1481
+B,73491,73547,Sevran Beaudottes,Villepinte,120,1488
+B,63029,63067,Lozère,Palaiseau - Villebon,128,1482
+B,72211,72598,La Plaine Stade de France,La Courneuve - Aubervilliers,120,2969
+B,63244,63320,Massy - Palaiseau,Massy - Verrières,106,1619
+B,70033,70210,Bourg-la-Reine,Bagneux,119,1213
+B,72648,72652,Le Blanc-Mesnil,Drancy,100,2969
+B,70623,71056,Cité Universitaire,Denfert-Rochereau,110,1576
+B,63025,63029,Le Guichet,Lozère,96,1482
+B,72646,72648,Aulnay-sous-Bois,Le Blanc-Mesnil,100,2969
+B,62851,62892,Bures-sur-Yvette,Orsay Ville,87,1481
+B,427230,70133,Robinson,Fontenay-aux-Roses,116,1149
+B,63067,63175,Palaiseau - Villebon,Palaiseau,80,1482
+B,63175,63244,Palaiseau,Massy - Palaiseau,102,1503
+B,73547,73568,Villepinte,Parc des Expositions,90,1488
+B,69647,69759,Fontaine Michalon,Antony,95,1620
+B,63320,69622,Massy - Verrières,Les Baconnets,88,1619
+B,62892,63025,Orsay Ville,Le Guichet,93,1518
+B,62825,62890,La Hacquinière,Gif-Sur-Yvette,83,1481
+B,70263,70427,Arcueil - Cachan,Laplace,91,1213
+B,69906,70033,Parc de Sceaux,Bourg-la-Reine,83,1477
+B,73596,73699,Aéroport CDG 1 (Terminal 3),Aéroport CDG - Terminal 2 (TGV),130,1751
+B,70033,74265,Bourg-la-Reine,Sceaux,88,1149
+B,69813,69906,La Croix de Berny,Parc de Sceaux,78,1477
+B,474151,73620,Châtelet - Les Halles,Saint-Michel Notre-Dame,80,1263
+B,70427,70543,Laplace,Gentilly,76,1218
+B,69759,69813,Antony,La Croix de Berny,70,2046
+B,62825,62851,La Hacquinière,Bures-sur-Yvette,82,1481
+B,70133,74265,Fontenay-aux-Roses,Sceaux,90,1149
+B,70210,70263,Bagneux,Arcueil - Cachan,70,1213
+B,71161,73620,Luxembourg,Saint-Michel Notre-Dame,96,1263
+B,69622,69647,Les Baconnets,Fontaine Michalon,65,1620
+B,71056,71106,Denfert-Rochereau,Port Royal,77,1263
+B,71106,71161,Port Royal,Luxembourg,64,1263
+B,70543,70623,Gentilly,Cité Universitaire,66,1218
+D,411429,411441,Chantilly - Gouvieux,Creil,450,258
+D,59825,59984,Ballancourt,Mennecy,290,452
+D,73625,73626,Maisons-Alfort - Alfortville,Gare de Lyon,380,2717
+D,59565,59661,Boutigny,La Ferté-Alais,310,452
+D,69300,69450,Louvres,Survilliers - Fosses,260,970
+D,411422,411429,Orry-la-Ville - Coye,Chantilly - Gouvieux,250,258
+D,411486,59420,Malesherbes,Boigneville,310,452
+D,59661,59825,La Ferté-Alais,Ballancourt,260,452
+D,59470,59565,Maisse,Boutigny,250,452
+D,62412,62558,Lieusaint - Moissy,Combs-la-Ville - Quincy,230,1072
+D,66009,66535,Villiers-le-Bel - Gonesse - Arnouville,Goussainville,230,2011
+D,61850,61926,Vosves,Melun,280,357
+D,71410,72206,Gare du Nord,Stade de France Saint-Denis,290,577
+D,62290,62412,Savigny-le-Temple - Nandy,Lieusaint - Moissy,190,1078
+D,59953,62172,Le Coudray-Montceaux,Saint-Fargeau,210,357
+D,62003,62176,Le Mée,Cesson,200,1078
+D,72323,72787,Saint-Denis,Pierrefitte - Stains,210,2363
+D,62176,62290,Cesson,Savigny-le-Temple - Nandy,190,1078
+D,59984,60084,Mennecy,Moulin Galant,220,452
+D,63071,69568,Vigneux-sur-Seine,Villeneuve-Saint-Georges,210,1684
+D,61976,62172,Ponthierry - Pringy,Saint-Fargeau,220,357
+D,411419,69450,La Borne Blanche (Gare),Survilliers - Fosses,190,970
+D,59420,59447,Boigneville,Buno - Gironville,190,452
+D,478505,63071,Juvisy,Vigneux-sur-Seine,180,1684
+D,60084,60309,Moulin Galant,Corbeil-Essonnes,230,452
+D,69671,69950,Villeneuve Triage,Créteil Pompadour,180,1601
+D,60839,60981,Ris-Orangis,Viry-Châtillon,180,867
+D,474151,73626,Châtelet - Les Halles,Gare de Lyon,210,572
+D,65582,66009,Garges - Sarcelles,Villiers-le-Bel - Gonesse - Arnouville,160,2363
+D,63072,69568,Montgeron - Crosne,Villeneuve-Saint-Georges,230,1082
+D,62596,67476,Boussy-Saint-Antoine,Brunoy,160,1082
+D,60309,60522,Corbeil-Essonnes,Évry - Val de Seine,210,872
+D,61926,62003,Melun,Le Mée,170,1078
+D,61850,61943,Vosves,Boissise-le-Roi,160,357
+D,60797,60981,Grigny Centre,Viry-Châtillon,160,1476
+D,66650,69300,Les Noues,Louvres,150,970
+D,60006,60124,Le Plessis Chenet,Villabé,170,357
+D,59447,59470,Buno - Gironville,Maisse,150,452
+D,474151,71410,Châtelet - Les Halles,Gare du Nord,180,572
+D,65582,72787,Garges - Sarcelles,Pierrefitte - Stains,140,2364
+D,60542,60797,Orangis Bois de l'Épine,Grigny Centre,160,1673
+D,60522,73627,Évry - Val de Seine,Grand Bourg,150,872
+D,69950,73624,Créteil Pompadour,Le Vert de Maisons,140,2699
+D,61943,61976,Boissise-le-Roi,Ponthierry - Pringy,140,357
+D,60450,60542,Évry - Courcouronnes,Orangis Bois de l'Épine,140,1673
+D,60309,60422,Corbeil-Essonnes,Le Bras de Fer,180,1673
+D,63044,67476,Yerres,Brunoy,140,1082
+D,72206,72323,Stade de France Saint-Denis,Saint-Denis,130,670
+D,62558,62596,Combs-la-Ville - Quincy,Boussy-Saint-Antoine,130,1082
+D,60839,73627,Ris-Orangis,Grand Bourg,150,872
+D,411419,411422,La Borne Blanche (Gare),Orry-la-Ville - Coye,150,970
+D,69568,69671,Villeneuve-Saint-Georges,Villeneuve Triage,130,1601
+D,60422,60450,Le Bras de Fer,Évry - Courcouronnes,120,1673
+D,63044,63072,Yerres,Montgeron - Crosne,110,1082
+D,478505,60981,Juvisy,Viry-Châtillon,120,2343
+D,66535,66650,Goussainville,Les Noues,120,970
+D,422776,60124,Essonnes Robinson,Villabé,110,357
+D,73624,73625,Le Vert de Maisons,Maisons-Alfort - Alfortville,120,2699
+D,59953,60006,Le Coudray-Montceaux,Le Plessis Chenet,100,357
+D,422776,60309,Essonnes Robinson,Corbeil-Essonnes,140,357
+E,72041,72421,Noisy-le-Sec,Pantin,220,2191
+E,68407,68419,Chelles - Gournay,Vaires - Torcy,310,3
+E,462934,67839,Ozoir-la-Ferrière,Roissy-en-Brie,200,525
+E,462934,67658,Ozoir-la-Ferrière,Gretz-Armainvilliers,190,525
+E,71379,71517,Neuilly - Porte Maillot,La Défense,200,2446
+E,71379,73688,Neuilly - Porte Maillot,Haussmann Saint-Lazare,180,2446
+E,67897,73096,Émerainville - Pontault-Combault,Les Yvris Noisy-le-Grand,180,525
+E,73096,73097,Les Yvris Noisy-le-Grand,Villiers-sur-Marne - Le Plessis-Trévise,160,525
+E,67839,67897,Roissy-en-Brie,Émerainville - Pontault-Combault,150,525
+E,72037,73297,Bondy,Le Raincy - Villemomble - Montfermeil,160,1117
+E,67625,67658,Tournan,Gretz-Armainvilliers,270,525
+E,73097,73098,Villiers-sur-Marne - Le Plessis-Trévise,Les Boullereaux Champigny,160,647
+E,478733,73688,Magenta,Haussmann Saint-Lazare,160,2446
+E,68407,73266,Chelles - Gournay,Le Chénay Gagny,140,1117
+E,426280,72041,Rosny Bois Perrier,Noisy-le-Sec,140,309
+E,478733,73798,Magenta,Rosa Parks,140,2271
+E,73266,73278,Le Chénay Gagny,Gagny,130,1117
+E,71609,73098,Nogent - Le Perreux,Les Boullereaux Champigny,140,647
+E,72421,73798,Pantin,Rosa Parks,140,2191
+E,71718,71935,Val de Fontenay,Rosny-sous-Bois,120,647
+E,71609,71718,Nogent - Le Perreux,Val de Fontenay,120,647
+E,72037,72041,Bondy,Noisy-le-Sec,110,1117
+E,426280,71935,Rosny Bois Perrier,Rosny-sous-Bois,110,309
+E,73278,73297,Gagny,Le Raincy - Villemomble - Montfermeil,90,1117
+E,488087,71517,Nanterre-La-Folie,La Défense,110,2446
