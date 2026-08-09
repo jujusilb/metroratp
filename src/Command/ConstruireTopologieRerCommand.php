@@ -11,10 +11,8 @@ use App\Entity\Troncon;
 use App\Entity\TronconDesserte;
 use App\Entity\TypeDesserte;
 use App\Entity\TypeTroncon;
-use App\Repository\DesserteRepository;
 use App\Repository\LigneRepository;
 use App\Repository\ServiceRepository;
-use App\Repository\StationRepository;
 use App\Repository\TypeDesserteRepository;
 use App\Repository\TypeTronconRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,8 +53,17 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'app:construire-topologie-rer', description: 'Construit les troncons/missions des RER A/B/D/E (hors maillage Evry/Corbeil/Juvisy sur D)')]
 class ConstruireTopologieRerCommand extends Command
 {
-    private const ASSOCIATIONS_CSV = 'documentation/scripts/donnees-extraites/association_stations_rer.csv';
     private const TRONCONS_CSV = 'documentation/scripts/donnees-extraites/troncons_rer.csv';
+
+    /**
+     * Paires manuelles (nom GTFS => label DB) : memes lieux reels, noms trop differents pour la
+     * normalisation automatique (abreviation "CDG" vs "Charles de Gaulle", suffixe "- RER"/"TGV").
+     * Voir documentation/scripts/associer_stations_rer.py (verifie une par une a l'origine).
+     */
+    private const ASSOCIATIONS_MANUELLES = [
+        'Aéroport CDG 1 (Terminal 3)' => 'Aéroport CDG 1 (Terminal 3) - RER',
+        'Aéroport CDG - Terminal 2 (TGV)' => 'Aéroport Charles de Gaulle 2 (Terminal 2)',
+    ];
 
     /** @var string[] codeExterne (route_id IDFM) de chaque ligne, voir backfill du 2026-08-09 */
     private const LIGNES_CODES = [
@@ -87,8 +94,6 @@ class ConstruireTopologieRerCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LigneRepository $ligneRepository,
-        private readonly StationRepository $stationRepository,
-        private readonly DesserteRepository $desserteRepository,
         private readonly TypeDesserteRepository $typeDesserteRepository,
         private readonly TypeTronconRepository $typeTronconRepository,
         private readonly ServiceRepository $serviceRepository,
@@ -105,7 +110,7 @@ class ConstruireTopologieRerCommand extends Command
         $this->exterieur = $this->typeTronconRepository->findOneBy(['label' => 'Exterieur']);
         $this->serviceUnique = $this->serviceRepository->findOneBy(['label' => 'Unique']);
 
-        $dessertesParZdc = $this->chargerDessertesParZdc($io);
+        $dessertesParZdc = $this->chargerDessertesParZdc($io, $this->chargerNomsParZdc());
         if (null === $dessertesParZdc) {
             return Command::FAILURE;
         }
@@ -125,40 +130,77 @@ class ConstruireTopologieRerCommand extends Command
     }
 
     /**
+     * Associe chaque ZdCId GTFS a sa Desserte existante par correspondance de nom, mais
+     * UNIQUEMENT au sein des dessertes de la ligne concernee (26 a 59 stations) plutot que sur
+     * l'ensemble des ~14000 stations nationales : voir le docblock de la classe. Fait a
+     * l'execution (pas via un CSV precalcule) car les id de Station different entre
+     * environnements (ordre d'auto-increment local vs prod) — seuls les LABELS sont stables.
+     *
      * @return ?array<string, array<string, Desserte>> route_label => zdc_id => Desserte, ou null si erreur
      */
-    private function chargerDessertesParZdc(SymfonyStyle $io): ?array
+    private function chargerDessertesParZdc(SymfonyStyle $io, array $nomsParZdc): ?array
     {
         $resultat = [];
-        $fichier = fopen(self::ASSOCIATIONS_CSV, 'r');
-        if (false === $fichier) {
-            $io->error('Fichier introuvable : '.self::ASSOCIATIONS_CSV);
 
-            return null;
+        foreach ($nomsParZdc as $routeLabel => $noms) {
+            $ligne = $this->trouverLigne($routeLabel);
+            if (null === $ligne) {
+                $io->error("Ligne $routeLabel introuvable (codeExterne manquant ?).");
+
+                return null;
+            }
+
+            $dessertesParNomNormalise = [];
+            foreach ($ligne->getDessertes() as $desserte) {
+                $label = $desserte->getStation()?->getLabel();
+                if (null !== $label) {
+                    $dessertesParNomNormalise[$this->normaliser($label)][] = $desserte;
+                }
+            }
+
+            foreach ($noms as $zdcId => $nomGtfs) {
+                $nomCherche = self::ASSOCIATIONS_MANUELLES[$nomGtfs] ?? $nomGtfs;
+                $candidats = $dessertesParNomNormalise[$this->normaliser($nomCherche)] ?? [];
+
+                if (1 !== \count($candidats)) {
+                    $io->error(sprintf(
+                        'Ligne %s : %d desserte(s) trouvee(s) pour "%s" (zdc %s), attendu exactement 1.',
+                        $routeLabel,
+                        \count($candidats),
+                        $nomGtfs,
+                        $zdcId,
+                    ));
+
+                    return null;
+                }
+
+                $resultat[$routeLabel][$zdcId] = $candidats[0];
+            }
         }
 
+        return $resultat;
+    }
+
+    private function normaliser(string $texte): string
+    {
+        $translitere = @iconv('UTF-8', 'ASCII//TRANSLIT', $texte);
+        $minuscule = mb_strtolower(false !== $translitere ? $translitere : $texte);
+
+        return trim(preg_replace('/[^a-z0-9]+/', ' ', $minuscule));
+    }
+
+    /**
+     * @return array<string, array<string, string>> route_label => zdc_id => nom GTFS
+     */
+    private function chargerNomsParZdc(): array
+    {
+        $resultat = [];
+        $fichier = fopen(self::TRONCONS_CSV, 'r');
         fgetcsv($fichier); // en-tete
         while (false !== ($ligneCsv = fgetcsv($fichier))) {
-            [$routeLabel, $stationId, $zdcId] = $ligneCsv;
-
-            $station = $this->stationRepository->find((int) $stationId);
-            if (null === $station) {
-                $io->error(sprintf('Station #%s introuvable (ligne %s, zdc %s).', $stationId, $routeLabel, $zdcId));
-                fclose($fichier);
-
-                return null;
-            }
-
-            $ligneEntity = $this->trouverLigne($routeLabel);
-            $desserte = $this->desserteRepository->findOneBy(['ligne' => $ligneEntity, 'station' => $station]);
-            if (null === $desserte) {
-                $io->error(sprintf('Desserte introuvable pour la station #%s sur la ligne %s.', $stationId, $routeLabel));
-                fclose($fichier);
-
-                return null;
-            }
-
-            $resultat[$routeLabel][$zdcId] = $desserte;
+            [$routeLabel, $zdcA, $zdcB, $nomA, $nomB] = $ligneCsv;
+            $resultat[$routeLabel][$zdcA] = $nomA;
+            $resultat[$routeLabel][$zdcB] = $nomB;
         }
         fclose($fichier);
 
