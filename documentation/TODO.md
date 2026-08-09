@@ -25,6 +25,31 @@ Corbeil-Essonnes via Juvisy *ou* via Melun ; Corbeil-Essonnes ↔ Viry-Châtillo
 arbre, pas un graphe avec cycles) que pour la RER C. Le reste de la ligne D (tronc Creil ↔
 Villeneuve-Saint-Georges, branche Malesherbes) est un arbre normal et a été construit.
 
+## Stations Metro/Tramway/RER dupliquées (découvert le 2026-08-09)
+
+En creusant pourquoi les correspondances inter-modes rataient les grosses gares (Gare du Nord,
+La Défense...), découverte d'un problème bien plus large : **~486 stations Métro/Tramway/RER
+"originales"** (créées à la main tôt dans le projet, avant `app:importer-reseau-complet`)
+**ont un doublon exact** créé plus tard par l'import du réseau complet — même lieu réel, même
+ZdCId officiel une fois résolu, mais deux lignes `Station` distinctes (l'originale avec
+`code_externe` NULL, la nouvelle avec le bon ZdCId). Quasiment tout le réseau métro/RER/tram
+d'origine est concerné, pas seulement les gros hubs.
+
+Contournement en place : `ConstruireCorrespondancesInterModesCommand` regroupe par **label** de
+station plutôt que par id, donc les correspondances fonctionnent malgré les doublons. Mais le
+problème de fond reste : toute future fonctionnalité qui regroupe par `Station` (pas par label)
+tombera dans le même piège.
+
+Vraie correction : fusionner ces ~486 paires de `Station` dupliquées (réassigner toutes les FK —
+`Desserte`, `TronconDesserte`, `Direction`, `Correspondance`, `Sortie` — de l'originale vers la
+nouvelle avant de supprimer l'originale, ou l'inverse). Opération delicate et invasive (touche
+quasiment toutes les entités), volontairement **pas faite dans cette session** : reperée via
+`documentation/scripts/backfill_code_externe_stations_originales.py` (génère
+`documentation/scripts/donnees-extraites/backfill_code_externe.sql`, qui liste aussi les vraies
+paires en doublon dans sa sortie console). 37 stations sans doublon ont été reliées à leur ZdC au
+passage (aucun risque, `code_externe` libre) ; 10 restent ambiguës (nom trop générique, plusieurs
+ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement.
+
 ## Autres pistes notées en cours de route
 
 - Coordonnées du plan schématique (`Station.schemaX/Y`) manquantes pour les stations créées
