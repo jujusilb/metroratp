@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Correspondance;
 use App\Entity\Desserte;
+use App\Entity\Ligne;
 use App\Entity\Troncon;
 use App\Repository\CorrespondanceRepository;
 use App\Repository\DesserteRepository;
@@ -43,21 +44,58 @@ class TrajetFinder
     ) {
     }
 
-    public function trouverPlusCourtChemin(int $desserteOrigineId, int $desserteDestinationId): ?ResultatTrajet
-    {
-        if ($desserteOrigineId === $desserteDestinationId) {
+    /**
+     * Origine/destination sont des STATIONS (pas des dessertes precises) : une station "a
+     * plusieurs quais" (une desserte par ligne qui la dessert) et on ne demande pas a
+     * l'utilisateur de savoir laquelle prendre, l'algorithme part de toutes celles qui existent
+     * (filtrees par $modesAutorises) et s'arrete des qu'il en atteint une quelconque a l'arrivee
+     * (Dijkstra multi-source/multi-puits : chaque desserte de depart est inseree a distance 0).
+     *
+     * @param ?string[] $modesAutorises      Cles Ligne::getModeFiltre() a autoriser (metro, tram,
+     *                                       rer, bus_ratp, bus_tiers). Null ou vide = aucune
+     *                                       restriction (comportement historique).
+     * @param ?string   $modeEntreeOrigine   Force le point d'entree a un mode precis (ex: entrer
+     *                                       a Nation uniquement par le RER) : ne restreint que
+     *                                       les dessertes de depart candidates, independamment de
+     *                                       $modesAutorises. Le reste du trajet (correspondances,
+     *                                       troncons suivants) reste soumis a $modesAutorises
+     *                                       normalement, donc le trajet peut tres bien continuer
+     *                                       en metro apres etre entre par le RER.
+     * @param ?string   $modeEntreeDestination Meme principe, pour le point d'arrivee.
+     */
+    public function trouverPlusCourtChemin(
+        int $stationOrigineId,
+        int $stationDestinationId,
+        ?array $modesAutorises = null,
+        ?string $modeEntreeOrigine = null,
+        ?string $modeEntreeDestination = null,
+    ): ?ResultatTrajet {
+        $dessertesOrigine = $this->dessertesIdsPourStation($stationOrigineId, $modesAutorises, $modeEntreeOrigine);
+        $dessertesDestination = $this->dessertesIdsPourStation($stationDestinationId, $modesAutorises, $modeEntreeDestination);
+
+        if ([] === $dessertesOrigine || [] === $dessertesDestination) {
+            return null;
+        }
+
+        // Meme station des deux cotes (au moins une desserte commune) : rien a parcourir.
+        if ([] !== array_intersect($dessertesOrigine, $dessertesDestination)) {
             return new ResultatTrajet([], 0.0);
         }
 
-        [$adjacence, $etapesParArc] = $this->construireGraphe();
+        [$adjacence, $etapesParArc] = $this->construireGraphe($modesAutorises);
 
-        $distances = [$desserteOrigineId => 0.0];
+        $destinationRecherchee = array_flip($dessertesDestination);
+        $distances = [];
         $predecesseurs = [];
         $visites = [];
 
         $file = new \SplPriorityQueue();
-        $file->insert($desserteOrigineId, 0);
+        foreach ($dessertesOrigine as $id) {
+            $distances[$id] = 0.0;
+            $file->insert($id, 0);
+        }
 
+        $arrivee = null;
         while (!$file->isEmpty()) {
             $courant = $file->extract();
 
@@ -66,7 +104,8 @@ class TrajetFinder
             }
             $visites[$courant] = true;
 
-            if ($courant === $desserteDestinationId) {
+            if (isset($destinationRecherchee[$courant])) {
+                $arrivee = $courant;
                 break;
             }
 
@@ -85,13 +124,13 @@ class TrajetFinder
             }
         }
 
-        if (!isset($distances[$desserteDestinationId])) {
+        if (null === $arrivee) {
             return null;
         }
 
         // Reconstruit le chemin en remontant les predecesseurs, puis le remet dans l'ordre.
-        $chemin = [$desserteDestinationId];
-        $noeud = $desserteDestinationId;
+        $chemin = [$arrivee];
+        $noeud = $arrivee;
         while (isset($predecesseurs[$noeud])) {
             $noeud = $predecesseurs[$noeud];
             $chemin[] = $noeud;
@@ -103,18 +142,58 @@ class TrajetFinder
             $etapes[] = $etapesParArc[$chemin[$i]][$chemin[$i + 1]];
         }
 
-        return new ResultatTrajet($etapes, $distances[$desserteDestinationId]);
+        return new ResultatTrajet($etapes, $distances[$arrivee]);
     }
 
     /**
+     * @param ?string[] $modesAutorises
+     * @param ?string   $modeForce Si fourni, ignore $modesAutorises et ne garde que les dessertes
+     *                             de ce mode precis (point d'entree/sortie choisi explicitement
+     *                             dans l'autocompletion, ex: "Nation (RER)").
+     *
+     * @return int[]
+     */
+    private function dessertesIdsPourStation(int $stationId, ?array $modesAutorises, ?string $modeForce = null): array
+    {
+        $ids = [];
+        foreach ($this->desserteRepository->findBy(['station' => $stationId]) as $desserte) {
+            $mode = $desserte->getLigne()?->getModeFiltre();
+
+            if (null !== $modeForce) {
+                if ($mode === $modeForce) {
+                    $ids[] = $desserte->getId();
+                }
+                continue;
+            }
+
+            if (null === $modesAutorises || [] === $modesAutorises || \in_array($mode, $modesAutorises, true)) {
+                $ids[] = $desserte->getId();
+            }
+        }
+
+        return $ids;
+    }
+
+    /**
+     * @param ?string[] $modesAutorises
+     *
      * @return array{0: array<int, array<int, float>>, 1: array<int, array<int, Etape>>}
      */
-    private function construireGraphe(): array
+    private function construireGraphe(?array $modesAutorises): array
     {
         /** @var array<int, array<int, float>> $adjacence */
         $adjacence = [];
         /** @var array<int, array<int, Etape>> $etapesParArc */
         $etapesParArc = [];
+
+        $modesAutorises = (null === $modesAutorises || [] === $modesAutorises) ? null : array_flip($modesAutorises);
+        $ligneAutorisee = static function (?Ligne $ligne) use ($modesAutorises): bool {
+            if (null === $modesAutorises) {
+                return true;
+            }
+
+            return isset($modesAutorises[$ligne?->getModeFiltre()]);
+        };
 
         $dessertes = [];
         foreach ($this->desserteRepository->findAll() as $desserte) {
@@ -141,6 +220,9 @@ class TrajetFinder
                 if (null === $sens['depart'] || null === $sens['arrivee']) {
                     continue;
                 }
+                if (!$ligneAutorisee($sens['depart']->getLigne())) {
+                    continue;
+                }
 
                 $ajouterArc(
                     $sens['depart'],
@@ -162,8 +244,12 @@ class TrajetFinder
             $duree = ($correspondance->getTempsEstimeMinutes() ?? self::DUREE_CORRESPONDANCE_DEFAUT_MINUTES)
                 + self::DUREE_ATTENTE_CORRESPONDANCE_MINUTES;
 
-            $ajouterArc($desserteA, $desserteB, $duree, new Etape($desserteA, $desserteB, Etape::TYPE_CORRESPONDANCE, $duree, correspondance: $correspondance));
-            $ajouterArc($desserteB, $desserteA, $duree, new Etape($desserteB, $desserteA, Etape::TYPE_CORRESPONDANCE, $duree, correspondance: $correspondance));
+            if ($ligneAutorisee($desserteB->getLigne())) {
+                $ajouterArc($desserteA, $desserteB, $duree, new Etape($desserteA, $desserteB, Etape::TYPE_CORRESPONDANCE, $duree, correspondance: $correspondance));
+            }
+            if ($ligneAutorisee($desserteA->getLigne())) {
+                $ajouterArc($desserteB, $desserteA, $duree, new Etape($desserteB, $desserteA, Etape::TYPE_CORRESPONDANCE, $duree, correspondance: $correspondance));
+            }
         }
 
         return [$adjacence, $etapesParArc];

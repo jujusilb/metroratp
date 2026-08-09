@@ -1,0 +1,113 @@
+/**
+ * Transforme un champ texte en autocompletion de station : tape "chat", l'utilisateur voit une
+ * liste deroulante deduplique (Chatelet, Chateau Landon, Chateau Rouge...) au lieu d'un <select>
+ * geant avec une entree par ligne desservant chaque station (voir StationRepository::rechercherParLabel
+ * cote backend, deja deduplique par lieu reel). Le choix d'une suggestion remplit un champ
+ * cache avec l'id de la station, seul champ realement soumis avec le formulaire.
+ *
+ * Quand une station est desservie par plusieurs modes (ex: Nation en Metro + RER), une
+ * suggestion secondaire par mode apparait sous la suggestion principale ("Nation" = tous modes,
+ * "→ RER" = forcer l'entree/sortie par le RER precisement) : voir
+ * TrajetFinder::trouverPlusCourtChemin, $modeEntreeOrigine/$modeEntreeDestination.
+ *
+ * @param {HTMLInputElement} inputTexte
+ * @param {HTMLInputElement} inputCache
+ * @param {HTMLInputElement} inputModeCache
+ * @param {HTMLElement} conteneurSuggestions
+ * @param {{ rechercheUrl: string, modeLabels?: Record<string, string>, delaiMs?: number, longueurMinimale?: number }} options
+ */
+export function initTrajetAutocomplete(inputTexte, inputCache, inputModeCache, conteneurSuggestions, options = {}) {
+    if (!inputTexte || !inputCache || !inputModeCache || !conteneurSuggestions || !options.rechercheUrl) {
+        return;
+    }
+
+    const delaiMs = options.delaiMs ?? 200;
+    const longueurMinimale = options.longueurMinimale ?? 2;
+    const modeLabels = options.modeLabels ?? {};
+
+    let requeteEnCours = 0;
+    let timer = null;
+
+    function effacerSuggestions() {
+        conteneurSuggestions.innerHTML = '';
+    }
+
+    function libelleStation(station) {
+        return station.ville ? station.label + ' (' + station.ville + ')' : station.label;
+    }
+
+    function choisir(station, mode, texteAffiche) {
+        inputCache.value = station.id;
+        inputModeCache.value = mode ?? '';
+        inputTexte.value = texteAffiche;
+        effacerSuggestions();
+    }
+
+    function afficherSuggestions(stations) {
+        effacerSuggestions();
+
+        stations.forEach((station) => {
+            const texteBase = libelleStation(station);
+
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'list-group-item list-group-item-action';
+            item.textContent = texteBase;
+            item.addEventListener('click', () => choisir(station, null, texteBase));
+            conteneurSuggestions.appendChild(item);
+
+            const modes = station.modes ?? [];
+            if (modes.length > 1) {
+                modes.forEach((mode) => {
+                    const modeLabel = modeLabels[mode] ?? mode;
+
+                    const sousItem = document.createElement('button');
+                    sousItem.type = 'button';
+                    sousItem.className = 'list-group-item list-group-item-action ps-4 small text-muted';
+                    sousItem.textContent = '→ ' + modeLabel + ' uniquement';
+                    sousItem.addEventListener('click', () => choisir(station, mode, texteBase + ' — ' + modeLabel));
+                    conteneurSuggestions.appendChild(sousItem);
+                });
+            }
+        });
+    }
+
+    inputTexte.addEventListener('input', () => {
+        // Toute frappe invalide le choix precedent : mieux vaut soumettre "aucune station"
+        // (message d'erreur clair) qu'un id qui ne correspond plus au texte affiche.
+        inputCache.value = '';
+        inputModeCache.value = '';
+
+        if (null !== timer) {
+            clearTimeout(timer);
+        }
+
+        const recherche = inputTexte.value.trim();
+        if (recherche.length < longueurMinimale) {
+            effacerSuggestions();
+            return;
+        }
+
+        timer = setTimeout(() => {
+            const idRequete = ++requeteEnCours;
+
+            fetch(options.rechercheUrl + '?q=' + encodeURIComponent(recherche))
+                .then((response) => response.json())
+                .then((stations) => {
+                    // Une recherche plus recente est peut-etre deja partie entre-temps : on
+                    // ignore une reponse devenue obsolete pour ne pas ecraser l'affichage.
+                    if (idRequete === requeteEnCours) {
+                        afficherSuggestions(stations);
+                    }
+                });
+        }, delaiMs);
+    });
+
+    document.addEventListener('click', (event) => {
+        if (event.target !== inputTexte && !conteneurSuggestions.contains(event.target)) {
+            effacerSuggestions();
+        }
+    });
+
+    return { afficherSuggestions, effacerSuggestions };
+}

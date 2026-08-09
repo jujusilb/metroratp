@@ -17,6 +17,33 @@ class DesserteRepository extends ServiceEntityRepository
     }
 
     /**
+     * Pour l'autocompletion du trajet : recupere en une requete les dessertes (avec ligne +
+     * typeTransport + gestionnaire, necessaires a Ligne::getModeFiltre()) des stations trouvees
+     * par StationRepository::rechercherParLabel, pour afficher les modes desservis par chaque
+     * suggestion sans un N+1 (une requete par station).
+     *
+     * @param int[] $stationIds
+     *
+     * @return Desserte[]
+     */
+    public function findByStationIds(array $stationIds): array
+    {
+        if ([] === $stationIds) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.station IN (:stationIds)')
+            ->setParameter('stationIds', $stationIds)
+            ->leftJoin('d.ligne', 'ligne')->addSelect('ligne')
+            ->leftJoin('ligne.typeTransport', 'typeTransport')->addSelect('typeTransport')
+            ->leftJoin('ligne.gestionnaire', 'gestionnaire')->addSelect('gestionnaire')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
      * Pour l'index : evite le N+1 sur station/ligne/styleStation, affichees sur chaque ligne.
      *
      * @return Desserte[]

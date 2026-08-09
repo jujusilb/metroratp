@@ -102,7 +102,7 @@ final class TrajetFinderTest extends DatabaseTestCase
         $this->manager->flush();
         $this->manager->clear();
 
-        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getId(), $c->getId());
+        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getStation()->getId(), $c->getStation()->getId());
 
         self::assertNotNull($resultat);
         self::assertCount(2, $resultat->etapes);
@@ -119,7 +119,7 @@ final class TrajetFinderTest extends DatabaseTestCase
         $this->manager->flush();
         $this->manager->clear();
 
-        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getId(), $a->getId());
+        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getStation()->getId(), $a->getStation()->getId());
 
         self::assertNotNull($resultat);
         self::assertCount(0, $resultat->etapes);
@@ -135,7 +135,7 @@ final class TrajetFinderTest extends DatabaseTestCase
         $this->manager->flush();
         $this->manager->clear();
 
-        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getId(), $b->getId());
+        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getStation()->getId(), $b->getStation()->getId());
 
         self::assertNull($resultat);
     }
@@ -165,7 +165,7 @@ final class TrajetFinderTest extends DatabaseTestCase
         $this->manager->flush();
         $this->manager->clear();
 
-        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getId(), $c->getId());
+        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getStation()->getId(), $c->getStation()->getId());
 
         self::assertNotNull($resultat);
         self::assertCount(3, $resultat->etapes);

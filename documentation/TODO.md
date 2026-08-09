@@ -30,3 +30,26 @@ pas le modèle de données.
 - Lignes de bus (~1400, dont ~210 avec plan officiel RATP déjà disponible dans
   `documentation/PLAN/PDF/BUS/`) : stations/lignes/dessertes peuplées, mais aucun tronçon/
   mission construit — ampleur trop importante pour un seul passage.
+
+## Matériel roulant RER (table `materiel` + `materiel_ligne`)
+
+Séries à ajouter, avec effectif et date de référence (relevé manuel de l'utilisateur) :
+
+- **RER A** : MI 09 (140 éléments depuis avril 2017), MI 2N (42 éléments au 26/02/2021).
+- **RER B** : MI 79 (116 éléments au 09/07/2020), MI 84 (42 éléments au 05/03/2025).
+- **RER C** : Z 5600 (30 éléments au 13/12/2025, exploitation commune avec la ligne V),
+  Z 8800 (35 éléments au 06/03/2025, exploitation commune avec la ligne V),
+  Z 20500 (67 éléments au 30/06/2026, exploitation commune avec la ligne V),
+  Z 20900 (54 éléments au 06/03/2025, exploitation commune avec la ligne V).
+- **RER D** : Z 20500 (112 éléments au 13/12/2025),
+  Z 57000/57400 (79 éléments au 28/06/2026, exploitation commune avec la ligne R),
+  Z 58500 (34 éléments au 27/07/2026).
+- **RER E** : Z 22500 (23 éléments au 08/07/2026),
+  Z 50000 (62 éléments au 23/04/2026, exploitation commune avec la ligne P),
+  Z 58000 (78 éléments au 04/07/2026).
+
+Note : le RER A a déjà MS61/MI84/MI09 et le RER B déjà MS61/MI79/RERng renseignés par
+`ImporterLignesRerCommand` — vérifier les doublons/écarts d'effectif avant d'ajouter MI09/MI2N/
+MI79/MI84 ci-dessus (l'utilisateur a peut-être des chiffres plus à jour que l'import initial).
+"Ligne V"/"Ligne P"/"Ligne R" = lignes Transilien (SNCF), pas encore dans la base — à créer si
+on veut représenter fidèlement le lien "exploitation commune".

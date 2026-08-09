@@ -16,28 +16,38 @@
             (300 stations sur 315 positionnées ; les extensions les plus récentes n'y figurent pas encore).
         </p>
 
-        <form method="get" class="row g-3 mb-4">
-            <div class="col-md-5">
-                <label for="origine" class="form-label">Départ</label>
-                <select name="origine" id="origine" class="form-select">
-                    <option value="">-- Choisir une station --</option>
-                    {% for desserte in dessertes %}
-                        <option value="{{ desserte.id }}" {{ desserte.id == origineId ? 'selected' : '' }}>
-                            {{ desserte.ligne ? desserte.ligne.label : '?' }} - {{ desserte.station ? desserte.station.label : '?' }}
-                        </option>
+        {% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers'} %}
+        <form method="get" class="row g-3 mb-4"
+              data-recherche-station-url="{{ path('app_trajet_recherche_station') }}"
+              data-mode-labels="{{ modeLabels|json_encode }}">
+            <div class="col-12">
+                <span class="form-label d-block">Modes de transport</span>
+                <div class="d-flex flex-wrap gap-3">
+                    {% for mode, label in modeLabels %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="modes[]" value="{{ mode }}" id="mode-{{ mode }}" {{ mode in modesSelectionnes ? 'checked' : '' }}>
+                            <label class="form-check-label" for="mode-{{ mode }}">{{ label }}</label>
+                        </div>
                     {% endfor %}
-                </select>
+                </div>
             </div>
-            <div class="col-md-5">
-                <label for="destination" class="form-label">Arrivée</label>
-                <select name="destination" id="destination" class="form-select">
-                    <option value="">-- Choisir une station --</option>
-                    {% for desserte in dessertes %}
-                        <option value="{{ desserte.id }}" {{ desserte.id == destinationId ? 'selected' : '' }}>
-                            {{ desserte.ligne ? desserte.ligne.label : '?' }} - {{ desserte.station ? desserte.station.label : '?' }}
-                        </option>
-                    {% endfor %}
-                </select>
+            <div class="col-md-5 position-relative">
+                <label for="origine-recherche" class="form-label">Départ</label>
+                <input type="text" id="origine-recherche" class="form-control" autocomplete="off"
+                       placeholder="-- Rechercher une station --"
+                       value="{{ stationOrigine ? stationOrigine.label ~ (stationOrigine.ville ? ' (' ~ stationOrigine.ville ~ ')' : '') ~ (origineMode ? ' — ' ~ modeLabels[origineMode] : '') : '' }}">
+                <input type="hidden" name="origine" id="origine" value="{{ stationOrigine ? stationOrigine.id : '' }}">
+                <input type="hidden" name="origineMode" id="origine-mode" value="{{ origineMode ?? '' }}">
+                <div id="origine-suggestions" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
+            </div>
+            <div class="col-md-5 position-relative">
+                <label for="destination-recherche" class="form-label">Arrivée</label>
+                <input type="text" id="destination-recherche" class="form-control" autocomplete="off"
+                       placeholder="-- Rechercher une station --"
+                       value="{{ stationDestination ? stationDestination.label ~ (stationDestination.ville ? ' (' ~ stationDestination.ville ~ ')' : '') ~ (destinationMode ? ' — ' ~ modeLabels[destinationMode] : '') : '' }}">
+                <input type="hidden" name="destination" id="destination" value="{{ stationDestination ? stationDestination.id : '' }}">
+                <input type="hidden" name="destinationMode" id="destination-mode" value="{{ destinationMode ?? '' }}">
+                <div id="destination-suggestions" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
             </div>
             <div class="col-md-2 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary w-100">Calculer</button>

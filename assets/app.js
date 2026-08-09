@@ -5,6 +5,7 @@ import 'bootstrap';
 import '@fontsource/baloo-2/700.css';
 import { initStyleStationPicker } from './js/style-station-picker';
 import { initTrajetCarte } from './js/trajet-carte';
+import { initTrajetAutocomplete } from './js/trajet-autocomplete';
 
 document.addEventListener('DOMContentLoaded', () => {
     const styleStationDessertes = document.getElementById('style_station_dessertes');
@@ -13,6 +14,26 @@ document.addEventListener('DOMContentLoaded', () => {
             placeholder: '-- Ajouter une station --',
             removeLabel: 'Retirer',
         });
+    }
+
+    const trajetForm = document.querySelector('form[data-recherche-station-url]');
+    if (trajetForm) {
+        const rechercheUrl = trajetForm.dataset.rechercheStationUrl;
+        const modeLabels = trajetForm.dataset.modeLabels ? JSON.parse(trajetForm.dataset.modeLabels) : {};
+        initTrajetAutocomplete(
+            document.getElementById('origine-recherche'),
+            document.getElementById('origine'),
+            document.getElementById('origine-mode'),
+            document.getElementById('origine-suggestions'),
+            { rechercheUrl, modeLabels },
+        );
+        initTrajetAutocomplete(
+            document.getElementById('destination-recherche'),
+            document.getElementById('destination'),
+            document.getElementById('destination-mode'),
+            document.getElementById('destination-suggestions'),
+            { rechercheUrl, modeLabels },
+        );
     }
 
     const trajetCarteContainer = document.getElementById('trajet-carte');

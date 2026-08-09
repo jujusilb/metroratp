@@ -3,12 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\Desserte;
+use App\Entity\Station;
 use App\Entity\Troncon;
 use App\Repository\DesserteRepository;
+use App\Repository\StationRepository;
 use App\Repository\TronconRepository;
 use App\Service\Trajet\Etape;
 use App\Service\TrajetFinder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,26 +19,46 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/trajet')]
 final class TrajetController extends AbstractController
 {
-    #[Route(name: 'app_trajet_index', methods: ['GET'])]
-    public function index(Request $request, DesserteRepository $desserteRepository, TronconRepository $tronconRepository, TrajetFinder $trajetFinder): Response
-    {
-        $dessertes = [];
-        foreach ($desserteRepository->findAllWithDetails() as $desserte) {
-            $dessertes[$desserte->getId()] = $desserte;
-        }
+    /** @var string[] */
+    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers'];
 
-        $origineId = $request->query->getInt('origine') ?: null;
-        $destinationId = $request->query->getInt('destination') ?: null;
+    #[Route(name: 'app_trajet_index', methods: ['GET'])]
+    public function index(Request $request, StationRepository $stationRepository, TronconRepository $tronconRepository, TrajetFinder $trajetFinder): Response
+    {
+        // Au premier chargement (aucune case n'a encore ete soumise), tout est coche par
+        // defaut : comportement historique, non restreint.
+        $modesSelectionnes = $request->query->has('modes')
+            ? $request->query->all('modes')
+            : self::MODES_DISPONIBLES;
+
+        // getInt() leve une exception sur une chaine vide (parametre present mais station pas
+        // encore choisie dans l'autocompletion) : on passe par get() + filtrage explicite.
+        $origineId = (int) $request->query->get('origine') ?: null;
+        $destinationId = (int) $request->query->get('destination') ?: null;
+
+        $stationOrigine = null !== $origineId ? $stationRepository->find($origineId) : null;
+        $stationDestination = null !== $destinationId ? $stationRepository->find($destinationId) : null;
+
+        // Point d'entree/sortie force explicitement dans l'autocompletion (ex: "Nation (RER)")
+        // plutot que "tous modes" : voir TrajetFinder::trouverPlusCourtChemin.
+        $origineMode = $this->modeValide($request->query->get('origineMode'));
+        $destinationMode = $this->modeValide($request->query->get('destinationMode'));
 
         $resultat = null;
         $carte = null;
         $erreur = null;
 
-        if (null !== $origineId && null !== $destinationId) {
-            $resultat = $trajetFinder->trouverPlusCourtChemin($origineId, $destinationId);
+        if (null !== $stationOrigine && null !== $stationDestination) {
+            $resultat = $trajetFinder->trouverPlusCourtChemin(
+                $stationOrigine->getId(),
+                $stationDestination->getId(),
+                $modesSelectionnes,
+                $origineMode,
+                $destinationMode,
+            );
 
             if (null === $resultat) {
-                $erreur = 'Aucun trajet trouvé entre ces deux dessertes.';
+                $erreur = 'Aucun trajet trouvé entre ces deux stations.';
             } else {
                 $carte = [
                     'reseau' => $this->construireReseauPourAffichage($tronconRepository),
@@ -47,15 +70,71 @@ final class TrajetController extends AbstractController
         $segments = null !== $resultat ? $this->construireSegmentsPourAffichage($resultat->etapes) : [];
 
         return $this->render('trajet/index.html.twig', [
-            'dessertes' => $dessertes,
-            'origineId' => $origineId,
-            'destinationId' => $destinationId,
+            'stationOrigine' => $stationOrigine,
+            'stationDestination' => $stationDestination,
+            'origineMode' => $origineMode,
+            'destinationMode' => $destinationMode,
+            'modesSelectionnes' => $modesSelectionnes,
             'resultat' => $resultat,
             'segments' => $segments,
             'resumeSimple' => null !== $resultat ? $this->construireResumeSimple($segments) : null,
             'erreur' => $erreur,
             'carteJson' => null !== $carte ? json_encode($carte, JSON_THROW_ON_ERROR) : null,
         ]);
+    }
+
+    private function modeValide(?string $mode): ?string
+    {
+        return \in_array($mode, self::MODES_DISPONIBLES, true) ? $mode : null;
+    }
+
+    /**
+     * Recherche de stations pour l'autocompletion du formulaire (une entree par lieu reel,
+     * jamais une par ligne/desserte — voir StationRepository::rechercherParLabel). Chaque
+     * resultat porte la liste des modes qui la desservent : quand une station a plusieurs modes
+     * (ex: Nation en Metro + RER), le JS propose en plus un point d'entree precis par mode (voir
+     * TrajetFinder::trouverPlusCourtChemin, $modeEntreeOrigine/$modeEntreeDestination).
+     */
+    #[Route('/recherche-station', name: 'app_trajet_recherche_station', methods: ['GET'])]
+    public function rechercheStation(Request $request, StationRepository $stationRepository, DesserteRepository $desserteRepository): JsonResponse
+    {
+        $recherche = trim((string) $request->query->get('q', ''));
+        if ('' === $recherche) {
+            return $this->json([]);
+        }
+
+        $stations = $stationRepository->rechercherParLabel($recherche);
+
+        $dessertesParStation = [];
+        foreach ($desserteRepository->findByStationIds(array_map(static fn (Station $s): int => $s->getId(), $stations)) as $desserte) {
+            $stationId = $desserte->getStation()?->getId();
+            if (null !== $stationId) {
+                $dessertesParStation[$stationId][] = $desserte;
+            }
+        }
+
+        $resultats = array_map(
+            function (Station $station) use ($dessertesParStation) {
+                $modes = [];
+                foreach ($dessertesParStation[$station->getId()] ?? [] as $desserte) {
+                    $mode = $desserte->getLigne()?->getModeFiltre();
+                    if (null !== $mode && !\in_array($mode, $modes, true)) {
+                        $modes[] = $mode;
+                    }
+                }
+                usort($modes, static fn (string $a, string $b): int => array_search($a, self::MODES_DISPONIBLES, true) <=> array_search($b, self::MODES_DISPONIBLES, true));
+
+                return [
+                    'id' => $station->getId(),
+                    'label' => $station->getLabel(),
+                    'ville' => $station->getVille(),
+                    'modes' => $modes,
+                ];
+            },
+            $stations,
+        );
+
+        return $this->json($resultats);
     }
 
     /**

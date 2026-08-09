@@ -9,6 +9,7 @@ use App\Entity\Station;
 use App\Entity\Troncon;
 use App\Entity\TronconDesserte;
 use App\Entity\TypeDesserte;
+use App\Entity\TypeTransport;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
@@ -36,10 +37,29 @@ final class TrajetControllerTest extends DatabaseTestCase
         return $station;
     }
 
+    private ?TypeTransport $typeTransportMetro = null;
+
+    /**
+     * Le calculateur de trajet filtre par Ligne::getModeFiltre() (voir la case a cocher
+     * "Metro/Tram/RER/Bus" du formulaire) : sans typeTransport, une ligne de test serait
+     * exclue du graphe par defaut.
+     */
+    private function typeTransportMetro(): TypeTransport
+    {
+        if (null === $this->typeTransportMetro) {
+            $this->typeTransportMetro = new TypeTransport();
+            $this->typeTransportMetro->setLabel('Métro');
+            $this->manager->persist($this->typeTransportMetro);
+        }
+
+        return $this->typeTransportMetro;
+    }
+
     private function createLigne(): Ligne
     {
         $ligne = new Ligne();
         $ligne->setLabel('1');
+        $ligne->setTypeTransport($this->typeTransportMetro());
         $this->manager->persist($ligne);
 
         return $ligne;
@@ -98,7 +118,7 @@ final class TrajetControllerTest extends DatabaseTestCase
         $this->manager->flush();
         $this->manager->clear();
 
-        $crawler = $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getId(), $b->getId()));
+        $crawler = $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getStation()->getId(), $b->getStation()->getId()));
 
         self::assertResponseStatusCodeSame(200);
         self::assertSelectorExists('#trajet-carte');
@@ -114,7 +134,7 @@ final class TrajetControllerTest extends DatabaseTestCase
         $this->manager->flush();
         $this->manager->clear();
 
-        $crawler = $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getId(), $b->getId()));
+        $crawler = $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getStation()->getId(), $b->getStation()->getId()));
 
         self::assertResponseStatusCodeSame(200);
         $carteJson = $crawler->filter('#trajet-carte')->attr('data-carte');
@@ -130,6 +150,7 @@ final class TrajetControllerTest extends DatabaseTestCase
         $ligne1 = $this->createLigne();
         $ligne2 = new Ligne();
         $ligne2->setLabel('2');
+        $ligne2->setTypeTransport($this->typeTransportMetro());
         $this->manager->persist($ligne2);
 
         $a = $this->createDesserte($ligne1, $this->createStation('A'));
@@ -148,7 +169,7 @@ final class TrajetControllerTest extends DatabaseTestCase
         $this->manager->flush();
         $this->manager->clear();
 
-        $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getId(), $b->getId()));
+        $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getStation()->getId(), $b->getStation()->getId()));
 
         self::assertResponseStatusCodeSame(200);
         self::assertSelectorExists('#vue-simple');
@@ -164,6 +185,7 @@ final class TrajetControllerTest extends DatabaseTestCase
         $ligne1 = $this->createLigne();
         $ligne2 = new Ligne();
         $ligne2->setLabel('2');
+        $ligne2->setTypeTransport($this->typeTransportMetro());
         $this->manager->persist($ligne2);
 
         $a = $this->createDesserte($ligne1, $this->createStation('A'));
@@ -171,9 +193,52 @@ final class TrajetControllerTest extends DatabaseTestCase
         $this->manager->flush();
         $this->manager->clear();
 
-        $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getId(), $b->getId()));
+        $this->client->request('GET', sprintf('/trajet?origine=%d&destination=%d', $a->getStation()->getId(), $b->getStation()->getId()));
 
         self::assertResponseStatusCodeSame(200);
         self::assertSelectorTextContains('.alert', 'Aucun trajet trouvé');
+    }
+
+    public function testSansStationSelectionneeNaffichePasDErreurEtNePlantePas(): void
+    {
+        $this->client->request('GET', '/trajet?origine=&destination=');
+
+        self::assertResponseStatusCodeSame(200);
+        self::assertSelectorNotExists('.alert');
+    }
+
+    public function testRechercheStationDedupliqueParStationPasParDesserte(): void
+    {
+        $ligne1 = $this->createLigne();
+        $ligne2 = new Ligne();
+        $ligne2->setLabel('4');
+        $ligne2->setTypeTransport($this->typeTransportMetro());
+        $this->manager->persist($ligne2);
+
+        $chatelet = $this->createStation('Châtelet');
+        $this->createDesserte($ligne1, $chatelet);
+        $this->createDesserte($ligne2, $chatelet);
+        $this->createStation('Château Landon');
+        $this->createStation('Nation');
+        $this->manager->flush();
+        $this->manager->clear();
+
+        $this->client->request('GET', '/trajet/recherche-station?q=chat');
+
+        self::assertResponseStatusCodeSame(200);
+        $resultats = json_decode($this->client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        self::assertCount(2, $resultats);
+        $labels = array_column($resultats, 'label');
+        self::assertContains('Châtelet', $labels);
+        self::assertContains('Château Landon', $labels);
+    }
+
+    public function testRechercheStationVideRetourneUneListeVide(): void
+    {
+        $this->client->request('GET', '/trajet/recherche-station?q=');
+
+        self::assertResponseStatusCodeSame(200);
+        self::assertSame('[]', $this->client->getResponse()->getContent());
     }
 }
