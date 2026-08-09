@@ -20,19 +20,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (trajetForm) {
         const rechercheUrl = trajetForm.dataset.rechercheStationUrl;
         const modeLabels = trajetForm.dataset.modeLabels ? JSON.parse(trajetForm.dataset.modeLabels) : {};
+        // Lu a chaque recherche (pas une seule fois au chargement) : l'utilisateur peut cocher/
+        // decocher des modes avant de taper dans le champ de gare.
+        const obtenirModesCoches = () => Array.from(trajetForm.querySelectorAll('input[name="modes[]"]:checked')).map((c) => c.value);
+
         initTrajetAutocomplete(
             document.getElementById('origine-recherche'),
             document.getElementById('origine'),
             document.getElementById('origine-mode'),
             document.getElementById('origine-suggestions'),
-            { rechercheUrl, modeLabels },
+            { rechercheUrl, modeLabels, obtenirModesCoches },
         );
         initTrajetAutocomplete(
             document.getElementById('destination-recherche'),
             document.getElementById('destination'),
             document.getElementById('destination-mode'),
             document.getElementById('destination-suggestions'),
-            { rechercheUrl, modeLabels },
+            { rechercheUrl, modeLabels, obtenirModesCoches },
         );
     }
 

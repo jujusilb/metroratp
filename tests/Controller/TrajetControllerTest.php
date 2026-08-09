@@ -65,6 +65,29 @@ final class TrajetControllerTest extends DatabaseTestCase
         return $ligne;
     }
 
+    private ?TypeTransport $typeTransportBus = null;
+
+    private function typeTransportBus(): TypeTransport
+    {
+        if (null === $this->typeTransportBus) {
+            $this->typeTransportBus = new TypeTransport();
+            $this->typeTransportBus->setLabel('Bus');
+            $this->manager->persist($this->typeTransportBus);
+        }
+
+        return $this->typeTransportBus;
+    }
+
+    private function createLigneBus(string $label): Ligne
+    {
+        $ligne = new Ligne();
+        $ligne->setLabel($label);
+        $ligne->setTypeTransport($this->typeTransportBus());
+        $this->manager->persist($ligne);
+
+        return $ligne;
+    }
+
     private function createDesserte(Ligne $ligne, Station $station): Desserte
     {
         $desserte = new Desserte();
@@ -218,8 +241,11 @@ final class TrajetControllerTest extends DatabaseTestCase
         $chatelet = $this->createStation('Châtelet');
         $this->createDesserte($ligne1, $chatelet);
         $this->createDesserte($ligne2, $chatelet);
-        $this->createStation('Château Landon');
-        $this->createStation('Nation');
+        // Une station reelle a toujours au moins une desserte : sans ca, rechercheStation()
+        // l'exclurait desormais (aucun mode ne la dessert, voir
+        // testRechercheStationExclutLesStationsDesserviesUniquementParUnModeDecoche).
+        $this->createDesserte($ligne1, $this->createStation('Château Landon'));
+        $this->createDesserte($ligne1, $this->createStation('Nation'));
         $this->manager->flush();
         $this->manager->clear();
 
@@ -232,6 +258,36 @@ final class TrajetControllerTest extends DatabaseTestCase
         $labels = array_column($resultats, 'label');
         self::assertContains('Châtelet', $labels);
         self::assertContains('Château Landon', $labels);
+    }
+
+    public function testRechercheStationExclutLesStationsDesserviesUniquementParUnModeDecoche(): void
+    {
+        $ligneMetro = $this->createLigne();
+        $ligneBus = $this->createLigneBus('131');
+
+        $mixte = $this->createStation('Châtelet Mixte');
+        $this->createDesserte($ligneMetro, $mixte);
+        $this->createDesserte($ligneBus, $mixte);
+
+        $busSeul = $this->createStation('Châtelet Bus Seul');
+        $this->createDesserte($ligneBus, $busSeul);
+
+        $this->manager->flush();
+        $this->manager->clear();
+
+        // Seul le metro est coche : la station 100% bus ne doit plus apparaitre du tout, et la
+        // station mixte ne doit plus proposer que le mode metro (pas de sous-option bus).
+        $this->client->request('GET', '/trajet/recherche-station?q=Châtelet&modes[]=metro');
+
+        self::assertResponseStatusCodeSame(200);
+        $resultats = json_decode($this->client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        $labels = array_column($resultats, 'label');
+        self::assertContains('Châtelet Mixte', $labels);
+        self::assertNotContains('Châtelet Bus Seul', $labels);
+
+        $mixteResultat = $resultats[array_search('Châtelet Mixte', $labels, true)];
+        self::assertSame(['metro'], $mixteResultat['modes']);
     }
 
     public function testRechercheStationVideRetourneUneListeVide(): void

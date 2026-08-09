@@ -94,6 +94,13 @@ final class TrajetController extends AbstractController
      * resultat porte la liste des modes qui la desservent : quand une station a plusieurs modes
      * (ex: Nation en Metro + RER), le JS propose en plus un point d'entree precis par mode (voir
      * TrajetFinder::trouverPlusCourtChemin, $modeEntreeOrigine/$modeEntreeDestination).
+     *
+     * Filtre par les cases "Modes de transport" cochees (parametre modes[], meme logique par
+     * defaut que index()) : si un mode est decoche, aucune station qui n'est desservie QUE par ce
+     * mode ne doit apparaitre — la choisir serait un cul-de-sac garanti, puisque
+     * TrajetFinder::dessertesIdsPourStation() l'exclurait de toute facon du calcul. Une station
+     * desservie par plusieurs modes reste proposee, mais seuls les modes cochés apparaissent dans
+     * ses sous-options.
      */
     #[Route('/recherche-station', name: 'app_trajet_recherche_station', methods: ['GET'])]
     public function rechercheStation(Request $request, StationRepository $stationRepository, DesserteRepository $desserteRepository): JsonResponse
@@ -102,6 +109,8 @@ final class TrajetController extends AbstractController
         if ('' === $recherche) {
             return $this->json([]);
         }
+
+        $modesAutorises = $request->query->has('modes') ? $request->query->all('modes') : self::MODES_DISPONIBLES;
 
         $stations = $stationRepository->rechercherParLabel($recherche);
 
@@ -113,26 +122,29 @@ final class TrajetController extends AbstractController
             }
         }
 
-        $resultats = array_map(
-            function (Station $station) use ($dessertesParStation) {
-                $modes = [];
-                foreach ($dessertesParStation[$station->getId()] ?? [] as $desserte) {
-                    $mode = $desserte->getLigne()?->getModeFiltre();
-                    if (null !== $mode && !\in_array($mode, $modes, true)) {
-                        $modes[] = $mode;
-                    }
+        $resultats = [];
+        foreach ($stations as $station) {
+            $modes = [];
+            foreach ($dessertesParStation[$station->getId()] ?? [] as $desserte) {
+                $mode = $desserte->getLigne()?->getModeFiltre();
+                if (null !== $mode && \in_array($mode, $modesAutorises, true) && !\in_array($mode, $modes, true)) {
+                    $modes[] = $mode;
                 }
-                usort($modes, static fn (string $a, string $b): int => array_search($a, self::MODES_DISPONIBLES, true) <=> array_search($b, self::MODES_DISPONIBLES, true));
+            }
 
-                return [
-                    'id' => $station->getId(),
-                    'label' => $station->getLabel(),
-                    'ville' => $station->getVille(),
-                    'modes' => $modes,
-                ];
-            },
-            $stations,
-        );
+            if ([] === $modes) {
+                continue; // aucun mode coche ne dessert cette station : cul-de-sac garanti
+            }
+
+            usort($modes, static fn (string $a, string $b): int => array_search($a, self::MODES_DISPONIBLES, true) <=> array_search($b, self::MODES_DISPONIBLES, true));
+
+            $resultats[] = [
+                'id' => $station->getId(),
+                'label' => $station->getLabel(),
+                'ville' => $station->getVille(),
+                'modes' => $modes,
+            ];
+        }
 
         return $this->json($resultats);
     }

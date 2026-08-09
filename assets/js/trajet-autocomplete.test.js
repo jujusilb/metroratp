@@ -76,6 +76,23 @@ describe('initTrajetAutocomplete', () => {
         expect(conteneurSuggestions.textContent).toContain('Château Landon (Paris)');
     });
 
+    test('transmet les modes actuellement coches a la recherche', async () => {
+        const { inputTexte, inputCache, inputModeCache, conteneurSuggestions } = buildDom();
+        mockFetchJson([]);
+        jest.useFakeTimers();
+
+        initTrajetAutocomplete(inputTexte, inputCache, inputModeCache, conteneurSuggestions, {
+            rechercheUrl: '/trajet/recherche-station',
+            obtenirModesCoches: () => ['metro', 'rer'],
+        });
+
+        inputTexte.value = 'chat';
+        inputTexte.dispatchEvent(new Event('input'));
+        await jest.advanceTimersByTimeAsync(200);
+
+        expect(global.fetch).toHaveBeenCalledWith('/trajet/recherche-station?q=chat&modes%5B%5D=metro&modes%5B%5D=rer');
+    });
+
     test('choisir une suggestion remplit le champ cache et le champ texte, puis vide les suggestions', async () => {
         const { inputTexte, inputCache, inputModeCache, conteneurSuggestions } = buildDom();
         mockFetchJson([{ id: 12, label: 'Châtelet', ville: 'Paris', modes: ['metro'] }]);

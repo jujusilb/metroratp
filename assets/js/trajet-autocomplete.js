@@ -10,11 +10,16 @@
  * "→ RER" = forcer l'entree/sortie par le RER precisement) : voir
  * TrajetFinder::trouverPlusCourtChemin, $modeEntreeOrigine/$modeEntreeDestination.
  *
+ * Ne propose que des stations desservies par au moins un des modes actuellement coches (cases
+ * "Modes de transport" du formulaire) : une station qui ne serait desservie que par un mode
+ * decoche serait de toute facon exclue du calcul par TrajetFinder::dessertesIdsPourStation(),
+ * donc la proposer serait un choix garanti sans trajet possible.
+ *
  * @param {HTMLInputElement} inputTexte
  * @param {HTMLInputElement} inputCache
  * @param {HTMLInputElement} inputModeCache
  * @param {HTMLElement} conteneurSuggestions
- * @param {{ rechercheUrl: string, modeLabels?: Record<string, string>, delaiMs?: number, longueurMinimale?: number }} options
+ * @param {{ rechercheUrl: string, modeLabels?: Record<string, string>, delaiMs?: number, longueurMinimale?: number, obtenirModesCoches?: () => string[] }} options
  */
 export function initTrajetAutocomplete(inputTexte, inputCache, inputModeCache, conteneurSuggestions, options = {}) {
     if (!inputTexte || !inputCache || !inputModeCache || !conteneurSuggestions || !options.rechercheUrl) {
@@ -91,7 +96,14 @@ export function initTrajetAutocomplete(inputTexte, inputCache, inputModeCache, c
         timer = setTimeout(() => {
             const idRequete = ++requeteEnCours;
 
-            fetch(options.rechercheUrl + '?q=' + encodeURIComponent(recherche))
+            const params = new URLSearchParams();
+            params.set('q', recherche);
+            const modesCoches = options.obtenirModesCoches ? options.obtenirModesCoches() : null;
+            if (modesCoches) {
+                modesCoches.forEach((mode) => params.append('modes[]', mode));
+            }
+
+            fetch(options.rechercheUrl + '?' + params.toString())
                 .then((response) => response.json())
                 .then((stations) => {
                     // Une recherche plus recente est peut-etre deja partie entre-temps : on
