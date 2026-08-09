@@ -55,8 +55,15 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
 - Coordonnées du plan schématique (`Station.schemaX/Y`) manquantes pour les stations créées
   après l'import RER/reseau complet (~14000 stations) — la source `schema_gares-gf` n'a pas
   été retrouvée localement.
-- Église d'Auteuil (ligne 10) : connectée topologiquement mais sans mission dédiée (desserte
-  spéciale à service limité, non modélisée).
+- ~~Église d'Auteuil (ligne 10) : sans mission dédiée~~ — vérifié le 2026-08-09 : `Mission`
+  n'est utilisée nulle part dans le site (ni le calcul de trajet ni l'affichage des lignes),
+  donc aucun effet fonctionnel. En revanche, corrigé un vrai bug trouvé au passage : le tronçon
+  Michel-Ange—Auteuil ↔ Église d'Auteuil était bidirectionnel alors que cette antenne n'est
+  desservie que dans un seul sens (Michel-Ange—Auteuil → Église d'Auteuil, confirmé par le plan
+  RATP officiel et Wikipédia — quai unique, voie nord de la boucle d'Auteuil). Audité tout le
+  reste du réseau métro/tram pour d'autres antennes mal modélisées en bidirectionnel : aucune
+  autre trouvée (la boucle 7bis Botzaris/Danube/Place des Fêtes/Pré-Saint-Gervais était déjà
+  correcte en sens unique).
 - Quais décalés (ex: Liège sur la ligne 13) : le modèle actuel suppose une distance symétrique
   par tronçon, ne capture pas les cas où la distance de marche diffère selon le sens réel.
 - Lignes de bus (~1400, dont ~210 avec plan officiel RATP déjà disponible dans
