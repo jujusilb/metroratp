@@ -164,4 +164,23 @@ multi-select par gestionnaire (~56 valeurs) sur les 3 pages, et d'un filtre "Tro
 | `curl` sur `/ligne?q=2`, `?q=Keolis`, `/desserte?q=2`, `?q=Keolis`, `/troncon?q=2`, `?q=Keolis` | Vérifier la recherche élargie (ligne OU gestionnaire, plus station pour Desserte/Troncon) : 504 lignes matchent "2", 331 "Keolis" ; 10976/6783 dessertes ; 358/2910 tronçons — pas d'erreur. |
 | `curl` sur `/ligne?gestionnaires[]=1`, `?avecTroncons=1`, `?avecTroncons=0`, `/desserte?gestionnaires[]=1&gestionnaires[]=21`, `/troncon?gestionnaires[]=1` | Vérifier le multi-select gestionnaire et le filtre "tronçons construits" : 244 lignes RATP, 250 lignes avec tronçons + 1184 sans = 1434 (total exact, cohérent), etc. |
 
+## Session du 2026-08-11 (suite 7) — Correspondances bus<->bus/metro/rer/tram via transfers.txt
+
+Demande : le dossier `documentation/IDFM-gtfs/` contient aussi `transfers.txt`/`pathways.txt`
+(GTFS standard) et un PDF référentiel IDFM — est-ce exploitable pour les correspondances impliquant
+le bus (jusqu'ici seules Métro/Tram/RER entre eux étaient couvertes, `ConstruireCorrespondancesInterModesCommand`,
+volontairement, pour éviter l'explosion combinatoire d'une approche "toutes les paires à un même
+arrêt" sur ~1400 lignes de bus).
+
+| Commande | Objectif |
+|---|---|
+| `pdftotext documentation/IDFM-gtfs/2023_idfm_referentiels.pdf -` | Lire le référentiel IDFM (poppler/`pdftotext` disponible via `/mingw64/bin`, pas besoin de `pdftoppm`). Confirme le concept de "Zone de correspondance" (= notre `Station`) : les correspondances **à l'intérieur** d'une même zone sont déjà implicites, celles **entre deux zones différentes** ne le sont pas — exactement ce que `transfers.txt` documente et que notre modèle ne capturait pas pour le bus. |
+| Script d'analyse ad hoc (`analyser_transfers.php`/`analyser_transfers2.php`, scratchpad) | Quantifier avant de se lancer : 179 917 lignes dans `transfers.txt`, 87 454 "intra-ZdC" (déjà implicite chez nous), **92 463 "inter-ZdC" (12 253 paires de Stations) — nouvelle info**, dont 99,9% impliquent au moins un arrêt de bus. Durées : médiane ~7 min, quelques valeurs aberrantes jusqu'à 92 min (filtrées à 30 min max). |
+| Script d'estimation (`estimer_correspondances_bus.php`, scratchpad, connexion MySQL directe) | Avant d'implémenter "toutes les paires de dessertes entre les 2 Stations" (même principe que la commande existante) : estimer le volume réel plutôt que de deviner. Résultat : ~106 757 lignes `Correspondance` au total — beaucoup, mais du même ordre de grandeur que ce qui existe déjà (31449 dessertes, 7241 tronçons), donc raisonnable. |
+| `documentation/scripts/extraire_correspondances_inter_zdc.php` (nouveau) | Extraction définitive : agrège `transfers.txt` par paire de ZdC (médiane de durée si plusieurs arrêts-transporteurs résolvent vers la même paire), filtre >30 min. → `correspondances_inter_zdc.csv` (12 247 paires). |
+| `php bin/console app:construire-correspondances-bus` (nouvelle commande) | Lit le CSV, crée une `Correspondance` pour chaque paire de dessertes entre les deux Stations (toutes combinaisons, comme la commande metro/tram/RER), en pré-chargeant les paires déjà existantes pour rester rejouable sans doublon. Temps GTFS (secondes) converti en distance (mètres, ×0,9 m/s) pour rester cohérent avec `Correspondance::getTempsEstimeMinutes()` qui dérive le temps affiché à partir de la distance. Flush par lots de 2000 (~107k écritures). Résultat : **106 757 créées**. |
+| Vérifications SQL (répartition par paire de modes, échantillons bus↔RER/métro) | 102 749 bus↔bus, 227 RER↔bus, 119 métro↔bus, etc. — cohérent avec l'attendu (le bus domine largement le volume d'arrêts). |
+| Test direct de `TrajetFinder` (script `php -r`, comme pour les tronçons bus) | Trajet RER A (Châtelet-Les Halles) → bus 21 (Pont Neuf) → 15 arrêts jusqu'à Porte de Saint-Ouen : 17 étapes, fonctionne de bout en bout en forçant `modes=['rer','bus_ratp']` (donc en passant obligatoirement par la nouvelle correspondance). |
+| `documentation/scripts/extraire_temps_marche_intra_zdc.php` + `php bin/console app:affiner-distances-correspondances` (nouvelles) | Deuxième volet demandé : remplacer l'estimation par défaut (distance NULL → 3 min fixe) des correspondances metro/tram/RER **existantes** par un vrai temps de marche GTFS, quand disponible, sans jamais écraser une distance déjà saisie manuellement. 32 candidates (distance NULL), 9 affinées (les autres ZdC sans temps de marche connu dans `transfers.txt`). |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

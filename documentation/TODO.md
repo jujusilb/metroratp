@@ -78,6 +78,18 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
   trop importante pour un seul passage, mais la méthode (extraction GTFS + réduction des
   raccourcis, voir `documentation/scripts/extraire_troncons_bus*.php`) est directement
   réutilisable pour étendre à d'autres plages de numéros.
+- ~~Aucune correspondance bus<->bus / bus<->metro / bus<->rer / bus<->tram (seulement metro/tram/RER
+  entre eux, `ConstruireCorrespondancesInterModesCommand`, limité aux modes lourds pour éviter
+  l'explosion combinatoire d'une approche "toutes les paires à un même arrêt" sur ~1400 lignes de
+  bus)~~ — **fait le 2026-08-11** grâce à `transfers.txt` (GTFS IDFM), qui documente déjà les vraies
+  correspondances piétonnes officielles entre deux Stations différentes (pas besoin de générer
+  toutes les combinaisons nous-mêmes, la source fait le tri) : **106 757 correspondances créées**
+  (`app:construire-correspondances-bus`, voir `extraire_correspondances_inter_zdc.php`), dont
+  102 749 bus↔bus, ~3200 bus↔tram/train, 227 RER↔bus, 119 métro↔bus. Testé de bout en bout
+  (RER A à Châtelet → correspondance → bus 21 → 15 arrêts). Au passage, 9 correspondances
+  métro/tram/RER existantes (distance NULL, estimation par défaut) ont été affinées avec un vrai
+  temps de marche GTFS (`app:affiner-distances-correspondances`) — la plupart des correspondances
+  existantes avaient déjà une distance vérifiée manuellement, non écrasée.
 
 ## Lignes Transilien V/P/R (pas encore dans la base)
 
