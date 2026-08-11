@@ -70,10 +70,28 @@ describe('initTrajetAutocomplete', () => {
         await jest.advanceTimersByTimeAsync(200);
 
         expect(global.fetch).toHaveBeenCalledWith('/trajet/recherche-station?q=chat');
-        // 1 station = 1 bouton principal (pas de sous-options, un seul mode chacune).
+        // 1 station = 1 ligne (un seul mode chacune, pas d'ambiguite a lever).
         expect(conteneurSuggestions.children.length).toBe(2);
         expect(conteneurSuggestions.textContent).toContain('Châtelet (Paris)');
         expect(conteneurSuggestions.textContent).toContain('Château Landon (Paris)');
+    });
+
+    test('une station a un seul mode affiche ce mode a gauche (pas "Tous")', async () => {
+        const { inputTexte, inputCache, inputModeCache, conteneurSuggestions } = buildDom();
+        mockFetchJson([{ id: 12, label: 'Châtelet', ville: 'Paris', modes: ['metro'] }]);
+        jest.useFakeTimers();
+
+        initTrajetAutocomplete(inputTexte, inputCache, inputModeCache, conteneurSuggestions, {
+            rechercheUrl: '/trajet/recherche-station',
+            modeLabels: MODE_LABELS,
+        });
+
+        inputTexte.value = 'chat';
+        inputTexte.dispatchEvent(new Event('input'));
+        await jest.advanceTimersByTimeAsync(200);
+
+        const pastille = conteneurSuggestions.querySelector('.suggestion-mode');
+        expect(pastille.textContent).toBe('Métro');
     });
 
     test('transmet les modes actuellement coches a la recherche', async () => {
@@ -112,7 +130,7 @@ describe('initTrajetAutocomplete', () => {
         expect(conteneurSuggestions.children.length).toBe(0);
     });
 
-    test('une station a plusieurs modes affiche une sous-option par mode, en plus du bouton "tous modes"', async () => {
+    test('une station a plusieurs modes affiche une ligne par mode, en plus d\'une ligne "Tous"', async () => {
         const { inputTexte, inputCache, inputModeCache, conteneurSuggestions } = buildDom();
         mockFetchJson([{ id: 7, label: 'Nation', ville: null, modes: ['metro', 'rer'] }]);
         jest.useFakeTimers();
@@ -126,10 +144,13 @@ describe('initTrajetAutocomplete', () => {
         inputTexte.dispatchEvent(new Event('input'));
         await jest.advanceTimersByTimeAsync(200);
 
-        // 1 bouton "tous modes" + 1 par mode (Metro, RER).
+        // 1 ligne par mode (Metro, RER) + 1 ligne "Tous".
         expect(conteneurSuggestions.children.length).toBe(3);
-        expect(conteneurSuggestions.textContent).toContain('Métro uniquement');
-        expect(conteneurSuggestions.textContent).toContain('RER uniquement');
+        expect(conteneurSuggestions.textContent).toContain('Nation — Métro');
+        expect(conteneurSuggestions.textContent).toContain('Nation — RER');
+
+        const pastilles = Array.from(conteneurSuggestions.querySelectorAll('.suggestion-mode')).map((p) => p.textContent);
+        expect(pastilles).toEqual(['Métro', 'RER', 'Tous']);
     });
 
     test('choisir un mode precis remplit le champ mode cache et suffixe le texte affiche', async () => {

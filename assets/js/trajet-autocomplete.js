@@ -48,32 +48,55 @@ export function initTrajetAutocomplete(inputTexte, inputCache, inputModeCache, c
         effacerSuggestions();
     }
 
+    function creerLigneSuggestion(libelleMode, texteAffiche, onClick) {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'list-group-item list-group-item-action suggestion-station';
+
+        const pastilleMode = document.createElement('span');
+        pastilleMode.className = 'suggestion-mode';
+        pastilleMode.textContent = libelleMode;
+        item.appendChild(pastilleMode);
+
+        const texte = document.createElement('span');
+        texte.className = 'suggestion-label';
+        texte.textContent = texteAffiche;
+        item.appendChild(texte);
+
+        item.addEventListener('click', onClick);
+
+        return item;
+    }
+
     function afficherSuggestions(stations) {
         effacerSuggestions();
 
         stations.forEach((station) => {
             const texteBase = libelleStation(station);
-
-            const item = document.createElement('button');
-            item.type = 'button';
-            item.className = 'list-group-item list-group-item-action';
-            item.textContent = texteBase;
-            item.addEventListener('click', () => choisir(station, null, texteBase));
-            conteneurSuggestions.appendChild(item);
-
             const modes = station.modes ?? [];
-            if (modes.length > 1) {
-                modes.forEach((mode) => {
-                    const modeLabel = modeLabels[mode] ?? mode;
 
-                    const sousItem = document.createElement('button');
-                    sousItem.type = 'button';
-                    sousItem.className = 'list-group-item list-group-item-action ps-4 small text-muted';
-                    sousItem.textContent = '→ ' + modeLabel + ' uniquement';
-                    sousItem.addEventListener('click', () => choisir(station, mode, texteBase + ' — ' + modeLabel));
-                    conteneurSuggestions.appendChild(sousItem);
-                });
+            if (modes.length <= 1) {
+                // Un seul mode possible (parmi ceux coches) : pas d'ambiguite a lever, la ligne
+                // "tous modes" (mode=null) et la ligne "ce mode precis" sont equivalentes pour le
+                // calcul de trajet, donc on garde mode=null pour ne pas suffixer le texte affiche.
+                const libelleMode = modes[0] ? (modeLabels[modes[0]] ?? modes[0]) : 'Tous';
+                conteneurSuggestions.appendChild(
+                    creerLigneSuggestion(libelleMode, texteBase, () => choisir(station, null, texteBase)),
+                );
+                return;
             }
+
+            modes.forEach((mode) => {
+                const modeLabel = modeLabels[mode] ?? mode;
+                const texteAffiche = texteBase + ' — ' + modeLabel;
+                conteneurSuggestions.appendChild(
+                    creerLigneSuggestion(modeLabel, texteAffiche, () => choisir(station, mode, texteAffiche)),
+                );
+            });
+
+            conteneurSuggestions.appendChild(
+                creerLigneSuggestion('Tous', texteBase, () => choisir(station, null, texteBase)),
+            );
         });
     }
 
