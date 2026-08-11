@@ -1,0 +1,504 @@
+code_externe,zdc_a,zdc_b,nom_a,nom_b,duree_mediane_secondes,nb_observations
+C01867,65571,65758,"Centre Commercial Paris Nord 2 / Érables","Fontaine Cypierre",300,405
+C01867,65926,422532,"Pierre Salvi / Rond-Point du 14 Juillet","Gonesse Hôpital",240,405
+C01867,65926,66009,"Pierre Salvi / Rond-Point du 14 Juillet","Villiers-le-Bel - Gonesse - Arnouville",240,405
+C01867,65758,422532,"Fontaine Cypierre","Gonesse Hôpital",240,405
+C01867,65571,483638,"Centre Commercial Paris Nord 2 / Érables","Paris Nord 2 - Bois de la Pie",120,405
+C01867,73568,483638,"Parc des Expositions","Paris Nord 2 - Bois de la Pie",120,405
+C00216,72729,72775,"Armand Esders","Centre Commercial O'Parinor",210,380
+C00216,72775,74015,"Centre Commercial O'Parinor","Garonor Entrée 4",240,252
+C00216,72757,72775,"Route de Gonesse","Centre Commercial O'Parinor",180,632
+C00216,73486,73503,"Parmentier / Saint Vincent de Paul",Poste,120,192
+C00216,73511,73515,Botticelli,"Collège Claude Debussy",120,316
+C00216,73491,496049,"Sevran - Beaudottes","Hôpital Ballanger (Avenue Martin Luther King)",180,384
+C00216,73482,480711,"Vert Galant",Stade,120,192
+C00216,72763,73511,"Le Suroît",Botticelli,120,316
+C00216,73482,73486,"Vert Galant","Parmentier / Saint Vincent de Paul",120,192
+C00216,73489,73497,Savigny,"Gros Saule",120,316
+C00216,73524,424029,"Bec Salé","Les Fougères",120,384
+C00216,73504,73525,"Fontaine Mallet","La Roseraie / Leclerc",60,384
+C00216,73491,73497,"Sevran - Beaudottes","Gros Saule",180,632
+C00216,73492,73501,"Schuman / Schweitzer / Paré",Lilas,120,316
+C00216,73520,73524,"Le Clos Montceleux","Bec Salé",60,384
+C00216,72756,72763,"Auguste Renoir / La Brise / Chemin de Roissy","Le Suroît",60,326
+C00216,72716,72729,"11-14 Avenue Albert Einstein","Armand Esders",60,534
+C00216,72700,72710,"Collège Aimé et Eugénie Cotton","Isaac Newton",60,632
+C00216,72756,72757,"Auguste Renoir / La Brise / Chemin de Roissy","Route de Gonesse",60,620
+C00216,73503,73519,Poste,"Place René Droulot",60,384
+C00216,72648,72666,"Le Blanc-Mesnil",Pasteur,60,632
+C00216,72688,72700,"Docteur Calmette","Collège Aimé et Eugénie Cotton",60,632
+C00216,74017,480711,Combattants,Stade,60,192
+C00216,73513,496049,"Rue / Route de Sevran","Hôpital Ballanger (Avenue Martin Luther King)",60,384
+C00216,74010,424029,"Georges Sachet / Jussieu","Les Fougères",60,288
+C00216,73486,480711,"Parmentier / Saint Vincent de Paul",Stade,60,384
+C00216,72744,72760,"Descartes - Renault / Rond Point Pablo Néruda","Anatole Sigonneau - Centre d'Affaires",60,252
+C00216,72729,72744,"Armand Esders","Descartes - Renault / Rond Point Pablo Néruda",60,252
+C00216,73504,74010,"Fontaine Mallet","Georges Sachet / Jussieu",60,384
+C00216,73515,73516,"Collège Claude Debussy","Vélodrome (cours Salvador Allende)",60,316
+C00216,72666,72679,Pasteur,"La Fontaine",60,632
+C00216,73501,73515,Lilas,"Collège Claude Debussy",60,632
+C00216,72759,73511,"Marc Chagall / Des Nénuphars",Botticelli,60,310
+C00216,73519,73525,"Place René Droulot","La Roseraie / Leclerc",60,384
+C00216,73511,73516,Botticelli,"Vélodrome (cours Salvador Allende)",60,316
+C00216,73513,73520,"Rue / Route de Sevran","Le Clos Montceleux",60,384
+C00216,73503,74017,Poste,Combattants,120,192
+C00216,73489,73501,Savigny,Lilas,60,316
+C00216,72679,72688,"La Fontaine","Docteur Calmette",60,632
+C00216,72759,72763,"Marc Chagall / Des Nénuphars","Le Suroît",60,264
+C00216,73492,73497,"Schuman / Schweitzer / Paré","Gros Saule",60,316
+C00216,72760,74015,"Anatole Sigonneau - Centre d'Affaires","Garonor Entrée 4",60,252
+C00216,72710,72716,"Isaac Newton","11-14 Avenue Albert Einstein",60,382
+C00154,64463,64520,"Square de Saint-Germain","Jean Moulin",240,74
+C00154,64475,64505,"Les Lampes","Ermitage Castors",60,70
+C00154,64463,64495,"Square de Saint-Germain","Ermitage Pont",120,88
+C00154,64558,64577,Brossolette,"Jean Jaurès",120,162
+C00154,64475,64495,"Les Lampes","Ermitage Pont",180,88
+C00154,64579,64582,"Route de Croissy / République","Le Vésinet - Le Pecq",120,320
+C00154,64520,64558,"Jean Moulin",Brossolette,60,318
+C00154,64495,64520,"Ermitage Pont","Jean Moulin",120,88
+C00154,64412,64435,"Les Pins Clos Courché","Ramon Saint-Thibault",60,158
+C00154,64405,64412,Marly-le-Roi,"Les Pins Clos Courché",120,320
+C00154,64576,64577,"Mairie / Pont du Pecq","Jean Jaurès",120,158
+C00154,64456,64475,"Les Marronniers / Square des Aubades","Les Lampes",60,131
+C00154,64558,64576,Brossolette,"Mairie / Pont du Pecq",120,158
+C00154,64577,64579,"Jean Jaurès","Route de Croissy / République",120,320
+C00154,64435,64445,"Ramon Saint-Thibault","Square des Sablons",60,269
+C00154,64412,64426,"Les Pins Clos Courché","Jean Witold / Le Galion",60,162
+C00154,64505,64520,"Ermitage Castors","Jean Moulin",60,152
+C00154,64495,64505,"Ermitage Pont","Ermitage Castors",60,11
+C00154,64451,64456,"Les Vignes Bénettes","Les Marronniers / Square des Aubades",60,320
+C00154,64426,64435,"Jean Witold / Le Galion","Ramon Saint-Thibault",60,162
+C00154,64456,64463,"Les Marronniers / Square des Aubades","Square de Saint-Germain",60,103
+C00154,64445,64451,"Square des Sablons","Les Vignes Bénettes",60,320
+C00815,61577,479388,Foch,"Gare de Melun - Gare routière Sud",960,212
+C00815,61079,488104,Piscine,"Centre Commercial Val-de-Loing",660,11
+C00815,61336,424527,"Pavé du Roy","Château / Place Napoléon Bonaparte",480,212
+C00815,61218,61303,"Nemours - Saint-Pierre","Les 4 Routes",360,105
+C00815,61102,482599,"Office du Tourisme","Hôtel de Ville",420,185
+C00815,61218,61289,"Nemours - Saint-Pierre","Les Fours",360,107
+C00815,61063,61102,"Place du Marché","Office du Tourisme",360,28
+C00815,61063,61094,"Place du Marché","Souppes - Château-Landon",420,146
+C00815,61207,482599,"Pasteur / Quai Victor Hugo","Hôtel de Ville",420,185
+C00815,61289,61336,"Les Fours","Pavé du Roy",180,107
+C00815,61303,61336,"Les 4 Routes","Pavé du Roy",180,105
+C00815,61102,488104,"Office du Tourisme","Centre Commercial Val-de-Loing",300,11
+C00815,61539,61577,"Place de l'Étape",Foch,180,212
+C00815,61094,61102,"Souppes - Château-Landon","Office du Tourisme",180,146
+C00815,61539,424527,"Place de l'Étape","Château / Place Napoléon Bonaparte",180,212
+C00815,61060,61063,"Foyer Rural / Place Verdun","Place du Marché",180,174
+C00815,61207,61218,"Pasteur / Quai Victor Hugo","Nemours - Saint-Pierre",180,212
+C00214,72789,73567,"André Citroën - Centre de Production","22, avenue des Nations",300,374
+C00214,73594,73596,"Rue des Vignes","Aéroport CDG 1 (Terminal 3)",180,186
+C00214,73592,73594,"Rue du Châpitre","Rue des Vignes",120,374
+C00214,73594,462531,"Rue des Vignes","Aéroport CDG - Terminal 2 (Route de service)",180,188
+C00214,73596,462531,"Aéroport CDG 1 (Terminal 3)","Aéroport CDG - Terminal 2 (Route de service)",120,188
+C00214,73568,419644,"Parc des Expositions","Rue de l'Etang",120,374
+C00214,69129,73991,"Rue de la belle Étoile / Avenue du Bois de la Pie / Parc des Nations","Centre Commercial Aéroville",360,374
+C00214,72646,73425,Aulnay-sous-Bois,"Pont de la Croix Blanche",180,186
+C00214,73505,73516,"Lenglen / Calmette et Guérin","Vélodrome (cours Salvador Allende)",180,374
+C00214,72782,72789,"Croix Saint-Marc","André Citroën - Centre de Production",120,374
+C00214,69165,73592,"Les Deux Cèdres","Rue du Châpitre",60,374
+C00214,73488,73489,"Lycée Voillaume",Savigny,120,374
+C00214,73425,73442,"Pont de la Croix Blanche","Collège Gérard Phillipe",120,188
+C00214,73590,73591,Marguilliers,"Cargo Centre",60,374
+C00214,73455,73461,"Lycée Jean Zay / Lycée d'Aulnay","Soleil Levant",120,374
+C00214,72778,72782,Tennis,"Croix Saint-Marc",120,374
+C00214,73442,73455,"Collège Gérard Phillipe","Lycée Jean Zay / Lycée d'Aulnay",60,374
+C00214,69120,69129,"277 rue de la Belle Etoile","Rue de la belle Étoile / Avenue du Bois de la Pie / Parc des Nations",60,350
+C00214,73590,73991,Marguilliers,"Centre Commercial Aéroville",60,374
+C00214,72646,72656,Aulnay-sous-Bois,Mairie,180,188
+C00214,69165,73591,"Les Deux Cèdres","Cargo Centre",60,374
+C00214,73575,73578,"33 rue des Chardonnerets","Avenue de la Pyramide",60,24
+C00214,69120,73578,"277 rue de la Belle Etoile","Avenue de la Pyramide",60,374
+C00214,73492,73505,"Schuman / Schweitzer / Paré","Lenglen / Calmette et Guérin",60,374
+C00214,72656,73425,Mairie,"Pont de la Croix Blanche",60,188
+C00214,73461,73466,"Soleil Levant",Arts,120,374
+C00214,73511,73516,Botticelli,"Vélodrome (cours Salvador Allende)",60,366
+C00214,72768,72774,"Matisse Delacroix",Bougainville,60,374
+C00214,73425,73435,"Pont de la Croix Blanche","Stade du Moulin Neuf",120,186
+C00214,73567,73568,"22, avenue des Nations","Parc des Expositions",60,374
+C00214,72768,73511,"Matisse Delacroix",Botticelli,60,374
+C00214,73466,73476,Arts,"Lapin sauté",60,374
+C00214,73575,419644,"33 rue des Chardonnerets","Rue de l'Etang",60,374
+C00214,73476,73488,"Lapin sauté","Lycée Voillaume",60,374
+C00214,73489,73492,Savigny,"Schuman / Schweitzer / Paré",60,194
+C00214,72774,72778,Bougainville,Tennis,60,16
+C00214,73435,73442,"Stade du Moulin Neuf","Collège Gérard Phillipe",60,186
+C00213,73568,74244,"Parc des Expositions","Rue du Sausset",240,384
+C00213,73565,74244,"Claude Nicolas Ledoux","Rue du Sausset",180,384
+C00213,73594,73596,"Rue des Vignes","Aéroport CDG 1 (Terminal 3)",180,191
+C00213,73592,73594,"Rue du Châpitre","Rue des Vignes",120,384
+C00213,73594,462531,"Rue des Vignes","Aéroport CDG - Terminal 2 (Route de service)",120,193
+C00213,73596,462531,"Aéroport CDG 1 (Terminal 3)","Aéroport CDG - Terminal 2 (Route de service)",360,193
+C00213,69123,73573,"190 rue des Chardonnerets","227 Avenue des Nations / 89 rue des Chardonnerets",60,384
+C00213,69129,73991,"Rue de la belle Étoile / Avenue du Bois de la Pie / Parc des Nations","Centre Commercial Aéroville",240,384
+C00213,73486,73503,"Parmentier / Saint Vincent de Paul",Poste,60,384
+C00213,73531,73545,"Parc de la Noue","Les Mousseaux",60,384
+C00213,69165,73592,"Les Deux Cèdres","Rue du Châpitre",60,384
+C00213,73482,480711,"Vert Galant",Stade,120,193
+C00213,73482,73486,"Vert Galant","Parmentier / Saint Vincent de Paul",480,191
+C00213,73590,73591,Marguilliers,"Cargo Centre",60,384
+C00213,73567,73570,"22, avenue des Nations","Plaine de France",120,384
+C00213,73560,73565,"Cimetière de Villepinte","Claude Nicolas Ledoux",60,384
+C00213,73504,73525,"Fontaine Mallet","La Roseraie / Leclerc",60,384
+C00213,73573,73578,"227 Avenue des Nations / 89 rue des Chardonnerets","Avenue de la Pyramide",60,204
+C00213,73590,73991,Marguilliers,"Centre Commercial Aéroville",60,384
+C00213,65571,74267,"Centre Commercial Paris Nord 2 / Érables","57-69 Rue de la Belle Étoile",60,335
+C00213,73571,74267,Epis,"57-69 Rue de la Belle Étoile",120,49
+C00213,73550,73560,"Route de Tremblay","Cimetière de Villepinte",60,384
+C00213,69165,73591,"Les Deux Cèdres","Cargo Centre",60,336
+C00213,73503,73519,Poste,"Place René Droulot",60,354
+C00213,65571,73571,"Centre Commercial Paris Nord 2 / Érables",Epis,60,335
+C00213,74010,424029,"Georges Sachet / Jussieu","Les Fougères",60,191
+C00213,73486,480711,"Parmentier / Saint Vincent de Paul",Stade,60,193
+C00213,69097,73581,"165-170 Rue de la Belle Étoile","230 Rue de la Belle Etoile",60,121
+C00213,69086,69097,"123 Rue de la Belle Étoile","165-170 Rue de la Belle Étoile",60,263
+C00213,73545,73550,"Les Mousseaux","Route de Tremblay",60,328
+C00213,73504,74010,"Fontaine Mallet","Georges Sachet / Jussieu",60,384
+C00213,73578,73581,"Avenue de la Pyramide","230 Rue de la Belle Etoile",60,204
+C00213,73519,73525,"Place René Droulot","La Roseraie / Leclerc",60,384
+C00213,73567,73568,"22, avenue des Nations","Parc des Expositions",60,384
+C00213,69086,74267,"123 Rue de la Belle Étoile","57-69 Rue de la Belle Étoile",60,121
+C00213,73531,424029,"Parc de la Noue","Les Fougères",60,384
+C00213,73570,73571,"Plaine de France",Epis,60,221
+C00213,69123,69129,"190 rue des Chardonnerets","Rue de la belle Étoile / Avenue du Bois de la Pie / Parc des Nations",60,208
+C02059,65720,69161,"Les Mines","Église Saint Eloi / Charles de Gaulle",300,75
+C02059,69205,73596,"Zone Technique","Aéroport CDG 1 (Terminal 3)",300,35
+C02059,69207,73591,"Entretien Nord","Cargo Centre",300,40
+C02059,69205,69207,"Zone Technique","Entretien Nord",120,35
+C02059,73592,73594,"Rue du Châpitre","Rue des Vignes",120,40
+C02059,65704,65834,"Triangle de Gonesse / Patte d'Oie",Cressonnières,120,75
+C02059,65926,65949,"Pierre Salvi / Rond-Point du 14 Juillet","Salle des Fêtes",120,75
+C02059,73594,462531,"Rue des Vignes","Aéroport CDG - Terminal 2 (Route de service)",180,40
+C02059,73596,462531,"Aéroport CDG 1 (Terminal 3)","Aéroport CDG - Terminal 2 (Route de service)",120,40
+C02059,65926,66075,"Pierre Salvi / Rond-Point du 14 Juillet","Jules Ferry / École Louise Michel",120,75
+C02059,66179,74192,"Louis Perrein","Les Carreaux / Voltaire / Arthur Rimbaud",180,75
+C02059,65833,65949,Hôpital,"Salle des Fêtes",60,75
+C02059,66251,427474,"Place Gaston Tessier","Place des Marronniers",180,75
+C02059,69152,69179,"Le Verger",Orangerie,60,75
+C02059,65833,65934,Hôpital,"ZI Arsonval",120,75
+C02059,69165,73592,"Les Deux Cèdres","Rue du Châpitre",60,40
+C02059,66267,415523,"Victor Hugo","Église / Mairie de Villiers-le-Bel",120,40
+C02059,66251,423648,"Place Gaston Tessier",Scribe,60,75
+C02059,69190,69207,Convention,"Entretien Nord",60,75
+C02059,69179,69187,Orangerie,Airapolis,60,75
+C02059,66214,423704,"Pierre Sémard","Jean Bullant",120,75
+C02059,415523,482863,"Église / Mairie de Villiers-le-Bel","Les Lierres - Hérivaux",120,35
+C02059,74192,423648,"Les Carreaux / Voltaire / Arthur Rimbaud",Scribe,180,75
+C02059,65704,65720,"Triangle de Gonesse / Patte d'Oie","Les Mines",60,75
+C02059,69165,73591,"Les Deux Cèdres","Cargo Centre",60,7
+C02059,66179,66214,"Louis Perrein","Pierre Sémard",120,75
+C02059,66252,66268,"Place de la Tolinette","La Cerisaie",60,72
+C02059,66252,423704,"Place de la Tolinette","Jean Bullant",60,75
+C02059,69152,69161,"Le Verger","Église Saint Eloi / Charles de Gaulle",60,75
+C02059,66075,427474,"Jules Ferry / École Louise Michel","Place des Marronniers",60,75
+C02059,65834,65934,Cressonnières,"ZI Arsonval",,0
+C02059,66340,482863,"Henri Sellier","Les Lierres - Hérivaux",60,35
+C02059,69187,69190,Airapolis,Convention,,0
+C02059,66268,415523,"La Cerisaie","Église / Mairie de Villiers-le-Bel",120,75
+C02059,66267,66340,"Victor Hugo","Henri Sellier",60,40
+C02059,66337,66340,"Puits La Marlière","Henri Sellier",60,75
+C00612,66009,66187,"Villiers-le-Bel - Gonesse - Arnouville","Place de Lattre de Tassigny / Maréchal Foch",180,130
+C00612,66009,66129,"Villiers-le-Bel - Gonesse - Arnouville","Square la Garenne",120,130
+C00612,66260,423648,"Raymond Poincaré",Scribe,60,130
+C00612,66222,66251,"Square des Sports","Place Gaston Tessier",60,130
+C00612,66177,66222,"Aristide Briand - Général Durand","Square des Sports",60,130
+C00612,66129,66177,"Square la Garenne","Aristide Briand - Général Durand",120,130
+C00612,423648,483637,Scribe,"Place Sangnier",60,130
+C00612,66251,66260,"Place Gaston Tessier","Raymond Poincaré",60,130
+C00612,66188,483637,"Mairie Annexe La Fauconnière","Place Sangnier",60,149
+C00612,66187,483637,"Place de Lattre de Tassigny / Maréchal Foch","Place Sangnier",60,111
+C00610,65646,72775,Berthelot,"Centre Commercial O'Parinor",450,146
+C00610,65286,65646,"Ferme Saint-Simon",Berthelot,360,56
+C00610,65372,72775,"ZAC Les Tulipes Nord","Centre Commercial O'Parinor",330,56
+C00610,65758,65771,"Fontaine Cypierre","Mairie de Gonesse",60,364
+C00610,72757,72775,"Route de Gonesse","Centre Commercial O'Parinor",150,56
+C00610,72656,72672,Mairie,"Anatole France / Jean Charcot",120,28
+C00610,65737,65741,"Jean Jaurès",Saint-Nicolas,120,364
+C00610,72646,72672,Aulnay-sous-Bois,"Anatole France / Jean Charcot",120,28
+C00610,72681,72698,L'Herminier,Marceau,120,56
+C00610,72711,72726,"Francisco Ferrer","Croix Rouge",120,56
+C00610,65758,421852,"Fontaine Cypierre","La Malmaison",60,364
+C00610,65737,65760,"Jean Jaurès","La Madeleine / Collège Philippe Auguste",60,364
+C00610,65935,66003,"Hector Berlioz",Aubépines,60,364
+C00610,65828,65926,"Guy de Maupassant","Pierre Salvi / Rond-Point du 14 Juillet",120,364
+C00610,66009,66038,"Villiers-le-Bel - Gonesse - Arnouville","Les Marronniers / Pierre Brossolette",120,364
+C00610,72726,72735,"Croix Rouge","Cité Emmaüs",60,56
+C00610,72646,72656,Aulnay-sous-Bois,Mairie,60,28
+C00610,66003,66038,Aubépines,"Les Marronniers / Pierre Brossolette",60,314
+C00610,65318,65372,"21ème Siècle","ZAC Les Tulipes Nord",60,52
+C00610,72735,72757,"Cité Emmaüs","Route de Gonesse",120,56
+C00610,65741,65771,Saint-Nicolas,"Mairie de Gonesse",60,364
+C00610,72698,72711,Marceau,"Francisco Ferrer",60,56
+C00610,65280,65318,"ZAC Les Tulipes Sud / Route des Parcs","21ème Siècle",60,28
+C00610,65646,421852,Berthelot,"La Malmaison",60,28
+C00610,72672,72681,"Anatole France / Jean Charcot",L'Herminier,60,50
+C00610,65926,65935,"Pierre Salvi / Rond-Point du 14 Juillet","Hector Berlioz",60,364
+C00610,65760,65828,"La Madeleine / Collège Philippe Auguste","Guy de Maupassant",60,364
+C00610,65280,65286,"ZAC Les Tulipes Sud / Route des Parcs","Ferme Saint-Simon",,0
+C01675,67177,69176,Luzarches,"Roissy Parc / Route de l'Arpenteur",1320,115
+C01675,67235,67250,Cimetière,Liberté,240,115
+C01675,69205,73596,"Zone Technique","Aéroport CDG 1 (Terminal 3)",300,115
+C01675,67177,67186,Luzarches,"Rue de Giez",240,115
+C01675,67250,67278,Liberté,"Hôpital Les Oliviers",180,115
+C01675,67186,67215,"Rue de Giez",Mascrée,180,115
+C01675,67278,422211,"Hôpital Les Oliviers","Souvenir / Centre Aquatique",120,115
+C01675,69205,69207,"Zone Technique","Entretien Nord",180,115
+C01675,69176,69207,"Roissy Parc / Route de l'Arpenteur","Entretien Nord",120,115
+C01675,67230,422285,"La Croix Boissiée / Place de Cutigliano",Fréchot,60,115
+C01675,67277,67292,"Les Tourelles","Persan - Beaumont",180,115
+C01675,67215,422285,Mascrée,Fréchot,120,115
+C01675,67277,422211,"Les Tourelles","Souvenir / Centre Aquatique",60,115
+C01675,67230,67235,"La Croix Boissiée / Place de Cutigliano",Cimetière,60,115
+C00209,69205,462531,"Zone Technique","Aéroport CDG - Terminal 2 (Route de service)",420,76
+C00209,69205,73596,"Zone Technique","Aéroport CDG 1 (Terminal 3)",300,97
+C00209,66378,69176,"La Talmouse","Roissy Parc / Route de l'Arpenteur",180,173
+C00209,69205,69207,"Zone Technique","Entretien Nord",180,173
+C00209,66376,66448,"Avenue Bocquet / Paillard",Calvaire,180,144
+C00209,73592,73594,"Rue du Châpitre","Rue des Vignes",120,74
+C00209,73594,462531,"Rue des Vignes","Aéroport CDG - Terminal 2 (Route de service)",120,74
+C00209,73596,462531,"Aéroport CDG 1 (Terminal 3)","Aéroport CDG - Terminal 2 (Route de service)",180,150
+C00209,66448,66515,Calvaire,"Carrefour de l'Europe",180,86
+C00209,66328,66376,"Chemin de Saint Denis","Avenue Bocquet / Paillard",120,26
+C00209,66588,419673,"Marché de Goussainville / Stade Maurice Baquet","Marcel Cerdan",180,86
+C00209,69165,73592,"Les Deux Cèdres","Rue du Châpitre",60,36
+C00209,66319,66431,"Pont Chinois","Le Moulin / Rond-Point du Thillay",60,29
+C00209,419673,488099,"Marcel Cerdan","Rond-Point de l'Europe",120,87
+C00209,66448,488099,Calvaire,"Rond-Point de l'Europe",120,87
+C00209,66535,66588,Goussainville,"Marché de Goussainville / Stade Maurice Baquet",120,87
+C00209,66710,66737,Montgolfier,"Cachin Blatreux",60,86
+C00209,69190,69207,Convention,"Entretien Nord",60,173
+C00209,73590,73591,Marguilliers,"Cargo Centre",60,74
+C00209,69172,69176,Passerelle,"Roissy Parc / Route de l'Arpenteur",60,173
+C00209,66278,66328,"Les Charmilles","Chemin de Saint Denis",60,17
+C00209,66376,66378,"Avenue Bocquet / Paillard","La Talmouse",120,173
+C00209,69177,69187,Village,Airapolis,120,173
+C00209,66431,66448,"Le Moulin / Rond-Point du Thillay",Calvaire,120,29
+C00209,73590,73991,Marguilliers,"Centre Commercial Aéroville",60,52
+C00209,66644,66663,"Avenue des Tilleuls / Espérance","Ampère - Chartrel",60,167
+C00209,69165,73591,"Les Deux Cèdres","Cargo Centre",120,74
+C00209,69172,69177,Passerelle,Village,60,161
+C00209,66683,66709,"Henri Dunant","École Gabriel Péri",120,87
+C00209,66602,66644,"Centre de Secours","Avenue des Tilleuls / Espérance",60,173
+C00209,66669,66709,"Les Montagnettes","École Gabriel Péri",60,173
+C00209,66278,66319,"Les Charmilles","Pont Chinois",60,15
+C00209,66663,66699,"Ampère - Chartrel",Chapellerie,60,173
+C00209,66683,66704,"Henri Dunant","Descartes - Malcolm X",60,87
+C00209,66515,66535,"Carrefour de l'Europe",Goussainville,120,86
+C00209,66588,66602,"Marché de Goussainville / Stade Maurice Baquet","Centre de Secours",60,164
+C00209,69187,69190,Airapolis,Convention,60,116
+C00209,66535,419673,Goussainville,"Marcel Cerdan",60,173
+C00209,66632,66653,"Mairie / Les Noues","La Charmeuse",60,163
+C00209,66653,66669,"La Charmeuse","Les Montagnettes",60,122
+C00209,66704,66710,"Descartes - Malcolm X",Montgolfier,60,87
+C00209,66699,66710,Chapellerie,Montgolfier,60,173
+C00209,66609,66632,"Victor Basch","Mairie / Les Noues",60,173
+C00209,66725,66737,Camélinat,"Cachin Blatreux",60,86
+C00209,66725,483478,Camélinat,Acacias,60,23
+C00209,66709,483478,"École Gabriel Péri",Acacias,60,66
+C00208,65497,485861,"Georges Brassens","Place Charles de Gaulle",60,358
+C00208,65461,65499,"Parc Commercial Pont de Pierre","La Muette - Europe",120,334
+C00208,65535,65582,"Jean-Baptiste Corot - Lamartine","Garges - Sarcelles",120,358
+C00208,65416,485861,"Les Mûriers","Place Charles de Gaulle",120,115
+C00208,65416,65445,"Les Mûriers",Mairie,120,115
+C00208,65561,65592,"Pierre De Coubertin","Paul Langevin",60,358
+C00208,65445,65505,Mairie,"Charles de Gaulle - Mitterrand",120,115
+C00208,65505,65535,"Charles de Gaulle - Mitterrand","Jean-Baptiste Corot - Lamartine",60,358
+C00208,65499,65536,"La Muette - Europe","Jacques Decour",60,358
+C00208,65497,65523,"Georges Brassens","8 mai 1945",60,358
+C00208,65523,65561,"8 mai 1945","Pierre De Coubertin",60,230
+C00208,65505,485861,"Charles de Gaulle - Mitterrand","Place Charles de Gaulle",120,243
+C00208,65536,65592,"Jacques Decour","Paul Langevin",60,259
+C02731,64863,64918,Turgot,Sartrouville,120,78
+C02731,64907,479074,Courteline,"Henri Brisson",60,78
+C02731,64882,479074,Convention,"Henri Brisson",120,78
+C02731,65041,65087,Vendanges,"La Garenne",60,78
+C02731,64921,64962,"Henri Barbusse / Boulevard de Bezons","Alphonse Allais",120,78
+C02731,65087,483240,"La Garenne",Trembleaux,60,78
+C02731,64918,64963,Sartrouville,Poste,120,78
+C02731,65088,65090,Jouhaux,"Calmette Guérin",120,78
+C02731,65090,65138,"Calmette Guérin","Les Perriers",60,78
+C02731,64907,64942,Courteline,"Gabriel Péri",120,78
+C02731,65049,65088,Flaubert,Jouhaux,60,78
+C02731,65006,65033,Temple,"Docteur Roux",60,78
+C02731,64921,64956,"Henri Barbusse / Boulevard de Bezons",Théâtre,120,78
+C02731,64962,64989,"Alphonse Allais","Grétry / Joliot Curie",60,78
+C02731,64977,65006,"Stalingrad / Masures",Temple,60,32
+C02731,65041,65047,Vendanges,"Mont Olivet",60,69
+C02731,64963,64977,Poste,"Stalingrad / Masures",60,78
+C02731,64976,65016,"Paul Bert / Clémenceau",Saint-Exupéry,60,78
+C02731,65033,65068,"Docteur Roux","Martial Dechard",60,78
+C02731,64863,64882,Turgot,Convention,60,78
+C02731,65138,483240,"Les Perriers",Trembleaux,60,78
+C02731,65016,65049,Saint-Exupéry,Flaubert,60,78
+C02731,64942,64971,"Gabriel Péri",Baudin,60,78
+C02731,64956,64976,Théâtre,"Paul Bert / Clémenceau",60,27
+C02731,64971,64989,Baudin,"Grétry / Joliot Curie",60,78
+C02731,65047,65068,"Mont Olivet","Martial Dechard",,0
+C02730,64882,479071,Convention,Tocqueville,60,78
+C02730,65041,65087,Vendanges,"La Garenne",120,78
+C02730,64921,64962,"Henri Barbusse / Boulevard de Bezons","Alphonse Allais",60,78
+C02730,64887,64918,Lamartine,Sartrouville,60,78
+C02730,65087,483240,"La Garenne",Trembleaux,60,78
+C02730,64918,64963,Sartrouville,Poste,120,78
+C02730,64882,64887,Convention,Lamartine,60,78
+C02730,64926,64989,"Jolis Monts","Grétry / Joliot Curie",60,78
+C02730,65088,65090,Jouhaux,"Calmette Guérin",120,78
+C02730,65090,65138,"Calmette Guérin","Les Perriers",60,78
+C02730,64907,479071,Courteline,Tocqueville,60,78
+C02730,65049,65088,Flaubert,Jouhaux,60,78
+C02730,65004,65015,Suger,Roosevelt,60,78
+C02730,64921,64956,"Henri Barbusse / Boulevard de Bezons",Théâtre,120,78
+C02730,64962,64989,"Alphonse Allais","Grétry / Joliot Curie",60,78
+C02730,64977,65006,"Stalingrad / Masures",Temple,60,6
+C02730,64963,64977,Poste,"Stalingrad / Masures",60,78
+C02730,64976,65016,"Paul Bert / Clémenceau",Saint-Exupéry,60,44
+C02730,65138,483240,"Les Perriers",Trembleaux,60,78
+C02730,65016,65049,Saint-Exupéry,Flaubert,60,78
+C02730,64907,64926,Courteline,"Jolis Monts",60,78
+C02730,65024,65041,Église,Vendanges,60,45
+C02730,65015,65024,Roosevelt,Église,60,78
+C02730,64956,64976,Théâtre,"Paul Bert / Clémenceau",60,34
+C02730,65004,65006,Suger,Temple,60,78
+C00306,64734,64741,"La Fontaine","Houilles - Carrières-sur-Seine",180,57
+C00306,415615,417678,Pasteur,Pâture,120,58
+C00306,65179,65238,"Route de Cormeilles",Passemay,120,77
+C00306,65179,65248,"Route de Cormeilles",Robespierre,120,77
+C00306,65052,65110,"Bretagne / Place François Rabelais","Val d'Argenteuil",120,154
+C00306,64758,64796,"Pont de Bezons","La Grâce de Dieu",120,154
+C00306,64865,64879,Brigadières,Marseillaise,180,154
+C00306,64734,494786,"La Fontaine",Colombier,120,57
+C00306,65254,65289,"Marché des Côteaux","Douce Fève",120,77
+C00306,64742,64758,"Louis Rameau","Pont de Bezons",120,58
+C00306,64796,64838,"La Grâce de Dieu",Lilas,120,154
+C00306,65238,65246,Passemay,Craonne,60,77
+C00306,64879,64908,Marseillaise,"Espace Nelson Mandela",60,154
+C00306,64703,64719,"84 - 89 Salvador Allende","Marcel Paul",60,115
+C00306,64700,494786,"La Rivière",Colombier,60,57
+C00306,64719,64742,"Marcel Paul","Louis Rameau",60,57
+C00306,64719,64735,"Marcel Paul",Germinal,120,58
+C00306,64975,65019,"Moulin Sarrazin","Square Aquitaine",60,154
+C00306,65110,479899,"Val d'Argenteuil","Jean Lurçat",60,154
+C00306,64975,491421,"Moulin Sarrazin","Jaurès Leclerc",60,154
+C00306,65248,65289,Robespierre,"Douce Fève",60,77
+C00306,64692,417678,Daubigny,Pâture,120,58
+C00306,64735,64742,Germinal,"Louis Rameau",120,20
+C00306,65162,479899,"Rue de Coudray","Jean Lurçat",60,154
+C00306,64700,64703,"La Rivière","84 - 89 Salvador Allende",60,115
+C00306,64741,415615,"Houilles - Carrières-sur-Seine",Pasteur,60,58
+C00306,64758,420134,"Pont de Bezons",Carasso,60,57
+C00306,64908,491421,"Espace Nelson Mandela","Jaurès Leclerc",60,151
+C00306,64742,420134,"Louis Rameau",Carasso,60,54
+C00306,64692,64700,Daubigny,"La Rivière",60,58
+C00306,64835,64838,"Francis de Pressensé",Lilas,60,154
+C00306,65162,65179,"Rue de Coudray","Route de Cormeilles",60,154
+C00306,65019,65052,"Square Aquitaine","Bretagne / Place François Rabelais",60,154
+C00306,65246,65254,Craonne,"Marché des Côteaux",60,47
+C00306,64835,64865,"Francis de Pressensé",Brigadières,60,135
+C02164,66567,66650,"École Pasteur / Jules Ferry","Les Noues",180,17
+C02164,66567,487087,"École Pasteur / Jules Ferry","Rouget de Lisle",120,19
+C02164,66631,66650,"École Jean Jaurès","Les Noues",120,19
+C02164,66631,73954,"École Jean Jaurès","Rue Sieyès",60,19
+C02164,66597,74176,"Les Coteaux","Rue Rolland",60,10
+C02164,73954,74176,"Rue Sieyès","Rue Rolland",60,18
+C02164,66597,487087,"Les Coteaux","Rouget de Lisle",60,10
+C00617,65737,481036,"Jean Jaurès","Rond-Point de Bonneuil",120,40
+C00617,66038,66052,"Les Marronniers / Pierre Brossolette","Myosotis / Place des Roses",60,40
+C00617,65961,66075,"Villa des Châtaigniers","Jules Ferry / École Louise Michel",120,40
+C00617,65737,65760,"Jean Jaurès","La Madeleine / Collège Philippe Auguste",60,40
+C00617,65828,65926,"Guy de Maupassant","Pierre Salvi / Rond-Point du 14 Juillet",90,40
+C00617,66009,66038,"Villiers-le-Bel - Gonesse - Arnouville","Les Marronniers / Pierre Brossolette",90,40
+C00617,66075,66149,"Jules Ferry / École Louise Michel","Maurice Meyer",,0
+C00617,66052,427474,"Myosotis / Place des Roses","Place des Marronniers",90,40
+C00617,65926,65961,"Pierre Salvi / Rond-Point du 14 Juillet","Villa des Châtaigniers",60,40
+C00617,65760,65828,"La Madeleine / Collège Philippe Auguste","Guy de Maupassant",60,40
+C00617,66149,427474,"Maurice Meyer","Place des Marronniers",60,40
+C00616,65501,481036,"Mairie de Bonneuil","Rond-Point de Bonneuil",120,65
+C00616,65501,65549,"Mairie de Bonneuil","Rond-Point du Christ / Les Quinconces",120,65
+C00616,65854,66009,"La Poste","Villiers-le-Bel - Gonesse - Arnouville",120,92
+C00616,65549,65654,"Rond-Point du Christ / Les Quinconces","Mairie Annexe - Collège Jean Moulin",120,65
+C00616,65671,65735,"Léon Blum","Saint Blin (Lycée René Cassin)",120,27
+C00616,65654,65695,"Mairie Annexe - Collège Jean Moulin",Cimetière,60,92
+C00616,65654,65694,"Mairie Annexe - Collège Jean Moulin","Roger Dehasque",60,27
+C00616,65695,65753,Cimetière,"Pierre Curie / Place Gabriel Péri",60,92
+C00616,65753,65803,"Pierre Curie / Place Gabriel Péri","Jean Jaurès",60,92
+C00616,65803,65854,"Jean Jaurès","La Poste",60,67
+C00616,65671,65694,"Léon Blum","Roger Dehasque",60,27
+C00611,65879,65949,"Centre d'Apprentissage","Salle des Fêtes",60,11
+C00611,65949,422532,"Salle des Fêtes","Gonesse Hôpital",60,11
+C00611,65634,65681,Ampère,"Gay Lussac",120,11
+C00611,65634,65646,Ampère,Berthelot,60,11
+C00611,65758,421852,"Fontaine Cypierre","La Malmaison",60,11
+C00611,65758,65834,"Fontaine Cypierre",Cressonnières,60,11
+C00611,65935,66003,"Hector Berlioz",Aubépines,60,6
+C00611,66009,66038,"Villiers-le-Bel - Gonesse - Arnouville","Les Marronniers / Pierre Brossolette",120,11
+C00611,65681,65712,"Gay Lussac","Zone Industrielle",60,11
+C00611,65934,65967,"ZI Arsonval","Souvenir Français",60,5
+C00611,66003,66038,Aubépines,"Les Marronniers / Pierre Brossolette",60,5
+C00611,65834,65934,Cressonnières,"ZI Arsonval",60,11
+C00611,65879,65926,"Centre d'Apprentissage","Pierre Salvi / Rond-Point du 14 Juillet",60,6
+C00611,65646,421852,Berthelot,"La Malmaison",60,11
+C00611,65926,65935,"Pierre Salvi / Rond-Point du 14 Juillet","Hector Berlioz",60,5
+C00611,65967,422532,"Souvenir Français","Gonesse Hôpital",60,6
+C00609,65720,69161,"Les Mines","Église Saint Eloi / Charles de Gaulle",300,41
+C00609,73590,73596,Marguilliers,"Aéroport CDG 1 (Terminal 3)",420,21
+C00609,73590,74162,Marguilliers,"Tour de Contrôle / Parking Pr",360,20
+C00609,69161,73991,"Église Saint Eloi / Charles de Gaulle","Centre Commercial Aéroville",180,41
+C00609,65949,66192,"Salle des Fêtes","Chemin d'Écouen",180,41
+C00609,73596,74162,"Aéroport CDG 1 (Terminal 3)","Tour de Contrôle / Parking Pr",120,20
+C00609,66192,66251,"Chemin d'Écouen","Place Gaston Tessier",120,21
+C00609,66009,66187,"Villiers-le-Bel - Gonesse - Arnouville","Place de Lattre de Tassigny / Maréchal Foch",180,21
+C00609,66009,66129,"Villiers-le-Bel - Gonesse - Arnouville","Square la Garenne",120,20
+C00609,65704,65758,"Triangle de Gonesse / Patte d'Oie","Fontaine Cypierre",120,41
+C00609,65949,422532,"Salle des Fêtes","Gonesse Hôpital",60,41
+C00609,66177,66192,"Aristide Briand - Général Durand","Chemin d'Écouen",60,20
+C00609,65704,65720,"Triangle de Gonesse / Patte d'Oie","Les Mines",60,41
+C00609,65758,65834,"Fontaine Cypierre",Cressonnières,60,41
+C00609,73590,73991,Marguilliers,"Centre Commercial Aéroville",60,36
+C00609,66260,423648,"Raymond Poincaré",Scribe,,0
+C00609,65934,65967,"ZI Arsonval","Souvenir Français",60,20
+C00609,65834,65934,Cressonnières,"ZI Arsonval",60,41
+C00609,66129,66177,"Square la Garenne","Aristide Briand - Général Durand",120,20
+C00609,423648,483637,Scribe,"Place Sangnier",60,21
+C00609,65967,422532,"Souvenir Français","Gonesse Hôpital",60,21
+C00609,66251,66260,"Place Gaston Tessier","Raymond Poincaré",60,21
+C00609,66188,483637,"Mairie Annexe La Fauconnière","Place Sangnier",60,26
+C00609,66187,483637,"Place de Lattre de Tassigny / Maréchal Foch","Place Sangnier",60,16
+C00211,66632,66669,"Mairie / Les Noues","Les Montagnettes",60,31
+C00211,66735,66758,Renaissance,"Georges Brassens",120,33
+C00211,66669,483478,"Les Montagnettes",Acacias,60,31
+C00211,66650,66671,"Les Noues","Résidence Ambroise Croizat",120,33
+C00211,66725,66755,Camélinat,"Gendarmerie - La Motte Picquet",120,34
+C00211,66671,66706,"Résidence Ambroise Croizat","Eugène Varlin",60,32
+C00211,66706,66735,"Eugène Varlin",Renaissance,60,33
+C00211,66758,66772,"Georges Brassens","Place Sydney Béchet",60,33
+C00211,66632,66650,"Mairie / Les Noues","Les Noues",60,31
+C00211,66755,66772,"Gendarmerie - La Motte Picquet","Place Sydney Béchet",60,33
+C00211,66725,483478,Camélinat,Acacias,60,22
+C02264,64438,477597,"Stade Omnisports","Allée des Machines",120,19
+C02264,64458,477597,"Cultures Lorraine","Allée des Machines",120,19
+C02264,64579,64582,"Route de Croissy / République","Le Vésinet - Le Pecq",150,38
+C02264,64516,477593,"Cirsee Buisson","Chemin de Ronde",120,19
+C02264,64526,477593,Liberté,"Chemin de Ronde",120,19
+C02264,64438,483237,"Stade Omnisports",IRSN,60,19
+C02264,64514,477620,"Le Vésinet - Centre","Président Roosevelt",240,38
+C02264,64526,64551,Liberté,"Alain / Verdun",60,19
+C02264,64458,64477,"Cultures Lorraine","Henri Régnault",60,19
+C02264,64424,477622,Gabillons,Crèche,60,19
+C02264,477593,477597,"Chemin de Ronde","Allée des Machines",60,38
+C02264,64452,477620,"Princesse Croissy","Président Roosevelt",60,38
+C02264,64577,64579,"Jean Jaurès","Route de Croissy / République",60,19
+C02264,64561,64577,Aligre,"Jean Jaurès",120,19
+C02264,64537,64561,"Président Wilson",Aligre,60,19
+C02264,64551,64579,"Alain / Verdun","Route de Croissy / République",60,19
+C02264,64452,477622,"Princesse Croissy",Crèche,120,19
+C02264,64424,483237,Gabillons,IRSN,60,19
+C02264,64516,64537,"Cirsee Buisson","Président Wilson",60,19
+C02264,64452,64473,"Princesse Croissy","École Princesse",60,19
+C02264,64473,64477,"École Princesse","Henri Régnault",60,19
+C00263,70269,416071,"Créteil - L'Échat",CROUS,1140,247
+C00263,68129,68217,Torcy,"Les Quatre Pavés",600,271
+C00263,68217,68224,"Les Quatre Pavés",Mairie,240,271
+C00263,68224,74195,Mairie,"Bois de Grâce",300,271
+C00263,68159,74195,Ampère,"Bois de Grâce",120,271
+C00263,68159,416071,Ampère,CROUS,120,271

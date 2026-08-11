@@ -142,7 +142,6 @@ jobs:
             --exclude='node_modules' \
             --exclude='var' \
             --exclude='tests' \
-            --exclude='documentation' \
             --exclude='.env.local' \
             -e "ssh -p $SSH_PORT -i ~/.ssh/deploy_key" \
             ./ "$SSH_USER@$SSH_HOST:$APP_PATH/"

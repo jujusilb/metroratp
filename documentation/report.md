@@ -53,29 +53,23 @@ une station à plusieurs modes a une ligne par mode plus une ligne "Tous". Test�
 "Modes de transport" cochées : le filtrage continue de fonctionner correctement dans tous les cas.
 Tests Jest mis à jour en conséquence.
 
-### [ ] 🔴 Bus (RATP et tiers) : sélectionnables dans le calculateur mais aucun trajet n'est réellement possible
+### [x] 🔴 Bus : sélectionnables dans le calculateur mais aucun trajet n'était réellement possible — **partiellement corrigé le 2026-08-11**
 
-**Fichiers** : [TrajetController.php:23](../src/Controller/TrajetController.php#L23) (constante
-`MODES_DISPONIBLES` incluant `bus_ratp`/`bus_tiers`), [TODO.md](TODO.md) (section « Autres pistes
-notées en cours de route »).
+**Fichiers** : [ConstruireTopologieBusCommand.php](../src/Command/ConstruireTopologieBusCommand.php),
+[ConstruireTopologieBusAutresOperateursCommand.php](../src/Command/ConstruireTopologieBusAutresOperateursCommand.php).
 
-Les cases « Bus RATP » et « Bus tiers » sont proposées comme modes de transport dans le formulaire
-du calculateur de trajet (`trajet/index.html.twig:19`) au même titre que Métro/Tram/RER, et des
-stations de bus apparaissent bien dans l'autocomplétion. Mais **aucun tronçon ni aucune mission
-n'a été construit pour les lignes de bus** (seules les stations/lignes/dessertes existent en base) —
-c'est documenté explicitement dans `documentation/TODO.md` : *« Lignes de bus (~1400...) :
-stations/lignes/dessertes peuplées, mais aucun tronçon/mission construit — ampleur trop importante
-pour un seul passage. »* Concrètement, `TrajetFinder::construireGraphe()` n'a donc aucune arête pour
-relier deux stations de bus entre elles : sélectionner un trajet en bus renvoie systématiquement
-« Aucun trajet trouvé entre ces deux stations », ce qui n'est pas clair pour l'utilisateur (il ne
-sait pas si c'est parce qu'aucun trajet n'existe réellement, ou parce que la fonctionnalité bus
-n'est simplement pas encore implémentée).
+Avant : aucun tronçon construit pour aucune ligne de bus, donc tout calcul de trajet en bus
+renvoyait systématiquement « Aucun trajet trouvé », sans que l'utilisateur sache si c'est normal ou
+si la fonctionnalité n'est juste pas implémentée.
 
-**Pistes de correction** (déjà identifiées dans le TODO, gros chantier) :
-- soit construire les tronçons/missions du réseau bus (gros volume : ~1400 lignes),
-- soit, en attendant, décocher les cases Bus par défaut et/ou afficher un message explicite
-  (« Bus : fonctionnalité pas encore disponible ») plutôt que de laisser croire que ça devrait
-  marcher.
+**Corrigé pour les lignes numérotées 20 à 299** : 20-100 toutes compagnies confondues (RATP +
+Keolis Roissy/Argenteuil + Transdev Boucle des Lys/Vallée du Loing/Nord Seine-Saint-Denis/Côteaux
+de la Marne + Keolis Nord Val d'Oise), 101-299 uniquement RATP/filiales "RATP Cap ..." — soit
+212 lignes au total (~5250 tronçons). Tronçons extraits du GTFS IDFM et construits en base, testé
+de bout en bout avec `TrajetFinder` sur plusieurs lignes. **Pas encore fait** : les lignes non-RATP
+de 101-299 (ATM Croix du Sud, Keolis Grand Paris Vallée de la Marne/Argenteuil/Ouest Val-de-Marne),
+et le reste du réseau bus (~1300 lignes hors 20-299) — voir `documentation/TODO.md`, la méthode
+est réutilisable pour étendre à d'autres plages plus tard.
 
 ---
 

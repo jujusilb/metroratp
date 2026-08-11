@@ -66,9 +66,18 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
   correcte en sens unique).
 - Quais décalés (ex: Liège sur la ligne 13) : le modèle actuel suppose une distance symétrique
   par tronçon, ne capture pas les cas où la distance de marche diffère selon le sens réel.
-- Lignes de bus (~1400, dont ~210 avec plan officiel RATP déjà disponible dans
-  `documentation/PLAN/PDF/BUS/`) : stations/lignes/dessertes peuplées, mais aucun tronçon/
-  mission construit — ampleur trop importante pour un seul passage.
+- ~~Lignes de bus (~1400...) : aucun tronçon construit~~ — **fait le 2026-08-11 pour les lignes
+  numérotées 20 à 299** : 20-100 toutes compagnies confondues (RATP + Keolis Roissy/Argenteuil +
+  Transdev Boucle des Lys/Vallée du Loing/Nord Seine-Saint-Denis/Côteaux de la Marne + Keolis Nord
+  Val d'Oise, voir `app:construire-topologie-bus` et `app:construire-topologie-bus-autres-operateurs`),
+  101-299 uniquement RATP/filiales "RATP Cap ..." (voir `app:construire-topologie-bus`, même
+  commande, map étendue). **Pas encore fait dans 101-299** : les lignes non-RATP de cette plage
+  (ATM Croix du Sud 179/189-191/194-195/289-290, Keolis Grand Paris Vallée de la Marne 206-207/
+  209/211-213/220, Keolis Argenteuil 262, Keolis Ouest Val-de-Marne 282 — pas encore demandé). Le
+  reste du réseau bus (~1300 lignes hors 20-299) n'a toujours aucun tronçon construit — ampleur
+  trop importante pour un seul passage, mais la méthode (extraction GTFS + réduction des
+  raccourcis, voir `documentation/scripts/extraire_troncons_bus*.php`) est directement
+  réutilisable pour étendre à d'autres plages de numéros.
 
 ## Lignes Transilien V/P/R (pas encore dans la base)
 
