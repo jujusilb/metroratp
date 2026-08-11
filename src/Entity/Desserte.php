@@ -105,7 +105,7 @@ class Desserte
     {
         $periodes = $this->getPeriodesOuvertureOrdonnees();
 
-        return $periodes[0]?->getOuverture();
+        return ($periodes[0] ?? null)?->getOuverture();
     }
 
     /**

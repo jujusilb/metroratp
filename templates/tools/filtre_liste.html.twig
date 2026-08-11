@@ -1,0 +1,35 @@
+{#
+    Formulaire de filtre (cases "Modes de transport" + recherche par station) reutilise sur les
+    pages d'index a fort volume (Ligne, Desserte, Troncon) : voir LigneController/DesserteController/
+    TronconController::index(). Soumission classique en GET (pas d'AJAX), coherent avec le reste du
+    site (formulaire de calcul de trajet).
+
+    Variables attendues :
+    - modesSelectionnes : string[] modes actuellement coches
+    - recherche : ?string valeur actuelle du champ de recherche
+    - route : nom de la route de la page courante (pour l'action du formulaire)
+#}
+{% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers'} %}
+<form method="get" action="{{ path(route) }}" class="row g-3 mb-4 align-items-end">
+    <div class="col-12">
+        <span class="form-label d-block">Modes de transport</span>
+        <div class="d-flex flex-wrap gap-3">
+            {% for mode, label in modeLabels %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="modes[]" value="{{ mode }}" id="filtre-mode-{{ mode }}" {{ mode in modesSelectionnes ? 'checked' : '' }}>
+                    <label class="form-check-label" for="filtre-mode-{{ mode }}">{{ label }}</label>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-8">
+        <label for="filtre-recherche" class="form-label">Rechercher une station</label>
+        <input type="text" name="q" id="filtre-recherche" class="form-control" value="{{ recherche }}" placeholder="Nom de station...">
+    </div>
+    <div class="col-md-4">
+        <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+        {% if recherche or modesSelectionnes|length < 5 %}
+            <a href="{{ path(route) }}" class="btn btn-outline-secondary w-100 mt-2">Réinitialiser</a>
+        {% endif %}
+    </div>
+</form>

@@ -6,6 +6,10 @@
     <div class="container py-4">
         <h1 class="mb-4">Desserte</h1>
 
+        {{ include('tools/filtre_liste.html.twig', {'modesSelectionnes': modesSelectionnes, 'recherche': recherche, 'route': 'app_desserte_index'}) }}
+
+        <p class="text-muted small">{{ dessertes.getTotalItemCount }} desserte{{ dessertes.getTotalItemCount > 1 ? 's' : '' }}</p>
+
         <table class="table align-middle">
             <thead>
                 <tr>
@@ -71,6 +75,10 @@
             {% endfor %}
             </tbody>
         </table>
+
+        <div class="d-flex justify-content-center mb-3">
+            {{ knp_pagination_render(dessertes) }}
+        </div>
 
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_desserte_new') }}" class="btn btn-primary">Créer nouvelle desserte</a>

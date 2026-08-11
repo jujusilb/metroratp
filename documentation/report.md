@@ -75,7 +75,7 @@ est réutilisable pour étendre à d'autres plages plus tard.
 
 ## 2. Bugs supplémentaires trouvés pendant le scan
 
-### [ ] 🔴 Aucune pagination sur les pages de liste d'administration — certaines chargent des dizaines de milliers de lignes d'un coup
+### [x] 🔴 Aucune pagination sur les pages de liste d'administration — **corrigé le 2026-08-11 pour Ligne/Desserte/Troncon**
 
 **Fichiers** : tous les contrôleurs CRUD (`StationController.php:21`, `DesserteController.php:21`,
 `TronconController.php:21`, `CorrespondanceController.php:21`, `AccesController.php:21`,
@@ -103,8 +103,19 @@ Point notable : **`KnpPaginatorBundle` est installé et activé** (`config/bundl
 `PaginatorInterface` ou de `knp_paginator` dans `src/`) — la brique existe déjà, elle n'est juste
 pas branchée.
 
-**Pistes de correction** : utiliser `KnpPaginatorBundle` (déjà en dépendance) sur les listes des
-grosses tables, au minimum `/desserte`, `/station`, `/troncon`, en priorité.
+**Corrigé pour `/ligne`, `/desserte`, `/troncon`** : `KnpPaginatorBundle` branché (50 par page),
+plus un filtre par mode de transport (cases Métro/Tram/RER/Bus RATP/Bus tiers, comme sur le
+calculateur de trajet) et une recherche par nom de station. Pour Desserte/Troncon (qui ont des
+relations *ToMany* dans leur affichage détaillé — périodes d'ouverture, tronçon-dessertes — dont le
+fetch-join fausserait le compte total de la pagination), la pagination tourne sur une requête légère
+puis recharge les entités complètes juste pour les ids de la page courante
+(`DesserteRepository`/`TronconRepository::trouverAvecDetailsParIds()`).
+
+**Bug annexe découvert et corrigé au passage** : `Desserte::getPremiereOuverture()` plantait
+(500, "Undefined array key 0") pour toute desserte sans aucune période d'ouverture enregistrée
+(fréquent pour les dessertes de bus, dont l'import n'a jamais peuplé cette donnée) — invisible
+jusqu'ici car cette erreur PHP (E_WARNING) ne fait planter la page qu'en environnement `dev`, pas en
+production. `/station` reste sans pagination (pas demandé pour l'instant, même méthode réutilisable).
 
 ### ~~🟡 `base.html.twig` inclut le bundle JS de l'app deux fois~~ — faux positif, retiré
 

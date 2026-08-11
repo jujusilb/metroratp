@@ -135,4 +135,20 @@ dépôt.
 - `assets/styles/app.scss` — classes CSS `.suggestion-station`/`.suggestion-mode`
 - `documentation/report.md`, `documentation/commande.md` — nouveaux fichiers de suivi (à confirmer avec l'utilisateur si à committer)
 
+## Session du 2026-08-11 (suite 5) — Pagination + filtres sur Ligne/Desserte/Troncon
+
+Demande : ces 3 pages d'index chargent des milliers d'enregistrements sans pagination (déjà noté
+dans `report.md`). Ajout de cases "Modes de transport" + recherche par station + pagination
+(`KnpPaginatorBundle`, déjà en dépendance mais jamais branché).
+
+| Commande | Objectif |
+|---|---|
+| Lecture de `LigneRepository`/`TronconRepository`/`DesserteRepository`/`Troncon.php` (getSensCirculation) | Comprendre les relations existantes avant d'écrire les requêtes filtrées (notamment que `Troncon` n'a pas de lien direct vers `Ligne`/`Station`, seulement via `tronconDesserte -> desserte`). |
+| Création de `config/packages/knp_paginator.yaml` (template `bootstrap_v5_pagination`) | KnpPaginatorBundle était installé mais sans configuration — cohérent avec le style Bootstrap 5 déjà utilisé partout ailleurs. |
+| Inscription/connexion via `form_input` + clic réel (`computer.left_click`) répétée plusieurs fois, toutes en échec ("CSRF token invalid" / "double-submit info... missing") | Tentative de créer un compte de test dans le navigateur automatisé pour vérifier les pages en conditions réelles. Échec systématique — investigué en profondeur (voir ligne suivante). |
+| Lecture de `vendor/symfony/security-csrf/SameOriginCsrfTokenManager.php` + `curl -I`/fetch du vrai `build/app.js` de production (`https://julien-silberstein.fr/metroratp/...`) | Diagnostic complet de l'échec CSRF récurrent dans le navigateur de test : le champ `_token` est bien rempli par un JS (`csrf_protection_controller.js`, fourni par `symfony/stimulus-bundle`) qui n'est **jamais chargé** dans le bundle Encore actuel (ni en local ni en prod, vérifié par grep sur le vrai `app.js` téléchargé) — mais ce n'est **pas un bug réel** : Symfony valide aussi via les en-têtes `Sec-Fetch-Site`/`Origin`/`Referer`, que tout vrai navigateur envoie automatiquement sur une soumission same-origin. Confirmé en pratique avec `curl -H "Origin: ..." -H "Referer: ..."` : la connexion réussit même avec le token factice `"csrf-token"`. Le navigateur de test utilisé dans cette session semble ne pas envoyer ces en-têtes de la même façon, d'où l'échec systématique **uniquement dans cet outil**, sans impact sur les vrais utilisateurs. Pas d'action corrective nécessaire côté code. |
+| Création d'un utilisateur de test directement en base (`php bin/console security:hash-password` + `INSERT INTO utilisateur`), puis connexion via `curl` avec `-H "Origin:..."` et un cookie jar | Contournement fiable du souci ci-dessus pour pouvoir tester les nouvelles pages authentifiées sans dépendre du navigateur automatisé. |
+| `curl` répétés sur `/ligne`, `/desserte`, `/troncon` avec différentes combinaisons de `modes[]`/`q`/`page` | Vérification bout en bout : total correct sans filtre (1434 lignes, 31449 dessertes, 7241 tronçons), filtre par mode (ex: Métro seul → 16 lignes), recherche par station (ex: "Nation"), pagination (liens `page=N` qui conservent bien les filtres), cas "aucune case cochée" → 0 résultat (voulu). A débusqué un vrai bug pré-existant (`Desserte::getPremiereOuverture()` plantait sur les dessertes sans période d'ouverture, cf `report.md`), corrigé. |
+| `DELETE FROM utilisateur WHERE username IN (...)` | Nettoyage des comptes de test créés pendant cette session. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

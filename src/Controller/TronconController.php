@@ -6,6 +6,7 @@ use App\Entity\Troncon;
 use App\Form\TronconType;
 use App\Repository\TronconRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,11 +15,33 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/troncon')]
 final class TronconController extends AbstractController
 {
+    /** @var string[] */
+    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers'];
+
     #[Route(name: 'app_troncon_index', methods: ['GET'])]
-    public function index(TronconRepository $tronconRepository): Response
+    public function index(Request $request, TronconRepository $tronconRepository, PaginatorInterface $paginator): Response
     {
+        $modesSelectionnes = $request->query->has('modes')
+            ? array_intersect($request->query->all('modes'), self::MODES_DISPONIBLES)
+            : self::MODES_DISPONIBLES;
+        $recherche = $request->query->get('q');
+
+        // Pagination sur une requete legere (EXISTS, pas de fetch-join) : voir
+        // TronconRepository::creerRequeteFiltree(). Les entites completes de la page courante sont
+        // rechargees ensuite en une seule requete supplementaire (trouverAvecDetailsParIds).
+        $pagination = $paginator->paginate(
+            $tronconRepository->creerRequeteFiltree($modesSelectionnes, $recherche),
+            $request->query->getInt('page', 1),
+            50,
+        );
+
+        $ids = array_map(static fn (Troncon $t): int => $t->getId(), $pagination->getItems());
+        $pagination->setItems($tronconRepository->trouverAvecDetailsParIds($ids));
+
         return $this->render('troncon/index.html.twig', [
-            'troncons' => $tronconRepository->findAllWithDetails(),
+            'troncons' => $pagination,
+            'modesSelectionnes' => $modesSelectionnes,
+            'recherche' => $recherche,
         ]);
     }
 

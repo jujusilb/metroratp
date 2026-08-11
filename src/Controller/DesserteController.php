@@ -6,6 +6,7 @@ use App\Entity\Desserte;
 use App\Form\DesserteType;
 use App\Repository\DesserteRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,11 +15,34 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/desserte')]
 final class DesserteController extends AbstractController
 {
+    /** @var string[] */
+    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers'];
+
     #[Route(name: 'app_desserte_index', methods: ['GET'])]
-    public function index(DesserteRepository $desserteRepository): Response
+    public function index(Request $request, DesserteRepository $desserteRepository, PaginatorInterface $paginator): Response
     {
+        $modesSelectionnes = $request->query->has('modes')
+            ? array_intersect($request->query->all('modes'), self::MODES_DISPONIBLES)
+            : self::MODES_DISPONIBLES;
+        $recherche = $request->query->get('q');
+
+        // Pagination sur une requete legere (pas de fetch-join sur periodesOuverture, qui
+        // multiplierait les lignes SQL et fausserait le compte total) : voir
+        // DesserteRepository::creerRequeteFiltree(). Les entites completes de la page courante
+        // sont rechargees ensuite en une seule requete supplementaire (trouverAvecDetailsParIds).
+        $pagination = $paginator->paginate(
+            $desserteRepository->creerRequeteFiltree($modesSelectionnes, $recherche),
+            $request->query->getInt('page', 1),
+            50,
+        );
+
+        $ids = array_map(static fn (Desserte $d): int => $d->getId(), $pagination->getItems());
+        $pagination->setItems($desserteRepository->trouverAvecDetailsParIds($ids));
+
         return $this->render('desserte/index.html.twig', [
-            'dessertes' => $desserteRepository->findAllWithDetails(),
+            'dessertes' => $pagination,
+            'modesSelectionnes' => $modesSelectionnes,
+            'recherche' => $recherche,
         ]);
     }
 
