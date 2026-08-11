@@ -151,4 +151,17 @@ dans `report.md`). Ajout de cases "Modes de transport" + recherche par station +
 | `curl` répétés sur `/ligne`, `/desserte`, `/troncon` avec différentes combinaisons de `modes[]`/`q`/`page` | Vérification bout en bout : total correct sans filtre (1434 lignes, 31449 dessertes, 7241 tronçons), filtre par mode (ex: Métro seul → 16 lignes), recherche par station (ex: "Nation"), pagination (liens `page=N` qui conservent bien les filtres), cas "aucune case cochée" → 0 résultat (voulu). A débusqué un vrai bug pré-existant (`Desserte::getPremiereOuverture()` plantait sur les dessertes sans période d'ouverture, cf `report.md`), corrigé. |
 | `DELETE FROM utilisateur WHERE username IN (...)` | Nettoyage des comptes de test créés pendant cette session. |
 
+## Session du 2026-08-11 (suite 6) — Filtres supplémentaires : ligne/gestionnaire, gestionnaire multi-select, "tronçons construits"
+
+Demande : la recherche sur Ligne doit porter sur le numéro/nom de ligne (pas les stations) ; sur
+Desserte/Troncon la recherche doit couvrir station OU ligne OU gestionnaire ; ajout d'un filtre
+multi-select par gestionnaire (~56 valeurs) sur les 3 pages, et d'un filtre "Tronçons construits"
+(Oui/Non/Tous) sur Ligne.
+
+| Commande | Objectif |
+|---|---|
+| `INSERT INTO utilisateur ...` (réutilisation du hash déjà généré en session précédente) puis suppression en fin de session | Recréer/nettoyer le compte de test direct-en-base pour les vérifications `curl` authentifiées (voir suite 5 pour le pourquoi de cette méthode plutôt que le navigateur). |
+| `curl` sur `/ligne?q=2`, `?q=Keolis`, `/desserte?q=2`, `?q=Keolis`, `/troncon?q=2`, `?q=Keolis` | Vérifier la recherche élargie (ligne OU gestionnaire, plus station pour Desserte/Troncon) : 504 lignes matchent "2", 331 "Keolis" ; 10976/6783 dessertes ; 358/2910 tronçons — pas d'erreur. |
+| `curl` sur `/ligne?gestionnaires[]=1`, `?avecTroncons=1`, `?avecTroncons=0`, `/desserte?gestionnaires[]=1&gestionnaires[]=21`, `/troncon?gestionnaires[]=1` | Vérifier le multi-select gestionnaire et le filtre "tronçons construits" : 244 lignes RATP, 250 lignes avec tronçons + 1184 sans = 1434 (total exact, cohérent), etc. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

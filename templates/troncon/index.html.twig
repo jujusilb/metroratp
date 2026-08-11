@@ -6,7 +6,15 @@
     <div class="container py-4">
         <h1 class="mb-4">Tronçon</h1>
 
-        {{ include('tools/filtre_liste.html.twig', {'modesSelectionnes': modesSelectionnes, 'recherche': recherche, 'route': 'app_troncon_index'}) }}
+        {{ include('tools/filtre_liste.html.twig', {
+            'modesSelectionnes': modesSelectionnes,
+            'recherche': recherche,
+            'route': 'app_troncon_index',
+            'libelleRecherche': 'une station ou une ligne',
+            'placeholderRecherche': 'Nom de station ou numéro de ligne...',
+            'gestionnaires': gestionnaires,
+            'gestionnairesSelectionnes': gestionnairesSelectionnes,
+        }) }}
 
         <p class="text-muted small">{{ troncons.getTotalItemCount }} tronçon{{ troncons.getTotalItemCount > 1 ? 's' : '' }}</p>
 

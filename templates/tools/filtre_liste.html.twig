@@ -1,15 +1,25 @@
 {#
-    Formulaire de filtre (cases "Modes de transport" + recherche par station) reutilise sur les
-    pages d'index a fort volume (Ligne, Desserte, Troncon) : voir LigneController/DesserteController/
-    TronconController::index(). Soumission classique en GET (pas d'AJAX), coherent avec le reste du
-    site (formulaire de calcul de trajet).
+    Formulaire de filtre (cases "Modes de transport" + gestionnaire + recherche, et optionnellement
+    "tronçons construits") reutilise sur les pages d'index a fort volume (Ligne, Desserte, Troncon) :
+    voir LigneController/DesserteController/TronconController::index(). Soumission classique en GET
+    (pas d'AJAX), coherent avec le reste du site (formulaire de calcul de trajet).
 
     Variables attendues :
     - modesSelectionnes : string[] modes actuellement coches
     - recherche : ?string valeur actuelle du champ de recherche
     - route : nom de la route de la page courante (pour l'action du formulaire)
+    - libelleRecherche : label du champ de recherche (ce sur quoi il filtre differe selon la page :
+      numero de ligne pour Ligne, nom de station pour Desserte/Troncon) — defaut "une station"
+    - placeholderRecherche : optionnel, defaut "Nom de station..."
+    - gestionnaires : Gestionnaire[] toutes les options du multi-select (triees par label)
+    - gestionnairesSelectionnes : int[] ids actuellement selectionnes ([] = pas de filtre)
+    - avecTroncons : optionnel, ?string ('1'/'0'/null) — si fourni, affiche le filtre "Tronçons
+      construits" (pertinent pour Ligne uniquement pour l'instant)
 #}
 {% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers'} %}
+{% set libelleRecherche = libelleRecherche|default('une station') %}
+{% set placeholderRecherche = placeholderRecherche|default('Nom de station...') %}
+{% set gestionnairesSelectionnes = gestionnairesSelectionnes|default([]) %}
 <form method="get" action="{{ path(route) }}" class="row g-3 mb-4 align-items-end">
     <div class="col-12">
         <span class="form-label d-block">Modes de transport</span>
@@ -22,14 +32,35 @@
             {% endfor %}
         </div>
     </div>
-    <div class="col-md-8">
-        <label for="filtre-recherche" class="form-label">Rechercher une station</label>
-        <input type="text" name="q" id="filtre-recherche" class="form-control" value="{{ recherche }}" placeholder="Nom de station...">
+    <div class="col-md-5">
+        <label for="filtre-recherche" class="form-label">Rechercher {{ libelleRecherche }}</label>
+        <input type="text" name="q" id="filtre-recherche" class="form-control" value="{{ recherche }}" placeholder="{{ placeholderRecherche }}">
     </div>
-    <div class="col-md-4">
-        <button type="submit" class="btn btn-primary w-100">Filtrer</button>
-        {% if recherche or modesSelectionnes|length < 5 %}
-            <a href="{{ path(route) }}" class="btn btn-outline-secondary w-100 mt-2">Réinitialiser</a>
+    {% if gestionnaires is defined %}
+        <div class="col-md-4">
+            <label for="filtre-gestionnaire" class="form-label">Gestionnaire</label>
+            <select name="gestionnaires[]" id="filtre-gestionnaire" class="form-select" multiple size="1">
+                {% for gestionnaire in gestionnaires %}
+                    <option value="{{ gestionnaire.id }}" {{ gestionnaire.id in gestionnairesSelectionnes ? 'selected' : '' }}>{{ gestionnaire.label }}</option>
+                {% endfor %}
+            </select>
+            <div class="form-text">Ctrl/Cmd+clic pour en choisir plusieurs. Vide = tous.</div>
+        </div>
+    {% endif %}
+    {% if avecTroncons is defined %}
+        <div class="col-md-3">
+            <label for="filtre-avec-troncons" class="form-label">Tronçons construits</label>
+            <select name="avecTroncons" id="filtre-avec-troncons" class="form-select">
+                <option value="" {{ avecTroncons is null ? 'selected' : '' }}>Tous</option>
+                <option value="1" {{ avecTroncons == '1' ? 'selected' : '' }}>Oui</option>
+                <option value="0" {{ avecTroncons == '0' ? 'selected' : '' }}>Non</option>
+            </select>
+        </div>
+    {% endif %}
+    <div class="col-md-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+        {% if recherche or modesSelectionnes|length < 5 or gestionnairesSelectionnes|length > 0 or (avecTroncons is defined and avecTroncons is not null) %}
+            <a href="{{ path(route) }}" class="btn btn-outline-secondary">Réinitialiser</a>
         {% endif %}
     </div>
 </form>

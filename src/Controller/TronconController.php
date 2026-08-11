@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Troncon;
 use App\Form\TronconType;
+use App\Repository\GestionnaireRepository;
 use App\Repository\TronconRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -19,18 +20,19 @@ final class TronconController extends AbstractController
     private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers'];
 
     #[Route(name: 'app_troncon_index', methods: ['GET'])]
-    public function index(Request $request, TronconRepository $tronconRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, TronconRepository $tronconRepository, GestionnaireRepository $gestionnaireRepository, PaginatorInterface $paginator): Response
     {
         $modesSelectionnes = $request->query->has('modes')
             ? array_intersect($request->query->all('modes'), self::MODES_DISPONIBLES)
             : self::MODES_DISPONIBLES;
         $recherche = $request->query->get('q');
+        $gestionnairesSelectionnes = array_map('intval', $request->query->all('gestionnaires'));
 
         // Pagination sur une requete legere (EXISTS, pas de fetch-join) : voir
         // TronconRepository::creerRequeteFiltree(). Les entites completes de la page courante sont
         // rechargees ensuite en une seule requete supplementaire (trouverAvecDetailsParIds).
         $pagination = $paginator->paginate(
-            $tronconRepository->creerRequeteFiltree($modesSelectionnes, $recherche),
+            $tronconRepository->creerRequeteFiltree($modesSelectionnes, $recherche, $gestionnairesSelectionnes),
             $request->query->getInt('page', 1),
             50,
         );
@@ -42,6 +44,8 @@ final class TronconController extends AbstractController
             'troncons' => $pagination,
             'modesSelectionnes' => $modesSelectionnes,
             'recherche' => $recherche,
+            'gestionnaires' => $gestionnaireRepository->findBy([], ['label' => 'ASC']),
+            'gestionnairesSelectionnes' => $gestionnairesSelectionnes,
         ]);
     }
 

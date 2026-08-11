@@ -24,10 +24,20 @@ class LigneRepository extends ServiceEntityRepository
      * KnpPaginatorBundle. Query legere (pas de fetch-join sur des collections) : sans risque de
      * multiplier les lignes, contrairement a Desserte/Troncon.
      *
-     * @param string[] $modes     cles Ligne::getModeFiltre() a inclure ; [] = aucun resultat
-     * @param ?string  $recherche filtre par nom de station desservie (LIKE, insensible a la casse)
+     * @param string[] $modes         cles Ligne::getModeFiltre() a inclure ; [] = aucun resultat
+     * @param ?string  $recherche      filtre par numero/nom de ligne OU nom de gestionnaire (LIKE
+     *                                 sur Ligne::label/Gestionnaire::label, pas sur les stations
+     *                                 desservies : taper "2" doit remonter la ligne "2" du metro,
+     *                                 "20" a "29" et "200" a "299" du bus, "342", etc. ; taper
+     *                                 "Keolis" doit remonter toutes les lignes de ce gestionnaire)
+     * @param int[]    $gestionnaireIds identifiants Gestionnaire a inclure ; [] = pas de filtre
+     *                                 (contrairement aux modes, une liste a choix multiple vide
+     *                                 signifie "aucune restriction", pas "aucun resultat")
+     * @param ?bool    $avecTroncons   true = seulement les lignes ayant deja des troncons
+     *                                 construits, false = seulement celles qui n'en ont aucun,
+     *                                 null = pas de filtre
      */
-    public function creerRequeteFiltree(array $modes, ?string $recherche): QueryBuilder
+    public function creerRequeteFiltree(array $modes, ?string $recherche, array $gestionnaireIds = [], ?bool $avecTroncons = null): QueryBuilder
     {
         $qb = $this->createQueryBuilder('l')
             ->leftJoin('l.typeTransport', 'tt')->addSelect('tt')
@@ -38,9 +48,22 @@ class LigneRepository extends ServiceEntityRepository
         $this->appliquerFiltreModes($qb, $modes);
 
         if (null !== $recherche && '' !== trim($recherche)) {
-            $qb->andWhere('EXISTS (SELECT 1 FROM App\Entity\Desserte d2 JOIN d2.station s2 WHERE d2.ligne = l AND s2.label LIKE :recherche)')
+            $qb->andWhere('l.label LIKE :recherche OR g.label LIKE :recherche')
                 ->setParameter('recherche', '%'.trim($recherche).'%')
             ;
+        }
+
+        if ([] !== $gestionnaireIds) {
+            $qb->andWhere('g.id IN (:gestionnaireIds)')
+                ->setParameter('gestionnaireIds', $gestionnaireIds)
+            ;
+        }
+
+        if (null !== $avecTroncons) {
+            $exists = 'EXISTS (SELECT 1 FROM App\Entity\Desserte dTroncon
+                JOIN dTroncon.tronconDessertes tdTroncon
+                WHERE dTroncon.ligne = l)';
+            $qb->andWhere($avecTroncons ? $exists : 'NOT '.$exists);
         }
 
         return $qb;

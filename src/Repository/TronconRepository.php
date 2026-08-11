@@ -29,9 +29,10 @@ class TronconRepository extends ServiceEntityRepository
      * TronconController::index() pour le second temps (rechargement avec details, seulement pour
      * les ids de la page courante, via findAllWithDetails()).
      *
-     * @param string[] $modes cles Ligne::getModeFiltre() a inclure ; [] = aucun resultat
+     * @param string[] $modes           cles Ligne::getModeFiltre() a inclure ; [] = aucun resultat
+     * @param int[]    $gestionnaireIds identifiants Gestionnaire a inclure ; [] = pas de filtre
      */
-    public function creerRequeteFiltree(array $modes, ?string $recherche): QueryBuilder
+    public function creerRequeteFiltree(array $modes, ?string $recherche, array $gestionnaireIds = []): QueryBuilder
     {
         $qb = $this->createQueryBuilder('t')
             ->orderBy('t.id', 'ASC')
@@ -69,12 +70,27 @@ class TronconRepository extends ServiceEntityRepository
         }
 
         if (null !== $recherche && '' !== trim($recherche)) {
+            // "2" doit remonter aussi bien un troncon touchant une station "Gare de l'Est" que
+            // ceux d'une ligne "2" (metro) ou 20-29/200-299 (bus) ; "Keolis" doit remonter les
+            // troncons de ce gestionnaire : recherche sur le nom de station OU le numero/nom de
+            // ligne OU le nom de gestionnaire, meme principe que DesserteRepository.
             $qb->andWhere(
                 'EXISTS (SELECT 1 FROM App\Entity\TronconDesserte tdRech
                     JOIN tdRech.desserte dRech
                     JOIN dRech.station sRech
-                    WHERE tdRech.troncon = t AND sRech.label LIKE :recherche)'
+                    JOIN dRech.ligne ligneRech
+                    LEFT JOIN ligneRech.gestionnaire gRech
+                    WHERE tdRech.troncon = t AND (sRech.label LIKE :recherche OR ligneRech.label LIKE :recherche OR gRech.label LIKE :recherche))'
             )->setParameter('recherche', '%'.trim($recherche).'%');
+        }
+
+        if ([] !== $gestionnaireIds) {
+            $qb->andWhere(
+                'EXISTS (SELECT 1 FROM App\Entity\TronconDesserte tdGest
+                    JOIN tdGest.desserte dGest
+                    JOIN dGest.ligne ligneGest
+                    WHERE tdGest.troncon = t AND ligneGest.gestionnaire IN (:gestionnaireIds))'
+            )->setParameter('gestionnaireIds', $gestionnaireIds);
         }
 
         return $qb;

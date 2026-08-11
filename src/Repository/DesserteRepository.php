@@ -19,7 +19,10 @@ class DesserteRepository extends ServiceEntityRepository
 
     /**
      * Pour l'index (des milliers de dessertes au total) : filtre par mode de la ligne (meme
-     * notion que Ligne::getModeFiltre()) et par nom de station, a paginer avec KnpPaginatorBundle.
+     * notion que Ligne::getModeFiltre()) et par nom de station OU numero/nom de ligne OU nom de
+     * gestionnaire (ex: "2" remonte aussi bien les dessertes de la station "Gare de l'Est" que
+     * celles de la ligne "2" du metro ou des lignes de bus 20-29/200-299... ; "Keolis" remonte
+     * toutes les dessertes des lignes de ce gestionnaire), a paginer avec KnpPaginatorBundle.
      *
      * Volontairement AUCUN fetch-join sur une collection ici (periodesOuverture, notamment) :
      * KnpPaginatorBundle pagine sur le nombre de LIGNES SQL renvoyees par la requete, donc un
@@ -27,9 +30,10 @@ class DesserteRepository extends ServiceEntityRepository
      * le compte total et la pagination. Voir DesserteController::index() pour le second temps
      * (rechargement avec details, seulement pour les ids de la page courante).
      *
-     * @param string[] $modes cles Ligne::getModeFiltre() a inclure ; [] = aucun resultat
+     * @param string[] $modes           cles Ligne::getModeFiltre() a inclure ; [] = aucun resultat
+     * @param int[]    $gestionnaireIds identifiants Gestionnaire a inclure ; [] = pas de filtre
      */
-    public function creerRequeteFiltree(array $modes, ?string $recherche): QueryBuilder
+    public function creerRequeteFiltree(array $modes, ?string $recherche, array $gestionnaireIds = []): QueryBuilder
     {
         $qb = $this->createQueryBuilder('d')
             ->leftJoin('d.ligne', 'ligne')
@@ -59,8 +63,14 @@ class DesserteRepository extends ServiceEntityRepository
 
         if (null !== $recherche && '' !== trim($recherche)) {
             $qb->leftJoin('d.station', 'station')
-                ->andWhere('station.label LIKE :recherche')
+                ->andWhere('station.label LIKE :recherche OR ligne.label LIKE :recherche OR g.label LIKE :recherche')
                 ->setParameter('recherche', '%'.trim($recherche).'%')
+            ;
+        }
+
+        if ([] !== $gestionnaireIds) {
+            $qb->andWhere('g.id IN (:gestionnaireIds)')
+                ->setParameter('gestionnaireIds', $gestionnaireIds)
             ;
         }
 

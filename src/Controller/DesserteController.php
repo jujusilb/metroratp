@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Desserte;
 use App\Form\DesserteType;
 use App\Repository\DesserteRepository;
+use App\Repository\GestionnaireRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,19 +20,20 @@ final class DesserteController extends AbstractController
     private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers'];
 
     #[Route(name: 'app_desserte_index', methods: ['GET'])]
-    public function index(Request $request, DesserteRepository $desserteRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, DesserteRepository $desserteRepository, GestionnaireRepository $gestionnaireRepository, PaginatorInterface $paginator): Response
     {
         $modesSelectionnes = $request->query->has('modes')
             ? array_intersect($request->query->all('modes'), self::MODES_DISPONIBLES)
             : self::MODES_DISPONIBLES;
         $recherche = $request->query->get('q');
+        $gestionnairesSelectionnes = array_map('intval', $request->query->all('gestionnaires'));
 
         // Pagination sur une requete legere (pas de fetch-join sur periodesOuverture, qui
         // multiplierait les lignes SQL et fausserait le compte total) : voir
         // DesserteRepository::creerRequeteFiltree(). Les entites completes de la page courante
         // sont rechargees ensuite en une seule requete supplementaire (trouverAvecDetailsParIds).
         $pagination = $paginator->paginate(
-            $desserteRepository->creerRequeteFiltree($modesSelectionnes, $recherche),
+            $desserteRepository->creerRequeteFiltree($modesSelectionnes, $recherche, $gestionnairesSelectionnes),
             $request->query->getInt('page', 1),
             50,
         );
@@ -43,6 +45,8 @@ final class DesserteController extends AbstractController
             'dessertes' => $pagination,
             'modesSelectionnes' => $modesSelectionnes,
             'recherche' => $recherche,
+            'gestionnaires' => $gestionnaireRepository->findBy([], ['label' => 'ASC']),
+            'gestionnairesSelectionnes' => $gestionnairesSelectionnes,
         ]);
     }
 

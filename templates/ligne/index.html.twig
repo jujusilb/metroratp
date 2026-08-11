@@ -6,7 +6,16 @@
     <div class="container py-4">
         <h1 class="mb-4">Ligne</h1>
 
-        {{ include('tools/filtre_liste.html.twig', {'modesSelectionnes': modesSelectionnes, 'recherche': recherche, 'route': 'app_ligne_index'}) }}
+        {{ include('tools/filtre_liste.html.twig', {
+            'modesSelectionnes': modesSelectionnes,
+            'recherche': recherche,
+            'route': 'app_ligne_index',
+            'libelleRecherche': 'une ligne',
+            'placeholderRecherche': 'Numéro ou nom de ligne...',
+            'gestionnaires': gestionnaires,
+            'gestionnairesSelectionnes': gestionnairesSelectionnes,
+            'avecTroncons': avecTroncons,
+        }) }}
 
         <p class="text-muted small">{{ lignes.getTotalItemCount }} ligne{{ lignes.getTotalItemCount > 1 ? 's' : '' }}</p>
 

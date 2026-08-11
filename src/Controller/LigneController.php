@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Ligne;
 use App\Form\LigneType;
+use App\Repository\GestionnaireRepository;
 use App\Repository\LigneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -19,7 +20,7 @@ final class LigneController extends AbstractController
     private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers'];
 
     #[Route(name: 'app_ligne_index', methods: ['GET'])]
-    public function index(Request $request, LigneRepository $ligneRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, LigneRepository $ligneRepository, GestionnaireRepository $gestionnaireRepository, PaginatorInterface $paginator): Response
     {
         // Au premier chargement (aucune case n'a encore ete soumise), tout est coche par
         // defaut : comportement historique (liste complete), non restreint.
@@ -27,9 +28,14 @@ final class LigneController extends AbstractController
             ? array_intersect($request->query->all('modes'), self::MODES_DISPONIBLES)
             : self::MODES_DISPONIBLES;
         $recherche = $request->query->get('q');
+        $gestionnairesSelectionnes = array_map('intval', $request->query->all('gestionnaires'));
+        // "" (option "Tous") ne doit pas etre confondu avec une valeur absente : filtre_liste.html.twig
+        // n'affiche le select "Tronçons construits" que si cette variable est definie (meme null).
+        $avecTronconsBrut = $request->query->get('avecTroncons');
+        $avecTroncons = '' === $avecTronconsBrut || null === $avecTronconsBrut ? null : '1' === $avecTronconsBrut;
 
         $lignes = $paginator->paginate(
-            $ligneRepository->creerRequeteFiltree($modesSelectionnes, $recherche),
+            $ligneRepository->creerRequeteFiltree($modesSelectionnes, $recherche, $gestionnairesSelectionnes, $avecTroncons),
             $request->query->getInt('page', 1),
             50,
         );
@@ -38,6 +44,9 @@ final class LigneController extends AbstractController
             'lignes' => $lignes,
             'modesSelectionnes' => $modesSelectionnes,
             'recherche' => $recherche,
+            'gestionnaires' => $gestionnaireRepository->findBy([], ['label' => 'ASC']),
+            'gestionnairesSelectionnes' => $gestionnairesSelectionnes,
+            'avecTroncons' => $avecTronconsBrut,
         ]);
     }
 
