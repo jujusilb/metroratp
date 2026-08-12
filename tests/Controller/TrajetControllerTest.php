@@ -26,12 +26,12 @@ final class TrajetControllerTest extends DatabaseTestCase
         $this->connecterEnAdmin($this->client, $this->manager);
     }
 
-    private function createStation(string $label, ?float $schemaX = null, ?float $schemaY = null): Station
+    private function createStation(string $label, ?float $latitude = null, ?float $longitude = null): Station
     {
         $station = new Station();
         $station->setLabel($label);
-        $station->setSchemaX($schemaX);
-        $station->setSchemaY($schemaY);
+        $station->setLatitude($latitude);
+        $station->setLongitude($longitude);
         $this->manager->persist($station);
 
         return $station;
@@ -148,11 +148,11 @@ final class TrajetControllerTest extends DatabaseTestCase
         self::assertSelectorTextContains('body', '2 min');
     }
 
-    public function testAvecCoordonneesSchematiquesAlimenteLaCarte(): void
+    public function testAvecCoordonneesGeographiquesAlimenteLaCarte(): void
     {
         $ligne = $this->createLigne();
-        $a = $this->createDesserte($ligne, $this->createStation('A', 10.0, 20.0));
-        $b = $this->createDesserte($ligne, $this->createStation('B', 15.0, 25.0));
+        $a = $this->createDesserte($ligne, $this->createStation('A', 48.85, 2.35));
+        $b = $this->createDesserte($ligne, $this->createStation('B', 48.86, 2.36));
         $this->linkTroncon($a, $b);
         $this->manager->flush();
         $this->manager->clear();
@@ -164,7 +164,7 @@ final class TrajetControllerTest extends DatabaseTestCase
         self::assertNotNull($carteJson);
         $carte = json_decode($carteJson, true, 512, \JSON_THROW_ON_ERROR);
         self::assertCount(1, $carte['reseau']);
-        self::assertEqualsWithDelta(10.0, $carte['reseau'][0]['x1'], 0.001);
+        self::assertEqualsWithDelta(48.85, $carte['reseau'][0]['lat1'], 0.001);
         self::assertSame('A', $carte['trajet'][0]['labelDepart']);
     }
 

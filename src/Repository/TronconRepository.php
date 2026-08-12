@@ -136,6 +136,36 @@ class TronconRepository extends ServiceEntityRepository
     }
 
     /**
+     * Pour le fond de carte du calculateur de trajet (TrajetController) : chaque paire
+     * depart/arrivee de chaque troncon avec les coordonnees geographiques des deux Stations et la
+     * couleur de la Ligne - strictement ce dont la carte a besoin, en SQL brut plutot que via
+     * l'ORM (findAllWithDetails() charge tout le graphe missions/direction, inutile ici, et
+     * hydrater ~193000 entites pour ~7000 troncons prenait plus de 10s).
+     *
+     * @return list<array{id_a: int, lat1: float, lon1: float, id_b: int, lat2: float, lon2: float, couleur: string}>
+     */
+    public function tronconsPourCarte(): array
+    {
+        return $this->getEntityManager()->getConnection()->executeQuery(
+            <<<'SQL'
+                SELECT sa.id AS id_a, sa.latitude AS lat1, sa.longitude AS lon1,
+                       sb.id AS id_b, sb.latitude AS lat2, sb.longitude AS lon2,
+                       l.couleur AS couleur
+                FROM troncon_desserte tda
+                JOIN type_desserte tta ON tta.id = tda.type_desserte_id AND tta.label = 'Départ'
+                JOIN troncon_desserte tdb ON tdb.troncon_id = tda.troncon_id AND tdb.desserte_id != tda.desserte_id
+                JOIN type_desserte ttb ON ttb.id = tdb.type_desserte_id AND ttb.label = 'Arrivée'
+                JOIN desserte da ON da.id = tda.desserte_id
+                JOIN desserte db ON db.id = tdb.desserte_id
+                JOIN station sa ON sa.id = da.station_id
+                JOIN station sb ON sb.id = db.station_id
+                JOIN ligne l ON l.id = da.ligne_id
+                WHERE sa.latitude IS NOT NULL AND sb.latitude IS NOT NULL
+                SQL
+        )->fetchAllAssociative();
+    }
+
+    /**
      * Pour l'index/l'affichage : evite le N+1 sur le graphe depart/arrivee/direction
      * (troncon_desserte -> desserte -> station/ligne, et missions -> direction -> station).
      *

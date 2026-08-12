@@ -192,3 +192,18 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     }
 }
 
+// Badge numerote d'une station du trajet sur la carte Leaflet (calculateur de trajet).
+.carte-station-numero span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bs-body-bg, #fff);
+    border: 1.5px solid #333;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #333;
+}
+

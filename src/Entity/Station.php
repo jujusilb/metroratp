@@ -47,6 +47,19 @@ class Station
     private ?float $schemaY = null;
 
     /**
+     * Coordonnees geographiques reelles (WGS84, degres decimaux), depuis stops.txt (GTFS IDFM,
+     * location_type=1, memes lignes que le codeExterne/ZdC) : voir la commande
+     * app:importer-coordonnees-geographiques. Contrairement a schemaX/Y (plan deforme,
+     * metro/RER/tram seulement), couvre tous les modes sur toute l'Ile-de-France - c'est ce que
+     * la carte du calculateur de trajet utilise pour un fond de carte reel (Leaflet/OSM).
+     */
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $latitude = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $longitude = null;
+
+    /**
      * @var Collection<int, Sortie>
      */
     #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'station')]
@@ -125,6 +138,30 @@ class Station
     public function setSchemaY(?float $schemaY): static
     {
         $this->schemaY = $schemaY;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): static
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): static
+    {
+        $this->longitude = $longitude;
 
         return $this;
     }

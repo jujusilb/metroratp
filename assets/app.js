@@ -3,6 +3,7 @@ import 'bootstrap';
 // Police libre hebergee localement (pas de CDN externe), la plus proche visuellement du
 // style arrondi de la Parisine (police propriete RATP, non disponible sous licence libre).
 import '@fontsource/baloo-2/700.css';
+import 'leaflet/dist/leaflet.css';
 import { initStyleStationPicker } from './js/style-station-picker';
 import { initTrajetCarte } from './js/trajet-carte';
 import { initTrajetAutocomplete } from './js/trajet-autocomplete';
@@ -40,10 +41,22 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
-    const trajetCarteContainer = document.getElementById('trajet-carte');
-    if (trajetCarteContainer && trajetCarteContainer.dataset.carte) {
-        const svg = document.getElementById('trajet-carte-svg');
-        const legende = document.getElementById('trajet-carte-legende');
-        initTrajetCarte(svg, legende, JSON.parse(trajetCarteContainer.dataset.carte));
+    // La carte s'affiche dans une modale (masquee par defaut) : Leaflet calcule sa taille a la
+    // creation, donc l'initialiser pendant que la modale est encore cachee produirait une carte
+    // ratatinee dans un coin. On attend sa premiere ouverture, puis on recalcule la taille
+    // (invalidateSize) a chaque reouverture au cas ou la fenetre aurait change de dimensions.
+    const carteModal = document.getElementById('carte-modal');
+    if (carteModal) {
+        const trajetCarteContainer = document.getElementById('trajet-carte');
+        let carte = null;
+        carteModal.addEventListener('shown.bs.modal', () => {
+            if (!carte) {
+                const carteDiv = document.getElementById('trajet-carte-map');
+                const legende = document.getElementById('trajet-carte-legende');
+                carte = initTrajetCarte(carteDiv, legende, JSON.parse(trajetCarteContainer.dataset.carte));
+            } else {
+                carte.invalidateSize();
+            }
+        });
     }
 });

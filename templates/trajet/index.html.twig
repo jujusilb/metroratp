@@ -12,8 +12,8 @@
             (369 tronçons sur 376 ; les autres utilisent une estimation de 2 min faute de correspondance trouvée).
             Les temps de correspondance restent des <strong>estimations</strong> (temps de marche connu sinon 3 min
             par défaut, plus 2 min d'attente moyenne du prochain train) — ce ne sont pas des données officielles RATP.
-            La carte utilise les coordonnées du plan schématique officiel Île-de-France Mobilités
-            (300 stations sur 315 positionnées ; les extensions les plus récentes n'y figurent pas encore).
+            La carte utilise les coordonnées géographiques réelles (fond de carte OpenStreetMap), tous modes
+            confondus (métro, RER, tram, bus) sur toute l'Île-de-France.
         </p>
 
         {% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers'} %}
@@ -67,14 +67,6 @@
                 <span class="badge text-bg-light text-dark fs-6">{{ resultat.etapes|length }} étapes</span>
             </div>
 
-            {% if carteJson %}
-                <p class="small text-muted mb-1">Molette pour zoomer, cliquer-glisser pour se déplacer</p>
-                <div id="trajet-carte" data-carte="{{ carteJson }}" style="border: 1px solid #dee2e6; border-radius: 6px;" class="mb-2">
-                    <svg id="trajet-carte-svg" viewBox="0 0 900 620" style="width: 100%; height: 500px; display: block; cursor: grab; touch-action: none;"></svg>
-                </div>
-                <div id="trajet-carte-legende" class="row row-cols-1 row-cols-md-3 g-1 mb-4 small"></div>
-            {% endif %}
-
             {% if segments|length > 0 %}
                 <ul class="nav nav-pills mb-3" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -83,6 +75,11 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="onglet-detaille" data-bs-toggle="pill" data-bs-target="#vue-detaillee" type="button" role="tab" aria-controls="vue-detaillee" aria-selected="false">Détaillé</button>
                     </li>
+                    {% if carteJson %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" type="button" data-bs-toggle="modal" data-bs-target="#carte-modal">Carte</button>
+                        </li>
+                    {% endif %}
                 </ul>
 
                 <div class="tab-content mb-4">
@@ -145,6 +142,25 @@
                 </div>
             {% else %}
                 <p class="text-muted mb-4">Départ et arrivée identiques.</p>
+            {% endif %}
+
+            {% if carteJson %}
+                <div class="modal fade" id="carte-modal" tabindex="-1" aria-labelledby="carte-modal-titre" aria-hidden="true">
+                    <div class="modal-dialog modal-fullscreen">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title fs-5" id="carte-modal-titre">Carte du trajet</h2>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                            </div>
+                            <div class="modal-body d-flex flex-column">
+                                <div id="trajet-carte" data-carte="{{ carteJson }}" class="flex-grow-1 mb-2">
+                                    <div id="trajet-carte-map" style="width: 100%; height: 100%;"></div>
+                                </div>
+                                <div id="trajet-carte-legende" class="row row-cols-1 row-cols-md-3 g-1 small"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endif %}
         </div>
     {% endif %}

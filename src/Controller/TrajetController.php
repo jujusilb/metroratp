@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Desserte;
 use App\Entity\Station;
-use App\Entity\Troncon;
 use App\Repository\DesserteRepository;
 use App\Repository\StationRepository;
 use App\Repository\TronconRepository;
@@ -249,65 +248,51 @@ final class TrajetController extends AbstractController
     }
 
     /**
-     * Le reseau complet des troncons, positionnes sur le plan schematique officiel IDFM
-     * (Station::schemaX/Y, voir app:importer-coordonnees-schema). Sert de fond de carte
-     * (attenue) pour situer le trajet trouve dans son contexte. Les troncons dont une des deux
-     * stations n'a pas de coordonnees connues sont ignores (~2% du reseau, cf commande import).
+     * Le reseau complet des troncons, positionnes avec les coordonnees geographiques reelles
+     * (Station::latitude/longitude, voir app:importer-coordonnees-geographiques - couvre tous les
+     * modes, pas seulement le metro). Sert de fond de carte (attenue) pour situer le trajet
+     * trouve dans son contexte. Les troncons dont une des deux stations n'a pas de coordonnees
+     * connues sont ignores (~4% du reseau, essentiellement les stations "originales" sans
+     * codeExterne - voir TODO.md, doublons de Station).
      *
-     * @return list<array{x1: float, y1: float, x2: float, y2: float, couleur: string}>
+     * En SQL brut (TronconRepository::tronconsPourCarte()) plutot que via l'ORM : hydrater
+     * l'integralite du graphe Troncon (~7000 troncons, missions/direction compris) prenait plus
+     * de 10s, alors que cette methode n'a besoin que des coordonnees et de la couleur.
+     *
+     * @return list<array{lat1: float, lon1: float, lat2: float, lon2: float, couleur: string}>
      */
     private function construireReseauPourAffichage(TronconRepository $tronconRepository): array
     {
         $troncons = [];
         $vus = [];
 
-        foreach ($tronconRepository->findAllWithDetails() as $troncon) {
-            /** @var Troncon $troncon */
-            foreach ($troncon->getSensCirculation() as $sens) {
-                $depart = $sens['depart'];
-                $arrivee = $sens['arrivee'];
-                if (null === $depart || null === $arrivee) {
-                    continue;
-                }
-
-                $stationDepart = $depart->getStation();
-                $stationArrivee = $arrivee->getStation();
-                if (null === $stationDepart || null === $stationArrivee) {
-                    continue;
-                }
-                if (null === $stationDepart->getSchemaX() || null === $stationArrivee->getSchemaX()) {
-                    continue;
-                }
-
-                $couleur = $depart->getLigne()?->getCouleur() ?? '6c757d';
-                $cle = min($stationDepart->getId(), $stationArrivee->getId())
-                    . '-' . max($stationDepart->getId(), $stationArrivee->getId())
-                    . '-' . $couleur;
-                if (isset($vus[$cle])) {
-                    continue;
-                }
-                $vus[$cle] = true;
-
-                $troncons[] = [
-                    'x1' => $stationDepart->getSchemaX(),
-                    'y1' => $stationDepart->getSchemaY(),
-                    'x2' => $stationArrivee->getSchemaX(),
-                    'y2' => $stationArrivee->getSchemaY(),
-                    'couleur' => '#' . ltrim($couleur, '#'),
-                ];
+        foreach ($tronconRepository->tronconsPourCarte() as $ligne) {
+            $couleur = $ligne['couleur'] ?? '6c757d';
+            $cle = min($ligne['id_a'], $ligne['id_b']) . '-' . max($ligne['id_a'], $ligne['id_b']) . '-' . $couleur;
+            if (isset($vus[$cle])) {
+                continue;
             }
+            $vus[$cle] = true;
+
+            $troncons[] = [
+                'lat1' => (float) $ligne['lat1'],
+                'lon1' => (float) $ligne['lon1'],
+                'lat2' => (float) $ligne['lat2'],
+                'lon2' => (float) $ligne['lon2'],
+                'couleur' => '#' . ltrim($couleur, '#'),
+            ];
         }
 
         return $troncons;
     }
 
     /**
-     * Les etapes du trajet trouve, avec les coordonnees schematiques de chaque station
+     * Les etapes du trajet trouve, avec les coordonnees geographiques reelles de chaque station
      * (etapes dont une station n'a pas de coordonnees connues sont ignorees : le trajet textuel
      * reste complet, seule cette representation graphique en manquera un morceau).
      *
      * @param Etape[] $etapes
-     * @return list<array{labelDepart: string, x1: float, y1: float, labelArrivee: string, x2: float, y2: float, couleur: string, type: string}>
+     * @return list<array{labelDepart: string, lat1: float, lon1: float, labelArrivee: string, lat2: float, lon2: float, couleur: string, type: string}>
      */
     private function construireTrajetPourAffichage(array $etapes): array
     {
@@ -319,7 +304,7 @@ final class TrajetController extends AbstractController
             if (null === $stationDepart || null === $stationArrivee) {
                 continue;
             }
-            if (null === $stationDepart->getSchemaX() || null === $stationArrivee->getSchemaX()) {
+            if (null === $stationDepart->getLatitude() || null === $stationArrivee->getLatitude()) {
                 continue;
             }
 
@@ -329,11 +314,11 @@ final class TrajetController extends AbstractController
 
             $resultat[] = [
                 'labelDepart' => $stationDepart->getLabel(),
-                'x1' => $stationDepart->getSchemaX(),
-                'y1' => $stationDepart->getSchemaY(),
+                'lat1' => $stationDepart->getLatitude(),
+                'lon1' => $stationDepart->getLongitude(),
                 'labelArrivee' => $stationArrivee->getLabel(),
-                'x2' => $stationArrivee->getSchemaX(),
-                'y2' => $stationArrivee->getSchemaY(),
+                'lat2' => $stationArrivee->getLatitude(),
+                'lon2' => $stationArrivee->getLongitude(),
                 'couleur' => $couleur,
                 'type' => $etape->type,
             ];
