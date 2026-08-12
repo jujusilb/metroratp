@@ -91,6 +91,45 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
   temps de marche GTFS (`app:affiner-distances-correspondances`) — la plupart des correspondances
   existantes avaient déjà une distance vérifiée manuellement, non écrasée.
 
+## Carte du calculateur de trajet (fait le 2026-08-12)
+
+~~La carte du calculateur de trajet n'utilisait que `Station.schemaX/Y` (plan schématique officiel,
+METRO seulement, ~300/315 stations) — RER/tram/bus n'apparaissaient jamais, meme quand le trajet
+les traversait reellement.~~ **Remplace par de vraies coordonnees geographiques** (`Station.latitude/
+longitude`, `app:importer-coordonnees-geographiques`, depuis `zdc_coordonnees.csv` extrait du GTFS) :
+couvre tous les modes sur toute l'Ile-de-France (13696 Stations via codeExterne + 371 de plus par
+repli sur le nom exact pour les Stations "originales" sans codeExterne). Rendu passe d'un SVG
+schematique fait main a une vraie carte Leaflet/OpenStreetMap (`assets/js/trajet-carte.js`),
+affichee dans une modale plein ecran (bouton "Carte").
+
+**Limite residuelle connue** : le repli par nom exact ne resout que ~70% des ~534 Stations
+"originales" sans codeExterne (le probleme de doublons documente plus haut) — les noms dont la
+graphie differe de celle du referentiel IDFM restent sans coordonnees (ex: "Châtelet" seul, la
+jumelle ZdC-liee s'appelant "Châtelet - Les Halles" ou "Châtelet (Paris 4e)" ; "Reuilly — Diderot"
+avec son tiret cadratin). Pour ces stations precises, le trace mis en evidence sur la carte peut
+etre incomplet ou vide bien que l'itineraire textuel reste correct. Un rapprochement plus tolerant
+(normalisation + repli par inclusion de mots, comme `app:importer-coordonnees-schema`) resoudrait
+une partie du reste, mais la vraie correction reste la fusion des Stations dupliquees (voir plus
+haut). Verifie une fausse correspondance ("Saint-Paul" du Marais rapproche par erreur d'un arret de
+bus rural homonyme) : corrigee via une petite liste d'exclusion manuelle dans la commande
+(`EXCLUSIONS_CONNUES`) — a completer si un nouveau cas est repere.
+
+## Performance de TrajetFinder (decouvert le 2026-08-12, pas corrige)
+
+`TrajetFinder::construireGraphe()` reconstruit l'integralite du graphe (tous les Troncon ET toutes
+les Correspondance) via l'ORM a **chaque** calcul de trajet, avec des fetch-joins tres larges
+(`TronconRepository`/`CorrespondanceRepository::findAllWithDetails()` : missions, directions,
+etc.). Devenu tres lent (~12s par requete, ~193 000 entites Doctrine hydratees) depuis que la table
+`correspondance` est passee de ~31 000 a ~155 000+ lignes (correspondances bus, voir plus haut) et
+que `troncon` compte desormais ~7241 lignes (bus compris). Le meme probleme a ete corrige pour le
+fond de carte (nouvelle methode SQL brute `TronconRepository::tronconsPourCarte()`, quasi
+instantanee) mais **pas pour le calcul d'itineraire lui-meme**, qui reste lent en prod.
+
+Piste de correction (pas implementee) : meme principe - construire le graphe Dijkstra (juste les
+ids et les poids) via des requetes SQL legeres plutot que l'ORM, puis ne recharger via Doctrine que
+les quelques entites necessaires aux `Etape` du chemin **trouve** (motif "requete legere + recharge
+par ids" deja utilise ailleurs dans le projet pour la pagination).
+
 ## Lignes Transilien V/P/R (pas encore dans la base)
 
 En ajoutant le matériel roulant RER (2026-08-09), plusieurs séries sont notées "exploitation
