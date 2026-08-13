@@ -52,9 +52,17 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
 
 ## Autres pistes notées en cours de route
 
-- Coordonnées du plan schématique (`Station.schemaX/Y`) manquantes pour les stations créées
+- ~~Coordonnées du plan schématique (`Station.schemaX/Y`) manquantes pour les stations créées
   après l'import RER/reseau complet (~14000 stations) — la source `schema_gares-gf` n'a pas
-  été retrouvée localement.
+  été retrouvée localement.~~ — **fait le 2026-08-14** : source retrouvée (téléchargée par
+  l'utilisateur), `app:importer-coordonnees-schema` étendue à tous les modes ferrés (métro/RER/
+  tram/train, plus seulement métro) avec un garde-fou (Stations candidates restreintes a celles
+  desservies par un mode ferre lourd - sans ca, le rapprochement par nom matchait aussi des
+  milliers d'arrets de bus). 1037 Stations positionnées (contre ~300 avant). **A noter** :
+  `schemaX/Y` n'est plus utilisé par aucune fonctionnalité visible depuis que la carte du trajet
+  utilise `latitude`/`longitude` (vraies coordonnées geographiques, voir plus haut) — cette donnée
+  est complète mais dormante, utile seulement si une bascule "plan schematique officiel" est
+  ajoutée un jour.
 - ~~Église d'Auteuil (ligne 10) : sans mission dédiée~~ — vérifié le 2026-08-09 : `Mission`
   n'est utilisée nulle part dans le site (ni le calcul de trajet ni l'affichage des lignes),
   donc aucun effet fonctionnel. En revanche, corrigé un vrai bug trouvé au passage : le tronçon

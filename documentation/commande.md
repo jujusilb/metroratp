@@ -249,4 +249,19 @@ granularité comme infini pour toute donnée de transport IDF (mémorisé).
 | Vérification navigateur (profiler Symfony) | Avant : ~12-14s, ~193 000 entités gérées, plantage mémoire avec `Ligne::trace`. Après : **2,5s, 30 entités, 58 Mo de pic mémoire** (limite 512 Mo). Confirmé aussi que le tracé réel se calcule correctement (Bastille→Gare de Lyon : 13 points de la vraie courbe de la ligne 1, pas juste 2). |
 | `documentation/TODO.md` | Sections mises à jour : tracé réel documenté, section "Performance de TrajetFinder" passée de "pas corrigé" à "corrigé" avec le détail de la cause du crash. |
 
+## Session du 2026-08-13/14 (suite 11) — Coordonnées du plan schématique, tous modes
+
+Demande : exploiter `schema_gares-gf.csv` (repéré comme "bonus find" lors d'une session
+précédente — répondait à un manque documenté dans `TODO.md`, jamais traité jusqu'ici).
+
+| Commande | Objectif |
+|---|---|
+| Inspection du fichier (`php -r` avec `fgetcsv`) | Format différent de ce qu'attendait `app:importer-coordonnees-schema` (entêtes `NOM_GARE`/`MODE_`/`X`/`Y` en majuscules, pas `nom_gare`/`mode`/`x`/`y`) et couvre TOUS les modes ferrés (391 métro, 259 RER, 287 train/Transilien, 255+14 tram, 10 navette), pas seulement le métro comme la version existante de la commande le filtrait. |
+| `cp` du fichier vers `documentation/scripts/donnees-extraites/` (275 Ko, assez petit pour être commité tel quel) | `documentation/IDFM-gtfs/` est gitignore ; rendre le fichier disponible en prod sans script d'extraction (inutile ici, taille déjà raisonnable). |
+| Extension de `ImporterCoordonneesSchemaCommand` (colonnes + tous modes) puis `--dry-run` | Premier essai alarmant : **4863 stations "positionnées"** sur ~14000 en base — bien trop pour les ~1000 lieux réels de la source, signe de faux positifs (le rapprochement par nom, avec repli par inclusion de mots, matchait aussi des arrêts de bus au nom proche d'une gare, alors que ce dataset ne couvre jamais le bus). |
+| Ajout d'un garde-fou : restreindre les Stations candidates à celles desservies par un mode ferré lourd (Métro/RER/Tramway/Train, via EXISTS sur Desserte→Ligne→TypeTransport) | Après correctif : 1071 candidates, **1037 positionnées (97%)**, 34 non trouvées. Vérifié : aucune station bus-seule positionnée, uniquement des hubs multimodaux légitimes (ex: La Défense, Gare de Lyon, servis par RER + bus). |
+| `php bin/console app:importer-coordonnees-schema documentation/scripts/donnees-extraites/schema_gares-gf.csv` (exécution réelle) | 1037 Stations mises à jour (contre ~300 avant, métro seulement). |
+| `php bin/phpunit` (134 tests) | Tout passe. |
+| Note pour l'utilisateur : `Station.schemaX/Y` n'est plus utilisé par aucune fonctionnalité visible depuis que la carte du trajet utilise les vraies coordonnées géographiques (`latitude`/`longitude`) — cet import complète la donnée pour un usage futur (ex: bascule carte réelle / plan schématique), sans changement visible immédiat sur le site. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

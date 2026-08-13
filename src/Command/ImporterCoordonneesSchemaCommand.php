@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Repository\StationRepository;
+use App\Entity\Station;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -26,8 +26,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * dernier recours (jamais de correspondance approximative type distance de Levenshtein : testee
  * empiriquement, elle a mal apparie deux vraies stations differentes qui partagent un gros
  * suffixe commun - "Mairie d'Aubervilliers" avec "Fort d'Aubervilliers").
+ *
+ * Couvre tous les modes presents dans la source (metro, RER, tram, train/Transilien) - pas
+ * seulement le metro comme la premiere version de cette commande : le mode NAVETTE (10 lignes,
+ * navettes automatiques type CDGVAL/Orlyval) est ignore faute d'equivalent dans notre
+ * TypeTransport. Format de colonnes mis a jour (le precedent export utilisait des entetes en
+ * minuscules 'nom_gare'/'mode'/'x'/'y' ; l'export courant utilise 'NOM_GARE'/'MODE_'/'X'/'Y').
  */
-#[AsCommand(name: 'app:importer-coordonnees-schema', description: 'Importe les coordonnees du plan schematique IDFM pour les stations de metro')]
+#[AsCommand(name: 'app:importer-coordonnees-schema', description: 'Importe les coordonnees du plan schematique IDFM pour les stations (tous modes)')]
 class ImporterCoordonneesSchemaCommand extends Command
 {
     private const CORRESPONDANCES_MANUELLES = [
@@ -47,7 +53,6 @@ class ImporterCoordonneesSchemaCommand extends Command
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly StationRepository $stationRepository,
     ) {
         parent::__construct();
     }
@@ -111,14 +116,18 @@ class ImporterCoordonneesSchemaCommand extends Command
         }
 
         $header = fgetcsv($fh, 0, ';');
-        $idxNom = array_search('nom_gare', $header, true);
-        $idxMode = array_search('mode', $header, true);
-        $idxX = array_search('x', $header, true);
-        $idxY = array_search('y', $header, true);
+        $idxNom = array_search('NOM_GARE', $header, true);
+        $idxMode = array_search('MODE_', $header, true);
+        $idxX = array_search('X', $header, true);
+        $idxY = array_search('Y', $header, true);
+
+        // Modes couverts par ce dataset et ayant un TypeTransport correspondant chez nous - voir
+        // docblock de la classe (NAVETTE ignore faute d'equivalent).
+        $modesConnus = ['METRO' => true, 'RER' => true, 'TRAM' => true, 'Tramway' => true, 'TRAIN' => true];
 
         $parNom = [];
         while (($row = fgetcsv($fh, 0, ';')) !== false) {
-            if ('METRO' !== ($row[$idxMode] ?? '')) {
+            if (!isset($modesConnus[$row[$idxMode] ?? ''])) {
                 continue;
             }
             $x = (float) $row[$idxX];
@@ -139,12 +148,32 @@ class ImporterCoordonneesSchemaCommand extends Command
                 'y' => array_sum(array_column($points, 'y')) / count($points),
             ];
         }
-        $io->writeln(sprintf('Stations metro dans la source : %d', count($coordsParNomNormalise)));
+        $io->writeln(sprintf('Stations dans la source (tous modes couverts) : %d', count($coordsParNomNormalise)));
+
+        // Ne candidate que les Stations desservies par un mode ferre lourd (celui-meme couvert par
+        // cette source : metro/RER/tram/train) : sans ce garde-fou, la correspondance par nom (avec
+        // repli par inclusion de mots) matchait aussi des milliers d'arrets de BUS au nom proche
+        // d'une gare/station (ex: un arret de bus "Nation" quelconque hors de Paris) - 4863
+        // "correspondances" trouvees sur l'ensemble des ~14000 Stations, bien trop pour les ~1000
+        // lieux reels couverts par la source. Ce dataset ne concerne jamais le bus, donc une
+        // Station uniquement desservie par bus ne peut jamais etre une bonne correspondance.
+        $stationsCandidates = $this->entityManager->createQueryBuilder()
+            ->select('s')
+            ->from(Station::class, 's')
+            ->where(
+                'EXISTS (SELECT 1 FROM App\Entity\Desserte d JOIN d.ligne l JOIN l.typeTransport tt
+                    WHERE d.station = s AND tt.label IN (:modesLourds))'
+            )
+            ->setParameter('modesLourds', ['Métro', 'RER', 'Tramway', 'Train'])
+            ->getQuery()
+            ->getResult()
+        ;
+        $io->writeln(sprintf('Stations candidates (desservies par metro/RER/tram/train) : %d', count($stationsCandidates)));
 
         $matches = 0;
         $nonTrouvees = [];
 
-        foreach ($this->stationRepository->findAll() as $station) {
+        foreach ($stationsCandidates as $station) {
             $trouve = $this->trouverCorrespondance($this->normaliser($station->getLabel()), $coordsParNomNormalise);
             if (null === $trouve) {
                 $nonTrouvees[] = $station->getLabel();
