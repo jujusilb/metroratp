@@ -140,21 +140,52 @@ plutot qu'a la Station "originale" (celle affichee par `/station/{id}`). Corrige
 `StationRepository::trouverIdCanoniqueParZdc()`, reutilisable pour toute future donnee importee
 par ZdC qui doit s'afficher sur la bonne page.
 
-## Performance de TrajetFinder (decouvert le 2026-08-12, pas corrige)
+## Performance de TrajetFinder (decouvert le 2026-08-12, corrige le 2026-08-13)
 
-`TrajetFinder::construireGraphe()` reconstruit l'integralite du graphe (tous les Troncon ET toutes
+~~`TrajetFinder::construireGraphe()` reconstruit l'integralite du graphe (tous les Troncon ET toutes
 les Correspondance) via l'ORM a **chaque** calcul de trajet, avec des fetch-joins tres larges
 (`TronconRepository`/`CorrespondanceRepository::findAllWithDetails()` : missions, directions,
 etc.). Devenu tres lent (~12s par requete, ~193 000 entites Doctrine hydratees) depuis que la table
-`correspondance` est passee de ~31 000 a ~155 000+ lignes (correspondances bus, voir plus haut) et
-que `troncon` compte desormais ~7241 lignes (bus compris). Le meme probleme a ete corrige pour le
-fond de carte (nouvelle methode SQL brute `TronconRepository::tronconsPourCarte()`, quasi
-instantanee) mais **pas pour le calcul d'itineraire lui-meme**, qui reste lent en prod.
+`correspondance` est passee de ~31 000 a ~155 000+ lignes.~~ **Corrige** : `construireGraphe()`
+reecrit en SQL brut (ids + poids seulement, aucune entite ORM chargee pour l'ensemble du reseau),
+seules les quelques dizaines de `Desserte` du chemin **trouve** sont rechargees via l'ORM a la fin
+(meme motif "requete legere + recharge par ids" que pour le fond de carte). Passe de ~12-14s
+(~193 000 entites) a ~2,5s (~30 entites, 58 Mo de pic memoire). La correction est devenue urgente
+le jour meme : l'ajout de `Ligne::trace` (potentiellement volumineux) a fait passer le probleme de
+"lent" a un **"Allowed memory size exhausted" (erreur 500) pur et simple** des qu'une Ligne
+concernee avait un gros trace, l'ancien code hydratant une Ligne complete (trace compris) par
+Desserte du reseau entier.
 
-Piste de correction (pas implementee) : meme principe - construire le graphe Dijkstra (juste les
-ids et les poids) via des requetes SQL legeres plutot que l'ORM, puis ne recharger via Doctrine que
-les quelques entites necessaires aux `Etape` du chemin **trouve** (motif "requete legere + recharge
-par ids" deja utilise ailleurs dans le projet pour la pagination).
+Reste ~1,7s de temps SQL par requete (deux grosses requetes brutes scannant tout `troncon_desserte`
+et toute `correspondance` a chaque fois) : correct pour un usage normal, mais une vraie optimisation
+future consisterait a limiter/indexer davantage, ou a mettre en cache le graphe entre deux requetes
+(non fait, pas juge necessaire vu le gain deja obtenu).
+
+## Trace geometrique reel des Lignes (fait le 2026-08-13)
+
+`Ligne::trace` (JSON, liste de composantes/branches, chacune une liste de points [lon,lat]),
+depuis le dataset IDFM "traces-des-lignes-de-transport-en-commun-idfm" (tous modes : 1882 bus, 24
+RER/Transilien, 16 metro, 17 tram, 2 funiculaire/telepherique). Simplifie (Douglas-Peucker,
+tolerance ~3m) et arrondi (5 decimales, ~1,1m) a l'extraction : 76 Mo -> 22,6 Mo, forme visuelle
+inchangee. `app:importer-traces-lignes` (meme rattachement par label pour le metro que
+`app:construire-positions-rame`, `Ligne.codeExterne` etant incoherent pour ce mode - voir plus
+haut) : 1445/1936 lignes rattachees.
+
+La carte du calculateur de trajet utilise ce trace reel pour dessiner le trajet en suivant les
+rues/rails plutot qu'une ligne droite entre deux stations consecutives (`assets/js/trajet-carte.js`,
+`extraireTraceEntreDeuxPoints` : projette les deux stations sur chaque composante du trace de la
+Ligne empruntee, choisit la plus proche des deux, decoupe la portion entre les deux projections).
+Verifie sur un vrai cas (Bastille -> Gare de Lyon, ligne 1) : 13 points de trace reel utilises
+plutot qu'un simple segment. Le fond de reseau (toutes les autres lignes, attenuees) reste en
+lignes droites - seul le trajet mis en evidence beneficie du trace reel, pour ne pas alourdir la
+carte avec des traces de tout le reseau a chaque requete (seules les 1-3 lignes du trajet trouve
+sont transmises, voir `TrajetController::construireTracesLignesPourAffichage()`).
+
+**A ete l'occasion de decouvrir et corriger un bug bien plus grave (voir section Performance de
+TrajetFinder plus bas)** : l'ancien `TrajetFinder::construireGraphe()` chargeait via l'ORM
+l'integralite du reseau (Troncon+Correspondance+Desserte+**Ligne**) a chaque calcul de trajet ; en
+ajoutant `Ligne::trace` (potentiellement volumineux), ce chargement complet du reseau a fait passer
+le calculateur de trajet d'"lent" (~12s) a **totalement casse (erreur 500, memoire epuisee)**.
 
 ## Lignes Transilien V/P/R (pas encore dans la base)
 

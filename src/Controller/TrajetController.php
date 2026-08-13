@@ -62,6 +62,7 @@ final class TrajetController extends AbstractController
                 $carte = [
                     'reseau' => $this->construireReseauPourAffichage($tronconRepository),
                     'trajet' => $this->construireTrajetPourAffichage($resultat->etapes),
+                    'tracesLignes' => $this->construireTracesLignesPourAffichage($resultat->etapes),
                 ];
             }
         }
@@ -289,10 +290,13 @@ final class TrajetController extends AbstractController
     /**
      * Les etapes du trajet trouve, avec les coordonnees geographiques reelles de chaque station
      * (etapes dont une station n'a pas de coordonnees connues sont ignorees : le trajet textuel
-     * reste complet, seule cette representation graphique en manquera un morceau).
+     * reste complet, seule cette representation graphique en manquera un morceau). Les etapes de
+     * type troncon portent aussi l'id de la Ligne empruntee (voir construireTracesLignesPourAffichage) :
+     * la carte s'en sert pour dessiner le trace reel (suit les rues/rails) plutot qu'une ligne
+     * droite entre les deux stations, quand ce trace est connu.
      *
      * @param Etape[] $etapes
-     * @return list<array{labelDepart: string, lat1: float, lon1: float, labelArrivee: string, lat2: float, lon2: float, couleur: string, type: string}>
+     * @return list<array{labelDepart: string, lat1: float, lon1: float, labelArrivee: string, lat2: float, lon2: float, couleur: string, type: string, ligneId: ?int}>
      */
     private function construireTrajetPourAffichage(array $etapes): array
     {
@@ -321,9 +325,39 @@ final class TrajetController extends AbstractController
                 'lon2' => $stationArrivee->getLongitude(),
                 'couleur' => $couleur,
                 'type' => $etape->type,
+                'ligneId' => Etape::TYPE_TRONCON === $etape->type ? $etape->depart->getLigne()?->getId() : null,
             ];
         }
 
         return $resultat;
+    }
+
+    /**
+     * Le trace geometrique reel (Ligne::trace) de chaque Ligne empruntee par une etape de type
+     * troncon du trajet trouve - seulement celles-la, jamais l'ensemble du reseau (les traces
+     * peuvent etre volumineuses pour une ligne de bus longue).
+     *
+     * @param Etape[] $etapes
+     * @return array<int, array> ligneId => trace (liste de lignes, chacune une liste de [lon, lat])
+     */
+    private function construireTracesLignesPourAffichage(array $etapes): array
+    {
+        $traces = [];
+
+        foreach ($etapes as $etape) {
+            if (Etape::TYPE_TRONCON !== $etape->type) {
+                continue;
+            }
+            $ligne = $etape->depart->getLigne();
+            if (null === $ligne || isset($traces[$ligne->getId()])) {
+                continue;
+            }
+            $trace = $ligne->getTrace();
+            if (null !== $trace) {
+                $traces[$ligne->getId()] = $trace;
+            }
+        }
+
+        return $traces;
     }
 }

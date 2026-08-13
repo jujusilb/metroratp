@@ -2,15 +2,10 @@
 
 namespace App\Service;
 
-use App\Entity\Correspondance;
-use App\Entity\Desserte;
-use App\Entity\Ligne;
-use App\Entity\Troncon;
-use App\Repository\CorrespondanceRepository;
 use App\Repository\DesserteRepository;
-use App\Repository\TronconRepository;
 use App\Service\Trajet\Etape;
 use App\Service\Trajet\ResultatTrajet;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Calcule le plus court chemin entre deux dessertes (algorithme de Dijkstra), sur un graphe
@@ -30,6 +25,14 @@ use App\Service\Trajet\ResultatTrajet;
  * 4 min aux heures creuses (source : Paris ZigZag). Pour une arrivee aleatoire sur le quai,
  * l'attente moyenne theorique est la moitie de cet intervalle, soit ~1.5 a 2 min : on retient
  * 2 min comme estimation raisonnable, pas une donnee officielle RATP.
+ *
+ * Le graphe (~7000 troncons, ~155000 correspondances) est construit en SQL brut (id + poids
+ * seulement), jamais via l'ORM : hydrater l'integralite via Doctrine (comme avant) chargeait des
+ * dizaines de milliers d'entites Troncon/Correspondance/Desserte/Ligne a CHAQUE calcul de trajet,
+ * ~12s par requete et depuis l'ajout de Ligne::trace (potentiellement volumineux), un
+ * "Allowed memory size exhausted" pur et simple. Seules les quelques dizaines de Desserte
+ * effectivement utilisees dans le chemin TROUVE sont rechargees via l'ORM a la fin (pattern
+ * "requete legere + recharge par ids" deja utilise ailleurs dans le projet pour la pagination).
  */
 class TrajetFinder
 {
@@ -39,8 +42,7 @@ class TrajetFinder
 
     public function __construct(
         private readonly DesserteRepository $desserteRepository,
-        private readonly TronconRepository $tronconRepository,
-        private readonly CorrespondanceRepository $correspondanceRepository,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -82,7 +84,7 @@ class TrajetFinder
             return new ResultatTrajet([], 0.0);
         }
 
-        [$adjacence, $etapesParArc] = $this->construireGraphe($modesAutorises);
+        [$adjacence, $tronconIdParArc] = $this->construireGraphe($modesAutorises);
 
         $destinationRecherchee = array_flip($dessertesDestination);
         $distances = [];
@@ -137,10 +139,7 @@ class TrajetFinder
         }
         $chemin = array_reverse($chemin);
 
-        $etapes = [];
-        for ($i = 0; $i < count($chemin) - 1; $i++) {
-            $etapes[] = $etapesParArc[$chemin[$i]][$chemin[$i + 1]];
-        }
+        $etapes = $this->construireEtapes($chemin, $adjacence, $tronconIdParArc);
 
         return new ResultatTrajet($etapes, $distances[$arrivee]);
     }
@@ -175,83 +174,146 @@ class TrajetFinder
     }
 
     /**
+     * Meme logique que Ligne::getModeFiltre(), a partir des libelles bruts (evite de charger des
+     * entites Ligne pour l'ensemble du reseau juste pour ce filtre).
+     */
+    private function modeFiltre(?string $typeTransport, ?string $gestionnaire): ?string
+    {
+        return match ($typeTransport) {
+            'Métro' => 'metro',
+            'Tramway' => 'tram',
+            'RER' => 'rer',
+            'Bus' => 'RATP' === $gestionnaire ? 'bus_ratp' : 'bus_tiers',
+            default => null,
+        };
+    }
+
+    /**
+     * Construit le graphe complet (tous les Troncon/Correspondance du reseau, pas seulement ceux
+     * du chemin trouve) en SQL brut : ids et poids seulement, aucune entite ORM chargee. Voir le
+     * docblock de la classe.
+     *
      * @param ?string[] $modesAutorises
      *
-     * @return array{0: array<int, array<int, float>>, 1: array<int, array<int, Etape>>}
+     * @return array{0: array<int, array<int, float>>, 1: array<int, array<int, int>>}
      */
     private function construireGraphe(?array $modesAutorises): array
     {
         /** @var array<int, array<int, float>> $adjacence */
         $adjacence = [];
-        /** @var array<int, array<int, Etape>> $etapesParArc */
-        $etapesParArc = [];
+        /** @var array<int, array<int, int>> $tronconIdParArc */
+        $tronconIdParArc = [];
 
-        $modesAutorises = (null === $modesAutorises || [] === $modesAutorises) ? null : array_flip($modesAutorises);
-        $ligneAutorisee = static function (?Ligne $ligne) use ($modesAutorises): bool {
-            if (null === $modesAutorises) {
-                return true;
-            }
+        $modesAutorisesSet = (null === $modesAutorises || [] === $modesAutorises) ? null : array_flip($modesAutorises);
+        $modeAutorise = static fn (?string $mode): bool => null === $modesAutorisesSet || isset($modesAutorisesSet[$mode]);
 
-            return isset($modesAutorises[$ligne?->getModeFiltre()]);
-        };
-
-        $dessertes = [];
-        foreach ($this->desserteRepository->findAll() as $desserte) {
-            $dessertes[$desserte->getId()] = $desserte;
-        }
-
-        $ajouterArc = function (Desserte $depart, Desserte $arrivee, float $poids, Etape $etape) use (&$adjacence, &$etapesParArc): void {
-            $departId = $depart->getId();
-            $arriveeId = $arrivee->getId();
-
+        $ajouterArc = static function (int $departId, int $arriveeId, float $poids) use (&$adjacence): void {
             if (!isset($adjacence[$departId][$arriveeId]) || $poids < $adjacence[$departId][$arriveeId]) {
                 $adjacence[$departId][$arriveeId] = $poids;
-                $etapesParArc[$departId][$arriveeId] = $etape;
             }
         };
 
-        foreach ($this->tronconRepository->findAllWithDetails() as $troncon) {
-            /** @var Troncon $troncon */
-            $duree = null !== $troncon->getDureeReelleSecondes()
-                ? $troncon->getDureeReelleSecondes() / 60
-                : self::DUREE_TRONCON_MINUTES;
+        $connexion = $this->entityManager->getConnection();
 
-            foreach ($troncon->getSensCirculation() as $sens) {
-                if (null === $sens['depart'] || null === $sens['arrivee']) {
-                    continue;
-                }
-                if (!$ligneAutorisee($sens['depart']->getLigne())) {
-                    continue;
-                }
-
-                $ajouterArc(
-                    $sens['depart'],
-                    $sens['arrivee'],
-                    $duree,
-                    new Etape($sens['depart'], $sens['arrivee'], Etape::TYPE_TRONCON, $duree, troncon: $troncon),
-                );
-            }
-        }
-
-        foreach ($this->correspondanceRepository->findAllWithDetails() as $correspondance) {
-            /** @var Correspondance $correspondance */
-            $desserteA = $correspondance->getDesserteA();
-            $desserteB = $correspondance->getDesserteB();
-            if (null === $desserteA || null === $desserteB) {
+        foreach ($connexion->executeQuery(
+            <<<'SQL'
+                SELECT tda.desserte_id AS depart_id, tdb.desserte_id AS arrivee_id,
+                       t.id AS troncon_id, t.duree_reelle_secondes,
+                       tt.label AS type_transport, g.label AS gestionnaire
+                FROM troncon_desserte tda
+                JOIN type_desserte ttypeA ON ttypeA.id = tda.type_desserte_id AND ttypeA.label = 'Départ'
+                JOIN troncon_desserte tdb ON tdb.troncon_id = tda.troncon_id AND tdb.desserte_id != tda.desserte_id
+                JOIN type_desserte ttypeB ON ttypeB.id = tdb.type_desserte_id AND ttypeB.label = 'Arrivée'
+                JOIN troncon t ON t.id = tda.troncon_id
+                JOIN desserte d ON d.id = tda.desserte_id
+                JOIN ligne l ON l.id = d.ligne_id
+                LEFT JOIN type_transport tt ON tt.id = l.type_transport_id
+                LEFT JOIN gestionnaire g ON g.id = l.gestionnaire_id
+                SQL
+        )->iterateAssociative() as $row) {
+            $mode = $this->modeFiltre($row['type_transport'], $row['gestionnaire']);
+            if (!$modeAutorise($mode)) {
                 continue;
             }
 
-            $duree = ($correspondance->getTempsEstimeMinutes() ?? self::DUREE_CORRESPONDANCE_DEFAUT_MINUTES)
-                + self::DUREE_ATTENTE_CORRESPONDANCE_MINUTES;
+            $departId = (int) $row['depart_id'];
+            $arriveeId = (int) $row['arrivee_id'];
+            $duree = null !== $row['duree_reelle_secondes']
+                ? ((int) $row['duree_reelle_secondes']) / 60
+                : self::DUREE_TRONCON_MINUTES;
 
-            if ($ligneAutorisee($desserteB->getLigne())) {
-                $ajouterArc($desserteA, $desserteB, $duree, new Etape($desserteA, $desserteB, Etape::TYPE_CORRESPONDANCE, $duree, correspondance: $correspondance));
+            $ajouterArc($departId, $arriveeId, $duree);
+            $tronconIdParArc[$departId][$arriveeId] = (int) $row['troncon_id'];
+        }
+
+        foreach ($connexion->executeQuery(
+            <<<'SQL'
+                SELECT c.id, c.desserte_a_id, c.desserte_b_id, c.distance,
+                       ttA.label AS type_transport_a, gA.label AS gestionnaire_a,
+                       ttB.label AS type_transport_b, gB.label AS gestionnaire_b
+                FROM correspondance c
+                JOIN desserte dA ON dA.id = c.desserte_a_id
+                JOIN ligne lA ON lA.id = dA.ligne_id
+                LEFT JOIN type_transport ttA ON ttA.id = lA.type_transport_id
+                LEFT JOIN gestionnaire gA ON gA.id = lA.gestionnaire_id
+                JOIN desserte dB ON dB.id = c.desserte_b_id
+                JOIN ligne lB ON lB.id = dB.ligne_id
+                LEFT JOIN type_transport ttB ON ttB.id = lB.type_transport_id
+                LEFT JOIN gestionnaire gB ON gB.id = lB.gestionnaire_id
+                SQL
+        )->iterateAssociative() as $row) {
+            $modeA = $this->modeFiltre($row['type_transport_a'], $row['gestionnaire_a']);
+            $modeB = $this->modeFiltre($row['type_transport_b'], $row['gestionnaire_b']);
+            $desserteAId = (int) $row['desserte_a_id'];
+            $desserteBId = (int) $row['desserte_b_id'];
+
+            $tempsEstimeMinutes = null !== $row['distance'] ? round(((float) $row['distance']) / 0.9 / 60, 1) : null;
+            $duree = ($tempsEstimeMinutes ?? self::DUREE_CORRESPONDANCE_DEFAUT_MINUTES) + self::DUREE_ATTENTE_CORRESPONDANCE_MINUTES;
+
+            if ($modeAutorise($modeB)) {
+                $ajouterArc($desserteAId, $desserteBId, $duree);
             }
-            if ($ligneAutorisee($desserteA->getLigne())) {
-                $ajouterArc($desserteB, $desserteA, $duree, new Etape($desserteB, $desserteA, Etape::TYPE_CORRESPONDANCE, $duree, correspondance: $correspondance));
+            if ($modeAutorise($modeA)) {
+                $ajouterArc($desserteBId, $desserteAId, $duree);
             }
         }
 
-        return [$adjacence, $etapesParArc];
+        return [$adjacence, $tronconIdParArc];
+    }
+
+    /**
+     * Recharge (une seule requete groupee) les quelques Desserte du chemin TROUVE - jamais
+     * l'ensemble du reseau - pour construire les Etape a retourner (station/ligne necessaires a
+     * l'affichage).
+     *
+     * @param int[]                       $chemin
+     * @param array<int, array<int, float>> $adjacence
+     * @param array<int, array<int, int>>   $tronconIdParArc
+     *
+     * @return Etape[]
+     */
+    private function construireEtapes(array $chemin, array $adjacence, array $tronconIdParArc): array
+    {
+        $dessertes = $this->desserteRepository->trouverAvecDetailsParIds($chemin);
+        $dessertesParId = [];
+        foreach ($dessertes as $desserte) {
+            $dessertesParId[$desserte->getId()] = $desserte;
+        }
+
+        $etapes = [];
+        for ($i = 0; $i < \count($chemin) - 1; ++$i) {
+            $departId = $chemin[$i];
+            $arriveeId = $chemin[$i + 1];
+            $depart = $dessertesParId[$departId] ?? null;
+            $arrivee = $dessertesParId[$arriveeId] ?? null;
+            if (null === $depart || null === $arrivee) {
+                continue;
+            }
+
+            $type = isset($tronconIdParArc[$departId][$arriveeId]) ? Etape::TYPE_TRONCON : Etape::TYPE_CORRESPONDANCE;
+            $etapes[] = new Etape($depart, $arrivee, $type, $adjacence[$departId][$arriveeId]);
+        }
+
+        return $etapes;
     }
 }

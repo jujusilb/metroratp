@@ -29,6 +29,17 @@ class Ligne
     #[ORM\Column(length: 20, nullable: true, unique: true)]
     private ?string $codeExterne = null;
 
+    /**
+     * Trace geometrique reel de la Ligne (WGS84), depuis le dataset IDFM
+     * "traces-des-lignes-de-transport-en-commun-idfm" - voir
+     * documentation/scripts/extraire_traces_lignes.php. JSON : liste de lignes (une Ligne peut
+     * avoir plusieurs branches/variantes disjointes), chacune une liste de points [lon, lat].
+     * Sert a dessiner le trace reel (suit les rues/rails) plutot qu'une ligne droite entre les
+     * stations sur la carte du calculateur de trajet. Null si aucun trace trouve pour cette Ligne.
+     */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $trace = null;
+
     #[ORM\ManyToOne(inversedBy: 'lignes')]
     private ?TypeTransport $typeTransport = null;
 
@@ -90,6 +101,18 @@ class Ligne
     public function setCodeExterne(?string $codeExterne): static
     {
         $this->codeExterne = $codeExterne;
+
+        return $this;
+    }
+
+    public function getTrace(): ?array
+    {
+        return $this->trace;
+    }
+
+    public function setTrace(?array $trace): static
+    {
+        $this->trace = $trace;
 
         return $this;
     }

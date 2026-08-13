@@ -229,4 +229,24 @@ du contenu du dossier GTFS avec l'utilisateur).
 | Ajustement de l'ordre de purge (`position_rame` avant `acces`, contrainte FK) | `app:construire-acces-sorties` doit désormais purger `position_rame` avant `acces`/`sortie` (sinon violation de contrainte FK) — documenté : `app:construire-positions-rame` doit être rejouée juste après. |
 | `php bin/phpunit` (134 tests), vérification navigateur sur `/station/15` | Tout passe, section "Conseils de position" bien affichée avec les bonnes données. |
 
+## Session du 2026-08-13 (suite 10) — Tracé réel des lignes sur la carte + crash mémoire de TrajetFinder
+
+Demande : exploiter `traces-des-lignes-de-transport-en-commun-idfm.csv` /
+`traces-des-lignes-regulieres-de-bus-en-ile-de-france.csv` (utilisateur : "je pense que ca peut
+etre necessaire ou utile"), après une nouvelle consigne explicite : considérer le degré de
+granularité comme infini pour toute donnée de transport IDF (mémorisé).
+
+| Commande | Objectif |
+|---|---|
+| `head`/`awk` sur les deux fichiers de tracés | `traces-des-lignes-de-transport-en-commun-idfm.csv` (1942 lignes) couvre TOUS les modes (1882 bus, 24 RER, 16 métro, 17 tram) avec un identifiant `IDFM:C0xxxx` cohérent avec notre `codeExterne` — choisi comme source unique, rendant le fichier bus-only redondant. |
+| `documentation/scripts/extraire_traces_lignes.php` (nouveau, avec algorithme de Douglas-Peucker écrit à la main) | 76 Mo brut (3,3M points, ~1700/ligne en moyenne) → simplifié (tolérance 3m) + arrondi (5 décimales) → 22,6 Mo (1,26M points, ~650/ligne), forme visuelle inchangée. |
+| Ajout `Ligne::trace` (JSON) + migration + `app:importer-traces-lignes` (rattachement par label pour le métro, même contournement que les conseils de position) | 1445/1936 lignes rattachées. |
+| `assets/js/trajet-carte.js` : `projeterSurSegment`/`projeterSurLigne`/`extraireSousChemin`/`extraireTraceEntreDeuxPoints` (nouvelles fonctions pures, testées) | Projette les 2 stations d'un tronçon du trajet sur le tracé réel de la Ligne empruntée (en choisissant la bonne branche parmi plusieurs), découpe la portion entre les deux — la carte suit maintenant les rues/rails au lieu d'un trait direct entre stations. |
+| Test navigateur sur un vrai trajet (Bastille → Nation, ligne 1) | **Erreur 500 "Allowed memory size exhausted"** au lieu d'afficher la carte. |
+| Investigation : `TrajetFinder::construireGraphe()` | Root cause identifiée : cette méthode (documentée comme lente ~12s dans `TODO.md` depuis la veille, jamais corrigée) charge via l'ORM l'intégralité du réseau (tous les Troncon + toutes les Correspondance, ~193 000 entités) à **chaque** calcul de trajet — en ajoutant `Ligne::trace` (potentiellement volumineux) à ce chargement complet, "lent" est devenu "plante". |
+| Réécriture complète de `TrajetFinder::construireGraphe()` en SQL brut (ids + poids seulement) + `construireEtapes()` qui ne recharge via l'ORM que les quelques dizaines de `Desserte` du chemin **trouvé** | Même motif "requête légère + recharge par ids" que pour la carte. `Etape::troncon`/`correspondance` (jamais lus nulle part dans le code, vérifié par recherche) ne sont plus peuplés — simplification supplémentaire sans risque. |
+| `php bin/console --env=test doctrine:schema:update --force`, `php bin/phpunit` (134 tests) | Tout passe après réécriture — comportement identique, juste beaucoup plus rapide. |
+| Vérification navigateur (profiler Symfony) | Avant : ~12-14s, ~193 000 entités gérées, plantage mémoire avec `Ligne::trace`. Après : **2,5s, 30 entités, 58 Mo de pic mémoire** (limite 512 Mo). Confirmé aussi que le tracé réel se calcule correctement (Bastille→Gare de Lyon : 13 points de la vraie courbe de la ligne 1, pas juste 2). |
+| `documentation/TODO.md` | Sections mises à jour : tracé réel documenté, section "Performance de TrajetFinder" passée de "pas corrigé" à "corrigé" avec le détail de la cause du crash. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
