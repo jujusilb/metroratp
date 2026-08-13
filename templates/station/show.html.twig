@@ -86,6 +86,49 @@
             <p class="text-muted">Aucune sortie enregistrée pour cette station.</p>
         {% endif %}
 
+        <h2 class="h5 mt-4">Conseils de position dans la rame</h2>
+        {% if positionsRame|length > 0 %}
+            <p class="text-muted small">Où se placer dans la rame en montant ici pour arriver au plus près de sa correspondance ou de sa sortie.</p>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Ligne</th>
+                            <th>Pour rejoindre</th>
+                            <th>Se placer</th>
+                            <th>Équipement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for conseil in positionsRame %}
+                            <tr>
+                                <td>
+                                    {% if conseil.ligne %}
+                                        <a href="{{ path('app_ligne_show', {'id': conseil.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ conseil.ligne.couleur|default('#6c757d') }};">
+                                            {{ conseil.ligne.label }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if conseil.acces %}
+                                        <a href="{{ path('app_acces_show', {'id': conseil.acces.id}) }}" class="link-body-emphasis">{{ conseil.destination }}</a>
+                                    {% else %}
+                                        {{ conseil.destination }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ conseil.labelPosition }} <span class="text-muted">({{ conseil.position }}/{{ conseil.positionMax }})</span></td>
+                                <td>{{ conseil.equipement ?? '—' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">Aucun conseil de position enregistré pour cette station.</p>
+        {% endif %}
+
         <div class="mt-4 d-flex gap-2">
             <a href="{{ path('app_station_index') }}" class="btn btn-secondary">Retour à la liste</a>
             {% if is_granted('ROLE_ADMIN') %}

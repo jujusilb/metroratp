@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conseils de position dans la rame{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Conseils de position dans la rame</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Ligne</th>
+                    <th>Station</th>
+                    <th>Destination</th>
+                    <th>Position</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for position_rame in position_rames %}
+                <tr>
+                    <td>{{ position_rame.ligne ? position_rame.ligne.label : '—' }}</td>
+                    <td>{{ position_rame.station ? position_rame.station.label : '—' }}</td>
+                    <td>{{ position_rame.destination }}</td>
+                    <td>{{ position_rame.labelPosition }} ({{ position_rame.position }}/{{ position_rame.positionMax }})</td>
+                    <td>
+                        <a href="{{ path('app_position_rame_show', {'id': position_rame.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_position_rame_edit', {'id': position_rame.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_position_rame_new') }}" class="btn btn-primary">Créer un conseil de position</a>
+        {% endif %}
+    </div>
+{% endblock %}

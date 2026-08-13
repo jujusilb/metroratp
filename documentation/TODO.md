@@ -114,6 +114,32 @@ haut). Verifie une fausse correspondance ("Saint-Paul" du Marais rapproche par e
 bus rural homonyme) : corrigee via une petite liste d'exclusion manuelle dans la commande
 (`EXCLUSIONS_CONNUES`) — a completer si un nouveau cas est repere.
 
+## Conseils de position dans la rame (fait le 2026-08-13)
+
+Nouvelle table `PositionRame` (dataset IDFM "positionnement-dans-la-rame") : pour une Ligne et une
+Station de depart, ou se placer dans la rame pour arriver au plus pres d'une sortie ou d'une
+correspondance. Affiche sur la page de chaque Station. `app:construire-positions-rame` (4671
+lignes, 18 lignes couvertes : metro 1-14+3B+7B, RER A/B - le dataset source ne couvre pas plus).
+
+**Bug decouvert au passage : `Ligne.codeExterne` incoherent pour le metro.** Nos Ligne de metro
+"doublons" (creees par `app:importer-reseau-complet`, voir plus bas "Stations dupliquees" - le
+meme phenomene existe aussi sur `Ligne`, pas seulement `Station`) ont un `codeExterne` qui ne
+correspond plus au GTFS actuel : ex. notre ligne "7" (id avec codeExterne) pointe vers `C00312`,
+qui est en realite dans le GTFS courant une ligne de BUS renommee "6402 (ex 7)" - vraisemblablement
+un residu d'un tres ancien import, jamais nettoye. Contourne pour `app:construire-positions-rame`
+en rattachant par label plutot que par codeExterne (sans risque de collision : seulement 18 lignes
+metro/RER couvertes par ce dataset, pas de bus). **Pas corrige a la source** : toute future
+fonctionnalite qui matche une Ligne de metro par `codeExterne` (a la maniere des lignes de bus)
+tombera dans le meme piege - verifier `referentiel-des-lignes.csv` (pas encore utilise) comme
+piste pour un vrai nettoyage.
+
+**Meme famille que le probleme de Station dupliquee, mais impactant cette fois l'affichage
+directement** (pas seulement une donnee derivee comme les coordonnees de la carte) : Accès/Sorties
+et PositionRame se rattachaient initialement a la Station ZdC-liee (jamais consultee en pratique)
+plutot qu'a la Station "originale" (celle affichee par `/station/{id}`). Corrige par
+`StationRepository::trouverIdCanoniqueParZdc()`, reutilisable pour toute future donnee importee
+par ZdC qui doit s'afficher sur la bonne page.
+
 ## Performance de TrajetFinder (decouvert le 2026-08-12, pas corrige)
 
 `TrajetFinder::construireGraphe()` reconstruit l'integralite du graphe (tous les Troncon ET toutes

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Station;
 use App\Form\StationType;
+use App\Repository\PositionRameRepository;
 use App\Repository\StationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,10 +44,11 @@ final class StationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_station_show', methods: ['GET'])]
-    public function show(Station $station): Response
+    public function show(Station $station, PositionRameRepository $positionRameRepository): Response
     {
         return $this->render('station/show.html.twig', [
             'station' => $station,
+            'positionsRame' => $positionRameRepository->trouverParStation($station->getId()),
         ]);
     }
 

@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conseil de position{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Conseil de position</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ position_rame.id }}</td>
+                </tr>
+                <tr>
+                    <th>Ligne</th>
+                    <td>
+                        {% if position_rame.ligne %}
+                            <a href="{{ path('app_ligne_show', {'id': position_rame.ligne.id}) }}" class="link-body-emphasis">{{ position_rame.ligne.label }}</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Station</th>
+                    <td>
+                        {% if position_rame.station %}
+                            <a href="{{ path('app_station_show', {'id': position_rame.station.id}) }}" class="link-body-emphasis">{{ position_rame.station.label }}</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Destination</th>
+                    <td>{{ position_rame.destination }}</td>
+                </tr>
+                <tr>
+                    <th>Accès</th>
+                    <td>
+                        {% if position_rame.acces %}
+                            <a href="{{ path('app_acces_show', {'id': position_rame.acces.id}) }}" class="link-body-emphasis">{{ position_rame.acces.numero }} — {{ position_rame.acces.label }}</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Position</th>
+                    <td>{{ position_rame.labelPosition }} ({{ position_rame.position }}/{{ position_rame.positionMax }})</td>
+                </tr>
+                <tr>
+                    <th>Équipement</th>
+                    <td>{{ position_rame.equipement ?? '—' }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_position_rame_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_position_rame_edit', {'id': position_rame.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('position_rame/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

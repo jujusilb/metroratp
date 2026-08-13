@@ -93,6 +93,41 @@ class StationRepository extends ServiceEntityRepository
         )));
     }
 
+    /**
+     * Pour tout import qui rattache une donnee externe a une Station par ZdC (Acces/Sortie,
+     * PositionRame...) : renvoie, pour chaque codeExterne connu, l'id de la Station a utiliser
+     * REELLEMENT - celle de la Station "originale" homonyme (creee a la main avant
+     * app:importer-reseau-complet, sans codeExterne, voir TODO.md) quand elle existe, sinon celle
+     * de la Station ZdC-liee elle-meme.
+     *
+     * Necessaire car les Desserte/Troncon les plus anciens (tout le reseau metro/RER/tram
+     * "historique") pointent vers la Station "originale", pas vers son doublon ZdC-lie cree plus
+     * tard : sans ce rattachement, une donnee importee par ZdC atterrirait sur une Station que
+     * personne ne consulte jamais en pratique (la page /station/{id} vraiment visitee est celle de
+     * l'originale). Verifie sans ambiguite (aucun cas ou plusieurs originales homonymes existent).
+     *
+     * @return array<string, int> codeExterne => id de Station a utiliser
+     */
+    public function trouverIdCanoniqueParZdc(): array
+    {
+        $connexion = $this->getEntityManager()->getConnection();
+
+        $resultat = [];
+        foreach ($connexion->executeQuery(
+            <<<'SQL'
+                SELECT zdc.code_externe AS code_externe, COALESCE(MIN(originale.id), zdc.id) AS id
+                FROM station zdc
+                LEFT JOIN station originale ON originale.label = zdc.label AND originale.code_externe IS NULL AND originale.id != zdc.id
+                WHERE zdc.code_externe IS NOT NULL
+                GROUP BY zdc.id
+                SQL
+        )->iterateAssociative() as $row) {
+            $resultat[$row['code_externe']] = (int) $row['id'];
+        }
+
+        return $resultat;
+    }
+
 //    /**
 //     * @return Station[] Returns an array of Station objects
 //     */

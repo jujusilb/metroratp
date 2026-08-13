@@ -210,4 +210,23 @@ distance à 0%), puis « compléter la carte avec tous les modes pour toute l'Î
 | `ssh ... php bin/console app:importer-coordonnees-geographiques/app:calculer-distances-troncons-bus/app:construire-acces-sorties --env=prod` | Exécution des 3 commandes de données contre la base de production (le code seul ne suffit pas, ces commandes ne tournent pas automatiquement au déploiement). Résultats cohérents avec le local. |
 | `curl` authentifié (cookie jar) sur `/trajet?origine=18&destination=21` en prod | Vérification finale : `data-carte` contient bien des coordonnées géographiques réelles (`lat1`/`lon1`) sur le site en ligne. |
 
+## Session du 2026-08-13 (suite 9) — Conseils de position dans la rame
+
+Demande : exploiter `documentation/IDFM-gtfs/positionnement-dans-la-rame.csv` (repéré en discutant
+du contenu du dossier GTFS avec l'utilisateur).
+
+| Commande | Objectif |
+|---|---|
+| `head`/`awk`/`shuf` sur `positionnement-dans-la-rame.csv` | Comprendre le schéma : pour une Ligne et un arrêt de départ (`stop_point` GTFS), où se placer dans la rame (`position_average`/`position`/`position_max`) pour arriver au plus près d'une sortie (`to_type=access_point`, même identifiant que `acces.csv`) ou d'une correspondance (`to_type=stop_point`). |
+| `grep` croisé sur `stops.txt` | Confirmer que les `stop_point` de ce fichier sont directement des `stop_id` GTFS (`location_type=0`), dont le `parent_station` donne la ZdC en un seul saut — pas besoin d'`arrets-transporteur.csv`. |
+| Ajout `Acces::codeExterne` (migration + colonne) | Nécessaire pour relier les `to_type=access_point` du nouveau fichier à nos `Acces` existants (même `AccId`). |
+| `src/Entity/PositionRame.php` (nouvelle entité), migration, `make:crud`-like (Controller/Form/templates écrits à la main, `make:crud` non-interactif indisponible dans cet environnement) | CRUD admin standard (`/position-rame`), cohérent avec le reste de l'app. |
+| `documentation/scripts/extraire_conseils_position.php` (nouveau) | Extrait `positionnement-dans-la-rame.csv` + résolution ZdC via `stops.txt` → `conseils_position.csv` (4675 lignes). |
+| Tentative de rattachement de la Ligne par `codeExterne` (comme pour le bus) | **Échec, bug découvert** : le `codeExterne` de nos Ligne de métro est incohérent avec le GTFS actuel (ex: notre ligne "7" pointe vers `C00312`, qui correspond dans le GTFS courant à une ligne de BUS renommée "6402 (ex 7)", pas à la ligne 7 du métro). Confirmé sur `routes.txt`. |
+| Correctif : rattachement par **label** (`UPPER(label)`, en préférant la Ligne sans `codeExterne` = l'"originale") | Le jeu de données ne couvre que 18 lignes (métro 1-14+3B+7B, RER A/B) — pas de risque de collision de label dans ce périmètre (contrairement au bus). `app:construire-positions-rame` (nouvelle commande) : 4671/4675 créées. |
+| Vérification sur `/station/15` (Châtelet) | **Deuxième bug découvert** : les Sorties ET les nouveaux conseils de position atterrissaient sur la Station ZdC-liée (id 20175, jamais consultée), pas sur la Station "originale" (id 15, celle réellement affichée) — même problème de doublon de Station que pour la carte, mais impactant cette fois l'affichage lui-même, pas juste une donnée dérivée. |
+| Correctif : `StationRepository::trouverIdCanoniqueParZdc()` (nouvelle méthode réutilisable) | Résout chaque `codeExterne` vers l'id de Station "originale" homonyme quand elle existe (0 cas ambigu vérifié), sinon vers la Station ZdC-liée elle-même. Réutilisé par `app:construire-acces-sorties` ET `app:construire-positions-rame`. Après correctif : Châtelet (id 15) affiche bien ses 2948 sorties et 2948 conseils de position. |
+| Ajustement de l'ordre de purge (`position_rame` avant `acces`, contrainte FK) | `app:construire-acces-sorties` doit désormais purger `position_rame` avant `acces`/`sortie` (sinon violation de contrainte FK) — documenté : `app:construire-positions-rame` doit être rejouée juste après. |
+| `php bin/phpunit` (134 tests), vérification navigateur sur `/station/15` | Tout passe, section "Conseils de position" bien affichée avec les bonnes données. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le conseil de position{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Modifier le conseil de position</h1>
+
+        {{ include('position_rame/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+        <div class="d-flex gap-2 mt-3">
+            <a href="{{ path('app_position_rame_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+
+        {{ include('position_rame/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

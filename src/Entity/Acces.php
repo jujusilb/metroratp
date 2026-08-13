@@ -30,6 +30,14 @@ class Acces
     #[ORM\Column(nullable: true)]
     private ?bool $isAccessible = null;
 
+    /**
+     * AccId du referentiel IDFM (dataset "acces" / GTFS StopPlaceEntrance) : permet de retrouver
+     * cet Acces depuis d'autres jeux de donnees IDFM qui reference ce meme identifiant (ex:
+     * positionnement-dans-la-rame). Null pour les Acces crees manuellement.
+     */
+    #[ORM\Column(length: 20, nullable: true, unique: true)]
+    private ?string $codeExterne = null;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -102,6 +110,18 @@ class Acces
     public function setIsAccessible(?bool $isAccessible): static
     {
         $this->isAccessible = $isAccessible;
+
+        return $this;
+    }
+
+    public function getCodeExterne(): ?string
+    {
+        return $this->codeExterne;
+    }
+
+    public function setCodeExterne(?string $codeExterne): static
+    {
+        $this->codeExterne = $codeExterne;
 
         return $this;
     }

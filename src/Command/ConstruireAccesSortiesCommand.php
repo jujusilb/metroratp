@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Entity\Acces;
 use App\Entity\Sortie;
 use App\Entity\Station;
+use App\Repository\StationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -26,6 +27,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * pas 2500+ acces individuels) : Acces::isAccessible reste NULL, ce qui reflete l'absence reelle
  * de donnee plutot qu'une fausse valeur.
  *
+ * Rattachement par StationRepository::trouverIdCanoniqueParZdc() (et non directement par
+ * codeExterne) : sans ca, les Sortie atterriraient sur la Station ZdC-liee plutot que sur la
+ * Station "originale" que /station/{id} affiche reellement pour tout le reseau metro/RER/tram
+ * historique (voir TODO.md, doublons de Station) - verifie sur Chatelet, ou aucune Sortie
+ * n'apparaissait sur la bonne page avant ce correctif.
+ *
  * Reconstruction complete a chaque execution (purge Acces/Sortie avant import) : les 1068 lignes
  * precedentes etaient une saisie manuelle partielle, concentree sur des Station "originales" sans
  * codeExterne (le probleme de doublons de Station documente dans TODO.md), donc pas reconciliable
@@ -39,6 +46,7 @@ class ConstruireAccesSortiesCommand extends Command
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly StationRepository $stationRepository,
     ) {
         parent::__construct();
     }
@@ -62,13 +70,13 @@ class ConstruireAccesSortiesCommand extends Command
         $connexion = $this->entityManager->getConnection();
 
         $io->section('Chargement des Stations connues (par codeExterne / ZdC)...');
-        $stationIdParZdc = [];
-        foreach ($connexion->executeQuery('SELECT code_externe, id FROM station WHERE code_externe IS NOT NULL')->iterateAssociative() as $row) {
-            $stationIdParZdc[$row['code_externe']] = (int) $row['id'];
-        }
+        $stationIdParZdc = $this->stationRepository->trouverIdCanoniqueParZdc();
         $io->info(\count($stationIdParZdc).' Stations avec un codeExterne.');
 
         $io->section('Purge des Acces/Sortie existants...');
+        // position_rame reference acces (FK) : purge d'abord, sinon la purge d'acces echoue.
+        // Consequence : app:construire-positions-rame doit etre rejouee juste apres celle-ci.
+        $connexion->executeStatement('DELETE FROM position_rame');
         $connexion->executeStatement('DELETE FROM sortie');
         $connexion->executeStatement('DELETE FROM acces');
 
@@ -90,6 +98,7 @@ class ConstruireAccesSortiesCommand extends Command
             $acces = new Acces();
             $acces->setLabel('' !== $ligne['label'] ? mb_substr($ligne['label'], 0, 100) : 'Sans nom');
             $acces->setNumero('' !== $ligne['numero'] ? mb_substr($ligne['numero'], 0, 4) : null);
+            $acces->setCodeExterne($ligne['accId']);
             $this->entityManager->persist($acces);
 
             $sortie = new Sortie();
