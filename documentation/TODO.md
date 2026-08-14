@@ -35,6 +35,16 @@ parisiennes assignées automatiquement, le reste du réseau (~13000 stations) do
 main via le formulaire Station — c'est le comportement voulu (repli automatique + assignation
 manuelle), pas un bug.
 
+**Découverte en vérifiant le déploiement** : le `--exclude='documentation'` du rsync de
+déploiement (`.github/workflows/tests.yml`) semblait impliquer qu'il fallait uploader les CSV
+dérivés (`documentation/scripts/donnees-extraites/`) à la main par SSH après coup — en fait ce
+n'est pas nécessaire : `documentation/IDFM-gtfs/` (le seul contenu vraiment volumineux) est
+gitignore et n'existe donc jamais dans le checkout du runner, donc rien de gros n'est jamais
+exclu en pratique ; tout le reste de `documentation/` (docs + CSV dérivés commit) part bien avec
+le rsync malgré l'exclude (vérifié le 2026-08-14 : `plans-de-secteur.csv` et
+`communes_departements.csv` étaient déjà présents et à jour sur le serveur juste après le
+déploiement, hash identique au fichier commit une fois les fins de ligne normalisées).
+
 ## Lignes à embranchements complexes (RER C notamment)
 
 Le modèle actuel (`Direction` = un par terminus réel, `numero` = position du tronçon,

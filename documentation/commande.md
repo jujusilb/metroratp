@@ -299,5 +299,9 @@ automatique quand le département de la Station ne correspond qu'à un seul Plan
 | `php bin/console app:importer-plans-secteur` (x2, vérif idempotence) | 73 Plan créés, 878 Stations parisiennes assignées automatiquement ; second passage : 0 création, 0 nouvelle assignation (les Station déjà assignées ne sont jamais écrasées). |
 | Création d'un utilisateur admin de test local (`security:hash-password` + INSERT SQL direct) | Vérification navigateur de `/plan` (liste, 73 lignes), `/plan/1` (Secteur Paris, 878 stations listées), `/station/{id}` (lien "Plan de secteur" affiché) et `/station/{id}/edit` (champ `plan` éditable, 73 options + "-- Aucun --"). Utilisateur supprimé après vérification. |
 | `php bin/phpunit` (134 tests), `npx jest` (36 tests) | Tout passe après ajout de l'entité `Plan`. |
+| `git push origin main` + `gh run watch` | CI et déploiement verts (build assets, PHPUnit, Jest, rsync, migration, symlink). |
+| `ssh -i ~/.ssh/deploy-metroratp/id_ed25519 -p 65002 ... "ls documentation/scripts/donnees-extraites/"` | Vérifié que `documentation/` (dont les CSV dérivés) est bien synchronisé en prod malgré le `--exclude='documentation'` du workflow — en pratique rien de gros n'est jamais exclu puisque `documentation/IDFM-gtfs/` (55 Mo+) est gitignore et n'existe donc jamais dans le checkout source. Pas besoin d'upload manuel supplémentaire. |
+| `ssh ... php bin/console app:importer-plans-secteur --env=prod` | 73 Plan créés, 878 Stations assignées — résultats identiques au local. |
+| Compte de test admin temporaire (`test_verif_plan`, méthode base64+SQL habituelle) + `curl` authentifié | Vérifié `/plan` (73 lignes), `/plan/1` (878 stations), `/station/{id}` (lien Plan affiché) et `/station/{id}/edit` (74 options, la bonne présélectionnée) en production. Compte supprimé après vérification. |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
