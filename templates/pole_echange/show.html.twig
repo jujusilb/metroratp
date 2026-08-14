@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pôle d'échange {{ pole_echange.label }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ pole_echange.label }}</h1>
+
+        <h2 class="h5">Stations ({{ pole_echange.stations|length }})</h2>
+        {% if pole_echange.stations|length > 0 %}
+            <ul>
+                {% for station in pole_echange.stations %}
+                    <li><a href="{{ path('app_station_show', {'id': station.id}) }}">{{ station.label }}</a>{% if station.ville %} <span class="text-muted">({{ station.ville }})</span>{% endif %}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucune station assignée à ce pôle pour l'instant.</p>
+        {% endif %}
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_pole_echange_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_pole_echange_edit', {'id': pole_echange.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('pole_echange/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

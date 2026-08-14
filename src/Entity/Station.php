@@ -70,6 +70,13 @@ class Station
     private ?Plan $plan = null;
 
     /**
+     * Pole d'echange (hub multimodal officiel IDFM) auquel cette Station appartient, le cas
+     * echeant (voir PoleEchange::$stations et app:importer-poles-echange).
+     */
+    #[ORM\ManyToOne(inversedBy: 'stations')]
+    private ?PoleEchange $poleEchange = null;
+
+    /**
      * @var Collection<int, Sortie>
      */
     #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'station')]
@@ -184,6 +191,18 @@ class Station
     public function setPlan(?Plan $plan): static
     {
         $this->plan = $plan;
+
+        return $this;
+    }
+
+    public function getPoleEchange(): ?PoleEchange
+    {
+        return $this->poleEchange;
+    }
+
+    public function setPoleEchange(?PoleEchange $poleEchange): static
+    {
+        $this->poleEchange = $poleEchange;
 
         return $this;
     }

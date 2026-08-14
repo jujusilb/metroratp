@@ -316,4 +316,18 @@ filtrent les stations affichées.
 | `npx jest` (49 tests, dont les nouveaux `carte-reseau.test.js`/`carte-tooltip.test.js`) et `php bin/phpunit` (134 tests) | Tout passe. |
 | Compte de test admin local (`test_carte2`) + connexion via `form.submit()` en JS (le clic direct sur le bouton via l'outil de navigation a de nouveau échoué silencieusement, cohérent avec le souci déjà documenté) | Vérification de la carte : bulle interactive ouverte via `dispatchEvent(MouseEvent('mousemove'/'mouseover'))` sur le canvas Leaflet (hit-testing interne, pas d'éléments DOM par marqueur) ; survol d'une ligne dans la bulle déclenche bien `GET /ligne/{id}/trace` (vérifié via `read_network_requests`) ; clic réutilise le cache (pas de second appel réseau) ; décocher "Bus" fait disparaître le marqueur bus-only "Hôtel de Ville" (plus de bulle au survol du même point), le recocher le fait réapparaître. Aucune erreur console à aucune étape. Compte supprimé après vérification. |
 
+## Session du 2026-08-14 (suite 15) — Pôles d'échange (entité `PoleEchange`)
+
+10 pôles d'échange IDFM (grandes gares/aéroports), sans clé de rattachement dans le dataset
+source vers les Station : rattachement construit à la main après avoir écarté un matching flou
+(trop de faux positifs sur les vraies données).
+
+| Commande | Objectif |
+|---|---|
+| Script PHP inline (`SELECT ... WHERE label LIKE '%terme%'`) sur des termes comme "Roissy", "Charles de Gaulle", "Saint-Michel" | Confirmé le risque de faux positifs d'un matching flou : des dizaines de résultats sans rapport avec le pôle recherché (arrêts de bus homonymes dans des communes éloignées). Décision : ne pas automatiser, curer la liste à la main. |
+| Script PHP inline (`SELECT ... WHERE label = ?`, exact) pour chaque candidat plausible par pôle | Construit la liste vérifiée `STATIONS_PAR_POLE` (32 couples label+ville) de `ImporterPolesEchangeCommand`, en excluant explicitement les faux positifs identifiés (ex: "Châtelet" à Montereau-Fault-Yonne, "Saint-Michel" à Étampes/Moissy-Cramayel, "La Muette" à Chesnay-Rocquencourt). |
+| `php bin/console app:importer-poles-echange` (x2, vérif idempotence) | 10 PoleEchange créés, 32/32 Stations assignées (0 candidat introuvable) — confirme la liste manuelle contre la vraie base. Second passage : 0 création, 32 mises à jour de Pole (pas de doublon Station). |
+| Compte de test admin local (`test_pole`) + connexion via `form.submit()` en JS | Vérifié `/pole-echange` (10 lignes), `/pole-echange/7` (Châtelet - Les Halles, 4 stations correctes), `/station/336` (lien Pôle affiché) et `/station/336/edit` (11 options, la bonne présélectionnée). Compte supprimé après vérification. |
+| `php bin/phpunit` (134 tests), `npx jest` (49 tests) | Tout passe après ajout de l'entité `PoleEchange`. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

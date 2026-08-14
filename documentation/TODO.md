@@ -45,6 +45,23 @@ le rsync malgré l'exclude (vérifié le 2026-08-14 : `plans-de-secteur.csv` et
 `communes_departements.csv` étaient déjà présents et à jour sur le serveur juste après le
 déploiement, hash identique au fichier commit une fois les fins de ligne normalisées).
 
+## Pôles d'échange (fait le 2026-08-14)
+
+Nouvelle entité `PoleEchange` (dataset IDFM `poles-d-echange`, seulement 10 hubs officiels :
+grandes gares/aéroports) + `Station::poleEchange` (FK many-to-one, une Station sur au plus un
+Pole). CRUD complet (`/pole-echange`), lien affiché sur la fiche Station, champ éditable dans son
+formulaire.
+
+Le dataset source ne contient qu'un id et un nom de pôle, **aucune clé de rattachement** vers les
+Station (pas de ZdCId). Un matching flou par nom a été explicitement écarté après l'avoir testé
+sur les vraies données : `LIKE '%Roissy%'` ou `LIKE '%Charles de Gaulle%'` remontent des dizaines
+d'arrêts sans rapport partout en Île-de-France (ex: "Charles de Gaulle" est aussi un nom de rue
+très commun). À la place, `app:importer-poles-echange` utilise une liste **vérifiée à la main**
+(constante PHP `STATIONS_PAR_POLE`, 32 couples label+ville) construite en interrogeant chaque
+candidat individuellement avant de l'inclure — même piège que `schema_gares-gf`/traces de lignes
+plus tôt dans le projet (voir plus bas) : ne jamais faire confiance à un matching par nom seul sans
+vérifier les faux positifs sur le jeu de données réel.
+
 ## Lignes à embranchements complexes (RER C notamment)
 
 Le modèle actuel (`Direction` = un par terminus réel, `numero` = position du tronçon,

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pôles d'échange{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Pôles d'échange</h1>
+        <p class="text-muted">Grands hubs multimodaux identifiés par IDFM (gares, aéroports), regroupant chacun plusieurs stations du réseau.</p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Stations rattachées</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for pole_echange in pole_echanges %}
+                <tr>
+                    <td>{{ pole_echange.label }}</td>
+                    <td>{{ pole_echange.stations|length }}</td>
+                    <td>
+                        <a href="{{ path('app_pole_echange_show', {'id': pole_echange.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_pole_echange_edit', {'id': pole_echange.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_pole_echange_new') }}" class="btn btn-primary">Créer un pôle d'échange</a>
+        {% endif %}
+    </div>
+{% endblock %}

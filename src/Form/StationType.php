@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Plan;
+use App\Entity\PoleEchange;
 use App\Entity\Station;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -18,6 +19,12 @@ class StationType extends AbstractType
             ->add('plan', EntityType::class, [
                 'class' => Plan::class,
                 'choice_label' => 'secteur',
+                'required' => false,
+                'placeholder' => '-- Aucun --',
+            ])
+            ->add('poleEchange', EntityType::class, [
+                'class' => PoleEchange::class,
+                'choice_label' => 'label',
                 'required' => false,
                 'placeholder' => '-- Aucun --',
             ])

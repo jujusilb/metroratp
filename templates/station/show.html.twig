@@ -14,6 +14,14 @@
                 <span class="text-muted">Non renseigné</span>
             {% endif %}
         </p>
+        <p>
+            <strong>Pôle d'échange :</strong>
+            {% if station.poleEchange %}
+                <a href="{{ path('app_pole_echange_show', {'id': station.poleEchange.id}) }}">{{ station.poleEchange.label }}</a>
+            {% else %}
+                <span class="text-muted">Non renseigné</span>
+            {% endif %}
+        </p>
 
         <h2 class="h5">Dessertes</h2>
         {% if station.dessertes|length > 0 %}
