@@ -219,3 +219,17 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     }
 }
 
+// Bandeau "Sortie N - libelle" sur la mini-carte des acces d'une Station (carte-acces.js),
+// imitant le style des plans de quartier affiches sur les quais RATP.
+.carte-acces-sortie span {
+    display: inline-block;
+    white-space: nowrap;
+    background: #1a237e;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+

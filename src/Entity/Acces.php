@@ -38,6 +38,17 @@ class Acces
     #[ORM\Column(length: 20, nullable: true, unique: true)]
     private ?string $codeExterne = null;
 
+    /**
+     * Coordonnees geographiques reelles (WGS84), depuis stops.txt (GTFS IDFM, location_type=2 -
+     * meme source que Station::latitude/longitude) : voir app:construire-acces-sorties. Sert a
+     * afficher la position de chaque acces sur une petite carte, sur la fiche de sa Station.
+     */
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $latitude = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $longitude = null;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -122,6 +133,30 @@ class Acces
     public function setCodeExterne(?string $codeExterne): static
     {
         $this->codeExterne = $codeExterne;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): static
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): static
+    {
+        $this->longitude = $longitude;
 
         return $this;
     }

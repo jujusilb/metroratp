@@ -2,15 +2,17 @@
 
 /**
  * Extrait, pour chaque acces/entree GTFS (stops.txt, location_type=2 = "StopPlaceEntrance"), son
- * rattachement a une ZdC (parent_station) et son libelle/numero officiels - en preferant
- * acces.csv (dataset "acces", data.iledefrance-mobilites.fr, AccName/AccShortName) quand l'acces y
- * figure, sinon en repli sur stop_name/stop_code du GTFS (~7 acces absents de l'export CSV).
+ * rattachement a une ZdC (parent_station), son libelle/numero officiels - en preferant acces.csv
+ * (dataset "acces", data.iledefrance-mobilites.fr, AccName/AccShortName) quand l'acces y figure,
+ * sinon en repli sur stop_name/stop_code du GTFS (~7 acces absents de l'export CSV) - et ses
+ * coordonnees geographiques (stop_lat/stop_lon, directement sur la ligne GTFS de l'acces, pas
+ * besoin du champ AccGeopoint de acces.csv).
  *
  * Le feed GTFS complet (~1,3 Go, documentation/IDFM-gtfs/) n'est jamais commit (.gitignore) : ce
  * petit extrait est ce que app:construire-acces-sorties utilise en production.
  *
  * Sortie : documentation/scripts/donnees-extraites/acces_entrees.csv
- * Colonnes : accId,zdc,label,numero
+ * Colonnes : accId,zdc,label,numero,lat,lon
  */
 
 $gtfsDir = 'documentation/IDFM-gtfs/';
@@ -43,7 +45,7 @@ foreach (lireCsv($gtfsDir . 'acces.csv', ';') as $row) {
 echo count($infosParAccId) . " acces dans acces.csv.\n";
 
 $fichier = fopen($sortie, 'w');
-fputcsv($fichier, ['accId', 'zdc', 'label', 'numero']);
+fputcsv($fichier, ['accId', 'zdc', 'label', 'numero', 'lat', 'lon']);
 
 $nb = 0;
 foreach (lireCsv($gtfsDir . 'stops.txt') as $row) {
@@ -56,7 +58,7 @@ foreach (lireCsv($gtfsDir . 'stops.txt') as $row) {
     $label = $infosParAccId[$accId]['label'] ?? $row['stop_name'];
     $numero = $infosParAccId[$accId]['numero'] ?? $row['stop_code'];
 
-    fputcsv($fichier, [$accId, $zdc, $label, $numero]);
+    fputcsv($fichier, [$accId, $zdc, $label, $numero, $row['stop_lat'], $row['stop_lon']]);
     ++$nb;
 }
 fclose($fichier);

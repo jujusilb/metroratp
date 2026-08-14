@@ -8,6 +8,7 @@ import { initStyleStationPicker } from './js/style-station-picker';
 import { initTrajetCarte } from './js/trajet-carte';
 import { initTrajetAutocomplete } from './js/trajet-autocomplete';
 import { initCarteReseau } from './js/carte-reseau';
+import { initCarteAcces } from './js/carte-acces';
 
 function auChargement(fn) {
     // Garde-fou standard : si 'DOMContentLoaded' a deja ete emis avant que ce script ne
@@ -69,6 +70,11 @@ auChargement(() => {
                 carte.invalidateSize();
             }
         });
+    }
+
+    const carteAccesContainer = document.getElementById('carte-acces');
+    if (carteAccesContainer) {
+        initCarteAcces(document.getElementById('carte-acces-map'), JSON.parse(carteAccesContainer.dataset.donnees));
     }
 
     const carteReseauContainer = document.getElementById('carte-reseau');

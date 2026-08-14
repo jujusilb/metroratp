@@ -334,4 +334,18 @@ source vers les Station : rattachement construit à la main après avoir écart�
 | Compte de test admin temporaire (méthode base64+SQL) + `curl` authentifié | Vérifié `/pole-echange` (10 pôles, mêmes effectifs qu'en local) et `/station/334` (lien Pôle affiché) en production. Compte supprimé après vérification. |
 | Compte de test admin temporaire supplémentaire + `curl` authentifié | Vérifié aussi la carte interactive (commit précédent, pas encore testé en prod) : `/carte` contient bien les 5 cases à cocher et l'attribut `data-trace-url`, `GET /ligne/1/trace` renvoie le JSON attendu (trace + couleur). Compte supprimé après vérification. |
 
+## Session du 2026-08-14 (suite 16) — Mini-carte des accès (équivalent "plan de quartier")
+
+Recherche sur le portail open-data IDFM (aucun dataset ne fournit le visuel "plan de quartier"
+affiché sur les quais), puis construction d'une mini-carte "maison" par Station.
+
+| Commande | Objectif |
+|---|---|
+| Extension de `documentation/scripts/extraire_acces_entrees.php` (colonnes `lat`/`lon` depuis `stop_lat`/`stop_lon` de stops.txt, déjà itéré pour les accès) + réexécution | Régénère `acces_entrees.csv` avec les coordonnées de chaque accès (2515 lignes). |
+| `php bin/console app:construire-acces-sorties` (reconstruction complète, comme d'habitude) puis `app:construire-positions-rame` (dépendance documentée : la purge d'Acces entraîne celle de PositionRame) | 2513 Acces recréés avec coordonnées, 4671 PositionRame reconstruites. |
+| `/c/xampp/mysql_start.bat` | MySQL local s'était arrêté entre deux sessions, redémarré. |
+| `npx encore dev` | Build après ajout de `carte-acces.js`/modification `app.scss`/`app.js`. |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests, dont le nouveau `carte-acces.test.js`) | Tout passe. |
+| Compte de test admin local (`test_acces`) + connexion via `form.submit()` en JS | Vérifié `/station/20129` (Gare Saint-Lazare, 14 sorties) : carte Leaflet initialisée (15 tuiles CARTO Positron chargées, `complete:true`), 14 bandeaux `.carte-acces-sortie` avec le texte attendu ("Sortie 3 — passage du Havre" etc.), aucune erreur console. Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

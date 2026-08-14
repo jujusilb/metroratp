@@ -45,6 +45,24 @@ le rsync malgré l'exclude (vérifié le 2026-08-14 : `plans-de-secteur.csv` et
 `communes_departements.csv` étaient déjà présents et à jour sur le serveur juste après le
 déploiement, hash identique au fichier commit une fois les fins de ligne normalisées).
 
+## Mini-carte des accès / "plan de quartier" (fait le 2026-08-14)
+
+L'utilisateur voulait l'équivalent du plan de quartier affiché sur les quais RATP (petite carte
+locale montrant où mène chaque sortie numérotée). Aucun dataset ouvert IDFM ne fournit ce visuel
+(vérifié par recherche sur data.iledefrance-mobilites.fr : rien entre `plans-de-secteur` — trop
+zoomé — et `acces` — pas de carte, juste des coordonnées). Reconstruit "maison" plutôt que
+d'essayer de sourcer un visuel propriétaire RATP :
+
+- `Acces::latitude`/`longitude` (nouveau, depuis `stop_lat`/`stop_lon` de stops.txt GTFS,
+  `location_type=2` — jamais importé avant malgré la présence du champ `AccGeopoint` dans
+  `acces.csv` source).
+- `carte-acces.js` : petite carte Leaflet par Station (fond CARTO Positron plutôt que les tuiles
+  OSM standard — plus proche visuellement d'un plan, façades de bâtiments visibles), un bandeau
+  bleu "Sortie N — libellé" par Acces connu (style RATP), sur la fiche Station.
+
+Limite assumée : pas de bâtiments/commerces nommés (Théâtre, École, Église...) sur la mini-carte,
+faute de dataset POI dans le projet — seuls le fond de carte OSM/CARTO et les accès sont affichés.
+
 ## Pôles d'échange (fait le 2026-08-14)
 
 Nouvelle entité `PoleEchange` (dataset IDFM `poles-d-echange`, seulement 10 hubs officiels :

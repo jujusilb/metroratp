@@ -49,7 +49,38 @@ final class StationController extends AbstractController
         return $this->render('station/show.html.twig', [
             'station' => $station,
             'positionsRame' => $positionRameRepository->trouverParStation($station->getId()),
+            'carteAccesJson' => json_encode($this->construireCarteAcces($station), JSON_THROW_ON_ERROR),
         ]);
+    }
+
+    /**
+     * Pour la mini-carte des accès sur la fiche Station (plan de quartier "fait maison" - voir
+     * carte-acces.js) : la position de la Station elle-même et celle de chaque Acces connu (les
+     * accès sans coordonnées, dataset incomplet, sont simplement omis).
+     *
+     * @return array{stationLat: ?float, stationLon: ?float, acces: list<array{label: string, numero: ?string, lat: float, lon: float}>}
+     */
+    private function construireCarteAcces(Station $station): array
+    {
+        $acces = [];
+        foreach ($station->getSorties() as $sortie) {
+            $unAcces = $sortie->getAcces();
+            if (null === $unAcces || null === $unAcces->getLatitude() || null === $unAcces->getLongitude()) {
+                continue;
+            }
+            $acces[] = [
+                'label' => $unAcces->getLabel(),
+                'numero' => $unAcces->getNumero(),
+                'lat' => $unAcces->getLatitude(),
+                'lon' => $unAcces->getLongitude(),
+            ];
+        }
+
+        return [
+            'stationLat' => $station->getLatitude(),
+            'stationLon' => $station->getLongitude(),
+            'acces' => $acces,
+        ];
     }
 
     #[Route('/{id}/edit', name: 'app_station_edit', methods: ['GET', 'POST'])]

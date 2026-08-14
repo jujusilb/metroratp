@@ -14,13 +14,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Remplit Acces (une sortie physique : nom de rue, numero) et Sortie (le lien vers la Station
- * desservie) depuis acces_entrees.csv (extrait d'acces.csv + stops.txt GTFS IDFM - voir
+ * Remplit Acces (une sortie physique : nom de rue, numero, coordonnees) et Sortie (le lien vers la
+ * Station desservie) depuis acces_entrees.csv (extrait d'acces.csv + stops.txt GTFS IDFM - voir
  * documentation/scripts/extraire_acces_entrees.php ; le feed GTFS complet, ~1,3 Go, n'est jamais
  * commit). Ce fichier derive fusionne deja : le libelle/numero officiels du dataset "acces"
  * (data.iledefrance-mobilites.fr) quand disponibles, sinon stop_name/stop_code du GTFS (~7 acces
- * absents de l'export CSV) ; et le rattachement a la ZdC (parent_station de stops.txt - verifie :
- * ce n'est pas la Zone d'Arrets intermediaire, mais bien la ZdC = Station::codeExterne).
+ * absents de l'export CSV) ; le rattachement a la ZdC (parent_station de stops.txt - verifie :
+ * ce n'est pas la Zone d'Arrets intermediaire, mais bien la ZdC = Station::codeExterne) ; et les
+ * coordonnees geographiques reelles (stop_lat/stop_lon, directement sur la ligne GTFS de l'acces).
  *
  * Pas de champ PMR dans ce referentiel (verifie sur le schema du dataset "acces" : aucune colonne
  * accessibilite). Le dataset "accessibilite-en-gare" existe mais a un tout autre grain (459 gares,
@@ -99,6 +100,8 @@ class ConstruireAccesSortiesCommand extends Command
             $acces->setLabel('' !== $ligne['label'] ? mb_substr($ligne['label'], 0, 100) : 'Sans nom');
             $acces->setNumero('' !== $ligne['numero'] ? mb_substr($ligne['numero'], 0, 4) : null);
             $acces->setCodeExterne($ligne['accId']);
+            $acces->setLatitude('' !== $ligne['lat'] ? (float) $ligne['lat'] : null);
+            $acces->setLongitude('' !== $ligne['lon'] ? (float) $ligne['lon'] : null);
             $this->entityManager->persist($acces);
 
             $sortie = new Sortie();
