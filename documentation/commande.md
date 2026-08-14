@@ -264,4 +264,21 @@ précédente — répondait à un manque documenté dans `TODO.md`, jamais trait
 | `php bin/phpunit` (134 tests) | Tout passe. |
 | Note pour l'utilisateur : `Station.schemaX/Y` n'est plus utilisé par aucune fonctionnalité visible depuis que la carte du trajet utilise les vraies coordonnées géographiques (`latitude`/`longitude`) — cet import complète la donnée pour un usage futur (ex: bascule carte réelle / plan schématique), sans changement visible immédiat sur le site. |
 
+## Session du 2026-08-14 (suite 12) — Carte complète du réseau, bulles au survol, lignes cliquables
+
+Demande : lignes du calculateur de trajet cliquables vers leur page ; une carte complète du réseau
+(tous arrêts, bulle au survol "Mode:Ligne:Arrêt") ; et la carte du trajet réduite aux seuls arrêts
+concernés (au lieu du réseau complet en fond).
+
+| Commande | Objectif |
+|---|---|
+| Ajout `id`/`ligneId` dans `TrajetController::construireResumeSimple()` + templates | Lignes cliquables vers `/ligne/{id}` dans les vues Simple et Détaillée. |
+| `StationRepository::donneesPourCarteComplete()` (SQL brut, ~31500 lignes desserte agrégées) + `CarteController` + `/carte` | Nouvelle page listant toutes les Stations (tous modes), avec pour chacune la liste (mode, ligne, gestionnaire) — testé : 705 ms, 68 Mo de pic mémoire pour 14057 stations. |
+| `assets/js/carte-tooltip.js` (nouveau, testé) | Formate "Mode:Ligne:Arrêt" ou "Mode:Gestionnaire:Ligne:Arrêt" (gestionnaire affiché seulement si ≠ RATP) — partagé entre la carte complète et la carte du trajet. |
+| `assets/js/carte-reseau.js` (nouveau) | Dessine tous les arrêts (canvas Leaflet, `circleMarker` + `bindTooltip`), couleur selon le mode le plus "lourd" desservi. |
+| Suppression de `construireReseauPourAffichage`/`marquerTronconsConcernes`, ajout `construireInfosStationsPourAffichage` | La carte du trajet ne montre plus que les arrêts/tronçons du trajet trouvé (plus de fond de réseau complet), avec les mêmes bulles au survol. |
+| **Long diagnostic (carte introuvable dans le navigateur malgré un code correct)** | `canvasCount` toujours à 0 malgré de nombreux rebuilds. Écarté un par un : erreur JS (aucune, `window.onerror` propre), race condition DOMContentLoaded (corrigée par précaution mais pas la cause), isolation de contexte JS de l'outil de navigateur (non pertinent, confirmé via marqueurs DOM). Cause réelle trouvée via `fetch(url)` sans `no-store` : **le serveur PHP intégré ne renvoie aucun header Cache-Control/ETag**, donc le navigateur appliquait un cache heuristique et servait un `app.js` vieux d'un jour malgré des dizaines de rebuilds. |
+| Correctif : `webpack.config.js`, `.enableVersioning(true)` au lieu de `.enableVersioning(Encore.isProduction())` | Force un hash dans le nom de fichier (`app.78d75e72.js`) à chaque build, donc une URL différente = jamais de cache périmé en dev local. Vérifié : carte fonctionne immédiatement après ce correctif (canvas, tuiles, marqueurs, bulles au survol tous présents). |
+| `php bin/phpunit` (134 tests), `npx jest` (36 tests), vérification production (carte + trajet, comptes de test temporaires) | Tout passe, déployé et vérifié en ligne. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

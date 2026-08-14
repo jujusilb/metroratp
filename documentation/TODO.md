@@ -1,5 +1,18 @@
 # À faire / pistes en attente
 
+## Piège de cache navigateur en dev local (resolu le 2026-08-14, a retenir)
+
+`symfony server:start` (serveur PHP integre) ne renvoie aucun header `Cache-Control`/`ETag` sur
+les fichiers statiques (`public/build/*.js/css`). Sans hash de version dans le nom de fichier, le
+navigateur applique un cache heuristique base sur `Last-Modified` et peut servir un `app.js` vieux
+de plusieurs heures/jours malgre des dizaines de `npx encore dev` successifs - **sans aucune
+erreur visible**, juste un comportement JS qui semble "ne rien faire". Corrige une fois pour
+toutes via `webpack.config.js` (`.enableVersioning(true)`, meme en dev) : chaque build produit un
+nom de fichier different (`app.<hash>.js`), donc une URL differente = jamais de cache perime. Si
+un changement JS semble ne jamais prendre effet localement malgre un rebuild reussi, verifier ce
+point AVANT de chercher un bug de logique (`fetch(url, {cache:'no-store'})` permet de comparer le
+contenu reellement charge par le navigateur vs le fichier source sur disque).
+
 ## Lignes à embranchements complexes (RER C notamment)
 
 Le modèle actuel (`Direction` = un par terminus réel, `numero` = position du tronçon,
