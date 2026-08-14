@@ -135,7 +135,7 @@ class StationRepository extends ServiceEntityRepository
      * TronconRepository::tronconsPourCarte()) : ~31500 lignes desserte/station a agreger, hors de
      * question de le faire via l'ORM (voir TrajetFinder, corrige le 2026-08-13 pour la meme raison).
      *
-     * @return list<array{id: int, label: string, lat: float, lon: float, dessertes: list<array{mode: ?string, ligne: string, gestionnaire: ?string}>}>
+     * @return list<array{id: int, label: string, lat: float, lon: float, dessertes: list<array{mode: ?string, ligne: string, ligneId: int, gestionnaire: ?string}>}>
      */
     public function donneesPourCarteComplete(): array
     {
@@ -145,7 +145,7 @@ class StationRepository extends ServiceEntityRepository
         foreach ($connexion->executeQuery(
             <<<'SQL'
                 SELECT s.id, s.label, s.latitude, s.longitude,
-                       tt.label AS mode, l.label AS ligne_label, g.label AS gestionnaire_label
+                       tt.label AS mode, l.id AS ligne_id, l.label AS ligne_label, g.label AS gestionnaire_label
                 FROM station s
                 JOIN desserte d ON d.station_id = s.id
                 JOIN ligne l ON l.id = d.ligne_id
@@ -168,6 +168,7 @@ class StationRepository extends ServiceEntityRepository
             $parStation[$id]['dessertes'][] = [
                 'mode' => $row['mode'],
                 'ligne' => $row['ligne_label'],
+                'ligneId' => (int) $row['ligne_id'],
                 // n'affiche le gestionnaire que quand ce n'est pas RATP (implicite sinon) - voir
                 // Ligne::getModeFiltre() qui fait la meme distinction bus_ratp/bus_tiers.
                 'gestionnaire' => 'RATP' !== $row['gestionnaire_label'] ? $row['gestionnaire_label'] : null,

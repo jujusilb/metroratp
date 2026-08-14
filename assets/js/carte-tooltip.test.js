@@ -1,4 +1,4 @@
-import { formaterBulleStation, formaterLigneDesserte } from './carte-tooltip';
+import { construireLignesUniques, formaterBulleStation, formaterLigneDesserte } from './carte-tooltip';
 
 describe('formaterLigneDesserte', () => {
     test('mode:ligne:arret quand le gestionnaire est RATP (non affiche)', () => {
@@ -34,5 +34,28 @@ describe('formaterBulleStation', () => {
         ]);
 
         expect(html).toBe('Métro:1:Nation');
+    });
+});
+
+describe('construireLignesUniques', () => {
+    test('garde le ligneId de chaque desserte', () => {
+        const lignes = construireLignesUniques([
+            { mode: 'Métro', ligne: '1', ligneId: 10, gestionnaire: null },
+            { mode: 'Métro', ligne: '4', ligneId: 11, gestionnaire: null },
+        ], 'Châtelet');
+
+        expect(lignes).toEqual([
+            { ligneId: 10, texte: 'Métro:1:Châtelet' },
+            { ligneId: 11, texte: 'Métro:4:Châtelet' },
+        ]);
+    });
+
+    test('deduplique sur ligneId+texte', () => {
+        const lignes = construireLignesUniques([
+            { mode: 'Métro', ligne: '1', ligneId: 10, gestionnaire: null },
+            { mode: 'Métro', ligne: '1', ligneId: 10, gestionnaire: null },
+        ], 'Nation');
+
+        expect(lignes).toEqual([{ ligneId: 10, texte: 'Métro:1:Nation' }]);
     });
 });

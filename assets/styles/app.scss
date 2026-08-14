@@ -207,3 +207,15 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     color: #333;
 }
 
+// Bulle interactive d'une station sur la carte du reseau complet : une ligne par desserte,
+// survolable/cliquable individuellement pour mettre en surbrillance son trace (carte-reseau.js).
+.carte-bulle-ligne {
+    cursor: pointer;
+    padding: 1px 3px;
+    border-radius: 3px;
+
+    &:hover {
+        background: rgba(13, 110, 253, 0.15);
+    }
+}
+

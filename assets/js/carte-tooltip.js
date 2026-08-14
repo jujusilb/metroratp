@@ -28,3 +28,27 @@ export function formaterBulleStation(label, dessertes) {
 
     return lignes.join('<br>');
 }
+
+/**
+ * Variante de formaterBulleStation qui garde le ligneId de chaque entree (dedupliquee sur
+ * ligneId+texte) : sert a la carte du reseau pour rendre chaque ligne de la bulle interactive
+ * (survol/clic -> surbrillance du trace de cette Ligne). Fonction pure, testable sans DOM.
+ *
+ * @param {string} label
+ * @param {Array<{ mode: ?string, ligne: string, ligneId: number, gestionnaire: ?string }>} dessertes
+ * @return {Array<{ ligneId: number, texte: string }>}
+ */
+export function construireLignesUniques(dessertes, label) {
+    const vues = new Set();
+    const lignes = [];
+    for (const d of dessertes) {
+        const texte = formaterLigneDesserte(d, label);
+        const cle = `${d.ligneId}|${texte}`;
+        if (!vues.has(cle)) {
+            vues.add(cle);
+            lignes.push({ ligneId: d.ligneId, texte });
+        }
+    }
+
+    return lignes;
+}

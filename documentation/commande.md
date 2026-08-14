@@ -304,4 +304,16 @@ automatique quand le département de la Station ne correspond qu'à un seul Plan
 | `ssh ... php bin/console app:importer-plans-secteur --env=prod` | 73 Plan créés, 878 Stations assignées — résultats identiques au local. |
 | Compte de test admin temporaire (`test_verif_plan`, méthode base64+SQL habituelle) + `curl` authentifié | Vérifié `/plan` (73 lignes), `/plan/1` (878 stations), `/station/{id}` (lien Plan affiché) et `/station/{id}/edit` (74 options, la bonne présélectionnée) en production. Compte supprimé après vérification. |
 
+## Session du 2026-08-14 (suite 14) — Carte du réseau : bulle interactive + filtre par mode
+
+Sur `/carte`, chaque ligne de la bulle au survol d'une station devient interactive (survol =
+aperçu du tracé, clic = surbrillance fixée) et 5 cases à cocher (Métro/RER/Tram/Bus/Autres)
+filtrent les stations affichées.
+
+| Commande | Objectif |
+|---|---|
+| `npx encore dev` | Rebuild des assets front après modification de `carte-reseau.js`/`carte-tooltip.js`/`app.js` (versionné, voir piège de cache déjà documenté). |
+| `npx jest` (49 tests, dont les nouveaux `carte-reseau.test.js`/`carte-tooltip.test.js`) et `php bin/phpunit` (134 tests) | Tout passe. |
+| Compte de test admin local (`test_carte2`) + connexion via `form.submit()` en JS (le clic direct sur le bouton via l'outil de navigation a de nouveau échoué silencieusement, cohérent avec le souci déjà documenté) | Vérification de la carte : bulle interactive ouverte via `dispatchEvent(MouseEvent('mousemove'/'mouseover'))` sur le canvas Leaflet (hit-testing interne, pas d'éléments DOM par marqueur) ; survol d'une ligne dans la bulle déclenche bien `GET /ligne/{id}/trace` (vérifié via `read_network_requests`) ; clic réutilise le cache (pas de second appel réseau) ; décocher "Bus" fait disparaître le marqueur bus-only "Hôtel de Ville" (plus de bulle au survol du même point), le recocher le fait réapparaître. Aucune erreur console à aucune étape. Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

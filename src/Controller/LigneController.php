@@ -9,6 +9,7 @@ use App\Repository\LigneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -75,6 +76,21 @@ final class LigneController extends AbstractController
     {
         return $this->render('ligne/show.html.twig', [
             'ligne' => $ligne,
+        ]);
+    }
+
+    /**
+     * Pour la carte du reseau (carte-reseau.js) : trace geometrique reel d'une Ligne, recupere a
+     * la demande (survol/clic d'une entree dans la bulle d'une station) plutot que d'embarquer les
+     * traces de ~1445 Lignes dans le payload initial de la page.
+     */
+    #[Route('/{id}/trace', name: 'app_ligne_trace', methods: ['GET'])]
+    public function trace(Ligne $ligne): JsonResponse
+    {
+        return $this->json([
+            'label' => $ligne->getLabel(),
+            'couleur' => $ligne->getCouleur(),
+            'trace' => $ligne->getTrace(),
         ]);
     }
 

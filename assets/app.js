@@ -73,6 +73,13 @@ auChargement(() => {
 
     const carteReseauContainer = document.getElementById('carte-reseau');
     if (carteReseauContainer) {
-        initCarteReseau(document.getElementById('carte-reseau-map'), JSON.parse(carteReseauContainer.dataset.donnees));
+        initCarteReseau(
+            document.getElementById('carte-reseau-map'),
+            JSON.parse(carteReseauContainer.dataset.donnees),
+            {
+                filtreContainer: document.getElementById('carte-reseau-filtres'),
+                traceUrlTemplate: carteReseauContainer.dataset.traceUrl,
+            },
+        );
     }
 });
