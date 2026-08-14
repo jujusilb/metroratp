@@ -163,8 +163,8 @@ final class TrajetControllerTest extends DatabaseTestCase
         $carteJson = $crawler->filter('#trajet-carte')->attr('data-carte');
         self::assertNotNull($carteJson);
         $carte = json_decode($carteJson, true, 512, \JSON_THROW_ON_ERROR);
-        self::assertCount(1, $carte['reseau']);
-        self::assertEqualsWithDelta(48.85, $carte['reseau'][0]['lat1'], 0.001);
+        self::assertCount(1, $carte['trajet']);
+        self::assertEqualsWithDelta(48.85, $carte['trajet'][0]['lat1'], 0.001);
         self::assertSame('A', $carte['trajet'][0]['labelDepart']);
     }
 

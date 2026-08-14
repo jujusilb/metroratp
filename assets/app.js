@@ -7,8 +7,19 @@ import 'leaflet/dist/leaflet.css';
 import { initStyleStationPicker } from './js/style-station-picker';
 import { initTrajetCarte } from './js/trajet-carte';
 import { initTrajetAutocomplete } from './js/trajet-autocomplete';
+import { initCarteReseau } from './js/carte-reseau';
 
-document.addEventListener('DOMContentLoaded', () => {
+function auChargement(fn) {
+    // Garde-fou standard : si 'DOMContentLoaded' a deja ete emis avant que ce script ne
+    // s'execute, un simple addEventListener le raterait silencieusement.
+    if ('loading' === document.readyState) {
+        document.addEventListener('DOMContentLoaded', fn);
+    } else {
+        fn();
+    }
+}
+
+auChargement(() => {
     const styleStationDessertes = document.getElementById('style_station_dessertes');
     if (styleStationDessertes) {
         initStyleStationPicker(styleStationDessertes, {
@@ -58,5 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 carte.invalidateSize();
             }
         });
+    }
+
+    const carteReseauContainer = document.getElementById('carte-reseau');
+    if (carteReseauContainer) {
+        initCarteReseau(document.getElementById('carte-reseau-map'), JSON.parse(carteReseauContainer.dataset.donnees));
     }
 });

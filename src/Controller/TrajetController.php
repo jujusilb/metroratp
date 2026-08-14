@@ -6,7 +6,6 @@ use App\Entity\Desserte;
 use App\Entity\Station;
 use App\Repository\DesserteRepository;
 use App\Repository\StationRepository;
-use App\Repository\TronconRepository;
 use App\Service\Trajet\Etape;
 use App\Service\TrajetFinder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +21,7 @@ final class TrajetController extends AbstractController
     private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers'];
 
     #[Route(name: 'app_trajet_index', methods: ['GET'])]
-    public function index(Request $request, StationRepository $stationRepository, TronconRepository $tronconRepository, TrajetFinder $trajetFinder): Response
+    public function index(Request $request, StationRepository $stationRepository, TrajetFinder $trajetFinder): Response
     {
         // Au premier chargement (aucune case n'a encore ete soumise), tout est coche par
         // defaut : comportement historique, non restreint.
@@ -60,9 +59,9 @@ final class TrajetController extends AbstractController
                 $erreur = 'Aucun trajet trouvé entre ces deux stations.';
             } else {
                 $carte = [
-                    'reseau' => $this->construireReseauPourAffichage($tronconRepository),
                     'trajet' => $this->construireTrajetPourAffichage($resultat->etapes),
                     'tracesLignes' => $this->construireTracesLignesPourAffichage($resultat->etapes),
+                    'stationsInfo' => $this->construireInfosStationsPourAffichage($resultat->etapes),
                 ];
             }
         }
@@ -204,7 +203,7 @@ final class TrajetController extends AbstractController
      * que la liste complete de chaque station traversee (voir "segments"/vue detaillee).
      *
      * @param list<array{type: string, dessertes?: Desserte[], depart?: Desserte, arrivee?: Desserte, duree: float}> $segments
-     * @return array{lignes: list<array{label: string, couleur: string}>, stations: list<array{id: ?int, label: string}>, segments: list<array{ligne: string, couleur: string, depart: array{id: ?int, label: string}, arrivee: array{id: ?int, label: string}}>}
+     * @return array{lignes: list<array{id: ?int, label: string, couleur: string}>, stations: list<array{id: ?int, label: string}>, segments: list<array{ligneId: ?int, ligne: string, couleur: string, depart: array{id: ?int, label: string}, arrivee: array{id: ?int, label: string}}>}
      */
     private function construireResumeSimple(array $segments): array
     {
@@ -220,7 +219,7 @@ final class TrajetController extends AbstractController
             $ligne = $premiereDesserte->getLigne();
             $couleur = '#' . ltrim($ligne?->getCouleur() ?? '6c757d', '#');
 
-            $lignes[] = ['label' => $ligne?->getLabel() ?? '?', 'couleur' => $couleur];
+            $lignes[] = ['id' => $ligne?->getId(), 'label' => $ligne?->getLabel() ?? '?', 'couleur' => $couleur];
 
             if (0 === $index) {
                 $stations[] = $this->stationPourResume($premiereDesserte);
@@ -228,6 +227,7 @@ final class TrajetController extends AbstractController
             $stations[] = $this->stationPourResume($derniereDesserte);
 
             $segmentsSimples[] = [
+                'ligneId' => $ligne?->getId(),
                 'ligne' => $ligne?->getLabel() ?? '?',
                 'couleur' => $couleur,
                 'depart' => $this->stationPourResume($premiereDesserte),
@@ -249,42 +249,47 @@ final class TrajetController extends AbstractController
     }
 
     /**
-     * Le reseau complet des troncons, positionnes avec les coordonnees geographiques reelles
-     * (Station::latitude/longitude, voir app:importer-coordonnees-geographiques - couvre tous les
-     * modes, pas seulement le metro). Sert de fond de carte (attenue) pour situer le trajet
-     * trouve dans son contexte. Les troncons dont une des deux stations n'a pas de coordonnees
-     * connues sont ignores (~4% du reseau, essentiellement les stations "originales" sans
-     * codeExterne - voir TODO.md, doublons de Station).
+     * Pour la bulle au survol de chaque station sur la carte du trajet (voir aussi
+     * StationRepository::donneesPourCarteComplete() pour la carte complete du reseau, meme
+     * format) : uniquement les (mode, ligne, gestionnaire) des stations REELLEMENT traversees par
+     * ce trajet, pas l'ensemble de leurs dessertes reelles (afficher "cette station a aussi une
+     * ligne 6" alors que le trajet ne l'emprunte pas serait trompeur ici). Cle = label de la
+     * Station, comme la Map "stationsTrajet" cote JS (voir trajet-carte.js) - pas les coordonnees,
+     * pour eviter tout risque de formatage different d'un flottant PHP vs JSON vs JS.
      *
-     * En SQL brut (TronconRepository::tronconsPourCarte()) plutot que via l'ORM : hydrater
-     * l'integralite du graphe Troncon (~7000 troncons, missions/direction compris) prenait plus
-     * de 10s, alors que cette methode n'a besoin que des coordonnees et de la couleur.
-     *
-     * @return list<array{lat1: float, lon1: float, lat2: float, lon2: float, couleur: string}>
+     * @param Etape[] $etapes
+     * @return array<string, list<array{mode: ?string, ligne: string, gestionnaire: ?string}>>
      */
-    private function construireReseauPourAffichage(TronconRepository $tronconRepository): array
+    private function construireInfosStationsPourAffichage(array $etapes): array
     {
-        $troncons = [];
-        $vus = [];
+        $infos = [];
 
-        foreach ($tronconRepository->tronconsPourCarte() as $ligne) {
-            $couleur = $ligne['couleur'] ?? '6c757d';
-            $cle = min($ligne['id_a'], $ligne['id_b']) . '-' . max($ligne['id_a'], $ligne['id_b']) . '-' . $couleur;
-            if (isset($vus[$cle])) {
-                continue;
+        $ajouter = function (Desserte $desserte) use (&$infos): void {
+            $station = $desserte->getStation();
+            $ligne = $desserte->getLigne();
+            if (null === $station || null === $ligne || null === $station->getLatitude()) {
+                return;
             }
-            $vus[$cle] = true;
 
-            $troncons[] = [
-                'lat1' => (float) $ligne['lat1'],
-                'lon1' => (float) $ligne['lon1'],
-                'lat2' => (float) $ligne['lat2'],
-                'lon2' => (float) $ligne['lon2'],
-                'couleur' => '#' . ltrim($couleur, '#'),
+            $cle = $station->getLabel();
+            $gestionnaireLabel = $ligne->getGestionnaire()?->getLabel();
+
+            $infos[$cle][] = [
+                'mode' => $ligne->getTypeTransport()?->getLabel(),
+                'ligne' => $ligne->getLabel() ?? '?',
+                'gestionnaire' => 'RATP' !== $gestionnaireLabel ? $gestionnaireLabel : null,
             ];
+        };
+
+        foreach ($etapes as $etape) {
+            $ajouter($etape->depart);
+            $ajouter($etape->arrivee);
         }
 
-        return $troncons;
+        return array_map(
+            static fn (array $lignes): array => array_values(array_unique($lignes, SORT_REGULAR)),
+            $infos,
+        );
     }
 
     /**

@@ -1,23 +1,5 @@
 import L from 'leaflet';
-
-/**
- * Determine, pour chaque troncon du reseau, s'il fait partie du trajet trouve (pour le mettre
- * en evidence). Fonction pure, testable sans DOM.
- *
- * @param {{ reseau: Array<{lat1:number,lon1:number,lat2:number,lon2:number}>, trajet: Array<{lat1:number,lon1:number,lat2:number,lon2:number,type:string}> }} donnees
- */
-export function marquerTronconsConcernes(donnees) {
-    const cles = new Set();
-    for (const e of donnees.trajet) {
-        cles.add([e.lat1, e.lon1, e.lat2, e.lon2].join(','));
-        cles.add([e.lat2, e.lon2, e.lat1, e.lon1].join(','));
-    }
-
-    return donnees.reseau.map((t) => ({
-        ...t,
-        concerne: cles.has([t.lat1, t.lon1, t.lat2, t.lon2].join(',')),
-    }));
-}
+import { formaterBulleStation } from './carte-tooltip';
 
 // Echelle approximative degres -> metres (latitude de reference Ile-de-France) : suffisant pour
 // comparer des distances localement, pas pour une mesure absolue precise.
@@ -115,16 +97,17 @@ export function extraireTraceEntreDeuxPoints(traceLigne, pointA, pointB) {
 }
 
 /**
- * Dessine la carte du trajet (fond OpenStreetMap + reseau attenue + trajet surligne) dans le
- * conteneur DOM donne, avec zoom/deplacement natifs Leaflet. Construit aussi la legende numerotee
- * dans le conteneur donne.
+ * Dessine la carte du trajet (fond OpenStreetMap + uniquement les arrets/troncons traverses par
+ * ce trajet - pas tout le reseau) dans le conteneur DOM donne, avec zoom/deplacement natifs
+ * Leaflet. Chaque station porte une bulle au survol (voir carte-tooltip.js) listant les lignes
+ * empruntees a cet arret. Construit aussi la legende numerotee dans le conteneur donne.
  *
  * @param {HTMLElement} mapContainer
  * @param {HTMLElement} legendeContainer
- * @param {{ reseau: Array, trajet: Array, tracesLignes: Object<string, Array> }} donnees
+ * @param {{ trajet: Array, tracesLignes: Object<string, Array>, stationsInfo: Object<string, Array> }} donnees
  */
 export function initTrajetCarte(mapContainer, legendeContainer, donnees) {
-    if (!mapContainer || !donnees || !donnees.reseau || 0 === donnees.reseau.length) {
+    if (!mapContainer || !donnees || !donnees.trajet || 0 === donnees.trajet.length) {
         return null;
     }
 
@@ -134,32 +117,6 @@ export function initTrajetCarte(mapContainer, legendeContainer, donnees) {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(carte);
-
-    const reseauMarque = marquerTronconsConcernes(donnees);
-
-    const stationsVues = new Set();
-    for (const t of reseauMarque) {
-        L.polyline([[t.lat1, t.lon1], [t.lat2, t.lon2]], {
-            color: t.couleur,
-            weight: t.concerne ? 5 : 2,
-            opacity: t.concerne ? 1 : 0.35,
-        }).addTo(carte);
-
-        for (const [lat, lon] of [[t.lat1, t.lon1], [t.lat2, t.lon2]]) {
-            const cle = `${lat},${lon}`;
-            if (stationsVues.has(cle)) {
-                continue;
-            }
-            stationsVues.add(cle);
-            L.circleMarker([lat, lon], {
-                radius: 3,
-                color: '#6c757d',
-                weight: 1,
-                fillColor: '#fff',
-                fillOpacity: 1,
-            }).addTo(carte);
-        }
-    }
 
     const tracesLignes = donnees.tracesLignes || {};
     for (const e of donnees.trajet) {
@@ -172,24 +129,20 @@ export function initTrajetCarte(mapContainer, legendeContainer, donnees) {
             continue;
         }
 
-        // Par-dessus la ligne droite deja dessinee par le fond de reseau (meme couleur) : quand
-        // le trace reel de la Ligne est connu, on affiche le trajet suivant vraiment les rues/
-        // rails plutot qu'un trait direct entre les deux stations.
+        // Trace reel de la Ligne (suit les rues/rails) quand il est connu, sinon un trait direct
+        // entre les deux stations.
         const traceLigne = tracesLignes[e.ligneId];
-        if (!traceLigne) {
-            continue;
-        }
-        const sousChemin = extraireTraceEntreDeuxPoints(traceLigne, [e.lon1, e.lat1], [e.lon2, e.lat2]);
-        if (!sousChemin) {
-            continue;
-        }
-        L.polyline(sousChemin.map(([lon, lat]) => [lat, lon]), {
+        const sousChemin = traceLigne ? extraireTraceEntreDeuxPoints(traceLigne, [e.lon1, e.lat1], [e.lon2, e.lat2]) : null;
+        const points = sousChemin ? sousChemin.map(([lon, lat]) => [lat, lon]) : [[e.lat1, e.lon1], [e.lat2, e.lon2]];
+
+        L.polyline(points, {
             color: e.couleur,
             weight: 5,
             opacity: 1,
         }).addTo(carte);
     }
 
+    const stationsInfo = donnees.stationsInfo || {};
     const stationsTrajet = new Map();
     for (const e of donnees.trajet) {
         if (!stationsTrajet.has(e.labelDepart)) {
@@ -209,7 +162,7 @@ export function initTrajetCarte(mapContainer, legendeContainer, donnees) {
     for (const [label, [lat, lon]] of stationsTrajet) {
         bounds.push([lat, lon]);
 
-        L.marker([lat, lon], {
+        const marqueur = L.marker([lat, lon], {
             icon: L.divIcon({
                 className: 'carte-station-numero',
                 html: `<span>${i}</span>`,
@@ -217,6 +170,11 @@ export function initTrajetCarte(mapContainer, legendeContainer, donnees) {
                 iconAnchor: [11, 11],
             }),
         }).addTo(carte);
+
+        const dessertes = stationsInfo[label];
+        if (dessertes && dessertes.length > 0) {
+            marqueur.bindTooltip(formaterBulleStation(label, dessertes), { sticky: true });
+        }
 
         if (legendeContainer) {
             const col = document.createElement('div');

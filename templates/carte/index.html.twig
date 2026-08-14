@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carte du réseau{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-4 py-4">
+        <h1 class="mb-3">Carte du réseau</h1>
+        <p class="text-muted small mb-3">
+            Toutes les stations d'Île-de-France, tous modes confondus. Survolez une station pour voir les lignes qui la desservent.
+        </p>
+        <div id="carte-reseau" data-donnees="{{ donneesJson }}">
+            <div id="carte-reseau-map" style="width: 100%; height: 75vh; border: 1px solid #dee2e6; border-radius: 6px;"></div>
+        </div>
+    </div>
+{% endblock %}

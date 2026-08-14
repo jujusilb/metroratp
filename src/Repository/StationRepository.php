@@ -128,6 +128,55 @@ class StationRepository extends ServiceEntityRepository
         return $resultat;
     }
 
+    /**
+     * Pour la carte complete du reseau (toutes les Stations, tous modes) : chaque Station avec
+     * coordonnees connues, et la liste des (mode, ligne, gestionnaire) qui la desservent - de quoi
+     * construire une bulle "Mode:Ligne:Arret" au survol de chaque point. En SQL brut (comme
+     * TronconRepository::tronconsPourCarte()) : ~31500 lignes desserte/station a agreger, hors de
+     * question de le faire via l'ORM (voir TrajetFinder, corrige le 2026-08-13 pour la meme raison).
+     *
+     * @return list<array{id: int, label: string, lat: float, lon: float, dessertes: list<array{mode: ?string, ligne: string, gestionnaire: ?string}>}>
+     */
+    public function donneesPourCarteComplete(): array
+    {
+        $connexion = $this->getEntityManager()->getConnection();
+
+        $parStation = [];
+        foreach ($connexion->executeQuery(
+            <<<'SQL'
+                SELECT s.id, s.label, s.latitude, s.longitude,
+                       tt.label AS mode, l.label AS ligne_label, g.label AS gestionnaire_label
+                FROM station s
+                JOIN desserte d ON d.station_id = s.id
+                JOIN ligne l ON l.id = d.ligne_id
+                LEFT JOIN type_transport tt ON tt.id = l.type_transport_id
+                LEFT JOIN gestionnaire g ON g.id = l.gestionnaire_id
+                WHERE s.latitude IS NOT NULL
+                ORDER BY s.id
+                SQL
+        )->iterateAssociative() as $row) {
+            $id = (int) $row['id'];
+            if (!isset($parStation[$id])) {
+                $parStation[$id] = [
+                    'id' => $id,
+                    'label' => $row['label'],
+                    'lat' => (float) $row['latitude'],
+                    'lon' => (float) $row['longitude'],
+                    'dessertes' => [],
+                ];
+            }
+            $parStation[$id]['dessertes'][] = [
+                'mode' => $row['mode'],
+                'ligne' => $row['ligne_label'],
+                // n'affiche le gestionnaire que quand ce n'est pas RATP (implicite sinon) - voir
+                // Ligne::getModeFiltre() qui fait la meme distinction bus_ratp/bus_tiers.
+                'gestionnaire' => 'RATP' !== $row['gestionnaire_label'] ? $row['gestionnaire_label'] : null,
+            ];
+        }
+
+        return array_values($parStation);
+    }
+
 //    /**
 //     * @return Station[] Returns an array of Station objects
 //     */

@@ -86,7 +86,12 @@
                     <div class="tab-pane fade show active" id="vue-simple" role="tabpanel" aria-labelledby="onglet-simple">
                         <p class="mb-2">
                             {% for ligne in resumeSimple.lignes %}
-                                <span class="ligne-badge-sm" style="background-color: {{ ligne.couleur }};"><span class="visually-hidden">Ligne </span>{{ ligne.label }}</span>{% if not loop.last %} <span aria-hidden="true">→</span> {% endif %}
+                                {% if ligne.id %}
+                                    <a href="{{ path('app_ligne_show', {'id': ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ ligne.couleur }};"><span class="visually-hidden">Ligne </span>{{ ligne.label }}</a>
+                                {% else %}
+                                    <span class="ligne-badge-sm" style="background-color: {{ ligne.couleur }};"><span class="visually-hidden">Ligne </span>{{ ligne.label }}</span>
+                                {% endif %}
+                                {% if not loop.last %} <span aria-hidden="true">→</span> {% endif %}
                             {% endfor %}
                         </p>
                         <p class="mb-3">
@@ -97,7 +102,11 @@
                         <ul class="list-group">
                             {% for segment in resumeSimple.segments %}
                                 <li class="list-group-item d-flex align-items-center gap-2">
-                                    <span class="ligne-badge-sm" style="background-color: {{ segment.couleur }};"><span class="visually-hidden">Ligne </span>{{ segment.ligne }}</span>
+                                    {% if segment.ligneId %}
+                                        <a href="{{ path('app_ligne_show', {'id': segment.ligneId}) }}" class="ligne-badge-sm" style="background-color: {{ segment.couleur }};"><span class="visually-hidden">Ligne </span>{{ segment.ligne }}</a>
+                                    {% else %}
+                                        <span class="ligne-badge-sm" style="background-color: {{ segment.couleur }};"><span class="visually-hidden">Ligne </span>{{ segment.ligne }}</span>
+                                    {% endif %}
                                     <a href="{{ path('app_station_show', {'id': segment.depart.id}) }}" class="link-body-emphasis">{{ segment.depart.label }}</a>
                                     <span aria-hidden="true">→</span>
                                     <a href="{{ path('app_station_show', {'id': segment.arrivee.id}) }}" class="link-body-emphasis">{{ segment.arrivee.label }}</a>
@@ -117,18 +126,24 @@
                                                 <span class="visually-hidden">de la ligne {{ segment.depart.ligne.label }} à la ligne {{ segment.arrivee.ligne.label }}</span>
                                             </span>
                                             <a href="{{ path('app_station_show', {'id': segment.depart.station.id}) }}" class="link-body-emphasis">{{ segment.depart.station.label }}</a>
-                                            <span class="ligne-badge-sm" style="background-color: {{ segment.depart.ligne.couleur|default('#6c757d') }};" aria-hidden="true">{{ segment.depart.ligne.label }}</span>
+                                            {% if segment.depart.ligne %}
+                                                <a href="{{ path('app_ligne_show', {'id': segment.depart.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ segment.depart.ligne.couleur|default('#6c757d') }};">{{ segment.depart.ligne.label }}</a>
+                                            {% endif %}
                                             <span aria-hidden="true">→</span>
-                                            <span class="ligne-badge-sm" style="background-color: {{ segment.arrivee.ligne.couleur|default('#6c757d') }};" aria-hidden="true">{{ segment.arrivee.ligne.label }}</span>
+                                            {% if segment.arrivee.ligne %}
+                                                <a href="{{ path('app_ligne_show', {'id': segment.arrivee.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ segment.arrivee.ligne.couleur|default('#6c757d') }};">{{ segment.arrivee.ligne.label }}</a>
+                                            {% endif %}
                                         </span>
                                         <span class="text-muted">{{ segment.duree|round(1) }} min</span>
                                     </li>
                                 {% else %}
                                     <li class="list-group-item d-flex justify-content-between align-items-start">
                                         <span>
-                                            <span class="ligne-badge-sm me-2" style="background-color: {{ segment.dessertes|first.ligne.couleur|default('#6c757d') }};">
-                                                <span class="visually-hidden">Ligne </span>{{ segment.dessertes|first.ligne.label }}
-                                            </span>
+                                            {% if segment.dessertes|first.ligne %}
+                                                <a href="{{ path('app_ligne_show', {'id': segment.dessertes|first.ligne.id}) }}" class="ligne-badge-sm me-2" style="background-color: {{ segment.dessertes|first.ligne.couleur|default('#6c757d') }};">
+                                                    <span class="visually-hidden">Ligne </span>{{ segment.dessertes|first.ligne.label }}
+                                                </a>
+                                            {% endif %}
                                             {% for desserte in segment.dessertes %}
                                                 <a href="{{ path('app_station_show', {'id': desserte.station.id}) }}" class="link-body-emphasis">{{ desserte.station.label }}</a>{% if not loop.last %} <span aria-hidden="true">→</span> {% endif %}
                                             {% endfor %}
