@@ -1,37 +1,98 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Carte du réseau{% endblock %}
+{% block title %}Carte{% endblock %}
 
 {% block body %}
     <div class="container-fluid px-4 py-4">
-        <h1 class="mb-3">Carte du réseau</h1>
-        <p class="text-muted small mb-2">
-            Toutes les stations d'Île-de-France. Survolez une station pour voir les lignes qui la desservent ; survolez une ligne dans la bulle pour prévisualiser son tracé, cliquez dessus pour le fixer (clic sur la carte pour l'effacer).
-        </p>
-        <div id="carte-reseau-filtres" class="d-flex flex-wrap gap-3 mb-3">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" data-bucket="metro" id="carte-filtre-metro" checked>
-                <label class="form-check-label" for="carte-filtre-metro">Métro</label>
+        <h1 class="mb-3">Carte</h1>
+
+        <ul class="nav nav-pills mb-3" id="carte-choix-type" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="carte-onglet-reseau" data-bs-toggle="pill" data-bs-target="#carte-panneau-reseau" type="button" role="tab">Carte du réseau</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="carte-onglet-secteurs" data-bs-toggle="pill" data-bs-target="#carte-panneau-secteurs" type="button" role="tab">Carte des secteurs</button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="carte-panneau-reseau" role="tabpanel">
+                <p class="text-muted small mb-2">
+                    Cochez les modes que vous voulez voir, puis affichez la carte. Survolez une station pour voir les lignes qui la desservent ; survolez une ligne dans la bulle pour prévisualiser son tracé, cliquez dessus pour le fixer.
+                </p>
+                <div id="carte-reseau-filtres" class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" data-bucket="metro" id="carte-filtre-metro">
+                        <label class="form-check-label" for="carte-filtre-metro">Métro</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" data-bucket="rer" id="carte-filtre-rer">
+                        <label class="form-check-label" for="carte-filtre-rer">RER</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" data-bucket="tram" id="carte-filtre-tram">
+                        <label class="form-check-label" for="carte-filtre-tram">Tramway</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" data-bucket="bus" id="carte-filtre-bus">
+                        <label class="form-check-label" for="carte-filtre-bus">Bus</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" data-bucket="autres" id="carte-filtre-autres">
+                        <label class="form-check-label" for="carte-filtre-autres">Autres (train, funiculaire...)</label>
+                    </div>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carte-reseau-modal">Afficher</button>
+                </div>
             </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" data-bucket="rer" id="carte-filtre-rer" checked>
-                <label class="form-check-label" for="carte-filtre-rer">RER</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" data-bucket="tram" id="carte-filtre-tram" checked>
-                <label class="form-check-label" for="carte-filtre-tram">Tramway</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" data-bucket="bus" id="carte-filtre-bus" checked>
-                <label class="form-check-label" for="carte-filtre-bus">Bus</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" data-bucket="autres" id="carte-filtre-autres" checked>
-                <label class="form-check-label" for="carte-filtre-autres">Autres (train, funiculaire...)</label>
+
+            <div class="tab-pane fade" id="carte-panneau-secteurs" role="tabpanel">
+                <p class="text-muted small mb-2">
+                    Choisissez un secteur, puis affichez son plan (PDF officiel IDFM).
+                </p>
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                    <select id="carte-secteur-select" class="form-select" style="max-width: 400px;">
+                        {% for plan in plans %}
+                            <option value="{{ plan.urlPdf }}">{{ plan.secteur }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carte-secteur-modal">Afficher</button>
+                </div>
             </div>
         </div>
-        <div id="carte-reseau" data-donnees="{{ donneesJson }}" data-trace-url="{{ path('app_ligne_trace', {'id': 0}) }}">
-            <div id="carte-reseau-map" style="width: 100%; height: 75vh; border: 1px solid #dee2e6; border-radius: 6px;"></div>
+
+        <div id="carte-reseau" data-donnees="{{ donneesJson }}" data-trace-url="{{ path('app_ligne_trace', {'id': 0}) }}"></div>
+
+        <div class="modal fade" id="carte-reseau-modal" tabindex="-1" aria-labelledby="carte-reseau-modal-titre" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title fs-5" id="carte-reseau-modal-titre">Carte du réseau</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="carte-reseau-map" style="width: 100%; height: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="carte-secteur-modal" tabindex="-1" aria-labelledby="carte-secteur-modal-titre" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title fs-5" id="carte-secteur-modal-titre">Plan du secteur</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <object id="carte-secteur-object" data="" type="application/pdf" width="100%" height="600">
+                            <p class="p-3">
+                                Impossible d'afficher le PDF ici.
+                                <a id="carte-secteur-lien-secours" href="" target="_blank" rel="noopener">Ouvrir dans un nouvel onglet</a>.
+                            </p>
+                        </object>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -77,15 +77,41 @@ auChargement(() => {
         initCarteAcces(document.getElementById('carte-acces-map'), JSON.parse(carteAccesContainer.dataset.donnees));
     }
 
+    // Meme principe que carte-modal ci-dessus : la carte du reseau ne se construit qu'a la
+    // premiere ouverture de son modal (les cases de filtre, elles, restent hors du modal et
+    // fonctionnent des le chargement de la page - c'est leur etat au moment de l'ouverture qui
+    // determine ce qui s'affiche d'emblee, voir initCarteReseau).
     const carteReseauContainer = document.getElementById('carte-reseau');
-    if (carteReseauContainer) {
-        initCarteReseau(
-            document.getElementById('carte-reseau-map'),
-            JSON.parse(carteReseauContainer.dataset.donnees),
-            {
-                filtreContainer: document.getElementById('carte-reseau-filtres'),
-                traceUrlTemplate: carteReseauContainer.dataset.traceUrl,
-            },
-        );
+    const carteReseauModal = document.getElementById('carte-reseau-modal');
+    if (carteReseauContainer && carteReseauModal) {
+        let carteReseau = null;
+        carteReseauModal.addEventListener('shown.bs.modal', () => {
+            if (!carteReseau) {
+                carteReseau = initCarteReseau(
+                    document.getElementById('carte-reseau-map'),
+                    JSON.parse(carteReseauContainer.dataset.donnees),
+                    {
+                        filtreContainer: document.getElementById('carte-reseau-filtres'),
+                        traceUrlTemplate: carteReseauContainer.dataset.traceUrl,
+                    },
+                );
+            } else {
+                carteReseau.invalidateSize();
+            }
+        });
+    }
+
+    // Carte des secteurs : le PDF choisi est charge dans l'<object> seulement a l'ouverture du
+    // modal (pas au chargement de la page, pour ne jamais telecharger un PDF inutilement).
+    const carteSecteurModal = document.getElementById('carte-secteur-modal');
+    if (carteSecteurModal) {
+        const select = document.getElementById('carte-secteur-select');
+        const objet = document.getElementById('carte-secteur-object');
+        const lienSecours = document.getElementById('carte-secteur-lien-secours');
+        carteSecteurModal.addEventListener('show.bs.modal', () => {
+            const url = select.value;
+            objet.setAttribute('data', url);
+            lienSecours.setAttribute('href', url);
+        });
     }
 });

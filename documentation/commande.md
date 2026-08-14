@@ -348,4 +348,17 @@ affiché sur les quais), puis construction d'une mini-carte "maison" par Station
 | `php bin/phpunit` (134 tests), `npx jest` (51 tests, dont le nouveau `carte-acces.test.js`) | Tout passe. |
 | Compte de test admin local (`test_acces`) + connexion via `form.submit()` en JS | Vérifié `/station/20129` (Gare Saint-Lazare, 14 sorties) : carte Leaflet initialisée (15 tuiles CARTO Positron chargées, `complete:true`), 14 bandeaux `.carte-acces-sortie` avec le texte attendu ("Sortie 3 — passage du Havre" etc.), aucune erreur console. Compte supprimé après vérification. |
 
+## Session du 2026-08-14 (suite 17) — Refonte page Carte (onglets réseau/secteurs, modal)
+
+Renommage "Carte du réseau" → "Carte", ajout d'un choix d'onglet Carte du réseau / Carte des
+secteurs, cases de filtre décochées par défaut + bouton "Afficher" ouvrant la carte dans un modal
+(comme le modal déjà existant sur `/trajet`), et un onglet secteurs avec sélection + `<object>`
+PDF dans un second modal.
+
+| Commande | Objectif |
+|---|---|
+| Réécriture de `carte-reseau.js` (calcul de `actifsInitial` avant la boucle de construction des marqueurs, au lieu d'ajouter tout puis filtrer) | Nécessaire car les cases partent maintenant décochées par défaut : sans ce changement, tous les marqueurs auraient été ajoutés puis retirés au premier `change`, au lieu de ne jamais être ajoutés. |
+| `npx encore dev`, `npx jest` (51 tests), `php bin/phpunit` (134 tests) | Tout passe (aucun changement de schéma dans cette suite). |
+| Compte de test admin local + connexion JS, vérifications via `dispatchEvent`/`querySelector` (pas de screenshot, pane non affiché) | Confirmé : cases décochées par défaut ; cocher "Métro" seul puis cliquer "Afficher" ouvre le modal avec uniquement les stations métro visibles (un point bus-only connu ne remonte plus de bulle) ; cocher "Bus" en direct pendant que le modal est ouvert le fait réapparaître (filtre toujours réactif) ; l'onglet "Carte des secteurs" affiche les 73 options, sélectionner "Secteur Paris" + "Afficher" ouvre le second modal avec `<object data="...plan03.pdf">` et le lien de secours pointant vers la bonne URL. Aucune erreur console. Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

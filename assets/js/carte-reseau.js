@@ -141,6 +141,14 @@ export function initCarteReseau(mapContainer, stations, options = {}) {
     });
     carte.on('tooltipclose', () => coucheApercu.clearLayers());
 
+    // Cases decochees par defaut (voir templates/carte/index.html.twig) : seuls les buckets deja
+    // coches au moment de l'initialisation (la carte n'est construite qu'a la premiere ouverture
+    // du modal, pas au chargement de la page) sont ajoutes d'emblee - pas de filtre => tout visible
+    // (comportement de repli si aucun conteneur de filtre n'est fourni).
+    const cases = filtreContainer ? [...filtreContainer.querySelectorAll('input[type="checkbox"][data-bucket]')] : [];
+    const bucketsActifs = () => new Set(cases.filter((c) => c.checked).map((c) => c.dataset.bucket));
+    const actifsInitial = cases.length > 0 ? bucketsActifs() : null;
+
     const marqueurs = [];
     for (const station of stations) {
         // Les stations desservies par un mode lourd (metro/RER/tram/train) ressortent un peu plus
@@ -150,6 +158,7 @@ export function initCarteReseau(mapContainer, stations, options = {}) {
         const contenuBulle = lignes
             .map((l) => `<div class="carte-bulle-ligne" data-ligne-id="${l.ligneId}">${l.texte}</div>`)
             .join('');
+        const buckets = bucketsPourDessertes(station.dessertes);
 
         const marker = L.circleMarker([station.lat, station.lon], {
             radius: modeLourd ? 5 : 3,
@@ -159,15 +168,18 @@ export function initCarteReseau(mapContainer, stations, options = {}) {
             fillOpacity: 0.9,
         })
             .bindTooltip(contenuBulle, { sticky: true, interactive: true })
-            .addTo(carte);
+        ;
 
-        marqueurs.push({ marker, buckets: bucketsPourDessertes(station.dessertes) });
+        if (null === actifsInitial || [...buckets].some((b) => actifsInitial.has(b))) {
+            marker.addTo(carte);
+        }
+
+        marqueurs.push({ marker, buckets });
     }
 
-    if (filtreContainer) {
-        const cases = [...filtreContainer.querySelectorAll('input[type="checkbox"][data-bucket]')];
+    if (cases.length > 0) {
         const appliquerFiltre = () => {
-            const actifs = new Set(cases.filter((c) => c.checked).map((c) => c.dataset.bucket));
+            const actifs = bucketsActifs();
             for (const { marker, buckets } of marqueurs) {
                 const visible = [...buckets].some((b) => actifs.has(b));
                 const surLaCarte = carte.hasLayer(marker);
