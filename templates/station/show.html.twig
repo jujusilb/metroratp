@@ -6,6 +6,15 @@
     <div class="container py-4">
         <h1 class="mb-4">{{ station.label }}{% if station.ville %} <small class="text-muted fs-5">({{ station.ville }})</small>{% endif %}</h1>
 
+        <p>
+            <strong>Plan de secteur :</strong>
+            {% if station.plan %}
+                <a href="{{ path('app_plan_show', {'id': station.plan.id}) }}">{{ station.plan.secteur }}</a>
+            {% else %}
+                <span class="text-muted">Non renseigné</span>
+            {% endif %}
+        </p>
+
         <h2 class="h5">Dessertes</h2>
         {% if station.dessertes|length > 0 %}
             <div class="table-responsive">

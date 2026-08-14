@@ -1,0 +1,13 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.numero) }}
+    {{ form_row(form.secteur) }}
+    {{ form_row(form.departements) }}
+    {{ form_row(form.urlPdf) }}
+    {{ form_row(form.urlFiche) }}
+    {{ form_row(form.tailleFichierMo) }}
+    {{ form_row(form.datePublication) }}
+    {{ form_row(form.format) }}
+
+    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Plan;
 use App\Entity\Station;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,6 +15,12 @@ class StationType extends AbstractType
     {
         $builder
             ->add('label')
+            ->add('plan', EntityType::class, [
+                'class' => Plan::class,
+                'choice_label' => 'secteur',
+                'required' => false,
+                'placeholder' => '-- Aucun --',
+            ])
         ;
     }
 

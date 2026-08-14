@@ -60,6 +60,16 @@ class Station
     private ?float $longitude = null;
 
     /**
+     * Plan de secteur (carte schematique papier IDFM) sur lequel cette Station apparait. Une
+     * Station n'appartient qu'a un seul Plan (voir Plan::$stations pour la relation inverse).
+     * Assignation automatique impossible en general : la plupart des departements suburbains
+     * sont couverts par plusieurs Plan distincts (voir app:importer-plans-secteur) - a completer
+     * manuellement ici au besoin.
+     */
+    #[ORM\ManyToOne(inversedBy: 'stations')]
+    private ?Plan $plan = null;
+
+    /**
      * @var Collection<int, Sortie>
      */
     #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'station')]
@@ -162,6 +172,18 @@ class Station
     public function setLongitude(?float $longitude): static
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getPlan(): ?Plan
+    {
+        return $this->plan;
+    }
+
+    public function setPlan(?Plan $plan): static
+    {
+        $this->plan = $plan;
 
         return $this;
     }

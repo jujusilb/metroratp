@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Plans de secteur{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Plans de secteur</h1>
+        <p class="text-muted">Cartes schématiques papier IDFM couvrant chacune une portion du réseau. Le PDF officiel est hébergé par IDFM (lien ci-dessous), pas par ce site.</p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Numéro</th>
+                    <th>Secteur</th>
+                    <th>Département(s)</th>
+                    <th>PDF</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for plan in plans %}
+                <tr>
+                    <td>{{ plan.numero }}</td>
+                    <td>{{ plan.secteur }}</td>
+                    <td>{{ plan.departements ?? '—' }}</td>
+                    <td><a href="{{ plan.urlPdf }}" target="_blank" rel="noopener">Voir le PDF</a></td>
+                    <td>
+                        <a href="{{ path('app_plan_show', {'id': plan.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_plan_edit', {'id': plan.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_plan_new') }}" class="btn btn-primary">Créer un plan de secteur</a>
+        {% endif %}
+    </div>
+{% endblock %}

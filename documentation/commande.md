@@ -281,4 +281,23 @@ concernés (au lieu du réseau complet en fond).
 | Correctif : `webpack.config.js`, `.enableVersioning(true)` au lieu de `.enableVersioning(Encore.isProduction())` | Force un hash dans le nom de fichier (`app.78d75e72.js`) à chaque build, donc une URL différente = jamais de cache périmé en dev local. Vérifié : carte fonctionne immédiatement après ce correctif (canvas, tuiles, marqueurs, bulles au survol tous présents). |
 | `php bin/phpunit` (134 tests), `npx jest` (36 tests), vérification production (carte + trajet, comptes de test temporaires) | Tout passe, déployé et vérifié en ligne. |
 
+## Session du 2026-08-14 (suite 13) — Plans de secteur (entité `Plan`, `Station::plan`)
+
+Téléchargement des 73 PDF de `plans-de-secteur.csv` (72 réussis, plan 50 indisponible côté IDFM),
+puis nouvelle entité `Plan` + FK `Station::plan`, CRUD complet, commande d'import avec assignation
+automatique quand le département de la Station ne correspond qu'à un seul Plan.
+
+| Commande | Objectif |
+|---|---|
+| `curl -sL --max-time 60 -o plan_${numero}.pdf "$url"` (boucle bash, tâche en arrière-plan) | Téléchargement des 73 PDF officiels IDFM dans `documentation/IDFM-gtfs/plan secteur/` (337 Mo, non commité). 72/73 réussis, plan 50 "En cours de réalisation" indisponible côté IDFM. |
+| `php bin/console doctrine:migrations:diff` puis `doctrine:migrations:sync-metadata-storage` | Échec persistant "metadata storage not up to date" — root cause : 3 migrations déjà appliquées localement via `doctrine:schema:update --force` lors de sessions précédentes mais jamais enregistrées dans `doctrine_migration_versions`. |
+| `doctrine:schema:update --dump-sql` puis exécution manuelle des seules lignes pertinentes (table `plan` + `station.plan_id`) via PDO direct | Le dump complet contenait aussi du bruit de drift pré-existant (differences `int`/`int(11)` MySQL 8) sans rapport avec ce changement — appliqué seulement ce qui concerne `Plan`/`Station::plan`, écrit la migration `Version20260814120000.php` à la main pour correspondre exactement. |
+| `INSERT INTO doctrine_migration_versions ...` (PDO direct) | Marque les 3 anciennes migrations + la nouvelle comme exécutées, sans rejouer leur SQL (déjà appliqué). |
+| `php documentation/scripts/extraire_communes_departements.php` | Extrait juste `Nom_commune`/`Code_departement` de `communes-par-contrat.csv` (55 Mo, jamais commité) vers un petit CSV commit-able (1310 paires) utilisé pour déduire le département d'une Station à partir de `Station::ville`. |
+| Script d'analyse ad hoc (PHP inline) | Vérifié la fiabilité de commune→département (4 communes ambiguës sur 1310, ex: Blandy 91/77) et le taux de correspondance `Station::ville` → commune (1086/1161 villes distinctes, le reste étant surtout des arrondissements parisiens gérés à part et des gares hors Île-de-France). |
+| Script d'analyse ad hoc (PHP inline) sur `plans-de-secteur.csv` | Confirmé que **seul le département 75 est couvert par un seul Plan** — tous les départements de grande couronne sont scindés (le 77 en compte 24) : l'assignation automatique de `Station::plan` ne peut donc concerner que Paris, le reste doit être assigné à la main (comportement voulu, validé avec l'utilisateur). |
+| `php bin/console app:importer-plans-secteur` (x2, vérif idempotence) | 73 Plan créés, 878 Stations parisiennes assignées automatiquement ; second passage : 0 création, 0 nouvelle assignation (les Station déjà assignées ne sont jamais écrasées). |
+| Création d'un utilisateur admin de test local (`security:hash-password` + INSERT SQL direct) | Vérification navigateur de `/plan` (liste, 73 lignes), `/plan/1` (Secteur Paris, 878 stations listées), `/station/{id}` (lien "Plan de secteur" affiché) et `/station/{id}/edit` (champ `plan` éditable, 73 options + "-- Aucun --"). Utilisateur supprimé après vérification. |
+| `php bin/phpunit` (134 tests), `npx jest` (36 tests) | Tout passe après ajout de l'entité `Plan`. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

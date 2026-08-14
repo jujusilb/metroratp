@@ -13,6 +13,28 @@ un changement JS semble ne jamais prendre effet localement malgre un rebuild reu
 point AVANT de chercher un bug de logique (`fetch(url, {cache:'no-store'})` permet de comparer le
 contenu reellement charge par le navigateur vs le fichier source sur disque).
 
+## Plans de secteur (fait le 2026-08-14)
+
+Nouvelle entité `Plan` (dataset IDFM `plans-de-secteur`, 73 secteurs) + `Station::plan` (FK
+many-to-one, une Station sur au plus un Plan). CRUD complet (`/plan`), lien affiché sur la fiche
+Station, champ éditable dans le formulaire Station.
+
+Les 72/73 PDF (le plan 50 "En cours de réalisation" est indisponible côté IDFM) ont été
+téléchargés dans `documentation/IDFM-gtfs/plan secteur/` (337 Mo, non commit, gitignore) pour
+référence locale, mais **le site ne les héberge pas** : `Plan::urlPdf` pointe vers le PDF officiel
+IDFM (décision utilisateur du 2026-08-14 — éviter d'alourdir l'hébergement mutualisé Hostinger).
+
+Assignation automatique de `Station::plan` (`app:importer-plans-secteur`) : le département de la
+Station est déduit de `Station::ville` (règle spéciale "Paris Ne" → 75, sinon correspondance
+exacte dans `communes_departements.csv`, extrait de `communes-par-contrat.csv` via
+`documentation/scripts/extraire_communes_departements.php`), puis le Plan n'est assigné que si ce
+département est couvert par **un seul** Plan. **Constat après avoir chargé les vraies données** :
+seul le département 75 (Paris) est couvert par un seul Plan (le n°3) — tous les départements de
+grande couronne sont scindés en plusieurs Plan (le 77 en compte 24). Résultat : 878 stations
+parisiennes assignées automatiquement, le reste du réseau (~13000 stations) doit être assigné à la
+main via le formulaire Station — c'est le comportement voulu (repli automatique + assignation
+manuelle), pas un bug.
+
 ## Lignes à embranchements complexes (RER C notamment)
 
 Le modèle actuel (`Direction` = un par terminus réel, `numero` = position du tronçon,

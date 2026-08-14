@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Plan de secteur {{ plan.secteur }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ plan.secteur }}</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Numéro</th>
+                    <td>{{ plan.numero }}</td>
+                </tr>
+                <tr>
+                    <th>Département(s)</th>
+                    <td>{{ plan.departements ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>PDF officiel</th>
+                    <td><a href="{{ plan.urlPdf }}" target="_blank" rel="noopener">{{ plan.urlPdf }}</a></td>
+                </tr>
+                <tr>
+                    <th>Fiche IDFM</th>
+                    <td>
+                        {% if plan.urlFiche %}
+                            <a href="{{ plan.urlFiche }}" target="_blank" rel="noopener">{{ plan.urlFiche }}</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Taille du fichier</th>
+                    <td>{{ plan.tailleFichierMo ? plan.tailleFichierMo ~ ' Mo' : '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Date de publication</th>
+                    <td>{{ plan.datePublication ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Format</th>
+                    <td>{{ plan.format ?? '—' }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="h5 mt-4">Stations sur ce plan ({{ plan.stations|length }})</h2>
+        {% if plan.stations|length > 0 %}
+            <ul class="columns-3">
+                {% for station in plan.stations %}
+                    <li><a href="{{ path('app_station_show', {'id': station.id}) }}">{{ station.label }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucune station assignée à ce plan pour l'instant.</p>
+        {% endif %}
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_plan_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_plan_edit', {'id': plan.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('plan/_delete_form.html.twig') }}
+    </div>
+{% endblock %}
