@@ -329,5 +329,9 @@ source vers les Station : rattachement construit à la main après avoir écart�
 | `php bin/console app:importer-poles-echange` (x2, vérif idempotence) | 10 PoleEchange créés, 32/32 Stations assignées (0 candidat introuvable) — confirme la liste manuelle contre la vraie base. Second passage : 0 création, 32 mises à jour de Pole (pas de doublon Station). |
 | Compte de test admin local (`test_pole`) + connexion via `form.submit()` en JS | Vérifié `/pole-echange` (10 lignes), `/pole-echange/7` (Châtelet - Les Halles, 4 stations correctes), `/station/336` (lien Pôle affiché) et `/station/336/edit` (11 options, la bonne présélectionnée). Compte supprimé après vérification. |
 | `php bin/phpunit` (134 tests), `npx jest` (49 tests) | Tout passe après ajout de l'entité `PoleEchange`. |
+| `git push origin main` + `gh run watch` + `gh run rerun --failed` | CI verte (le blip SSH transitoire connu a de nouveau frappé sur ce push, corrigé par un rerun). |
+| `ssh ... php bin/console app:importer-poles-echange --env=prod` | 10 PoleEchange créés, 32/32 Stations assignées — résultats identiques au local. |
+| Compte de test admin temporaire (méthode base64+SQL) + `curl` authentifié | Vérifié `/pole-echange` (10 pôles, mêmes effectifs qu'en local) et `/station/334` (lien Pôle affiché) en production. Compte supprimé après vérification. |
+| Compte de test admin temporaire supplémentaire + `curl` authentifié | Vérifié aussi la carte interactive (commit précédent, pas encore testé en prod) : `/carte` contient bien les 5 cases à cocher et l'attribut `data-trace-url`, `GET /ligne/1/trace` renvoie le JSON attendu (trace + couleur). Compte supprimé après vérification. |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
