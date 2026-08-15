@@ -16,6 +16,8 @@ class MaterielType extends AbstractType
         $builder
             ->add('label')
             ->add('anneeProduction')
+            ->add('constructeur', null, ['required' => false])
+            ->add('vitesseMaxKmh', null, ['required' => false])
             ->add('typeMateriel', EntityType::class, [
                 'class' => TypeMateriel::class,
                 'choice_label' => 'id',

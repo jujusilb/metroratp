@@ -18,7 +18,15 @@
                 </tr>
                 <tr>
                     <th>Année de production</th>
-                    <td>{{ materiel.anneeProduction }}</td>
+                    <td>{{ materiel.anneeProduction ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Constructeur</th>
+                    <td>{{ materiel.constructeur ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Vitesse maximale</th>
+                    <td>{{ materiel.vitesseMaxKmh ? materiel.vitesseMaxKmh ~ ' km/h' : '—' }}</td>
                 </tr>
                 <tr>
                     <th>Type de matériel</th>

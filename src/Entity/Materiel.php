@@ -21,6 +21,21 @@ class Materiel
     #[ORM\Column(length: 5, nullable: true)]
     private ?string $anneeProduction = null;
 
+    /**
+     * Constructeur(s), depuis Wikidata (propriete P176) - plusieurs entreprises separees par
+     * " / " quand la donnee source en liste plusieurs (sous-traitance/consortium de fabrication).
+     */
+    #[ORM\Column(length: 300, nullable: true)]
+    private ?string $constructeur = null;
+
+    /**
+     * Vitesse maximale en service, depuis Wikidata (propriete P2052, deja en km/h a la source).
+     * Rarement renseignee sur Wikidata pour le materiel roulant parisien : rester null plutot
+     * que d'estimer quand absent.
+     */
+    #[ORM\Column(nullable: true)]
+    private ?int $vitesseMaxKmh = null;
+
     #[ORM\ManyToOne(inversedBy: 'materiels')]
     private ?TypeMateriel $typeMateriel = null;
 
@@ -60,6 +75,30 @@ class Materiel
     public function setAnneeProduction(?string $anneeProduction): static
     {
         $this->anneeProduction = $anneeProduction;
+
+        return $this;
+    }
+
+    public function getConstructeur(): ?string
+    {
+        return $this->constructeur;
+    }
+
+    public function setConstructeur(?string $constructeur): static
+    {
+        $this->constructeur = $constructeur;
+
+        return $this;
+    }
+
+    public function getVitesseMaxKmh(): ?int
+    {
+        return $this->vitesseMaxKmh;
+    }
+
+    public function setVitesseMaxKmh(?int $vitesseMaxKmh): static
+    {
+        $this->vitesseMaxKmh = $vitesseMaxKmh;
 
         return $this;
     }

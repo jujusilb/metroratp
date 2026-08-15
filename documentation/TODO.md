@@ -1,5 +1,37 @@
 # À faire / pistes en attente
 
+## Enrichissement Materiel via Wikidata (fait le 2026-08-15)
+
+Demande utilisateur : auditer `Materiel`/`MaterielLigne` (bien rempli ? bonnes lignes/dates ?) et
+récupérer un maximum d'info (vitesse, moteurs...) via SPARQL Wikidata.
+
+**Bug de données corrigé au passage** : 3 paires de `Materiel` en double (MS 61, RERng, Z2N —
+chacun avait 2 lignes distinctes au lieu d'un seul Materiel utilisé sur 2 lignes via 2
+`MaterielLigne`). Fusionnés (`MaterielLigne` repointés, doublons supprimés) : 35 → 32 lignes.
+
+**Nouveaux champs `Materiel::constructeur`/`vitesseMaxKmh`**, remplis pour 20/32 matériels via
+Wikidata (propriétés P176 "fabricant" et P2052 "vitesse", vérifiées manuellement une par une,
+jamais devinées depuis la mémoire — voir la méthodologie ci-dessous). Les valeurs manquantes
+restent `null` plutôt que d'être estimées : Wikidata ne documente pas systématiquement ces deux
+infos pour le matériel roulant parisien (ex: `vitesseMaxKmh` seulement 6/32, absent même pour des
+matériels bien connus comme le MP89 ou le MF67). `Z 58000`/`Z 58500` (matériel RER NG le plus
+récent, mise en service 2025-2026) n'ont pas encore de fiche Wikidata dédiée.
+
+**`MaterielLigne` du tramway remplies** : les 14 lignes de tram n'avaient aucune date d'entrée en
+service pour `Citadis` (0/14 avant). 13/14 trouvées via la propriété P1619 "date d'ouverture
+officielle" des fiches Wikidata de chaque ligne de tram, vérifiées cohérentes avec les faits
+connus (T1=1992, T9=2021, T14=2025...). T10 (ligne récente, 2023) n'a pas de fiche Wikidata
+identifiée, T12 a une fiche mais sans date renseignée.
+
+**Méthodologie (à réutiliser pour d'autres enrichissements Wikidata futurs)** : chaque valeur a
+été vérifiée par une requête réelle (recherche du bon QID puis lecture des claims bruts), jamais
+générée depuis la connaissance générale du modèle — un premier essai de requête SPARQL générique
+a d'ailleurs renvoyé des stations de métro coréennes par erreur (mauvaise classe Wikidata
+devinée), corrigé en vérifiant chaque QID individuellement avant de l'utiliser. Une unité de
+vitesse (Q180154) a aussi été confirmée explicitement ("kilometre per hour") après qu'un résumé
+l'ait étiquetée une fois "km/h" et une fois "m/s" pour la même valeur — sans cette vérification,
+le champ `vitesseMaxKmh` aurait pu être faux d'un facteur 3,6.
+
 ## Fontaines à eau en station (fait le 2026-08-15)
 
 `FontaineEau` (dataset IDFM "fontaines-a-eau-dans-le-reseau-ratp", 91 emplacements avec

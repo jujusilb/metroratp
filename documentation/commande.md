@@ -504,4 +504,19 @@ Reprise du TODO après l'urgence /correspondance ("np, allez! fais le todo!").
 | `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
 | Compte de test admin local + connexion JS | Vérifié `/fontaine-eau` (liste paginée) et `/station/2` (section "Fontaines à eau" affichée). Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Enrichissement Materiel via Wikidata
+
+Demande utilisateur : auditer `Materiel`/`MaterielLigne`, récupérer vitesse/moteurs/etc via SPARQL.
+
+| Commande | Objectif |
+|---|---|
+| Requêtes SPARQL de calibration (`query.wikidata.org/sparql`) | Une première requête (classe Q928830 seule) a renvoyé des stations de métro coréennes — Q928830 = "metro station" générique, pas "station du métro parisien". Corrigé en filtrant par `P137=Q643290` (opéré par RATP) : 316 stations, résultats vérifiés cohérents (Denfert-Rochereau 1906, Daumesnil 1909...). |
+| Comptage `P149`/`P2043` sur les 316 stations | 2/316 ont un "style architectural" renseigné, 0/316 ont une longueur — confirmé que le style de quai (CMP/Nord-Sud/Motte/Mouton) et la longueur de quai ne sont pas exploitables via Wikidata (voir entrée TODO dédiée). |
+| Requêtes SQL inline sur `materiel_ligne` | Découvert 3 doublons `Materiel` (MS 61, RERng, Z2N, chacun avec 2 lignes séparées au lieu d'1 matériel + 2 MaterielLigne) — fusionnés (35 → 32 lignes). |
+| ~35 recherches Wikidata individuelles (`wbsearchentities` + lecture des claims bruts, jamais de requête SPARQL devinée pour les données finales) | Constructeur (P176) et vitesse max (P2052) trouvés pour 20/32 matériels. Vérifié explicitly que Q180154 = "kilometre per hour" après une incohérence d'unité dans deux résumés différents (un l'a étiqueté "km/h", l'autre "m/s" pour la même valeur). |
+| 12 recherches Wikidata (lignes de tram T1-T14, propriété P1619) | Dates d'entrée en service de `Citadis` remplies pour 13/14 lignes de tram (0/14 avant), cohérentes avec les faits connus. |
+| `php bin/console doctrine:schema:update --dump-sql` | Généré le SQL exact pour les 2 nouvelles colonnes `Materiel::constructeur`/`vitesseMaxKmh`. |
+| `php bin/phpunit` (134 tests) — échec inattendu (124 erreurs) | `Unknown column 't0.constructeur'` : la base `metroratp_test` (isolation Doctrine via `dbname_suffix: '_test'`, `config/packages/doctrine.yaml`) est une base MySQL séparée de `metroratp`, jamais synchronisée avec les migrations locales jusqu'ici. Corrigé en appliquant le même `ALTER TABLE` avec `--env=test`. Tout repasse au vert (134 tests + 51 Jest). |
+| Compte de test admin local + connexion JS | Vérifié `/materiel/16` (MS 61) : constructeur et vitesse (100 km/h) affichés correctement. Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
