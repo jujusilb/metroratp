@@ -137,6 +137,20 @@ pattern que `app:importer-traces-lignes`). Vérifié que le repli label n'aide q
 notre base, pas au problème de codeExterne corrompu du métro. Dédupliqué par URL (57 doublons
 exacts dans la source). CRUD complet (paginé), section "Horaires et plans" sur la fiche Ligne.
 
+## PDF affichés directement sur le site (fait le 2026-08-15, branche feature/plans-regionaux)
+
+Même traitement que sur `plan/show.html.twig` (main) : `templates/tools/visionneuse_pdf.html.twig`
+appliqué à `plan_region/show.html.twig` (PDF visible directement sur la page, plus de lien qui
+ouvre juste un nouvel onglet).
+
+## Plans régionaux (fait le 2026-08-15, branche feature/plans-regionaux)
+
+`PlanRegion` (19 grandes cartes d'ensemble du réseau : Métro, RER, réseau de Nuit, plans
+PMR/facile à lire..., dataset IDFM "plans-region"). Même traitement que `Plan` (secteurs) : PDF
+jamais auto-hébergé, lien vers l'officiel IDFM. CRUD complet (`/plan-region`). Ajouté à l'onglet
+"Carte des secteurs" existant (`/carte`) sous forme de second `<optgroup>` dans le même sélecteur
+plutôt qu'un nouvel onglet séparé — réutilise tel quel le mécanisme modal `<object>` déjà en place.
+
 ## Accessibilité PMR par gare (fait le 2026-08-15)
 
 `Station::accessibilitePmr`/`accessibilitePmrCommentaire` depuis `accessibilite-en-gare.csv`
