@@ -449,4 +449,17 @@ pas mergées sur main.
 | `php bin/console app:importer-projets-arrets` | 404 ProjetArret créés (0 ignoré), reconstruction complète (pas de clé stable par ligne dans le CSV source). |
 | Compte de test admin local + connexion JS | Vérifié `/projet-arret` (liste paginée) et `/projet-arret/26` (TCSP Altival) : tous les champs corrects, lien OpenStreetMap fonctionnel sur les coordonnées. Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Merge des 4 branches feature dans main
+
+Demande utilisateur : merger `feature/points-de-vente`, `feature/horaires-lignes`,
+`feature/plans-regionaux`, `feature/projets-reseau` dans `main`, sans supprimer les branches.
+
+| Commande | Objectif |
+|---|---|
+| `git merge --no-ff feature/points-de-vente` (puis les 3 autres, une à une) | Conflits uniquement sur `documentation/TODO.md`/`commande.md` (entrées de log complémentaires, jamais contradictoires — simple concaténation) et `templates/menu/menu.html.twig` (2/4 merges : liens de nav de branches différentes sur la même ligne d'insertion, résolu en gardant les deux). `templates/carte/index.html.twig` et `templates/station/show.html.twig` se sont auto-mergés correctement (vérifié à la main : les deux `<optgroup>`/sections issues de branches différentes coexistent sans perte). |
+| `git push origin main` + `gh run watch` | CI verte (PHPUnit + Jest, donc les 4 branches + les fonctionnalités déjà sur `main` — PDF, pathways — cohabitent sans régression). Un premier essai du job de déploiement a échoué à "Preparer la cle SSH" (blip transitoire déjà rencontré) : `gh run rerun --failed` a suffi, tout est passé au vert ensuite. |
+| `ssh ... php bin/console app:importer-points-de-vente/app:importer-documents-lignes/app:importer-plans-region/app:importer-projets-arrets --env=prod` | Les 4 branches n'avaient jamais été déployées/importées en prod avant ce merge (voulu — "on mergera ensuite"). Résultats identiques au local : 2012 PointDeVente (1989 rattachés), 3188 DocumentLigne, 20 PlanRegion, 404 ProjetArret. |
+| Compte de test admin temporaire (avec `username` renseigné dès la création cette fois) + `curl` authentifié | Vérifié en production : `/station/1` (points de vente affichés), `/point-de-vente`, `/ligne/1` (section Horaires et plans), `/carte` (2 `<optgroup>`), `/projet-arret/26` (TCSP Altival, tous les champs corrects). Compte supprimé après vérification. |
+| `git branch` | Confirmé que les 4 branches existent toujours après le merge (non supprimées, comme demandé). |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
