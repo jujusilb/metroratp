@@ -1,5 +1,56 @@
 # À faire / pistes en attente
 
+## Pistes de données IDFM non encore exploitées (ajouté le 2026-08-15)
+
+Fichiers vérifiés (en-têtes + échantillon) mais pas encore importés. Objectif noté pour chacun,
+à affiner en regardant tous les fichiers en rapport au moment de construire, pour maximiser
+l'info récupérée (ex : croiser plusieurs exports d'un même jeu de données).
+
+* `relations.csv`/`relations.json` (52576 lignes, 753 avec un PdEId non-nul) : table officielle
+  de la hiérarchie PdE → ZdC (`Station.codeExterne`) → ZdA → ArR, avec coordonnées GPS à chaque
+  niveau. Remplacerait la liste `STATIONS_PAR_POLE` faite à la main (32 stations) dans
+  `PoleEchange` par un rattachement officiel et plus complet.
+* `sanitaires-reseau-ratp.*` : toilettes en station RATP, rattachable par nom de station
+  directement (pas besoin de proximité géo).
+* `sanisettesparis2011.*` : toilettes publiques Paris (hors réseau RATP), rattachable par
+  proximité géographique comme `PointDeVente`.
+* `defibrillateurs-du-reseau-ratp.*` : défibrillateurs en station, même logique que les
+  sanitaires (rattachement par nom).
+* `fontaines-a-eau-dans-le-reseau-ratp.*` : fontaines à eau en station, idem.
+* `emplacement-des-gares-idf-data-generalisee.csv` (999 lignes) : une ligne par gare avec
+  `id_ref_ZdC`/`id_ref_ZdA` (mêmes clés que `relations.csv`), coordonnées (Geo Point + x/y
+  Lambert93), `exploitant`, et des indicateurs de mode (train/rer/metro/tramway/val) + terminus
+  par mode (`tertrain`/`terrer`/etc.). Source alternative de géoloc/exploitant par station à
+  croiser avec l'existant — vérifier si ça comble des trous plutôt que faire doublon.
+* `transfers.txt` : temps de correspondance officiel entre arrêts proches (`TrajetFinder` utilise
+  actuellement une estimation, pas cette donnée officielle).
+* `sdap-arrets-associes.csv` (36696 lignes, un ArR par ligne) : accessibilité détaillée par
+  arrêt — `ArRAccessibility`/`ArRAudibleSignals`/`ArRVisualSigns` (signalétique sonore/visuelle
+  PMR) + `Extensions` (JSON imbriqué, ex. climatisation) + `bookingRules`. Bien plus fin que
+  `Station.accessibilitePmr` actuel ; a du sens surtout une fois un niveau Arrêt/ArT modélisé
+  (voir plus bas), pour rattacher l'accessibilité au bon quai plutôt qu'à toute la station.
+* `commerces-de-proximite-agrees-ratp.*` : à comparer avec `points-de-vente.csv` avant import
+  (chevauchement probable, à vérifier pour éviter les doublons).
+
+## Cheminement piétons réel Acces → quai (fait le 2026-08-15)
+
+`pathways.txt` (GTFS IDFM, 4973 lignes) donne le cheminement piéton réel entre chaque Acces et son
+quai le plus proche : `Acces::distanceMarcheMetres`/`tempsMarcheSecondes`/`nombreMarches`/
+`penteMaxPourcent`/`largeurMinMetres`/`signalisation`/`signalisationInverse`/
+`cheminementBidirectionnel` (`app:importer-temps-marche-acces`). Affiché sur la fiche Station
+(colonne "Marche depuis le quai" dans le tableau des sorties) et sur la fiche Acces elle-même
+(tableau "Cheminement vers le quai le plus proche").
+
+**Fichier 100% "walkway" (pathway_mode=1)** : aucun cheminement quai-à-quai (donc rien
+d'exploitable pour une correspondance inter-lignes, voir `transfers.txt` pour cette piste-là,
+toujours pas commencée). Un Acces desservant plusieurs quais (1127/2378 cas) garde le plus proche.
+
+**`stair_count`/`max_slope`/`min_width`/`signposted_as`/`reversed_signposted_as` sont vides à 100%
+sur les 4973 lignes actuelles** — importés quand même (colonnes lues et stockées, jamais
+ignorées) : rien ne garantit que ça reste vide dans un futur export IDFM, et l'ambition du site
+est encyclopédique — même une info anecdotique (nombre de marches) mérite sa place si elle existe
+un jour, pas seulement ce qui est déjà rempli aujourd'hui.
+
 ## PDF affichés directement sur le site (fait le 2026-08-15)
 
 Demande utilisateur : les PDF (plans, horaires...) doivent être visualisables directement sur le

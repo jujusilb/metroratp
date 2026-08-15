@@ -80,6 +80,7 @@
                             <th>Numéro</th>
                             <th>Accès</th>
                             <th>Accessible PMR</th>
+                            <th>Marche depuis le quai</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -101,6 +102,16 @@
                                         <span class="badge text-bg-success">Oui</span>
                                     {% else %}
                                         <span class="badge text-bg-secondary">Non</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if sortie.acces and sortie.acces.distanceMarcheMetres %}
+                                        {{ sortie.acces.distanceMarcheMetres|round }} m
+                                        {% if sortie.acces.tempsMarcheSecondes %}
+                                            <span class="text-muted">(~{{ (sortie.acces.tempsMarcheSecondes / 60)|round(0, 'ceil') }} min)</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">—</span>
                                     {% endif %}
                                 </td>
                                 <td>

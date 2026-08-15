@@ -49,6 +49,46 @@ class Acces
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $longitude = null;
 
+    /**
+     * Distance/temps de marche reels (pas une approximation) depuis cet Acces jusqu'au quai le
+     * plus proche de la Station, depuis pathways.txt (GTFS IDFM). Quand un Acces dessert plusieurs
+     * quais (lignes differentes), on garde le plus proche (voir app:importer-temps-marche-acces).
+     * Null si aucun pathway trouve pour cet Acces (~5% des cas).
+     */
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $distanceMarcheMetres = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $tempsMarcheSecondes = null;
+
+    /**
+     * Champs supplementaires de pathways.txt (GTFS), stockes meme si vides sur 100% des lignes du
+     * jeu de donnees actuel (verifie le 2026-08-15) : rien ne garantit que ce restera le cas dans
+     * un futur export IDFM, et ces details (nombre de marches, pente, largeur, signaletique) ont
+     * leur place ici pour l'ambition encyclopedique du site, meme quand ils sont anecdotiques.
+     */
+    #[ORM\Column(nullable: true)]
+    private ?int $nombreMarches = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $penteMaxPourcent = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $largeurMinMetres = null;
+
+    #[ORM\Column(length: 150, nullable: true)]
+    private ?string $signalisation = null;
+
+    #[ORM\Column(length: 150, nullable: true)]
+    private ?string $signalisationInverse = null;
+
+    /**
+     * false = le cheminement vers le quai le plus proche ne se fait que dans un sens (ex: sortie
+     * uniquement). true/null = bidirectionnel ou inconnu.
+     */
+    #[ORM\Column(nullable: true)]
+    private ?bool $cheminementBidirectionnel = null;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -157,6 +197,102 @@ class Acces
     public function setLongitude(?float $longitude): static
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getDistanceMarcheMetres(): ?float
+    {
+        return $this->distanceMarcheMetres;
+    }
+
+    public function setDistanceMarcheMetres(?float $distanceMarcheMetres): static
+    {
+        $this->distanceMarcheMetres = $distanceMarcheMetres;
+
+        return $this;
+    }
+
+    public function getTempsMarcheSecondes(): ?int
+    {
+        return $this->tempsMarcheSecondes;
+    }
+
+    public function setTempsMarcheSecondes(?int $tempsMarcheSecondes): static
+    {
+        $this->tempsMarcheSecondes = $tempsMarcheSecondes;
+
+        return $this;
+    }
+
+    public function getNombreMarches(): ?int
+    {
+        return $this->nombreMarches;
+    }
+
+    public function setNombreMarches(?int $nombreMarches): static
+    {
+        $this->nombreMarches = $nombreMarches;
+
+        return $this;
+    }
+
+    public function getPenteMaxPourcent(): ?float
+    {
+        return $this->penteMaxPourcent;
+    }
+
+    public function setPenteMaxPourcent(?float $penteMaxPourcent): static
+    {
+        $this->penteMaxPourcent = $penteMaxPourcent;
+
+        return $this;
+    }
+
+    public function getLargeurMinMetres(): ?float
+    {
+        return $this->largeurMinMetres;
+    }
+
+    public function setLargeurMinMetres(?float $largeurMinMetres): static
+    {
+        $this->largeurMinMetres = $largeurMinMetres;
+
+        return $this;
+    }
+
+    public function getSignalisation(): ?string
+    {
+        return $this->signalisation;
+    }
+
+    public function setSignalisation(?string $signalisation): static
+    {
+        $this->signalisation = $signalisation;
+
+        return $this;
+    }
+
+    public function getSignalisationInverse(): ?string
+    {
+        return $this->signalisationInverse;
+    }
+
+    public function setSignalisationInverse(?string $signalisationInverse): static
+    {
+        $this->signalisationInverse = $signalisationInverse;
+
+        return $this;
+    }
+
+    public function isCheminementBidirectionnel(): ?bool
+    {
+        return $this->cheminementBidirectionnel;
+    }
+
+    public function setCheminementBidirectionnel(?bool $cheminementBidirectionnel): static
+    {
+        $this->cheminementBidirectionnel = $cheminementBidirectionnel;
 
         return $this;
     }

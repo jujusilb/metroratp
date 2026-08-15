@@ -27,6 +27,50 @@
             </tbody>
         </table>
 
+        <h2 class="h5 mt-4 mb-3">Cheminement vers le quai le plus proche</h2>
+        {% if acce.distanceMarcheMetres %}
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Distance</th>
+                        <td>{{ acce.distanceMarcheMetres|round }} m</td>
+                    </tr>
+                    <tr>
+                        <th>Temps de marche</th>
+                        <td>{{ acce.tempsMarcheSecondes ? acce.tempsMarcheSecondes ~ ' s (~' ~ (acce.tempsMarcheSecondes / 60)|round(0, 'ceil') ~ ' min)' : '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nombre de marches</th>
+                        <td>{{ acce.nombreMarches ?? '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Pente maximale</th>
+                        <td>{{ acce.penteMaxPourcent ? acce.penteMaxPourcent ~ ' %' : '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Largeur minimale</th>
+                        <td>{{ acce.largeurMinMetres ? acce.largeurMinMetres ~ ' m' : '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Signalisation</th>
+                        <td>{{ acce.signalisation ?? '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Cheminement</th>
+                        <td>
+                            {% if acce.cheminementBidirectionnel == false %}
+                                <span class="badge text-bg-warning">Sens unique</span>
+                            {% else %}
+                                Bidirectionnel
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">Cheminement non renseigné pour cet accès.</p>
+        {% endif %}
+
         <h2 class="h5 mt-4 mb-3">Stations desservies</h2>
 
         {% if acce.sorties|length > 0 %}

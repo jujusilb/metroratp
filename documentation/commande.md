@@ -382,4 +382,16 @@ commencer par l'accessibilité PMR.
 | `npx encore dev`, `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
 | Compte de test admin local + connexion JS | Vérifié `/plan/1` (objet PDF affiché + lien "Ouvrir / télécharger" pointant vers la bonne URL) et `/carte` (onglet secteurs, modal : même vérification). Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Cheminement piétons réel Acces → quai (pathways.txt)
+
+Demande "priorité absolue" : analyse de `pathways.txt` puis exploitation maximale.
+
+| Commande | Objectif |
+|---|---|
+| Script PHP inline (comptage des colonnes non vides de `pathways.txt`) | Confirmé avant de coder : `stair_count`/`max_slope`/`min_width`/`signposted_as`/`reversed_signposted_as` sont vides sur les 4973 lignes, seuls `length`/`traversal_time`/`is_bidirectional` ont de la donnée. Importés quand même tous les champs (ambition encyclopédique, l'utilisateur l'a explicitement demandé même vides). |
+| Script PHP inline (comptage Acces avec plusieurs pathways) | 1127/2378 Acces desservent plusieurs quais à des distances différentes — confirmé qu'on garde le plus proche. |
+| `php bin/console app:importer-temps-marche-acces` (x2, vérif idempotence) | 2377/2378 Acces mis à jour. Second passage : même résultat. |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
+| Compte de test admin local + connexion JS | Vérifié `/station/1` (colonne "Marche depuis le quai" dans le tableau des sorties, ex: "203 m (~4 min)") et `/acces/11121` (tableau "Cheminement vers le quai le plus proche" complet, champs vides affichés "—" proprement). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
