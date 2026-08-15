@@ -1,5 +1,25 @@
 # À faire / pistes en attente
 
+## StyleStation : 360/404 dessertes métro sans style — pas exploitable via Wikidata (constaté le 2026-08-15)
+
+Demande utilisateur : remplir le style de quai (CMP/Nord-Sud/Motte/Mouton-Duvernet/Renouveau du
+métro, déjà les 5 valeurs seedées dans `style_station`) pour toutes les dessertes métro (une
+`Desserte` = un couple Station×Ligne, donc jusqu'à 4 par station à correspondances comme
+Sèvres-Babylone : 2 lignes × leurs 2 quais physiques, mais un seul style par couple Station×Ligne
+dans ce modèle de données puisque les 2 sens partagent en général le même style).
+
+**Vérifié avant de se lancer (voir aussi entrée "Enrichissement Materiel" ci-dessous pour la
+méthodologie)** : sur les 316 stations RATP de Wikidata, seulement 2 ont la propriété "style
+architectural" (P149) renseignée — et ce n'est même pas la bonne taxonomie (termes génériques
+d'architecture, pas CMP/Nord-Sud/Motte). **Aucune source structurée et interrogeable trouvée pour
+cette donnée**, ni sur Wikidata ni dans les CSV IDFM déjà présents dans le projet.
+
+Seule piste restante identifiée : dépouiller les ~300 articles Wikipédia individuels de chaque
+station un par un (le style y est parfois mentionné en texte libre dans la section
+"architecture"), extraction lente et sujette à erreur d'interprétation vu le volume — pas fait
+tant que l'utilisateur n'a pas confirmé vouloir cette approche (ou une autre source qu'il
+connaîtrait, ex. un site spécialisé passionnés du métro parisien).
+
 ## Enrichissement Materiel via Wikidata (fait le 2026-08-15)
 
 Demande utilisateur : auditer `Materiel`/`MaterielLigne` (bien rempli ? bonnes lignes/dates ?) et
@@ -9,7 +29,7 @@ récupérer un maximum d'info (vitesse, moteurs...) via SPARQL Wikidata.
 chacun avait 2 lignes distinctes au lieu d'un seul Materiel utilisé sur 2 lignes via 2
 `MaterielLigne`). Fusionnés (`MaterielLigne` repointés, doublons supprimés) : 35 → 32 lignes.
 
-**Nouveaux champs `Materiel::constructeur`/`vitesseMaxKmh`**, remplis pour 20/32 matériels via
+**Nouveaux champs `Materiel::constructeur`/`vitesseMaxKmh`**, remplis pour 21/32 matériels via
 Wikidata (propriétés P176 "fabricant" et P2052 "vitesse", vérifiées manuellement une par une,
 jamais devinées depuis la mémoire — voir la méthodologie ci-dessous). Les valeurs manquantes
 restent `null` plutôt que d'être estimées : Wikidata ne documente pas systématiquement ces deux
