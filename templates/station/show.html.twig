@@ -155,6 +155,20 @@
             <p class="text-muted">Aucun sanitaire connu à proximité.</p>
         {% endif %}
 
+        <h2 class="h5 mt-4">Défibrillateurs à proximité</h2>
+        {% if station.defibrillateurs|length > 0 %}
+            <ul>
+                {% for defibrillateur in station.defibrillateurs %}
+                    <li>
+                        <a href="{{ path('app_defibrillateur_show', {'id': defibrillateur.id}) }}">{{ defibrillateur.localisation }}</a>
+                        {% if defibrillateur.complementLocalisation %}<span class="text-muted">({{ defibrillateur.complementLocalisation }})</span>{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucun défibrillateur connu à proximité.</p>
+        {% endif %}
+
         <h2 class="h5 mt-4">Conseils de position dans la rame</h2>
         {% if positionsRame|length > 0 %}
             <p class="text-muted small">Où se placer dans la rame en montant ici pour arriver au plus près de sa correspondance ou de sa sortie.</p>

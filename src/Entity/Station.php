@@ -119,12 +119,22 @@ class Station
     #[ORM\OneToMany(targetEntity: Sanitaire::class, mappedBy: 'station')]
     private Collection $sanitaires;
 
+    /**
+     * Defibrillateurs les plus proches (rattachement par proximite geographique, meme limite
+     * que PointDeVente/Sanitaire).
+     *
+     * @var Collection<int, Defibrillateur>
+     */
+    #[ORM\OneToMany(targetEntity: Defibrillateur::class, mappedBy: 'station')]
+    private Collection $defibrillateurs;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
         $this->dessertes = new ArrayCollection();
         $this->pointsDeVente = new ArrayCollection();
         $this->sanitaires = new ArrayCollection();
+        $this->defibrillateurs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -376,6 +386,35 @@ class Station
         if ($this->sanitaires->removeElement($sanitaire)) {
             if ($sanitaire->getStation() === $this) {
                 $sanitaire->setStation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Defibrillateur>
+     */
+    public function getDefibrillateurs(): Collection
+    {
+        return $this->defibrillateurs;
+    }
+
+    public function addDefibrillateur(Defibrillateur $defibrillateur): static
+    {
+        if (!$this->defibrillateurs->contains($defibrillateur)) {
+            $this->defibrillateurs->add($defibrillateur);
+            $defibrillateur->setStation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDefibrillateur(Defibrillateur $defibrillateur): static
+    {
+        if ($this->defibrillateurs->removeElement($defibrillateur)) {
+            if ($defibrillateur->getStation() === $this) {
+                $defibrillateur->setStation(null);
             }
         }
 

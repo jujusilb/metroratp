@@ -1,5 +1,12 @@
 # À faire / pistes en attente
 
+## Défibrillateurs en station (fait le 2026-08-15)
+
+`Defibrillateur` (dataset IDFM "defibrillateurs-du-reseau-ratp", 451 emplacements, 448 avec
+coordonnées exploitables). Même pattern que `Sanitaire` : purge + reimport, rattachement à
+`Station` par proximité géographique (446/448, soit 99,5%). CRUD complet (`/defibrillateur`),
+section "Défibrillateurs à proximité" sur la fiche Station.
+
 ## Sanitaires en station (fait le 2026-08-15)
 
 `Sanitaire` (dataset IDFM "sanitaires-reseau-ratp", 60 toilettes publiques). Aucune clé stable

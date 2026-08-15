@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Défibrillateur {{ defibrillateur.localisation }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ defibrillateur.localisation }}</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Ville</th>
+                    <td>{{ defibrillateur.ville ?? '—' }} {{ defibrillateur.codePostal }}</td>
+                </tr>
+                <tr>
+                    <th>Accès</th>
+                    <td>{{ defibrillateur.acces ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Accès libre</th>
+                    <td>
+                        {% if defibrillateur.accesLibre is null %}
+                            <span class="text-muted">Non renseigné</span>
+                        {% elseif defibrillateur.accesLibre %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Non</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Complément de localisation</th>
+                    <td>{{ defibrillateur.complementLocalisation ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Disponibilité (semaine)</th>
+                    <td>{{ defibrillateur.disponibiliteSemaine ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Disponibilité (horaires)</th>
+                    <td>{{ defibrillateur.disponibiliteHoraires ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Station rattachée</th>
+                    <td>
+                        {% if defibrillateur.station %}
+                            <a href="{{ path('app_station_show', {'id': defibrillateur.station.id}) }}">{{ defibrillateur.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">Aucune à proximité</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_defibrillateur_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_defibrillateur_edit', {'id': defibrillateur.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('defibrillateur/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

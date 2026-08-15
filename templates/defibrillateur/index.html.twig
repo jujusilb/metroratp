@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Défibrillateurs{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Défibrillateurs</h1>
+        <p class="text-muted">Défibrillateurs automatisés externes en station (réseau RATP).</p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Localisation</th>
+                    <th>Ville</th>
+                    <th>Accès</th>
+                    <th>Disponibilité</th>
+                    <th>Station rattachée</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for defibrillateur in defibrillateurs %}
+                <tr>
+                    <td>{{ defibrillateur.localisation }}</td>
+                    <td>{{ defibrillateur.ville ?? '—' }}</td>
+                    <td>{{ defibrillateur.acces ?? '—' }}</td>
+                    <td>{{ defibrillateur.disponibiliteSemaine ?? '—' }} {{ defibrillateur.disponibiliteHoraires ?? '' }}</td>
+                    <td>
+                        {% if defibrillateur.station %}
+                            <a href="{{ path('app_station_show', {'id': defibrillateur.station.id}) }}">{{ defibrillateur.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_defibrillateur_show', {'id': defibrillateur.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_defibrillateur_edit', {'id': defibrillateur.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(defibrillateurs) }}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_defibrillateur_new') }}" class="btn btn-primary">Créer un défibrillateur</a>
+        {% endif %}
+    </div>
+{% endblock %}

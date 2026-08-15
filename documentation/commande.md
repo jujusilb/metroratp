@@ -487,4 +487,12 @@ Reprise du TODO après l'urgence /correspondance ("np, allez! fais le todo!").
 | `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
 | Compte de test admin local + connexion JS | Vérifié `/sanitaire` (liste paginée), `/sanitaire/32` (fiche détail, "Station rattachée" correcte) et `/station/1` (section "Sanitaires à proximité" affichée avec badges "Accessible au public"/"PMR"). Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Défibrillateurs en station (entité `Defibrillateur`)
+
+| Commande | Objectif |
+|---|---|
+| `php bin/console app:importer-defibrillateurs` | 448 Defibrillateur créés (3 lignes sans coordonnées ignorées sur 451), 446 rattachés à moins de 300m. |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
+| Compte de test admin local + connexion JS | Vérifié `/defibrillateur` (liste paginée) et `/station/1` (section "Défibrillateurs à proximité" affichée). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
