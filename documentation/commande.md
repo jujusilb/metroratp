@@ -389,4 +389,11 @@ pas mergées sur main.
 | `php bin/console app:importer-documents-lignes` (x2, vérif idempotence + timing) | ~7s. 3188 DocumentLigne créés (1262 ignorés : Ligne introuvable). Second passage : 0 création, 3188 mises à jour. |
 | Compte de test admin local + connexion JS | Vérifié `/document-ligne` (liste paginée) et `/ligne/1` (Métro 1) : section "Horaires et plans" n'affiche que le document réellement rattaché à cette Ligne précise ("Plan Métro 1"), confirmant que les entrées visuellement similaires (même badge "1") dans la liste globale appartiennent à d'autres Ligne homonymes (bus d'autres opérateurs), pas un bug de rattachement. Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — PDF affichés directement sur le site (branche feature/horaires-lignes)
+
+| Commande | Objectif |
+|---|---|
+| `php bin/phpunit` (134 tests) | Tout passe. |
+| Compte de test admin local + connexion JS | Vérifié `/ligne/1` (le lien "Horaires et plans" pointe vers `/document-ligne/{id}`, plus vers le PDF brut) et `/document-ligne/1621` (objet PDF affiché directement, URL RATP correcte). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

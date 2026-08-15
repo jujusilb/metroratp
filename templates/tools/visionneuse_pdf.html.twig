@@ -1,0 +1,18 @@
+{#
+    Affiche un PDF directement sur la page (pas de telechargement force), avec un lien de secours
+    si l'affichage embarque echoue (certains serveurs PDF externes bloquent l'affichage en objet)
+    et un lien clair pour l'ouvrir/telecharger separement pour qui le souhaite.
+
+    Variables attendues :
+    - url (string, obligatoire) : URL du PDF
+    - hauteur (string, optionnelle) : hauteur CSS de la visionneuse, defaut "600px"
+#}
+<object data="{{ url }}" type="application/pdf" width="100%" height="{{ hauteur|default('600px') }}" class="border rounded">
+    <p class="p-3 mb-0">
+        Impossible d'afficher le PDF ici.
+        <a href="{{ url }}" target="_blank" rel="noopener">Ouvrir dans un nouvel onglet</a>.
+    </p>
+</object>
+<p class="mt-2">
+    <a href="{{ url }}" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm">Ouvrir / télécharger le PDF</a>
+</p>

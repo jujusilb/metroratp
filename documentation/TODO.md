@@ -45,6 +45,13 @@ le rsync malgré l'exclude (vérifié le 2026-08-14 : `plans-de-secteur.csv` et
 `communes_departements.csv` étaient déjà présents et à jour sur le serveur juste après le
 déploiement, hash identique au fichier commit une fois les fins de ligne normalisées).
 
+## PDF affichés directement sur le site (fait le 2026-08-15, branche feature/horaires-lignes)
+
+Même traitement que sur `plan/show.html.twig` (main) : `templates/tools/visionneuse_pdf.html.twig`
+appliqué à `document_ligne/show.html.twig`. La liste "Horaires et plans" sur `ligne/show.html.twig`
+pointe désormais vers la fiche du document (PDF intégré) plutôt que d'ouvrir le PDF brut dans un
+nouvel onglet.
+
 ## Horaires et plans par ligne (fait le 2026-08-15, branche feature/horaires-lignes)
 
 `DocumentLigne` (4507 fiches horaires/plans PDF officiels, dataset IDFM

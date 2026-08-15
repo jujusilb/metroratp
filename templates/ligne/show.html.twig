@@ -63,7 +63,7 @@
             <h2 class="h5 mt-4">Horaires et plans</h2>
             <ul>
                 {% for document in ligne.documents %}
-                    <li><a href="{{ document.url }}" target="_blank" rel="noopener">{{ document.type }} — {{ document.nom }}</a></li>
+                    <li><a href="{{ path('app_document_ligne_show', {'id': document.id}) }}">{{ document.type }} — {{ document.nom }}</a></li>
                 {% endfor %}
             </ul>
         {% endif %}
