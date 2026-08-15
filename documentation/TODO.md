@@ -1,5 +1,20 @@
 # À faire / pistes en attente
 
+## PDF affichés directement sur le site (fait le 2026-08-15)
+
+Demande utilisateur : les PDF (plans, horaires...) doivent être visualisables directement sur le
+site, sans obligation de les télécharger — mais avec un lien clair pour ouvrir/télécharger
+séparément pour qui le veut. Nouveau partial `templates/tools/visionneuse_pdf.html.twig`
+(`<object type="application/pdf">` + lien de secours si l'affichage embarqué échoue + bouton
+"Ouvrir / télécharger" toujours visible), réutilisé sur `plan/show.html.twig` et le modal PDF de
+`/carte`. Même traitement à appliquer sur `plan_region/show.html.twig` et
+`document_ligne/show.html.twig` (branches non mergées `feature/plans-regionaux` et
+`feature/horaires-lignes`).
+
+Le `download` HTML n'est volontairement pas utilisé : ignoré par les navigateurs pour une URL
+cross-origin (tous les PDF sont hébergés par IDFM, jamais par ce site), donc un simple lien
+suffit.
+
 ## Piège de cache navigateur en dev local (resolu le 2026-08-14, a retenir)
 
 `symfony server:start` (serveur PHP integre) ne renvoie aucun header `Cache-Control`/`ETag` sur

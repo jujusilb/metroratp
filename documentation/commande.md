@@ -375,4 +375,11 @@ commencer par l'accessibilité PMR.
 | `php bin/phpunit` (134 tests) | Tout passe (pas de changement JS dans cette fonctionnalité). |
 | Compte de test admin local + connexion JS | Vérifié `/station/1` (La Défense) : ligne "Accessibilité PMR" affichée avec le commentaire détaillé complet. Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — PDF affichés directement sur le site
+
+| Commande | Objectif |
+|---|---|
+| `npx encore dev`, `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
+| Compte de test admin local + connexion JS | Vérifié `/plan/1` (objet PDF affiché + lien "Ouvrir / télécharger" pointant vers la bonne URL) et `/carte` (onglet secteurs, modal : même vérification). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

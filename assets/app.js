@@ -108,10 +108,12 @@ auChargement(() => {
         const select = document.getElementById('carte-secteur-select');
         const objet = document.getElementById('carte-secteur-object');
         const lienSecours = document.getElementById('carte-secteur-lien-secours');
+        const lienTelecharger = document.getElementById('carte-secteur-lien-telecharger');
         carteSecteurModal.addEventListener('show.bs.modal', () => {
             const url = select.value;
             objet.setAttribute('data', url);
             lienSecours.setAttribute('href', url);
+            lienTelecharger.setAttribute('href', url);
         });
     }
 });

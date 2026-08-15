@@ -17,10 +17,6 @@
                     <td>{{ plan.departements ?? '—' }}</td>
                 </tr>
                 <tr>
-                    <th>PDF officiel</th>
-                    <td><a href="{{ plan.urlPdf }}" target="_blank" rel="noopener">{{ plan.urlPdf }}</a></td>
-                </tr>
-                <tr>
                     <th>Fiche IDFM</th>
                     <td>
                         {% if plan.urlFiche %}
@@ -44,6 +40,9 @@
                 </tr>
             </tbody>
         </table>
+
+        <h2 class="h5">Plan</h2>
+        {{ include('tools/visionneuse_pdf.html.twig', {'url': plan.urlPdf}) }}
 
         <h2 class="h5 mt-4">Stations sur ce plan ({{ plan.stations|length }})</h2>
         {% if plan.stations|length > 0 %}
