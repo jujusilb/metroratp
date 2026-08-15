@@ -462,4 +462,18 @@ Demande utilisateur : merger `feature/points-de-vente`, `feature/horaires-lignes
 | Compte de test admin temporaire (avec `username` renseigné dès la création cette fois) + `curl` authentifié | Vérifié en production : `/station/1` (points de vente affichés), `/point-de-vente`, `/ligne/1` (section Horaires et plans), `/carte` (2 `<optgroup>`), `/projet-arret/26` (TCSP Altival, tous les champs corrects). Compte supprimé après vérification. |
 | `git branch` | Confirmé que les 4 branches existent toujours après le merge (non supprimées, comme demandé). |
 
+## Session du 2026-08-15 (suite) — URGENCE : crash mémoire sur /correspondance
+
+Signalé par l'utilisateur en cours de développement ("STOP TOUT !!!"), avec capture d'écran d'un
+500 sur `/correspondance` en production.
+
+| Commande | Objectif |
+|---|---|
+| `curl` local authentifié sur `/correspondance` | Reproduit immédiatement en local : `Fatal error: Allowed memory size ... exhausted` dans `PDO\Connection.php`. Cause : `CorrespondanceController::index()` chargeait la table entière (107000+ lignes, 12 jointures chacune) sans pagination. |
+| Lecture de `CorrespondanceRepository`/`CorrespondanceController` | Confirmé l'absence totale de pagination — même famille de bug que `TrajetFinder::construireGraphe()` déjà corrigé plus tôt dans le projet. `SortieController` a le même anti-pattern mais ne casse pas encore (2513 lignes seulement, noté dans TODO.md). |
+| Édition : `CorrespondanceRepository::creerRequeteAvecDetails()` retourne un `QueryBuilder` (plus `getResult()`), `CorrespondanceController::index()` utilise `PaginatorInterface` (50/page, comme le reste de l'app) | Corrige le chargement complet en mémoire. |
+| `curl` local re-test + `php bin/phpunit` (134 tests) | 200 OK, pagination visible, tout passe. |
+| `git push origin main` + `gh run watch` | CI et déploiement verts. Commit isolé (uniquement les 3 fichiers du correctif, sans mélanger avec le travail en cours sur les Sanitaires). |
+| `curl` authentifié en production sur `/correspondance` | 200 OK, 50 lignes + pagination visibles avec les vraies données de prod (107191 lignes). Compte de test supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

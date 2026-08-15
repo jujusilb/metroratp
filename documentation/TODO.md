@@ -1,5 +1,18 @@
 # À faire / pistes en attente
 
+## Crash mémoire sur /correspondance (corrigé le 2026-08-15, urgence signalée en prod)
+
+`CorrespondanceController::index()` chargeait les 107000+ lignes de `correspondance` avec 12
+jointures chacune en une seule requête ORM, sans pagination : épuisait la mémoire PHP et causait
+une erreur 500 systématique. Corrigé en paginant (`CorrespondanceRepository::creerRequeteAvecDetails()`
+retourne maintenant un `QueryBuilder`, paginé à 50/page dans le contrôleur comme le reste de
+l'application). Même famille de bug que celui déjà corrigé sur `TrajetFinder::construireGraphe()`
+plus tôt dans le projet (chargement complet du réseau via l'ORM).
+
+**`SortieController::index()` a exactement le même anti-pattern** (`SortieRepository::findAllWithDetails()`
+sans pagination) mais ne casse pas encore : `sortie` ne compte que 2513 lignes. À corriger de la
+même façon avant que ce nombre grossisse, par prudence plutôt que dans l'urgence.
+
 ## Pistes de données IDFM non encore exploitées (ajouté le 2026-08-15)
 
 Fichiers vérifiés (en-têtes + échantillon) mais pas encore importés. Objectif noté pour chacun,
