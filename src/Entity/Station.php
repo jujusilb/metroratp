@@ -110,11 +110,21 @@ class Station
     #[ORM\OneToMany(targetEntity: PointDeVente::class, mappedBy: 'station')]
     private Collection $pointsDeVente;
 
+    /**
+     * Sanitaires les plus proches (rattachement par proximite geographique, meme limite que
+     * PointDeVente : pas d'identifiant officiel dans la donnee source).
+     *
+     * @var Collection<int, Sanitaire>
+     */
+    #[ORM\OneToMany(targetEntity: Sanitaire::class, mappedBy: 'station')]
+    private Collection $sanitaires;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
         $this->dessertes = new ArrayCollection();
         $this->pointsDeVente = new ArrayCollection();
+        $this->sanitaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -337,6 +347,35 @@ class Station
         if ($this->pointsDeVente->removeElement($pointDeVente)) {
             if ($pointDeVente->getStation() === $this) {
                 $pointDeVente->setStation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Sanitaire>
+     */
+    public function getSanitaires(): Collection
+    {
+        return $this->sanitaires;
+    }
+
+    public function addSanitaire(Sanitaire $sanitaire): static
+    {
+        if (!$this->sanitaires->contains($sanitaire)) {
+            $this->sanitaires->add($sanitaire);
+            $sanitaire->setStation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSanitaire(Sanitaire $sanitaire): static
+    {
+        if ($this->sanitaires->removeElement($sanitaire)) {
+            if ($sanitaire->getStation() === $this) {
+                $sanitaire->setStation(null);
             }
         }
 

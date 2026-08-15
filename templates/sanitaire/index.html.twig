@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sanitaires{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Sanitaires</h1>
+        <p class="text-muted">Toilettes publiques en station (réseau RATP).</p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Ligne</th>
+                    <th>Station</th>
+                    <th>Tarif</th>
+                    <th>Accessible PMR</th>
+                    <th>Station rattachée</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for sanitaire in sanitaires %}
+                <tr>
+                    <td>{{ sanitaire.ligneLabel ?? '—' }}</td>
+                    <td>{{ sanitaire.label }}</td>
+                    <td>{{ sanitaire.tarif ?? '—' }}</td>
+                    <td>
+                        {% if sanitaire.accessibilitePmr %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Non renseigné</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if sanitaire.station %}
+                            <a href="{{ path('app_station_show', {'id': sanitaire.station.id}) }}">{{ sanitaire.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_sanitaire_show', {'id': sanitaire.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_sanitaire_edit', {'id': sanitaire.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(sanitaires) }}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_sanitaire_new') }}" class="btn btn-primary">Créer un sanitaire</a>
+        {% endif %}
+    </div>
+{% endblock %}

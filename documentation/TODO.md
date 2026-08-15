@@ -1,5 +1,17 @@
 # À faire / pistes en attente
 
+## Sanitaires en station (fait le 2026-08-15)
+
+`Sanitaire` (dataset IDFM "sanitaires-reseau-ratp", 60 toilettes publiques). Aucune clé stable
+dans le CSV source : purge + reimport complet à chaque exécution (comme `ProjetArret`).
+Rattachement à `Station` par proximité géographique (même limite que `PointDeVente` : le dataset
+ne fournit qu'une adresse/coordonnées, pas d'identifiant de Station officiel) — 60/60 rattachés à
+moins de 300m. CRUD complet (`/sanitaire`), section "Sanitaires à proximité" sur la fiche Station.
+
+Tous les champs du CSV sont capturés même les booléens à forte proportion de valeurs vides
+(`Accessible au public`, `Accès bouton poussoir`, etc. : "oui" ou vide → stockés en `bool|null`,
+`null` = non renseigné plutôt que supposé "non") — ambition encyclopédique du site.
+
 ## Crash mémoire sur /correspondance (corrigé le 2026-08-15, urgence signalée en prod)
 
 `CorrespondanceController::index()` chargeait les 107000+ lignes de `correspondance` avec 12

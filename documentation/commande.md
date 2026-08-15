@@ -476,4 +476,15 @@ Signalé par l'utilisateur en cours de développement ("STOP TOUT !!!"), avec ca
 | `git push origin main` + `gh run watch` | CI et déploiement verts. Commit isolé (uniquement les 3 fichiers du correctif, sans mélanger avec le travail en cours sur les Sanitaires). |
 | `curl` authentifié en production sur `/correspondance` | 200 OK, 50 lignes + pagination visibles avec les vraies données de prod (107191 lignes). Compte de test supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Sanitaires en station (entité `Sanitaire`)
+
+Reprise du TODO après l'urgence /correspondance ("np, allez! fais le todo!").
+
+| Commande | Objectif |
+|---|---|
+| `php bin/console doctrine:schema:update --dump-sql` (après création de l'entité) | Généré le SQL exact de création de table plutôt que deviner les noms de contrainte FK à la main. |
+| `php bin/console app:importer-sanitaires` | 60 Sanitaire créés, 60 rattachés à une Station à moins de 300m. |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
+| Compte de test admin local + connexion JS | Vérifié `/sanitaire` (liste paginée), `/sanitaire/32` (fiche détail, "Station rattachée" correcte) et `/station/1` (section "Sanitaires à proximité" affichée avec badges "Accessible au public"/"PMR"). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

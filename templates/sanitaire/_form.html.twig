@@ -1,0 +1,20 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.ligneLabel) }}
+    {{ form_row(form.label) }}
+    {{ form_row(form.accessiblePublic) }}
+    {{ form_row(form.tarif) }}
+    {{ form_row(form.accesPassNavigoTicketT) }}
+    {{ form_row(form.accesBoutonPoussoir) }}
+    {{ form_row(form.enZoneControlee) }}
+    {{ form_row(form.horsZoneControleeStation) }}
+    {{ form_row(form.horsZoneControleeVoiePublique) }}
+    {{ form_row(form.accessibilitePmr) }}
+    {{ form_row(form.localisation) }}
+    {{ form_row(form.latitude) }}
+    {{ form_row(form.longitude) }}
+    {{ form_row(form.gestionnaire) }}
+    {{ form_row(form.station) }}
+
+    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

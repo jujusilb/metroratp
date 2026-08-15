@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sanitaire {{ sanitaire.label }}{% endblock %}
+
+{% macro oui_non(valeur) %}
+    {% if valeur is null %}
+        <span class="text-muted">Non renseigné</span>
+    {% elseif valeur %}
+        <span class="badge text-bg-success">Oui</span>
+    {% else %}
+        <span class="badge text-bg-secondary">Non</span>
+    {% endif %}
+{% endmacro %}
+
+{% import _self as macros %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ sanitaire.label }}{% if sanitaire.ligneLabel %} <small class="text-muted fs-5">(Ligne {{ sanitaire.ligneLabel }})</small>{% endif %}</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Localisation</th>
+                    <td>{{ sanitaire.localisation ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Accessible au public</th>
+                    <td>{{ macros.oui_non(sanitaire.accessiblePublic) }}</td>
+                </tr>
+                <tr>
+                    <th>Tarif</th>
+                    <td>{{ sanitaire.tarif ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Accès Passe Navigo ou Ticket T+</th>
+                    <td>{{ macros.oui_non(sanitaire.accesPassNavigoTicketT) }}</td>
+                </tr>
+                <tr>
+                    <th>Accès bouton poussoir</th>
+                    <td>{{ macros.oui_non(sanitaire.accesBoutonPoussoir) }}</td>
+                </tr>
+                <tr>
+                    <th>En zone contrôlée</th>
+                    <td>{{ macros.oui_non(sanitaire.enZoneControlee) }}</td>
+                </tr>
+                <tr>
+                    <th>Hors zone contrôlée (station)</th>
+                    <td>{{ macros.oui_non(sanitaire.horsZoneControleeStation) }}</td>
+                </tr>
+                <tr>
+                    <th>Hors zone contrôlée (voie publique)</th>
+                    <td>{{ macros.oui_non(sanitaire.horsZoneControleeVoiePublique) }}</td>
+                </tr>
+                <tr>
+                    <th>Accessibilité PMR</th>
+                    <td>{{ macros.oui_non(sanitaire.accessibilitePmr) }}</td>
+                </tr>
+                <tr>
+                    <th>Gestionnaire</th>
+                    <td>{{ sanitaire.gestionnaire ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Station rattachée</th>
+                    <td>
+                        {% if sanitaire.station %}
+                            <a href="{{ path('app_station_show', {'id': sanitaire.station.id}) }}">{{ sanitaire.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">Aucune à proximité</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_sanitaire_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_sanitaire_edit', {'id': sanitaire.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('sanitaire/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

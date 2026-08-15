@@ -140,6 +140,21 @@
             <p class="text-muted">Aucun point de vente connu à proximité.</p>
         {% endif %}
 
+        <h2 class="h5 mt-4">Sanitaires à proximité</h2>
+        {% if station.sanitaires|length > 0 %}
+            <ul>
+                {% for sanitaire in station.sanitaires %}
+                    <li>
+                        <a href="{{ path('app_sanitaire_show', {'id': sanitaire.id}) }}">{{ sanitaire.localisation ?? 'Toilette publique' }}</a>
+                        {% if sanitaire.accessiblePublic %}<span class="badge text-bg-success">Accessible au public</span>{% endif %}
+                        {% if sanitaire.accessibilitePmr %}<span class="badge text-bg-info">PMR</span>{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucun sanitaire connu à proximité.</p>
+        {% endif %}
+
         <h2 class="h5 mt-4">Conseils de position dans la rame</h2>
         {% if positionsRame|length > 0 %}
             <p class="text-muted small">Où se placer dans la rame en montant ici pour arriver au plus près de sa correspondance ou de sa sortie.</p>
