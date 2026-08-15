@@ -1,0 +1,18 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.label) }}
+    {{ form_row(form.nomProjet) }}
+    {{ form_row(form.operation) }}
+    {{ form_row(form.nature) }}
+    {{ form_row(form.mode) }}
+    {{ form_row(form.statut) }}
+    {{ form_row(form.phase) }}
+    {{ form_row(form.creation) }}
+    {{ form_row(form.prolongement) }}
+    {{ form_row(form.amelioration) }}
+    {{ form_row(form.terminus) }}
+    {{ form_row(form.latitude) }}
+    {{ form_row(form.longitude) }}
+
+    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

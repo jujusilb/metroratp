@@ -375,4 +375,12 @@ commencer par l'accessibilité PMR.
 | `php bin/phpunit` (134 tests) | Tout passe (pas de changement JS dans cette fonctionnalité). |
 | Compte de test admin local + connexion JS | Vérifié `/station/1` (La Défense) : ligne "Accessibilité PMR" affichée avec le commentaire détaillé complet. Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Projets d'arrêts en projet (branche feature/projets-reseau)
+
+| Commande | Objectif |
+|---|---|
+| `WebFetch` sur l'API catalog IDFM (`.../api/explore/v2.1/catalog/datasets/projets_arrets_idf`) | Cherché une table de correspondance code→libellé pour `MODE_`/`SOUS_MODE`/`STATUT`/`PHASE` avant de coder l'import. Aucune trouvée dans les métadonnées publiées — seule certitude : `STATUT` va de 1 (études préalables) à 10 (mise en service). Décidé de stocker les codes bruts plutôt que d'inventer des libellés. |
+| `php bin/console app:importer-projets-arrets` | 404 ProjetArret créés (0 ignoré), reconstruction complète (pas de clé stable par ligne dans le CSV source). |
+| Compte de test admin local + connexion JS | Vérifié `/projet-arret` (liste paginée) et `/projet-arret/26` (TCSP Altival) : tous les champs corrects, lien OpenStreetMap fonctionnel sur les coordonnées. Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
