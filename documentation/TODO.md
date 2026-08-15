@@ -45,6 +45,16 @@ le rsync malgré l'exclude (vérifié le 2026-08-14 : `plans-de-secteur.csv` et
 `communes_departements.csv` étaient déjà présents et à jour sur le serveur juste après le
 déploiement, hash identique au fichier commit une fois les fins de ligne normalisées).
 
+## Points de vente (fait le 2026-08-15, branche feature/points-de-vente)
+
+`PointDeVente` (2012 commerces agréés/guichets Navigo, dataset IDFM "points-de-vente") rattaché à
+la Station la plus proche. **Le dataset source ne donne aucune clé de rattachement fiable**
+(`ZdAId` toujours à 0 dans cet export, vérifié sur l'ensemble du fichier) : rattachement fait par
+proximité géographique (moins de 300 m à vol d'oiseau) dans `app:importer-points-de-vente`, donc
+`PointDeVente::station` doit être lu comme "le plus proche", pas "le point de vente officiel de
+cette station" — 1989/2012 (99%) rattachés. CRUD complet (`/point-de-vente`, paginé vu le volume),
+section "Points de vente à proximité" sur la fiche Station.
+
 ## Accessibilité PMR par gare (fait le 2026-08-15)
 
 `Station::accessibilitePmr`/`accessibilitePmrCommentaire` depuis `accessibilite-en-gare.csv`

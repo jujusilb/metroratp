@@ -375,4 +375,18 @@ commencer par l'accessibilité PMR.
 | `php bin/phpunit` (134 tests) | Tout passe (pas de changement JS dans cette fonctionnalité). |
 | Compte de test admin local + connexion JS | Vérifié `/station/1` (La Défense) : ligne "Accessibilité PMR" affichée avec le commentaire détaillé complet. Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Points de vente (branche feature/points-de-vente)
+
+L'utilisateur a demandé de créer 4 branches (une par fichier restant identifié dans la fouille du
+dossier) et de tout construire, l'une après l'autre, sans merger tout de suite ("on mergera
+ensuite") : pas de déploiement/vérification production pour ces branches tant qu'elles ne sont
+pas mergées sur main.
+
+| Commande | Objectif |
+|---|---|
+| `git branch feature/points-de-vente main` (+ 3 autres branches, voir suites suivantes) | Crée les 4 branches de travail depuis la pointe de main, dans le clone propre (le seul endroit où `git` fonctionne pour ce projet). |
+| Script PHP inline sur `points-de-vente.csv` (comptage `ZdAId`) | Découvert que `ZdAId` vaut 0 sur les 2012 lignes sans exception : aucun rattachement officiel possible vers une Station, contrairement à l'hypothèse de départ (rattachement via ZdA→ZdC comme pour les accès). Pivoté vers un rattachement par proximité géographique. |
+| `php bin/console app:importer-points-de-vente` (x2, vérif idempotence + timing) | ~11 s (2012 points × 14070 Stations, calcul de distance en PHP). 2012 créés, 1989 rattachés à moins de 300 m. Second passage : 0 création, 2012 mises à jour, même taux de rattachement. |
+| Compte de test admin local + connexion JS | Vérifié `/point-de-vente` (liste paginée) et `/station/1` (La Défense, 4 points de vente à proximité listés). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

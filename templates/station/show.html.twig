@@ -115,6 +115,20 @@
             <p class="text-muted">Aucune sortie enregistrée pour cette station.</p>
         {% endif %}
 
+        <h2 class="h5 mt-4">Points de vente à proximité</h2>
+        {% if station.pointsDeVente|length > 0 %}
+            <ul>
+                {% for point_de_vente in station.pointsDeVente %}
+                    <li>
+                        <a href="{{ path('app_point_de_vente_show', {'id': point_de_vente.id}) }}">{{ point_de_vente.label }}</a>
+                        <span class="text-muted">({{ point_de_vente.type }}{% if point_de_vente.adresse %}, {{ point_de_vente.adresse }}{% endif %})</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucun point de vente connu à proximité.</p>
+        {% endif %}
+
         <h2 class="h5 mt-4">Conseils de position dans la rame</h2>
         {% if positionsRame|length > 0 %}
             <p class="text-muted small">Où se placer dans la rame en montant ici pour arriver au plus près de sa correspondance ou de sa sortie.</p>

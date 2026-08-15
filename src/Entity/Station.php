@@ -101,10 +101,20 @@ class Station
     #[ORM\OneToMany(targetEntity: Desserte::class, mappedBy: 'station')]
     private Collection $dessertes;
 
+    /**
+     * Points de vente les plus proches (rattachement par proximite geographique, voir
+     * PointDeVente pour les limites de ce rattachement).
+     *
+     * @var Collection<int, PointDeVente>
+     */
+    #[ORM\OneToMany(targetEntity: PointDeVente::class, mappedBy: 'station')]
+    private Collection $pointsDeVente;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
         $this->dessertes = new ArrayCollection();
+        $this->pointsDeVente = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -298,6 +308,35 @@ class Station
             // set the owning side to null (unless already changed)
             if ($desserte->getStation() === $this) {
                 $desserte->setStation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PointDeVente>
+     */
+    public function getPointsDeVente(): Collection
+    {
+        return $this->pointsDeVente;
+    }
+
+    public function addPointDeVente(PointDeVente $pointDeVente): static
+    {
+        if (!$this->pointsDeVente->contains($pointDeVente)) {
+            $this->pointsDeVente->add($pointDeVente);
+            $pointDeVente->setStation($this);
+        }
+
+        return $this;
+    }
+
+    public function removePointDeVente(PointDeVente $pointDeVente): static
+    {
+        if ($this->pointsDeVente->removeElement($pointDeVente)) {
+            if ($pointDeVente->getStation() === $this) {
+                $pointDeVente->setStation(null);
             }
         }
 

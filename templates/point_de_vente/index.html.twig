@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Points de vente{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Points de vente</h1>
+        <p class="text-muted">Commerces agréés et guichets Navigo où acheter un titre de transport.</p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Adresse</th>
+                    <th>Station la plus proche</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for point_de_vente in points_de_vente %}
+                <tr>
+                    <td>{{ point_de_vente.label }}</td>
+                    <td>{{ point_de_vente.type ?? '—' }}</td>
+                    <td>{{ point_de_vente.adresse }} {{ point_de_vente.codePostal }} {{ point_de_vente.ville }}</td>
+                    <td>
+                        {% if point_de_vente.station %}
+                            <a href="{{ path('app_station_show', {'id': point_de_vente.station.id}) }}">{{ point_de_vente.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_point_de_vente_show', {'id': point_de_vente.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_point_de_vente_edit', {'id': point_de_vente.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(points_de_vente) }}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_point_de_vente_new') }}" class="btn btn-primary">Créer un point de vente</a>
+        {% endif %}
+    </div>
+{% endblock %}
