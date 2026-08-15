@@ -6,6 +6,7 @@ use App\Entity\Correspondance;
 use App\Form\CorrespondanceType;
 use App\Repository\CorrespondanceRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,10 +17,14 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CorrespondanceController extends AbstractController
 {
     #[Route(name: 'app_correspondance_index', methods: ['GET'])]
-    public function index(CorrespondanceRepository $correspondanceRepository): Response
+    public function index(Request $request, CorrespondanceRepository $correspondanceRepository, PaginatorInterface $paginator): Response
     {
         return $this->render('correspondance/index.html.twig', [
-            'correspondances' => $correspondanceRepository->findAllWithDetails(),
+            'correspondances' => $paginator->paginate(
+                $correspondanceRepository->creerRequeteAvecDetails(),
+                $request->query->getInt('page', 1),
+                50,
+            ),
         ]);
     }
 

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Correspondance;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,12 +18,12 @@ class CorrespondanceRepository extends ServiceEntityRepository
     }
 
     /**
-     * Pour l'index : evite le N+1 sur desserteA/desserteB -> station/ligne, affiches sur
-     * chaque ligne.
-     *
-     * @return Correspondance[]
+     * Pour l'index (paginee) : evite le N+1 sur desserteA/desserteB -> station/ligne, affiches
+     * sur chaque ligne. Retourne un QueryBuilder (pas getResult()) : la table compte 100000+
+     * lignes, un chargement complet (meme avec pagination applicable) epuisait la memoire PHP
+     * en prod avant ce correctif - voir CorrespondanceController::index().
      */
-    public function findAllWithDetails(): array
+    public function creerRequeteAvecDetails(): QueryBuilder
     {
         return $this->createQueryBuilder('c')
             ->leftJoin('c.desserteA', 'a')->addSelect('a')
@@ -38,8 +39,6 @@ class CorrespondanceRepository extends ServiceEntityRepository
             ->leftJoin('dirB.desserteTerminus', 'dirBDesserte')->addSelect('dirBDesserte')
             ->leftJoin('dirBDesserte.station', 'dirBStation')->addSelect('dirBStation')
             ->orderBy('aStation.label', 'ASC')
-            ->getQuery()
-            ->getResult()
         ;
     }
 
