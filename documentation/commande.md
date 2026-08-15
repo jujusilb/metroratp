@@ -375,4 +375,18 @@ commencer par l'accessibilité PMR.
 | `php bin/phpunit` (134 tests) | Tout passe (pas de changement JS dans cette fonctionnalité). |
 | Compte de test admin local + connexion JS | Vérifié `/station/1` (La Défense) : ligne "Accessibilité PMR" affichée avec le commentaire détaillé complet. Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Horaires et plans par ligne (branche feature/horaires-lignes)
+
+L'utilisateur a demandé de créer 4 branches (une par fichier restant identifié dans la fouille du
+dossier) et de tout construire, l'une après l'autre, sans merger tout de suite ("on mergera
+ensuite") : pas de déploiement/vérification production pour ces branches tant qu'elles ne sont
+pas mergées sur main.
+
+| Commande | Objectif |
+|---|---|
+| Script PHP inline (jointure `ID_Line` → `Ligne.code_externe`, puis repli `Name_Line` → `UPPER(label)`) | Vérifié le taux de rattachement avant de coder l'import : 3218/4507 (71%) par codeExterne exact, seulement +20 via le repli par label (le probleme n'est donc pas principalement le codeExterne corrompu du metro, contrairement a l'hypothese de depart — la majorite des non-rattaches sont des Ligne absentes de la base). |
+| Script PHP inline (comptage URL dupliquées) | 57 doublons exacts sur 4507 lignes — dédupliqué par URL comme clé naturelle (le CSV source n'a pas d'id par document). |
+| `php bin/console app:importer-documents-lignes` (x2, vérif idempotence + timing) | ~7s. 3188 DocumentLigne créés (1262 ignorés : Ligne introuvable). Second passage : 0 création, 3188 mises à jour. |
+| Compte de test admin local + connexion JS | Vérifié `/document-ligne` (liste paginée) et `/ligne/1` (Métro 1) : section "Horaires et plans" n'affiche que le document réellement rattaché à cette Ligne précise ("Plan Métro 1"), confirmant que les entrées visuellement similaires (même badge "1") dans la liste globale appartiennent à d'autres Ligne homonymes (bus d'autres opérateurs), pas un bug de rattachement. Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

@@ -45,6 +45,15 @@ le rsync malgré l'exclude (vérifié le 2026-08-14 : `plans-de-secteur.csv` et
 `communes_departements.csv` étaient déjà présents et à jour sur le serveur juste après le
 déploiement, hash identique au fichier commit une fois les fins de ligne normalisées).
 
+## Horaires et plans par ligne (fait le 2026-08-15, branche feature/horaires-lignes)
+
+`DocumentLigne` (4507 fiches horaires/plans PDF officiels, dataset IDFM
+"fiches-horaires-et-plans") rattachées à `Ligne` par codeExterne avec repli par label (même
+pattern que `app:importer-traces-lignes`). Vérifié que le repli label n'aide que marginalement ici
+(~20 lignes) : les ~1262 documents non rattachés correspondent surtout à des Ligne absentes de
+notre base, pas au problème de codeExterne corrompu du métro. Dédupliqué par URL (57 doublons
+exacts dans la source). CRUD complet (paginé), section "Horaires et plans" sur la fiche Ligne.
+
 ## Accessibilité PMR par gare (fait le 2026-08-15)
 
 `Station::accessibilitePmr`/`accessibilitePmrCommentaire` depuis `accessibilite-en-gare.csv`

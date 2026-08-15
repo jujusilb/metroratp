@@ -58,10 +58,17 @@ class Ligne
     #[ORM\OneToMany(targetEntity: MaterielLigne::class, mappedBy: 'ligne')]
     private Collection $materielLignes;
 
+    /**
+     * @var Collection<int, DocumentLigne>
+     */
+    #[ORM\OneToMany(targetEntity: DocumentLigne::class, mappedBy: 'ligne')]
+    private Collection $documents;
+
     public function __construct()
     {
         $this->dessertes = new ArrayCollection();
         $this->materielLignes = new ArrayCollection();
+        $this->documents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -212,6 +219,35 @@ class Ligne
             // set the owning side to null (unless already changed)
             if ($materielLigne->getLigne() === $this) {
                 $materielLigne->setLigne(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DocumentLigne>
+     */
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function addDocument(DocumentLigne $document): static
+    {
+        if (!$this->documents->contains($document)) {
+            $this->documents->add($document);
+            $document->setLigne($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDocument(DocumentLigne $document): static
+    {
+        if ($this->documents->removeElement($document)) {
+            if ($document->getLigne() === $this) {
+                $document->setLigne(null);
             }
         }
 
