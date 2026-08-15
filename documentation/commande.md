@@ -375,4 +375,11 @@ commencer par l'accessibilité PMR.
 | `php bin/phpunit` (134 tests) | Tout passe (pas de changement JS dans cette fonctionnalité). |
 | Compte de test admin local + connexion JS | Vérifié `/station/1` (La Défense) : ligne "Accessibilité PMR" affichée avec le commentaire détaillé complet. Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Plans régionaux (branche feature/plans-regionaux)
+
+| Commande | Objectif |
+|---|---|
+| `php bin/console app:importer-plans-region` (x2, vérif idempotence) | 20 PlanRegion créés (dataset complet, pas de rattachement complexe nécessaire ici). Second passage : 0 création, 20 mises à jour. |
+| Compte de test admin local + connexion JS | Vérifié `/plan-region` (liste complète) et `/carte` (onglet "Carte des secteurs" : le select contient bien 2 `<optgroup>`, "Plans régionaux" avec 20 options et "Secteurs" avec 73). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

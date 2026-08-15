@@ -47,13 +47,20 @@
 
             <div class="tab-pane fade" id="carte-panneau-secteurs" role="tabpanel">
                 <p class="text-muted small mb-2">
-                    Choisissez un secteur, puis affichez son plan (PDF officiel IDFM).
+                    Choisissez un secteur ou un plan régional, puis affichez-le (PDF officiel IDFM).
                 </p>
                 <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
                     <select id="carte-secteur-select" class="form-select" style="max-width: 400px;">
-                        {% for plan in plans %}
-                            <option value="{{ plan.urlPdf }}">{{ plan.secteur }}</option>
-                        {% endfor %}
+                        <optgroup label="Plans régionaux">
+                            {% for plan_region in plansRegion %}
+                                <option value="{{ plan_region.urlPdf }}">{{ plan_region.label }}</option>
+                            {% endfor %}
+                        </optgroup>
+                        <optgroup label="Secteurs">
+                            {% for plan in plans %}
+                                <option value="{{ plan.urlPdf }}">{{ plan.secteur }}</option>
+                            {% endfor %}
+                        </optgroup>
                     </select>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carte-secteur-modal">Afficher</button>
                 </div>
