@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fontaines à eau{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Fontaines à eau</h1>
+        <p class="text-muted">Fontaines à eau en station (réseau RATP).</p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Ligne</th>
+                    <th>Station ou gare</th>
+                    <th>Accès le plus proche</th>
+                    <th>Station rattachée</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for fontaine_eau in fontaines_eau %}
+                <tr>
+                    <td>{{ fontaine_eau.ligneLabel ?? '—' }}</td>
+                    <td>{{ fontaine_eau.label }}</td>
+                    <td>
+                        {% if fontaine_eau.acces %}
+                            <a href="{{ path('app_acces_show', {'id': fontaine_eau.acces.id}) }}">{{ fontaine_eau.nomAccesProche ?? fontaine_eau.acces.label }}</a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if fontaine_eau.station %}
+                            <a href="{{ path('app_station_show', {'id': fontaine_eau.station.id}) }}">{{ fontaine_eau.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_fontaine_eau_show', {'id': fontaine_eau.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_fontaine_eau_edit', {'id': fontaine_eau.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(fontaines_eau) }}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_fontaine_eau_new') }}" class="btn btn-primary">Créer une fontaine à eau</a>
+        {% endif %}
+    </div>
+{% endblock %}

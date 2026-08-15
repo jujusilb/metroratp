@@ -169,6 +169,19 @@
             <p class="text-muted">Aucun défibrillateur connu à proximité.</p>
         {% endif %}
 
+        <h2 class="h5 mt-4">Fontaines à eau</h2>
+        {% if station.fontainesEau|length > 0 %}
+            <ul>
+                {% for fontaine_eau in station.fontainesEau %}
+                    <li>
+                        <a href="{{ path('app_fontaine_eau_show', {'id': fontaine_eau.id}) }}">{{ fontaine_eau.nomAccesProche ?? fontaine_eau.label }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucune fontaine à eau connue.</p>
+        {% endif %}
+
         <h2 class="h5 mt-4">Conseils de position dans la rame</h2>
         {% if positionsRame|length > 0 %}
             <p class="text-muted small">Où se placer dans la rame en montant ici pour arriver au plus près de sa correspondance ou de sa sortie.</p>

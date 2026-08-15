@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fontaine à eau {{ fontaine_eau.label }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ fontaine_eau.label }}{% if fontaine_eau.ligneLabel %} <small class="text-muted fs-5">(Ligne {{ fontaine_eau.ligneLabel }})</small>{% endif %}</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Adresse</th>
+                    <td>{{ fontaine_eau.adresse ?? '—' }} {{ fontaine_eau.codePostal }} {{ fontaine_eau.commune }}</td>
+                </tr>
+                <tr>
+                    <th>Accès le plus proche</th>
+                    <td>
+                        {% if fontaine_eau.acces %}
+                            <a href="{{ path('app_acces_show', {'id': fontaine_eau.acces.id}) }}">{{ fontaine_eau.nomAccesProche ?? fontaine_eau.acces.label }}</a>
+                            {% if fontaine_eau.numeroAccesProche %}<span class="text-muted">(n°{{ fontaine_eau.numeroAccesProche }})</span>{% endif %}
+                        {% else %}
+                            <span class="text-muted">Non rattaché</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>En zone contrôlée</th>
+                    <td>{{ fontaine_eau.enZoneControlee ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Identifiant RATP</th>
+                    <td>{{ fontaine_eau.identifiantRatp ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Station rattachée</th>
+                    <td>
+                        {% if fontaine_eau.station %}
+                            <a href="{{ path('app_station_show', {'id': fontaine_eau.station.id}) }}">{{ fontaine_eau.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">Aucune</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_fontaine_eau_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_fontaine_eau_edit', {'id': fontaine_eau.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('fontaine_eau/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

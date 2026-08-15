@@ -495,4 +495,13 @@ Reprise du TODO après l'urgence /correspondance ("np, allez! fais le todo!").
 | `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
 | Compte de test admin local + connexion JS | Vérifié `/defibrillateur` (liste paginée) et `/station/1` (section "Défibrillateurs à proximité" affichée). Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Fontaines à eau en station (entité `FontaineEau`)
+
+| Commande | Objectif |
+|---|---|
+| Script PHP inline sur "id IDM de l'accès le plus proche" | Vérifié avant de coder que ce champ correspond exactement à `Acces::codeExterne` (ex: "50147895.0" -> "50147895" trouvé dans `acces`) : rattachement officiel possible, contrairement aux autres datasets d'équipements. 91/91 lignes ont ce champ rempli. |
+| `php bin/console app:importer-fontaines-eau` | 91 FontaineEau créés, 61 rattachés à un Acces officiel (30 référencent un codeExterne absent de notre table `acces`, écart de couverture entre exports). |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
+| Compte de test admin local + connexion JS | Vérifié `/fontaine-eau` (liste paginée) et `/station/2` (section "Fontaines à eau" affichée). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

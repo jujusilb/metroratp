@@ -1,0 +1,94 @@
+﻿Ligne;Station ou Gare;Longitude;Latitude;Adresse;Code postal;Commune;Numéro de l'accès à la station le plus proche ;"Nom de l'accès à la station le plus proche 
+";En zone contrôlée ou non;Point_geographique;"Identifiant 
+RATP";id IDM de l'accès le plus proche
+3;Métro Gambetta;2.398237000000000;48.864901099999997;10 Place Gambetta;75020;Paris;2.0;pl. Gambetta;en zone contrôlée;48.8649011, 2.398237;8.0;50147895.0
+4;Métro Denfert-Rochereau;2.331880500000000;48.834250400000002;4 Avenue du Colonel Henri Rol Tanguy;75014;Paris;1.0;pl. Denfert-Rochereau;;48.8342504, 2.3318805;11.0;50147853.0
+6;Métro Nation;2.395229900000000;48.847781800000000;6 Place de la Nation / Rue Dorian;75011;Paris;2.0;av. Dorian;;48.8477818, 2.3952299;16.0;50148053.0
+9;Métro Saint-Augustin;2.321390000000000;48.874532600000002;85 Boulevard Haussmann;75008;Paris;2.0;bd Haussmann;;48.8745326, 2.32139;22.0;50148290.0
+A;RER Gare de Lyon;2.374085700000000;48.843773200000001;174 Rue de Bercy;75012;Paris;2.0;Min. Économie et Finances;;48.8437732, 2.3740857;28.0;50147982.0
+A;RER Nanterre-Préfecture;2.222746200000000;48.895963899999998;Place François Mitterrand;92000;Nanterre;1.0;Carillon;;48.8959639, 2.2227462;29.0;50148545.0
+7;Métro Poissonnière;2.349333200000000;48.877303099999999;96 Rue La Fayette (Terre-plein);75010;Paris;2.0;r. de Chabrol;;48.8773031, 2.3493332;39.0;50148814.0
+10;Métro Boulogne-Jean Jaures;2.238925200000000;48.842066400000000;25 Boulevard Jean Jaurès;92100;Boulogne;;bd Jean Jaurès / rue du Château / côté des n° pairs;;48.8420664, 2.2389252;47.0;50148382.0
+10;Métro Charles Michels;2.286216300000000;48.846415600000000;36 bis Rue des Entrepreneurs;75015;Paris;2.0;r. des Entrepreneurs;;48.8464156, 2.2862163;49.0;50148372.0
+9;Croix de Chavaux;2.4357957;48.8579814;Place Jacques Duclos/Boulevard Chanzy;93100;Montreuil;;;;48.8579814, 2.4357957;71.0;109091.0
+14;Madeleine;2.3253215;48.8706375;20, place de la Madeleine;75008;Paris;;;;48.8706375, 2.3253215;78.0;118047.0
+14;Gare de Lyon SA238;2.3749152;48.8428333;201 Rue de Bercy;75012;Paris;;;;48.8428333, 2.3749152;79.0;118053.0
+A;Bussy-Saint-Georges;2.7094370;48.8365977;Rocade de la Gare;77600;Bussy St Georges;;;;48.8365977, 2.709437;81.0;146049.0
+1;Château de Vincennes;2.4375576;48.8446970;10 Avenue de Paris;94300;Vincennes;;;;48.844697, 2.4375576;82.0;101033.0
+13;Basilique St Denis;2.3592363;48.9366472;21 Place du Caquet;93200;Saint-Denis;;;en zone contrôlée;48.9366472, 2.3592363;88.0;114081.0
+4;Métro Châtelet;2.347592300000000;48.857632799999998;Place du Châtelet;75001;Paris;16.0;pl. du Châtelet;;48.8576328, 2.3475923;10.0;50147797.0
+5;Métro Bastille;2.369746600000000;48.852041900000003;146 Rue de Lyon;75012;Paris;4.0;r. de Lyon;;48.8520419, 2.3697466;15.0;50148660.0
+11;Métro République;2.363616500000000;48.867014500000003;13 Place de La République;75003;Paris;2.0;r. du Temple;;48.8670145, 2.3636165;25.0;50148721.0
+14;Métro Bercy;2.379817400000000;48.840226800000003;Place du Bataillon du Pacifique;75012;Paris;2.0;boulevard de Bercy;;48.8402268, 2.3798174;26.0;50148041.0
+A;RER Vincennes;2.434033100000000;48.847227400000001;5 Avenue Aubert;94300;Vincennes;1.0;Centre-ville;;48.8472274, 2.4340331;30.0;50148839.0
+2;Métro Place de Clichy;2.327215300000000;48.883817299999997;Place de Clichy / Rue Biot;75017;Paris;;Entrée / Sortie;;48.8838173, 2.3272153;33.0;50147934.0
+3;Métro Galliéni;2.416495000000000;48.865178000000000;"36 Rue des Champeaux / Avenue du Général de Gaulle - Centre Commercial ""Bel Est""";93170;Bagnolet;;Entrée / Sortie;;48.865178, 2.416495;34.0;50147902.0
+7;Métro Crimée;2.377684000000000;48.891224899999997;104 Avenue De Flandre;75019;Paris;2.0;Caisse Nationale d'Assurance Vieillesse;;48.8912249, 2.377684;37.0;50148082.0
+8;Métro Ecole Vétérinaire de Maisons-Alfort;2.422335400000000;48.814684000000000;École Nationale Vétérinaire d'Alfort  Allée des Cavaliers;94700;Maison-Alfort;3.0;av. Général Leclerc;;48.814684, 2.4223354;42.0;50210115.0
+10;Métro Duroc;2.316469600000000;48.846983000000002;56 Boulevard des Invalides;75007;Paris;1.0;bd des Invalides;;48.846983, 2.3164696;50.0;50148365.0
+12;Métro Mairie d'Issy;2.273061800000000;48.824299500000002;63 Rue du Général Leclerc / Avenue de La République;92130;Issy-Les-Moulineaux;;Entrée / Sortie;;48.8242995, 2.2730618;54.0;50148422.0
+12;Métro Pigalle;2.337455700000000;48.882425099999999;22 Boulevard de Clichy;75018;Paris;;Entrée / Sortie;en zone contrôlée;48.8824251, 2.3374557;55.0;50148459.0
+A;RER Marne-la-Vallée - Chessy;2.782085521694469;48.87008937465786;Esplanade François Truffaut / Boulevard du Parc;77700;Chessy;1.0;Entrée / Sortie;;48.87008937465786, 2.782085521694469;61.0;50148801.0
+3;Pont de Levallois-Bécon;2.2797803;48.8978073;Rue Anatole France;92300;Levallois-Perret;;;;48.8978073, 2.2797803;63.0;103081.0
+4;Porte d'Orléans;2.3258905;48.8228182;Angle Jourdan/ Place  25 Août;75014;Paris;;;;48.8228182, 2.3258905;65.0;104079.0
+7;Louis Blanc;2.3650284;48.8813901;Angle Rue Lafayette/Rue du Faubourg Saint Martin;75010;Paris;;;;48.8813901, 2.3650284;66.0;107041.0
+8;Boucicaut;2.2876261;48.8410393;Angle Faure/Convention;75015;Paris;;;;48.8410393, 2.2876261;69.0;108023.0
+9;Marcel Sembat;2.2442114;48.8339275;Boulevard de la République;92000;Boulogne Billancourt;;;;48.8339275, 2.2442114;72.0;109025.0
+13;Les Agnettes;2.2857509;48.9231026;85 rue Robert Dupont;92600;Asnières sur Seine;;;en zone contrôlée;48.9231026, 2.2857509;74.0;113077.0
+14;Gare de Lyon SA231;2.3727068;48.8440863;201 Rue de Bercy;75012;Paris;;;;48.8440863, 2.3727068;80.0;118053.0
+5;Oberkampf;2.3688154;48.8644219;Boulevard Voltaire;75011;Paris;;;;48.8644219, 2.3688154;84.0;105065.0
+5;Place d'Italie;2.3547434;48.8310658;12b Place d'Italie;75013;Paris;;;;48.8310658, 2.3547434;85.0;105081.0
+9;Voltaire;2.3807736;48.8573789;57 Rue Richard Lenoir;75011;Paris;;;en zone contrôlée;48.8573789, 2.3807736;86.0;109075.0
+13;Guy Moquet;2.3273525;48.8927196;86 Avenue de Saint-Ouen;75018;Paris;;;en zone contrôlée;48.8927196, 2.3273525;87.0;114069.0
+1;Métro Champs-Elysées-Clémenceau;2.313305100000000;48.867236400000003;1 Avenue du Général Eisenhower;75008;Paris;1.0;pl. Clemenceau;;48.8672364, 2.3133051;1.0;50147971.0
+1;Métro Esplanade de la Défense;2.249559200000000;48.888164600000003;21 Voie des Bâtisseurs;92800;Puteaux;1.0;Courbevoie;en zone contrôlée;48.8881646, 2.2495592;2.0;50147942.0
+1;Métro Les sablons;2.271377000000000;48.881363299999997;68 Avenue Ch. De Gaulle;92200;Neuilly-sur-Seine;1.0;r. Louis-Philippe;;48.8813633, 2.271377;3.0;50208149.0
+1;Métro Reuilly-Diderot;2.386394200000000;48.847320000000003;75 Boulevard Diderot;75012;Paris;3.0;r. de Reuilly;;48.84732, 2.3863942;7.0;50148202.0
+4;Métro Mairie de Montrouge;2.319687300000000;48.818401600000001;1b Avenue de La République;92120;Montrouge;2.0;av. de la République;;48.8184016, 2.3196873;13.0;50148739.0
+9;Métro Bonne Nouvelle;2.347419900000000;48.870736899999997;5 Boulevard Poissonnière;75002;Paris;1.0;r. du Sentier;;48.8707369, 2.3474199;20.0;50148182.0
+A;RER Auber;2.330597300000000;48.871634600000000;Rue Scribe/ Rue Auber;75009;Paris;3.0;r. Scribe;;48.8716346, 2.3305973;27.0;50148104.0
+1;Métro Charles de Gaulle-Etoile;2.295914400000000;48.874369299999998;Place Charles de Gaulle / Avenue Hoche;75008;Paris;3.0;av. Hoche;en zone contrôlée;48.8743693, 2.2959144;31.0;50148764.0
+1;Métro Saint-Mandé-Tourelle;2.417314600000000;48.846569500000001;178 Avenue Gallieni;94160;Saint-Mandé;1.0;av. Joffre;;48.8465695, 2.4173146;32.0;50148008.0
+7;Métro Fort d'Aubervilliers;2.404308500000000;48.914498100000003;avenue de la Division Leclerc;93300;Aubervilliers;3.0;av. de la Division Leclerc;;48.9144981, 2.4043085;38.0;50148067.0
+7;Métro Villejuif-Léo Lagrange;2.363850000000000;48.804564300000003;Rue René Thibert;94800;Villejuif;1.0;r. René Thibert;;48.8045643, 2.36385;40.0;50210093.0
+8;Métro Daumesnil;2.395854800000000;48.839247299999997;105 Rue Claude Decaen;75012;Paris;2.0;r. Claude Decaen;;48.8392473, 2.3958548;41.0;50148045.0
+9;Métro Porte de Montreuil;2.411324100000000;48.853740500000001;1 Avenue de la Porte de Montreuil;75020;Paris;1.0;av. de la Porte de Montreuil;;48.8537405, 2.4113241;44.0;50148336.0
+7;Mairie d'ivry;2.3838050;48.8110565;Angle Marat/Robespierre;94000;Ivry;;;en zone contrôlée;48.8110565, 2.383805;67.0;107091.0
+7;Porte d'Italie;2.3597851;48.8191931;Angle Boulevard Massena/Avenue d'Italie;75013;Paris;;;;48.8191931, 2.3597851;68.0;107083.0
+13;Plaisance;2.3141914;48.8317823;207, Rue d'Alésia;75014;Paris;;;;48.8317823, 2.3141914;75.0;114041.0
+14;porte de Clichy;2.3133231;48.8941676;1 Bis Boulevard Berthier;75017;Paris;;;;48.8941676, 2.3133231;89.0;113071.0
+A;Fontenay sous Bois;2.4645939;48.8433058;1 Avenue Foch;94120;Fontenay-sous-Bois;;;;48.8433058, 2.4645939;90.0;136027.0
+A;Noisy grand Mont d'Est;2.5480766;48.8408563;1 Promenade Jules Valles;93160;Noisy-le-Grand;;;en zone contrôlée;48.8408563, 2.5480766;91.0;146035.0
+1;Métro Pont de Neuilly;2.259519400000000;48.884814499999997;205 Avenue Ch.De Gaulle;92200;Neuilly-sur-Seine;2.0;av. de Madrid;;48.8848145, 2.2595194;4.0;50147940.0
+1;Métro Porte de Vincennes;2.408922300000000;48.847267299999999;Cours de Vincennes / Rue du Général Niessel;75012;Paris;1.0;r. du Général Niessel;;48.8472673, 2.4089223;5.0;50147980.0
+3;Métro Havre-Caumartin;2.328369700000000;48.873610200000002;64 Boulevard Haussmann;75009;Paris;2.0;bd Haussmann;;48.8736102, 2.3283697;9.0;50147875.0
+4;Métro Strasbourg-Saint-Denis;2.353934300000000;48.869342600000003;Boulevard de Sébastopol / Boulevard Saint-Denis;75002;Paris;1.0;bd de Sébastopol;;48.8693426, 2.3539343;14.0;50208192.0
+7;Métro Villejuif-Louis Aragon;2.367859600000000;48.787626699999997;175 Boulevard Maxime Gorki;94800;Villejuif;2.0;bd Maxime Gorki;;48.7876267, 2.3678596;18.0;50148150.0
+8;Métro Balard;2.277342000000000;48.834982599999996;10 Boulevard Victor;75015;Paris;1.0;bd Victor;;48.8349826, 2.277342;19.0;50148154.0
+10;Métro La Motte-Picquet-Grenelle;2.298553300000000;48.849424499999998;63 Avenue de la Motte-Picquet;75015;Paris;2.0;av. de La Motte-Picquet;;48.8494245, 2.2985533;23.0;50148368.0
+4;Métro Marcadet-Poissonniers;2.349499000000000;48.890607000000003;69 Boulevard Barbès;75018;Paris;1.0;bd Barbès;;48.890607, 2.349499;36.0;50147761.0
+9;Métro Porte de Saint-Cloud;2.255961700000000;48.837748300000001;Avenue Édouard Vaillant (Boulogne-Billancourt);75016;Paris;;Gare Routière;;48.8377483, 2.2559617;45.0;50148247.0
+9;Métro Saint-Philippe-du-Roule;2.310141100000000;48.872379899999999;30 Avenue Franklin D. Roosevelt;75008;Paris;1.0;r. La Boétie;;48.8723799, 2.3101411;46.0;50148283.0
+10;Métro Michel-Ange-Molitor;2.261628500000000;48.845249000000003;38 Rue Michel-Ange / Rue Molitor;75016;Paris;;Entrée / Sortie;;48.845249, 2.2616285;51.0;50148387.0
+12;Métro Front Populaire;2.366294600000000;48.906578799999998;33 Rue du Pilier;93300;Aubervilliers;1.0;r. Léon Blum;;48.9065788, 2.3662946;53.0;50148735.0
+12;Métro Porte de Versailles;2.288089100000000;48.832208899999998;1 Avenue Ernest Renan;75015;Paris;1.0;av. Ernest Renan;;48.8322089, 2.2880891;56.0;50148426.0
+12;Métro Sèvres-Babylone;2.327057100000000;48.851585200000002;18 Rue de Sèvres;75007;Paris;1.0;r. de Sèvres;;48.8515852, 2.3270571;57.0;50148445.0
+14;Métro Bibliothèque François Miterrand;2.375973300000000;48.829749999999997;60 Rue du Chevaleret;75013;Paris;1.0;r. du Chevaleret;;48.82975, 2.3759733;60.0;50148910.0
+13;Porte de Vanves;2.3052727;48.8277019;10, Boulevard Brune;75014;Paris;;;;48.8277019, 2.3052727;76.0;114039.0
+14;Cour Saint-Émilion;2.3858607;48.8337977;Cours des Chamonard;75012;Paris;;;;48.8337977, 2.3858607;77.0;118057.0
+1;Métro Porte Maillot;2.282886000000000;48.877533999999997;87 Avenue de la Grande Armée;75016;Paris;5.0;av. de Malakoff;;48.877534, 2.282886;6.0;50147958.0
+4;Métro Gare du Nord;2.356907300000000;48.879801800000003;155 Rue La Fayette;75010;Paris;1.0;r. du Fbg Saint-Denis;;48.8798018, 2.3569073;12.0;50147779.0
+7;Métro Chaussée d'Antin-La Fayette;2.333718500000000;48.872841000000001;36 Boulevard Haussmann;75009;Paris;4.0;bd Haussmann;;48.872841, 2.3337185;17.0;50148095.0
+9;Métro Miromesnil;2.314442700000000;48.873600300000000;45 Rue La Boétie;75008;Paris;2.0;av. Delcassé;;48.8736003, 2.3144427;21.0;50148285.0
+11;Métro Hôtel de Ville;2.351581400000000;48.857294799999998;70 Rue de Rivoli;75004;Paris;1.0;r. de Rivoli;;48.8572948, 2.3515814;24.0;50148847.0
+4;Métro Gare de l'Est;2.358090600000000;48.876127500000003;Gare de l'Est  Boulevard de Strasbourg;75010;Paris;7.0;Terre-plein;;48.8761275, 2.3580906;35.0;50147774.0
+8;Métro Maisons-Alfort-Les Juilliottes;2.445950000000000;48.802722099999997;277 Avenue du Général Leclerc;94700;Maison-Alfort;4.0;av. du Maréchal de Lattre de Tassigny;;48.8027221, 2.44595;43.0;50148225.0
+10;Métro Boulogne-Pont de Saint-Cloud;2.229011000000000;48.840904399999999;Avenue Jean-Baptiste Clément / Rond Point Rhin et Danub;92100;Boulogne;2.0;av. Jean-Baptiste Clément;;48.8409044, 2.229011;48.0;50148386.0
+12;Métro Convention;2.296229500000000;48.837498900000000;Place Geneviève de Gaulle Anthonioz;75015;Paris;1.0;r. de la Convention;;48.8374989, 2.2962295;52.0;50210155.0
+13;Métro Carrefour Pleyel;2.343221000000000;48.919628699999997;11 Place des Pianos;93200;Saint-Denis;2.0;Cap Ampère;;48.9196287, 2.343221;58.0;50148731.0
+13;Métro Saint-Denis Porte de Paris;2.356240000000000;48.929883599999997;Rue Danièle Casanova;93200;Saint-Denis;2.0;r. Danielle Casanova;en zone contrôlée;48.9298836, 2.35624;59.0;50148510.0
+3;Péreire;2.2981799;48.8847458;Angle Place du Maréchal Juin/Rue de Courcelles;75017;Paris;;;;48.8847458, 2.2981799;62.0;103073.0
+4;Château Rouge;2.3497528;48.8872989;Angle Boulevard Barbès/ Rue Poulet;75018;Paris;;;;48.8872989, 2.3497528;64.0;104035.0
+9;Charonne;2.3855600;48.8545906;Angle Boulevard Voltaire/Rue de Charonne;75012;Paris;;;;48.8545906, 2.38556;70.0;109077.0
+11;Arts et Métiers;2.3565996;48.8654039;Terre Plein Turbigo/Réaumur;75003;Paris;;;;48.8654039, 2.3565996;73.0;111051.0
+1;Château de Vincennes;2.4402043;48.8444886;10 Avenue de Paris;94300;Vincennes;;;;48.8444886, 2.4402043;83.0;101033.0

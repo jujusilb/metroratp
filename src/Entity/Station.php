@@ -128,6 +128,16 @@ class Station
     #[ORM\OneToMany(targetEntity: Defibrillateur::class, mappedBy: 'station')]
     private Collection $defibrillateurs;
 
+    /**
+     * Fontaines a eau rattachees a cette Station. Contrairement aux collections ci-dessus, ce
+     * rattachement est officiel (derive de FontaineEau::acces via Sortie), pas une approximation
+     * geographique - voir app:importer-fontaines-eau.
+     *
+     * @var Collection<int, FontaineEau>
+     */
+    #[ORM\OneToMany(targetEntity: FontaineEau::class, mappedBy: 'station')]
+    private Collection $fontainesEau;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -135,6 +145,7 @@ class Station
         $this->pointsDeVente = new ArrayCollection();
         $this->sanitaires = new ArrayCollection();
         $this->defibrillateurs = new ArrayCollection();
+        $this->fontainesEau = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -415,6 +426,35 @@ class Station
         if ($this->defibrillateurs->removeElement($defibrillateur)) {
             if ($defibrillateur->getStation() === $this) {
                 $defibrillateur->setStation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FontaineEau>
+     */
+    public function getFontainesEau(): Collection
+    {
+        return $this->fontainesEau;
+    }
+
+    public function addFontaineEau(FontaineEau $fontaineEau): static
+    {
+        if (!$this->fontainesEau->contains($fontaineEau)) {
+            $this->fontainesEau->add($fontaineEau);
+            $fontaineEau->setStation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFontaineEau(FontaineEau $fontaineEau): static
+    {
+        if ($this->fontainesEau->removeElement($fontaineEau)) {
+            if ($fontaineEau->getStation() === $this) {
+                $fontaineEau->setStation(null);
             }
         }
 

@@ -1,5 +1,16 @@
 # À faire / pistes en attente
 
+## Fontaines à eau en station (fait le 2026-08-15)
+
+`FontaineEau` (dataset IDFM "fontaines-a-eau-dans-le-reseau-ratp", 91 emplacements avec
+coordonnées exploitables sur 93). **Seul dataset d'équipement en station avec un rattachement
+officiel** : la colonne "id IDM de l'accès le plus proche" correspond exactement à
+`Acces::codeExterne` (vérifié avant de coder) — rattaché à `Acces` directement (pas une
+approximation géographique comme `Sanitaire`/`Defibrillateur`/`PointDeVente`), puis `Station`
+dérivée via les `Sortie` de cet Acces. 61/91 rattachés (30 référencent un `Acces::codeExterne`
+absent de notre table `acces` — écart de couverture entre les deux exports IDFM, pas un bug).
+CRUD complet (`/fontaine-eau`), section "Fontaines à eau" sur la fiche Station.
+
 ## Défibrillateurs en station (fait le 2026-08-15)
 
 `Defibrillateur` (dataset IDFM "defibrillateurs-du-reseau-ratp", 451 emplacements, 448 avec

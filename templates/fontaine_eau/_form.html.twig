@@ -1,0 +1,18 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.ligneLabel) }}
+    {{ form_row(form.label) }}
+    {{ form_row(form.adresse) }}
+    {{ form_row(form.codePostal) }}
+    {{ form_row(form.commune) }}
+    {{ form_row(form.numeroAccesProche) }}
+    {{ form_row(form.nomAccesProche) }}
+    {{ form_row(form.enZoneControlee) }}
+    {{ form_row(form.identifiantRatp) }}
+    {{ form_row(form.latitude) }}
+    {{ form_row(form.longitude) }}
+    {{ form_row(form.acces) }}
+    {{ form_row(form.station) }}
+
+    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}
