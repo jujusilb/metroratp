@@ -45,6 +45,12 @@ le rsync malgré l'exclude (vérifié le 2026-08-14 : `plans-de-secteur.csv` et
 `communes_departements.csv` étaient déjà présents et à jour sur le serveur juste après le
 déploiement, hash identique au fichier commit une fois les fins de ligne normalisées).
 
+## PDF affichés directement sur le site (fait le 2026-08-15, branche feature/plans-regionaux)
+
+Même traitement que sur `plan/show.html.twig` (main) : `templates/tools/visionneuse_pdf.html.twig`
+appliqué à `plan_region/show.html.twig` (PDF visible directement sur la page, plus de lien qui
+ouvre juste un nouvel onglet).
+
 ## Plans régionaux (fait le 2026-08-15, branche feature/plans-regionaux)
 
 `PlanRegion` (19 grandes cartes d'ensemble du réseau : Métro, RER, réseau de Nuit, plans
