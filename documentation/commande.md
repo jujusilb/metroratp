@@ -393,5 +393,8 @@ Demande "priorité absolue" : analyse de `pathways.txt` puis exploitation maxima
 | `php bin/console app:importer-temps-marche-acces` (x2, vérif idempotence) | 2377/2378 Acces mis à jour. Second passage : même résultat. |
 | `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
 | Compte de test admin local + connexion JS | Vérifié `/station/1` (colonne "Marche depuis le quai" dans le tableau des sorties, ex: "203 m (~4 min)") et `/acces/11121` (tableau "Cheminement vers le quai le plus proche" complet, champs vides affichés "—" proprement). Compte supprimé après vérification. |
+| `git push origin main` + `gh run watch` | CI et déploiement verts (build assets, PHPUnit, Jest, rsync, migration, symlink). |
+| `ssh ... php bin/console app:importer-temps-marche-acces --env=prod` | 2377 Acces mis à jour — résultat identique au local. |
+| Compte de test admin temporaire + `curl` authentifié | Login `curl` en échec (302 vers `/login`) avec `_username`=l'email : le provider Symfony (`security.yaml`, `property: username`) authentifie sur la colonne `username`, distincte de `email` en base — gotcha non rencontré sur les comptes de test précédents qui avaient `username` déjà rempli par coïncidence. Une fois `username` renseigné à la même valeur que l'email sur le compte de test, connexion `curl` OK (302 → session). Vérifié `/station/395` (colonne "Marche depuis le quai" présente) et `/acces/6095` (128 m, ~3 min, "—" pour les champs vides) en production. Compte supprimé après vérification. |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
