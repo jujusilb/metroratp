@@ -77,6 +77,19 @@ class Station
     private ?PoleEchange $poleEchange = null;
 
     /**
+     * Niveau d'accessibilite PMR de la gare (dataset IDFM "accessibilite-en-gare", ~459 gares
+     * seulement - train/RER/metro principalement, pas tous les arrets de bus) : voir
+     * app:importer-accessibilite-gares. Valeur en texte libre cote source (4 niveaux distincts
+     * observes, pas une enumeration stricte garantie stable) : stockee telle quelle plutot que
+     * mappee sur un type dedie.
+     */
+    #[ORM\Column(length: 150, nullable: true)]
+    private ?string $accessibilitePmr = null;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $accessibilitePmrCommentaire = null;
+
+    /**
      * @var Collection<int, Sortie>
      */
     #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'station')]
@@ -203,6 +216,30 @@ class Station
     public function setPoleEchange(?PoleEchange $poleEchange): static
     {
         $this->poleEchange = $poleEchange;
+
+        return $this;
+    }
+
+    public function getAccessibilitePmr(): ?string
+    {
+        return $this->accessibilitePmr;
+    }
+
+    public function setAccessibilitePmr(?string $accessibilitePmr): static
+    {
+        $this->accessibilitePmr = $accessibilitePmr;
+
+        return $this;
+    }
+
+    public function getAccessibilitePmrCommentaire(): ?string
+    {
+        return $this->accessibilitePmrCommentaire;
+    }
+
+    public function setAccessibilitePmrCommentaire(?string $accessibilitePmrCommentaire): static
+    {
+        $this->accessibilitePmrCommentaire = $accessibilitePmrCommentaire;
 
         return $this;
     }

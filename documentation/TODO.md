@@ -45,6 +45,17 @@ le rsync malgré l'exclude (vérifié le 2026-08-14 : `plans-de-secteur.csv` et
 `communes_departements.csv` étaient déjà présents et à jour sur le serveur juste après le
 déploiement, hash identique au fichier commit une fois les fins de ligne normalisées).
 
+## Accessibilité PMR par gare (fait le 2026-08-15)
+
+`Station::accessibilitePmr`/`accessibilitePmrCommentaire` depuis `accessibilite-en-gare.csv`
+(dataset IDFM, 459 gares - train/RER/métro principalement). Le CSV source ne donne aucune clé
+directe vers le référentiel ZdC utilisé partout ailleurs (`stop_point_id` façon
+`stop_point:IDFM:monomodalStopPlace:47915`) : résolu via `stops.txt` (`parent_station`) dans
+`documentation/scripts/extraire_accessibilite_gares.php` (455/459 résolues, 4 hors du snapshot
+GTFS téléchargé). Affiché sur la fiche Station uniquement quand renseigné (grain "gare", la
+grande majorité des Station bus n'auront jamais cette donnée - fidèle à la source, pas un import
+manquant).
+
 ## Mini-carte des accès / "plan de quartier" (fait le 2026-08-14)
 
 L'utilisateur voulait l'équivalent du plan de quartier affiché sur les quais RATP (petite carte

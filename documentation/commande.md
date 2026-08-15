@@ -361,4 +361,18 @@ PDF dans un second modal.
 | `npx encore dev`, `npx jest` (51 tests), `php bin/phpunit` (134 tests) | Tout passe (aucun changement de schéma dans cette suite). |
 | Compte de test admin local + connexion JS, vérifications via `dispatchEvent`/`querySelector` (pas de screenshot, pane non affiché) | Confirmé : cases décochées par défaut ; cocher "Métro" seul puis cliquer "Afficher" ouvre le modal avec uniquement les stations métro visibles (un point bus-only connu ne remonte plus de bulle) ; cocher "Bus" en direct pendant que le modal est ouvert le fait réapparaître (filtre toujours réactif) ; l'onglet "Carte des secteurs" affiche les 73 options, sélectionner "Secteur Paris" + "Afficher" ouvre le second modal avec `<object data="...plan03.pdf">` et le lien de secours pointant vers la bonne URL. Aucune erreur console. Compte supprimé après vérification. |
 
+## Session du 2026-08-15 — Accessibilité PMR par gare
+
+Fouille du dossier IDFM-gtfs à la demande de l'utilisateur ("je veux que le site soit une bible
+des transports") : plusieurs fichiers jamais exploités identifiés, l'utilisateur a choisi de
+commencer par l'accessibilité PMR.
+
+| Commande | Objectif |
+|---|---|
+| Script PHP inline (jointure `stop_point_id` (sans/avec préfixe `stop_point:`) → `stops.txt` → `parent_station`) | Vérifié le taux de résolution vers une ZdC avant de coder l'import : 0/459 avec le préfixe complet, 455/459 après l'avoir retiré (l'écart venait juste du préfixe `stop_point:` absent de `stops.txt`). |
+| `php documentation/scripts/extraire_accessibilite_gares.php` | Génère `accessibilite_gares.csv` (455 lignes, colonnes zdc/niveau/commentaire), commité. |
+| `php bin/console app:importer-accessibilite-gares` | 455/455 Stations mises à jour (0 ignorée), rattachement via `trouverIdCanoniqueParZdc()` comme les autres imports par ZdC. |
+| `php bin/phpunit` (134 tests) | Tout passe (pas de changement JS dans cette fonctionnalité). |
+| Compte de test admin local + connexion JS | Vérifié `/station/1` (La Défense) : ligne "Accessibilité PMR" affichée avec le commentaire détaillé complet. Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

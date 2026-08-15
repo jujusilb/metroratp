@@ -22,6 +22,15 @@
                 <span class="text-muted">Non renseigné</span>
             {% endif %}
         </p>
+        {% if station.accessibilitePmr %}
+            <p>
+                <strong>Accessibilité PMR :</strong>
+                {{ station.accessibilitePmr }}
+                {% if station.accessibilitePmrCommentaire %}
+                    <span class="text-muted">— {{ station.accessibilitePmrCommentaire }}</span>
+                {% endif %}
+            </p>
+        {% endif %}
 
         <h2 class="h5">Dessertes</h2>
         {% if station.dessertes|length > 0 %}
