@@ -151,6 +151,19 @@ jamais auto-hébergé, lien vers l'officiel IDFM. CRUD complet (`/plan-region`).
 "Carte des secteurs" existant (`/carte`) sous forme de second `<optgroup>` dans le même sélecteur
 plutôt qu'un nouvel onglet séparé — réutilise tel quel le mécanisme modal `<object>` déjà en place.
 
+## Projets d'arrêts/pôles en projet (fait le 2026-08-15, branche feature/projets-reseau)
+
+`ProjetArret` (404 arrêts/pôles multimodaux en projet ou en construction, dataset IDFM
+"projets_arrets_idf") : le futur du réseau. Jamais rattaché à une Station/Ligne existante — ce
+sont des entités distinctes, pas encore réelles. Reconstruction complète à chaque import (purge +
+réimport), pas de find-or-create : le CSV source n'a pas d'identifiant stable par ligne.
+
+Les champs `MODE_`/`SOUS_MODE`/`STATUT`/`PHASE` sont des codes internes IDFM **sans table de
+correspondance publiée** dans les métadonnées du dataset (vérifié via l'API catalog) : stockés
+tels quels plutôt que traduits en libellés inventés. Seule certitude documentée sur `STATUT` :
+échelle 1 (études préalables) à 10 (mise en service), sans le détail des valeurs intermédiaires —
+affichée telle quelle dans l'UI plutôt que de deviner un libellé par valeur.
+
 ## Accessibilité PMR par gare (fait le 2026-08-15)
 
 `Station::accessibilitePmr`/`accessibilitePmrCommentaire` depuis `accessibilite-en-gare.csv`

@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Projets d'arrêts et de pôles{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Projets d'arrêts et de pôles</h1>
+        <p class="text-muted">Arrêts et pôles multimodaux en projet ou en construction — le futur du réseau.</p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Projet</th>
+                    <th>Arrêt / opération</th>
+                    <th>Nature</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for projet_arret in projets_arret %}
+                <tr>
+                    <td>{{ projet_arret.nomProjet }}</td>
+                    <td>{{ projet_arret.label }}</td>
+                    <td>{{ projet_arret.nature ?? '—' }}</td>
+                    <td>{{ projet_arret.statut ?? '—' }}</td>
+                    <td>
+                        <a href="{{ path('app_projet_arret_show', {'id': projet_arret.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_projet_arret_edit', {'id': projet_arret.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(projets_arret) }}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_projet_arret_new') }}" class="btn btn-primary">Créer un projet d'arrêt</a>
+        {% endif %}
+    </div>
+{% endblock %}
