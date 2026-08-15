@@ -411,4 +411,20 @@ pas mergées sur main.
 | `php bin/console app:importer-points-de-vente` (x2, vérif idempotence + timing) | ~11 s (2012 points × 14070 Stations, calcul de distance en PHP). 2012 créés, 1989 rattachés à moins de 300 m. Second passage : 0 création, 2012 mises à jour, même taux de rattachement. |
 | Compte de test admin local + connexion JS | Vérifié `/point-de-vente` (liste paginée) et `/station/1` (La Défense, 4 points de vente à proximité listés). Compte supprimé après vérification. |
 
+## Session du 2026-08-15 (suite) — Horaires et plans par ligne (branche feature/horaires-lignes)
+
+| Commande | Objectif |
+|---|---|
+| Script PHP inline (jointure `ID_Line` → `Ligne.code_externe`, puis repli `Name_Line` → `UPPER(label)`) | Vérifié le taux de rattachement avant de coder l'import : 3218/4507 (71%) par codeExterne exact, seulement +20 via le repli par label (le probleme n'est donc pas principalement le codeExterne corrompu du metro, contrairement a l'hypothese de depart — la majorite des non-rattaches sont des Ligne absentes de la base). |
+| Script PHP inline (comptage URL dupliquées) | 57 doublons exacts sur 4507 lignes — dédupliqué par URL comme clé naturelle (le CSV source n'a pas d'id par document). |
+| `php bin/console app:importer-documents-lignes` (x2, vérif idempotence + timing) | ~7s. 3188 DocumentLigne créés (1262 ignorés : Ligne introuvable). Second passage : 0 création, 3188 mises à jour. |
+| Compte de test admin local + connexion JS | Vérifié `/document-ligne` (liste paginée) et `/ligne/1` (Métro 1) : section "Horaires et plans" n'affiche que le document réellement rattaché à cette Ligne précise ("Plan Métro 1"), confirmant que les entrées visuellement similaires (même badge "1") dans la liste globale appartiennent à d'autres Ligne homonymes (bus d'autres opérateurs), pas un bug de rattachement. Compte supprimé après vérification. |
+
+## Session du 2026-08-15 (suite) — PDF affichés directement sur le site (branche feature/horaires-lignes)
+
+| Commande | Objectif |
+|---|---|
+| `php bin/phpunit` (134 tests) | Tout passe. |
+| Compte de test admin local + connexion JS | Vérifié `/ligne/1` (le lien "Horaires et plans" pointe vers `/document-ligne/{id}`, plus vers le PDF brut) et `/document-ligne/1621` (objet PDF affiché directement, URL RATP correcte). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

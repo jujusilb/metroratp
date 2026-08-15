@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Document {{ document.nom }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ document.nom }}</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Ligne</th>
+                    <td>
+                        {% if document.ligne %}
+                            <a href="{{ path('app_ligne_show', {'id': document.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ document.ligne.couleur|default('#6c757d') }};">
+                                {{ document.ligne.label }}
+                            </a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Type</th>
+                    <td>{{ document.type }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="h5">Document</h2>
+        {{ include('tools/visionneuse_pdf.html.twig', {'url': document.url}) }}
+
+        <div class="d-flex gap-2 mt-4">
+            <a href="{{ path('app_document_ligne_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_document_ligne_edit', {'id': document.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('document_ligne/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

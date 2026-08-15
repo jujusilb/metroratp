@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un document de ligne{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Créer un document de ligne</h1>
+
+        {{ include('document_ligne/_form.html.twig') }}
+
+        <a href="{{ path('app_document_ligne_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}

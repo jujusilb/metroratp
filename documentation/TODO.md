@@ -121,6 +121,22 @@ proximité géographique (moins de 300 m à vol d'oiseau) dans `app:importer-poi
 cette station" — 1989/2012 (99%) rattachés. CRUD complet (`/point-de-vente`, paginé vu le volume),
 section "Points de vente à proximité" sur la fiche Station.
 
+## PDF affichés directement sur le site (fait le 2026-08-15, branche feature/horaires-lignes)
+
+Même traitement que sur `plan/show.html.twig` (main) : `templates/tools/visionneuse_pdf.html.twig`
+appliqué à `document_ligne/show.html.twig`. La liste "Horaires et plans" sur `ligne/show.html.twig`
+pointe désormais vers la fiche du document (PDF intégré) plutôt que d'ouvrir le PDF brut dans un
+nouvel onglet.
+
+## Horaires et plans par ligne (fait le 2026-08-15, branche feature/horaires-lignes)
+
+`DocumentLigne` (4507 fiches horaires/plans PDF officiels, dataset IDFM
+"fiches-horaires-et-plans") rattachées à `Ligne` par codeExterne avec repli par label (même
+pattern que `app:importer-traces-lignes`). Vérifié que le repli label n'aide que marginalement ici
+(~20 lignes) : les ~1262 documents non rattachés correspondent surtout à des Ligne absentes de
+notre base, pas au problème de codeExterne corrompu du métro. Dédupliqué par URL (57 doublons
+exacts dans la source). CRUD complet (paginé), section "Horaires et plans" sur la fiche Ligne.
+
 ## Accessibilité PMR par gare (fait le 2026-08-15)
 
 `Station::accessibilitePmr`/`accessibilitePmrCommentaire` depuis `accessibilite-en-gare.csv`

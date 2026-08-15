@@ -59,6 +59,15 @@
             {% endif %}
         </div>
 
+        {% if ligne.documents|length > 0 %}
+            <h2 class="h5 mt-4">Horaires et plans</h2>
+            <ul>
+                {% for document in ligne.documents %}
+                    <li><a href="{{ path('app_document_ligne_show', {'id': document.id}) }}">{{ document.type }} — {{ document.nom }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         <div class="mt-4 d-flex gap-2">
             <a href="{{ path('app_ligne_index') }}" class="btn btn-secondary">Retour à la liste</a>
             {% if is_granted('ROLE_ADMIN') %}

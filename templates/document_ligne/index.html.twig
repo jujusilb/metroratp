@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Horaires et plans par ligne{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Horaires et plans par ligne</h1>
+        <p class="text-muted">Fiches horaires et plans PDF officiels IDFM, par ligne.</p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Ligne</th>
+                    <th>Type</th>
+                    <th>Document</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for document in documents %}
+                <tr>
+                    <td>
+                        {% if document.ligne %}
+                            <a href="{{ path('app_ligne_show', {'id': document.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ document.ligne.couleur|default('#6c757d') }};">
+                                {{ document.ligne.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ document.type }}</td>
+                    <td><a href="{{ document.url }}" target="_blank" rel="noopener">{{ document.nom }}</a></td>
+                    <td>
+                        <a href="{{ path('app_document_ligne_show', {'id': document.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_document_ligne_edit', {'id': document.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(documents) }}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_document_ligne_new') }}" class="btn btn-primary">Créer un document</a>
+        {% endif %}
+    </div>
+{% endblock %}
