@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Point de vente {{ point_de_vente.label }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ point_de_vente.label }}</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>{{ point_de_vente.type ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Adresse</th>
+                    <td>{{ point_de_vente.adresse ?? '—' }} {{ point_de_vente.codePostal }} {{ point_de_vente.ville }}</td>
+                </tr>
+                <tr>
+                    <th>Horaires</th>
+                    <td>{{ point_de_vente.horaires ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Station la plus proche</th>
+                    <td>
+                        {% if point_de_vente.station %}
+                            <a href="{{ path('app_station_show', {'id': point_de_vente.station.id}) }}">{{ point_de_vente.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">Aucune à proximité</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_point_de_vente_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_point_de_vente_edit', {'id': point_de_vente.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('point_de_vente/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

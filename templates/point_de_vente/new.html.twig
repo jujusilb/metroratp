@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un point de vente{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Créer un point de vente</h1>
+
+        {{ include('point_de_vente/_form.html.twig') }}
+
+        <a href="{{ path('app_point_de_vente_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}
