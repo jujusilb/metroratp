@@ -1,6 +1,48 @@
 # À faire / pistes en attente
 
-## StyleStation : 360/404 dessertes métro sans style — pas exploitable via Wikidata (constaté le 2026-08-15)
+## StyleStation rempli pour toutes les dessertes métro (fait le 2026-08-15/16)
+
+Suite à la constatation que Wikidata n'a pas cette donnée (voir plus bas, section conservée pour
+mémoire), l'utilisateur a demandé de le faire quand même via dépouillement des articles Wikipédia
+individuels des ~294 stations concernées (une `Desserte` = un couple Station×Ligne, jusqu'à 5 par
+station à grosses correspondances comme Châtelet ou République — le style peut différer d'une
+ligne à l'autre à la même station, ex. Nation : ligne 1 Ouï-dire, lignes 2/6 mouton, ligne 9
+renouveau du métro, vérifié conforme à l'exemple donné par l'utilisateur pour Sèvres-Babylone :
+ligne 10 renouveau du métro, ligne 12 Nord Sud).
+
+**Résultat : 404 dessertes métro au total, 234 remplies (58%), 126 laissées vides après
+vérification (aucune mention explicite du style trouvée dans l'article Wikipédia correspondant —
+jamais devinées), 44 déjà remplies avant cette session.**
+
+**2 nouveaux styles découverts et ajoutés à `style_station`** en cours de route (absents des 5
+valeurs seedées initialement) :
+- **Ouï-dire** : style de rénovation des années 1990 (bandeaux d'éclairage colorés sur consoles
+  courbes en forme de faux), antérieur au style « Gaudin »/Renouveau du métro des années 2000 —
+  24 dessertes.
+- **Décor unique** : pour les stations à décor artistique one-off non rattachable aux styles
+  systémiques (Louvre-Rivoli, Arts et Métiers L11 "steampunk", Bastille L1, Tuileries, Varenne
+  "Rodin"...) — 12 dessertes.
+
+**Répartition finale (404 dessertes métro) :** motte 104, renouveau du métro 104, Ouï-dire 24,
+Nord Sud 20, Décor unique 12, mouton 9, CMP 5, vide 126.
+
+**Méthodologie** : une requête WebFetch par station (avec prompt demandant la citation exacte de
+l'article, jamais une reformulation/déduction), une station à la fois, en distinguant
+explicitement chaque ligne quand la station en dessert plusieurs. Règle stricte : si l'article ne
+nomme pas explicitement un style (CMP/Nord-Sud/Motte/Mouton/Ouï-dire/Gaudin) ou un décor artistique
+reconnu, la desserte reste `NULL` plutôt que d'inférer depuis des indices indirects (ex: une seule
+mention de "sièges de style Motte" sans description du carrelage mural n'a pas suffi à conclure au
+style Motte pour l'ensemble du quai). Deux cas particuliers traités avec jugement : Mouton-Duvernet
+elle-même (la station de référence du style "Mouton") a en fait été rénovée en 2007 vers le style
+Gaudin — état actuel utilisé, pas l'historique ; certaines stations ont un décor qui a changé au fil
+du temps (ex: Château Rouge, décor Motte retiré en 2023) — état actuel utilisé systématiquement.
+
+**Non trouvé malgré recherche** : quelques stations très récentes (Saint-Denis — Pleyel, Rosny —
+Bois-Perrier, Chevilly-Larue...) n'ont pas d'article Wikipédia détaillé sur leur décor, ou l'article
+existe mais ne mentionne aucun style nommé — cohérent avec le fait que ces stations viennent tout
+juste d'ouvrir et n'ont pas encore d'historique de rénovation à documenter.
+
+## StyleStation : ancienne note (Wikidata seul, avant le dépouillement Wikipédia demandé)
 
 Demande utilisateur : remplir le style de quai (CMP/Nord-Sud/Motte/Mouton-Duvernet/Renouveau du
 métro, déjà les 5 valeurs seedées dans `style_station`) pour toutes les dessertes métro (une

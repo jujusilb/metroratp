@@ -519,4 +519,17 @@ Demande utilisateur : auditer `Materiel`/`MaterielLigne`, récupérer vitesse/mo
 | `php bin/phpunit` (134 tests) — échec inattendu (124 erreurs) | `Unknown column 't0.constructeur'` : la base `metroratp_test` (isolation Doctrine via `dbname_suffix: '_test'`, `config/packages/doctrine.yaml`) est une base MySQL séparée de `metroratp`, jamais synchronisée avec les migrations locales jusqu'ici. Corrigé en appliquant le même `ALTER TABLE` avec `--env=test`. Tout repasse au vert (134 tests + 51 Jest). |
 | Compte de test admin local + connexion JS | Vérifié `/materiel/16` (MS 61) : constructeur et vitesse (100 km/h) affichés correctement. Compte supprimé après vérification. |
 
+## Session du 2026-08-15/16 (suite) — Remplissage StyleStation (360 dessertes métro)
+
+Demande explicite de l'utilisateur malgré la constatation que Wikidata n'a pas cette donnée :
+dépouiller les articles Wikipédia individuels station par station.
+
+| Commande | Objectif |
+|---|---|
+| Export SQL des 360 dessertes métro sans style (`documentation/scripts/donnees-extraites/style_station_dessertes.tsv`) | Liste de travail : desserte_id, station, ligne. |
+| ~294 requêtes WebFetch (une par station, citation exacte exigée, distinction par ligne quand plusieurs) | Style trouvé et vérifié pour 234/360, laissé vide pour 126 (aucune mention explicite dans l'article, jamais deviné). 2 nouveaux styles découverts en cours de route (`Ouï-dire`, `Décor unique`) et ajoutés à `style_station`. |
+| Script PHP (`apply_style_batch.php`/`apply_style_batch_prod.php`, appliqués par lots de ~10 tout au long de la recherche, en local puis répliqués en prod via `scp`+SSH) | 234 `Desserte.styleStation` mis à jour en local et en prod, vérifié identique (même compte, même répartition par style). |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe (aucun changement de code, uniquement des données). |
+| Vérification manuelle SQL sur Sèvres-Babylone (ligne 10 = renouveau du métro, ligne 12 = Nord Sud) et Nation (ligne 1 = Ouï-dire, lignes 2/6 = mouton, ligne 9 = renouveau du métro) | Conforme aux exemples donnés par l'utilisateur en début de demande. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
