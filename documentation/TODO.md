@@ -241,8 +241,11 @@ sont réellement utilisées, ce ne sont pas de purs doublons vides). Solution re
 `relations.csv` comme source principale (34 Stations), complétée par une liste résiduelle
 minimale — `LEGACY_GAP_SANS_CODE_EXTERNE`, 16 labels vérifiés un à un, réservée aux seuls cas
 structurellement invisibles pour le référentiel officiel (label + `ville IS NULL` +
-`code_externe IS NULL`). Résultat : 50 Stations rattachées (contre 32 avant), commande idempotente
-(reset complet de `Station.pole_echange_id` à chaque exécution avant réassignation).
+`code_externe IS NULL`). Résultat : 50 Stations rattachées en local (contre 32 avant), 49 en
+production — l'écart d'1 est "Saint-Michel Notre-Dame", déjà connu comme une des Stations
+dupliquées en dérive entre local et prod (voir section "Stations Metro/Tramway/RER dupliquées"
+plus bas), pas un bug de ce correctif. Commande idempotente (reset complet de
+`Station.pole_echange_id` à chaque exécution avant réassignation).
 
 ## Lignes à embranchements complexes (RER C notamment)
 
