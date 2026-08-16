@@ -51,8 +51,9 @@ l'info récupérée (ex : croiser plusieurs exports d'un même jeu de données).
   PMR) + `Extensions` (JSON imbriqué, ex. climatisation) + `bookingRules`. Bien plus fin que
   `Station.accessibilitePmr` actuel ; a du sens surtout une fois un niveau Arrêt/ArT modélisé
   (voir plus bas), pour rattacher l'accessibilité au bon quai plutôt qu'à toute la station.
-* `commerces-de-proximite-agrees-ratp.*` : à comparer avec `points-de-vente.csv` avant import
-  (chevauchement probable, à vérifier pour éviter les doublons).
+* ~~`commerces-de-proximite-agrees-ratp.*` : à comparer avec `points-de-vente.csv` avant import
+  (chevauchement probable, à vérifier pour éviter les doublons).~~ **fait le 2026-08-16**, voir
+  section "Commerces de proximité (enrichissement PointDeVente)" plus bas.
 
 ## Cheminement piétons réel Acces → quai (fait le 2026-08-15)
 
@@ -270,6 +271,20 @@ dense en arrêts de bus, donc la plupart des sanisettes se trouvent malgré tout
 arrêt du réseau). `source`/`complement_adresse` du CSV source sont des colonnes constantes sur les
 609 lignes (aucune vraie donnée) : non importées, même décision que pour `agency.txt`. CRUD complet
 (`/sanisette-publique`, paginé), section "Sanisettes publiques à proximité" sur la fiche Station.
+
+## Commerces de proximité (enrichissement PointDeVente) (fait le 2026-08-16)
+
+Le dataset IDFM "commerces-de-proximite-agrees-ratp" (911 lignes : cafés-tabac, tabac-presse,
+librairies...) chevauche très largement `points-de-vente.csv` déjà importé : recoupement
+géographique (< 50m) vérifié AVANT d'importer → **889/911 (98%) déjà présents en base**. Pas de
+nouvelle entité créée (aurait dupliqué quasiment tout `PointDeVente`) : `app:importer-commerces-proximite`
+**enrichit** les `PointDeVente` existants (type "Commerce de proximité") avec deux nouveaux champs
+absents du dataset officiel — `categorieCommerce` (catégorie fine : "café tabac", "tabac presse",
+"librairie"...) et `jourFermeture` — trouvés via correspondance géographique la plus proche. Les
+~2% non retrouvés (20 commerces agréés RATP absents du référentiel `points-de-vente` officiel) sont
+créés en plus (`codeExterne` préfixé `COM-` pour ne pas entrer en collision avec le format `PdVId`
+existant), pour ne perdre aucune information réelle. Commande idempotente (un rejeu retrouve les
+commerces déjà créés/enrichis par coordonnées exactes, 0 nouvelle création).
 
 ## Lignes à embranchements complexes (RER C notamment)
 

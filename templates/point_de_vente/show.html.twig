@@ -21,6 +21,14 @@
                     <td>{{ point_de_vente.horaires ?? '—' }}</td>
                 </tr>
                 <tr>
+                    <th>Catégorie du commerce</th>
+                    <td>{{ point_de_vente.categorieCommerce ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Jour de fermeture</th>
+                    <td>{{ point_de_vente.jourFermeture ?? '—' }}</td>
+                </tr>
+                <tr>
                     <th>Station la plus proche</th>
                     <td>
                         {% if point_de_vente.station %}

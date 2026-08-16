@@ -451,4 +451,19 @@ Dataset Paris Open Data "sanisettesparis2011" (609 toilettes publiques de voirie
 | `ssh ... php bin/console app:importer-sanisettes-publiques --env=prod` | 609 SanisettePublique créées, 606 rattachées (99%) — résultats identiques au local. |
 | Compte de test admin temporaire (prod) + connexion via le Browser tool | Vérifié `/sanisette-publique` (mêmes données qu'en local) et `/sanisette-publique/584` (fiche complète, Station "Franklin D. Roosevelt" rattachée). Compte supprimé après vérification. |
 
+## Session du 2026-08-16 (suite) — Commerces de proximité (enrichissement PointDeVente)
+
+Avant d'importer `commerces-de-proximite-agrees-ratp.csv`, vérification du chevauchement avec
+`points-de-vente.csv` déjà en base (piste explicitement notée comme risquée dans TODO.md).
+
+| Commande | Objectif |
+|---|---|
+| Script PHP inline (comptage lignes/catégories) | 911 lignes ; 11 catégories fines (café tabac 515, tabac loto 174, tabac presse 102, etc.) ; colonnes `Column 8` à `Column 14` et `source`-like toutes vides. |
+| Script PHP inline (recoupement géographique `commerces-de-proximite` vs `PointDeVente` type "Commerce de proximité", plusieurs seuils testés 30m/50m/100m/200m/300m) | 887/911 (97%) déjà présents à moins de 30m, 889/911 (98%) à moins de 50m, plateau ensuite (902/911 même à 300m) — confirme un chevauchement massif, pas une coïncidence de seuil. Décision : enrichir l'existant plutôt que dupliquer. |
+| Ajout de `PointDeVente::categorieCommerce`/`jourFermeture` (nullable) + migration (`Version20260816110000`) | Deux champs absents du dataset `points-de-vente` officiel, seulement disponibles via ce second dataset. |
+| Nouvelle commande `app:importer-commerces-proximite` : pour chaque commerce, `UPDATE` du `PointDeVente` le plus proche (< 50m) ; sinon `INSERT` d'un nouveau (`codeExterne` préfixé `COM-` + `identifiant commerce`, pour ne pas collisionner avec le format `PdVId` existant) | 889 enrichis, 20 créés en plus (commerces agréés RATP absents du référentiel officiel). Second passage : 909 enrichis (les 20 nouveaux se retrouvent eux-mêmes par coordonnées exactes), 0 création — confirmé idempotent. |
+| `PointDeVenteType`/`_form.html.twig`/`show.html.twig`/`index.html.twig` mis à jour (2 nouveaux champs) | Catégorie affichée en colonne sur la liste, catégorie + jour de fermeture sur la fiche détail et le formulaire. |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe (colonnes ajoutées aussi en base de test). |
+| Compte de test admin local + connexion via `javascript_tool` (`form.submit()` direct — le clic via `computer` a de nouveau échoué silencieusement sur ce formulaire, comportement déjà documenté) | Vérifié `/point-de-vente/2` ("Librairie Fontaine", catégorie "tabac presse" + jour de fermeture "dimanche" affichés) et `/point-de-vente` (colonne "Catégorie" visible, vide pour les non-enrichis). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

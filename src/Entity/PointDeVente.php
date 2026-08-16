@@ -12,6 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
  * geographique a l'import (voir app:importer-points-de-vente), pas par un identifiant officiel -
  * Station::pointsDeVente doit donc etre lu comme "les plus proches", pas "les points de vente
  * officiels de cette station precise".
+ *
+ * `categorieCommerce`/`jourFermeture` viennent d'un second dataset IDFM
+ * "commerces-de-proximite-agrees-ratp" (911 lignes), recoupe par proximite geographique avec les
+ * PointDeVente de type "Commerce de proximite" deja importes (voir
+ * app:importer-commerces-proximite) : 97% de recouvrement confirme avant d'importer (pas de
+ * doublon cree pour les commerces deja presents, seuls les ~2% non retrouves sont crees en plus).
  */
 #[ORM\Entity(repositoryClass: PointDeVenteRepository::class)]
 class PointDeVente
@@ -41,6 +47,17 @@ class PointDeVente
 
     #[ORM\Column(length: 150, nullable: true)]
     private ?string $horaires = null;
+
+    /**
+     * Categorie fine du commerce (dataset IDFM "commerces-de-proximite-agrees-ratp" : "cafe tabac",
+     * "tabac presse", "librairie"...), uniquement pour les PointDeVente de type "Commerce de
+     * proximite" - voir app:importer-commerces-proximite.
+     */
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $categorieCommerce = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $jourFermeture = null;
 
     #[ORM\Column(type: 'float')]
     private ?float $latitude = null;
@@ -140,6 +157,30 @@ class PointDeVente
     public function setHoraires(?string $horaires): static
     {
         $this->horaires = $horaires;
+
+        return $this;
+    }
+
+    public function getCategorieCommerce(): ?string
+    {
+        return $this->categorieCommerce;
+    }
+
+    public function setCategorieCommerce(?string $categorieCommerce): static
+    {
+        $this->categorieCommerce = $categorieCommerce;
+
+        return $this;
+    }
+
+    public function getJourFermeture(): ?string
+    {
+        return $this->jourFermeture;
+    }
+
+    public function setJourFermeture(?string $jourFermeture): static
+    {
+        $this->jourFermeture = $jourFermeture;
 
         return $this;
     }

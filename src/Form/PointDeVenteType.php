@@ -21,6 +21,8 @@ class PointDeVenteType extends AbstractType
             ->add('codePostal', null, ['required' => false])
             ->add('ville', null, ['required' => false])
             ->add('horaires', null, ['required' => false])
+            ->add('categorieCommerce', null, ['required' => false])
+            ->add('jourFermeture', null, ['required' => false])
             ->add('latitude')
             ->add('longitude')
             ->add('station', EntityType::class, [

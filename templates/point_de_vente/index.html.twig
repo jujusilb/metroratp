@@ -12,6 +12,7 @@
                 <tr>
                     <th>Nom</th>
                     <th>Type</th>
+                    <th>Catégorie</th>
                     <th>Adresse</th>
                     <th>Station la plus proche</th>
                     <th>Actions</th>
@@ -22,6 +23,7 @@
                 <tr>
                     <td>{{ point_de_vente.label }}</td>
                     <td>{{ point_de_vente.type ?? '—' }}</td>
+                    <td>{{ point_de_vente.categorieCommerce ?? '—' }}</td>
                     <td>{{ point_de_vente.adresse }} {{ point_de_vente.codePostal }} {{ point_de_vente.ville }}</td>
                     <td>
                         {% if point_de_vente.station %}
@@ -39,7 +41,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="5">Aucun enregistrement trouvé</td>
+                    <td colspan="6">Aucun enregistrement trouvé</td>
                 </tr>
             {% endfor %}
             </tbody>
