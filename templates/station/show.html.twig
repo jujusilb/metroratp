@@ -182,6 +182,21 @@
             <p class="text-muted">Aucune fontaine à eau connue.</p>
         {% endif %}
 
+        <h2 class="h5 mt-4">Sanisettes publiques à proximité</h2>
+        {% if station.sanisettesPubliques|length > 0 %}
+            <ul>
+                {% for sanisette in station.sanisettesPubliques %}
+                    <li>
+                        <a href="{{ path('app_sanisette_publique_show', {'id': sanisette.id}) }}">{{ sanisette.adresse }}</a>
+                        {% if sanisette.accesPmr %}<span class="badge text-bg-info">PMR</span>{% endif %}
+                        {% if sanisette.statut != 'En service' %}<span class="badge text-bg-secondary">{{ sanisette.statut }}</span>{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucune sanisette publique connue à proximité.</p>
+        {% endif %}
+
         <h2 class="h5 mt-4">Conseils de position dans la rame</h2>
         {% if positionsRame|length > 0 %}
             <p class="text-muted small">Où se placer dans la rame en montant ici pour arriver au plus près de sa correspondance ou de sa sortie.</p>

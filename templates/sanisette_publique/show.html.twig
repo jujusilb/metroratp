@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sanisette {{ sanisette.adresse }}{% endblock %}
+
+{% macro oui_non(valeur) %}
+    {% if valeur is null %}
+        <span class="text-muted">Non renseigné</span>
+    {% elseif valeur %}
+        <span class="badge text-bg-success">Oui</span>
+    {% else %}
+        <span class="badge text-bg-secondary">Non</span>
+    {% endif %}
+{% endmacro %}
+
+{% import _self as macros %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ sanisette.adresse }}{% if sanisette.arrondissement %} <small class="text-muted fs-5">({{ sanisette.arrondissement }})</small>{% endif %}</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>{{ sanisette.type }}</td>
+                </tr>
+                <tr>
+                    <th>Statut</th>
+                    <td>
+                        {% if sanisette.statut == 'En service' %}
+                            <span class="badge text-bg-success">{{ sanisette.statut }}</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">{{ sanisette.statut }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Horaire</th>
+                    <td>{{ sanisette.horaire ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Accès PMR</th>
+                    <td>{{ macros.oui_non(sanisette.accesPmr) }}</td>
+                </tr>
+                <tr>
+                    <th>Relais bébé</th>
+                    <td>{{ macros.oui_non(sanisette.relaisBebe) }}</td>
+                </tr>
+                <tr>
+                    <th>Fiche équipement</th>
+                    <td>
+                        {% if sanisette.urlFicheEquipement %}
+                            <a href="{{ sanisette.urlFicheEquipement }}" target="_blank" rel="noopener">Voir la fiche</a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Gestionnaire</th>
+                    <td>{{ sanisette.gestionnaire ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Station rattachée</th>
+                    <td>
+                        {% if sanisette.station %}
+                            <a href="{{ path('app_station_show', {'id': sanisette.station.id}) }}">{{ sanisette.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">Aucune à proximité</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_sanisette_publique_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_sanisette_publique_edit', {'id': sanisette.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('sanisette_publique/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

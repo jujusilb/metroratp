@@ -138,6 +138,16 @@ class Station
     #[ORM\OneToMany(targetEntity: FontaineEau::class, mappedBy: 'station')]
     private Collection $fontainesEau;
 
+    /**
+     * Sanisettes publiques (Ville de Paris) les plus proches (rattachement par proximite
+     * geographique, meme limite que PointDeVente/Sanitaire) - dataset distinct des Sanitaire RATP
+     * en station.
+     *
+     * @var Collection<int, SanisettePublique>
+     */
+    #[ORM\OneToMany(targetEntity: SanisettePublique::class, mappedBy: 'station')]
+    private Collection $sanisettesPubliques;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -146,6 +156,7 @@ class Station
         $this->sanitaires = new ArrayCollection();
         $this->defibrillateurs = new ArrayCollection();
         $this->fontainesEau = new ArrayCollection();
+        $this->sanisettesPubliques = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -455,6 +466,35 @@ class Station
         if ($this->fontainesEau->removeElement($fontaineEau)) {
             if ($fontaineEau->getStation() === $this) {
                 $fontaineEau->setStation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SanisettePublique>
+     */
+    public function getSanisettesPubliques(): Collection
+    {
+        return $this->sanisettesPubliques;
+    }
+
+    public function addSanisettePublique(SanisettePublique $sanisettePublique): static
+    {
+        if (!$this->sanisettesPubliques->contains($sanisettePublique)) {
+            $this->sanisettesPubliques->add($sanisettePublique);
+            $sanisettePublique->setStation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSanisettePublique(SanisettePublique $sanisettePublique): static
+    {
+        if ($this->sanisettesPubliques->removeElement($sanisettePublique)) {
+            if ($sanisettePublique->getStation() === $this) {
+                $sanisettePublique->setStation(null);
             }
         }
 

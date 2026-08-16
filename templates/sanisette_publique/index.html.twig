@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sanisettes publiques{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Sanisettes publiques</h1>
+        <p class="text-muted">Toilettes publiques de voirie de la Ville de Paris (hors réseau RATP).</p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Adresse</th>
+                    <th>Arrondissement</th>
+                    <th>Type</th>
+                    <th>Statut</th>
+                    <th>Accès PMR</th>
+                    <th>Station rattachée</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for sanisette in sanisettes %}
+                <tr>
+                    <td>{{ sanisette.adresse }}</td>
+                    <td>{{ sanisette.arrondissement ?? '—' }}</td>
+                    <td>{{ sanisette.type }}</td>
+                    <td>
+                        {% if sanisette.statut == 'En service' %}
+                            <span class="badge text-bg-success">{{ sanisette.statut }}</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">{{ sanisette.statut }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if sanisette.accesPmr %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Non renseigné</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if sanisette.station %}
+                            <a href="{{ path('app_station_show', {'id': sanisette.station.id}) }}">{{ sanisette.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_sanisette_publique_show', {'id': sanisette.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_sanisette_publique_edit', {'id': sanisette.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(sanisettes) }}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_sanisette_publique_new') }}" class="btn btn-primary">Créer une sanisette</a>
+        {% endif %}
+    </div>
+{% endblock %}

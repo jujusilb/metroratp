@@ -1,0 +1,17 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.arrondissement) }}
+    {{ form_row(form.type) }}
+    {{ form_row(form.statut) }}
+    {{ form_row(form.adresse) }}
+    {{ form_row(form.horaire) }}
+    {{ form_row(form.accesPmr) }}
+    {{ form_row(form.relaisBebe) }}
+    {{ form_row(form.urlFicheEquipement) }}
+    {{ form_row(form.latitude) }}
+    {{ form_row(form.longitude) }}
+    {{ form_row(form.gestionnaire) }}
+    {{ form_row(form.station) }}
+
+    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

@@ -1,5 +1,14 @@
 # À faire / pistes en attente
 
+## Tri des colonnes sur les pages d'index (demandé le 2026-08-16, pas commencé)
+
+Sur toutes les pages d'index (tableaux listant les entités : `/station`, `/ligne`, `/sortie`,
+`/pole-echange`, etc.), permettre de cliquer sur l'en-tête d'une colonne pour trier par cette
+colonne (ASC, puis DESC au second clic). Concerne potentiellement une trentaine de templates
+`*/index.html.twig` — à voir si un mécanisme générique (partagé entre tous les contrôleurs paginés
+KnpPaginator, qui gère déjà le tri via `sortable()`/`knp_pagination_sortable()`) est faisable
+plutôt que de dupliquer la logique dans chaque contrôleur/template.
+
 ## Crash mémoire sur /correspondance (corrigé le 2026-08-15, urgence signalée en prod)
 
 `CorrespondanceController::index()` chargeait les 107000+ lignes de `correspondance` avec 12
@@ -24,8 +33,9 @@ l'info récupérée (ex : croiser plusieurs exports d'un même jeu de données).
   **fait le 2026-08-16**, voir section "Pôles d'échange" plus bas.
 * `sanitaires-reseau-ratp.*` : toilettes en station RATP, rattachable par nom de station
   directement (pas besoin de proximité géo).
-* `sanisettesparis2011.*` : toilettes publiques Paris (hors réseau RATP), rattachable par
-  proximité géographique comme `PointDeVente`.
+* ~~`sanisettesparis2011.*` : toilettes publiques Paris (hors réseau RATP), rattachable par
+  proximité géographique comme `PointDeVente`.~~ **fait le 2026-08-16**, voir section
+  "Sanisettes publiques" plus bas.
 * `defibrillateurs-du-reseau-ratp.*` : défibrillateurs en station, même logique que les
   sanitaires (rattachement par nom).
 * `fontaines-a-eau-dans-le-reseau-ratp.*` : fontaines à eau en station, idem.
@@ -247,6 +257,19 @@ production — l'écart d'1 est "Saint-Michel Notre-Dame", déjà connu comme un
 dupliquées en dérive entre local et prod (voir section "Stations Metro/Tramway/RER dupliquées"
 plus bas), pas un bug de ce correctif. Commande idempotente (reset complet de
 `Station.pole_echange_id` à chaque exécution avant réassignation).
+
+## Sanisettes publiques (fait le 2026-08-16)
+
+Nouvelle entité `SanisettePublique` (dataset Paris Open Data "sanisettesparis2011", 609 toilettes
+publiques de voirie de la Ville de Paris), distincte de `Sanitaire` (toilettes RATP en station,
+autre gestionnaire, autre dataset). Rattachement à `Station` par proximité géographique (même
+seuil 300m que `PointDeVente`/`Sanitaire`/`Defibrillateur`) : **606/609 (99%) rattachées**, un
+taux bien plus élevé qu'attendu au départ (l'hypothèse initiale "majorité sans Station à proximité,
+dataset de voirie sans rapport avec le réseau" était fausse — Paris intra-muros est en réalité très
+dense en arrêts de bus, donc la plupart des sanisettes se trouvent malgré tout à moins de 300m d'un
+arrêt du réseau). `source`/`complement_adresse` du CSV source sont des colonnes constantes sur les
+609 lignes (aucune vraie donnée) : non importées, même décision que pour `agency.txt`. CRUD complet
+(`/sanisette-publique`, paginé), section "Sanisettes publiques à proximité" sur la fiche Station.
 
 ## Lignes à embranchements complexes (RER C notamment)
 

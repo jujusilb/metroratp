@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la sanisette publique{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Modifier la sanisette publique</h1>
+
+        {{ include('sanisette_publique/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+        <div class="d-flex gap-2 mt-3">
+            <a href="{{ path('app_sanisette_publique_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+
+        {{ include('sanisette_publique/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

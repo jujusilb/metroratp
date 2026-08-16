@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une sanisette publique{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Créer une sanisette publique</h1>
+
+        {{ include('sanisette_publique/_form.html.twig') }}
+
+        <a href="{{ path('app_sanisette_publique_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}

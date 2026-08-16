@@ -421,4 +421,31 @@ pas mergées sur main.
 | `php bin/console app:importer-documents-lignes` (x2, vérif idempotence + timing) | ~7s. 3188 DocumentLigne créés (1262 ignorés : Ligne introuvable). Second passage : 0 création, 3188 mises à jour. |
 | Compte de test admin local + connexion JS | Vérifié `/document-ligne` (liste paginée) et `/ligne/1` (Métro 1) : section "Horaires et plans" n'affiche que le document réellement rattaché à cette Ligne précise ("Plan Métro 1"), confirmant que les entrées visuellement similaires (même badge "1") dans la liste globale appartiennent à d'autres Ligne homonymes (bus d'autres opérateurs), pas un bug de rattachement. Compte supprimé après vérification. |
 
+## Session du 2026-08-16 (suite) — Sortie : pagination préventive
+
+`SortieController::index()` avait exactement le même anti-pattern que `CorrespondanceController`
+avant son correctif du 2026-08-15 (`findAllWithDetails()` sans pagination). Corrigé
+préventivement avant que les 2513 lignes actuelles ne posent problème.
+
+| Commande | Objectif |
+|---|---|
+| `SortieRepository::findAllWithDetails()` renommée `creerRequeteAvecDetails()` (retourne un `QueryBuilder`), `SortieController::index()` paginé 50/page, `knp_pagination_render` ajouté au template | Même traitement exact que `CorrespondanceController`. |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
+| `git push origin main` + `gh run watch` | CI vert, déploiement Hostinger réussi. |
+| Compte de test admin temporaire (prod) + connexion via le Browser tool | Vérifié `/sortie` : 50 lignes affichées (au lieu des 2513 totales), pas de crash. Compte supprimé après vérification. |
+
+## Session du 2026-08-16 (suite) — Sanisettes publiques (entité `SanisettePublique`)
+
+Dataset Paris Open Data "sanisettesparis2011" (609 toilettes publiques de voirie), distinct des
+`Sanitaire` RATP en station.
+
+| Commande | Objectif |
+|---|---|
+| Script PHP inline (comptage des valeurs distinctes par colonne) | 609 lignes ; `STATUT` : 580 "En service"/29 "Hors service" ; `TYPE` : 5 valeurs (Sanisette/WC/Urinoir/Lavatory/Urinoir femme) ; `source`/`complement_adresse` constantes sur les 609 lignes (aucune vraie donnée, non importées, même décision que pour `agency.txt`) ; `URL_FICHE_EQUIPEMENT` renseignée sur 154/609 (25%). |
+| Nouvelle entité `SanisettePublique` + migration (`Version20260816090000`, table `sanisette_publique`) + `SanisettePubliqueRepository`/`SanisettePubliqueType`/`SanisettePubliqueController` (CRUD complet, paginé) + templates | Même structure que `Sanitaire`/`Defibrillateur`/`FontaineEau`. |
+| `Station::sanisettesPubliques` (OneToMany) + section "Sanisettes publiques à proximité" sur `station/show.html.twig` + lien menu | Intégration à la fiche Station, même pattern que les 3 entités géo-proximité précédentes. |
+| `php bin/console app:importer-sanisettes-publiques` (rattachement par proximité, seuil 300m comme `PointDeVente`/`Sanitaire`) | 609 SanisettePublique créées, **606 (99%) rattachées** à une Station — bien plus que prévu (hypothèse initiale erronée que la majorité seraient sans Station proche ; corrigée dans les docblocks avant commit : Paris intra-muros est dense en arrêts de bus, donc quasiment toutes les sanisettes se trouvent à moins de 300m d'un arrêt du réseau, pas seulement celles proches d'une station métro/RER). |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe (table créée aussi en base de test via `dbal:run-sql --env=test`, même piège d'isolation déjà documenté). |
+| Compte de test admin local + connexion via le Browser tool, serveur `symfony server:start` | Vérifié `/sanisette-publique` (liste avec Station rattachée cohérente), `/sanisette-publique/1` ("10 rue ortolan", rattachée à "Place Monge") et `/station/154` (section "Sanisettes publiques à proximité" affiche bien 2 entrées). Compte supprimé après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
