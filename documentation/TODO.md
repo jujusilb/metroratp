@@ -1,5 +1,13 @@
 # À faire / pistes en attente
 
+## Style physique des Acces (demandé le 2026-08-15, jamais noté ici, pas commencé)
+
+Demande utilisateur : pour chaque Acces, indiquer s'il y a un escalator, un édicule Guimard, un
+mât, ou un autre style d'entrée reconnaissable. Jamais commencé — probable faible rendement sur
+Wikidata (constaté en marge du travail sur `StyleStation` : un seul édicule d'entrée dans tout
+Wikidata porte à la fois `P84`=Guimard et `P31`=entrée de station). À vérifier plus sérieusement
+avant de conclure que la piste n'est pas exploitable.
+
 ## Tri des colonnes sur les pages d'index (demandé le 2026-08-16, pas commencé)
 
 Sur toutes les pages d'index (tableaux listant les entités : `/station`, `/ligne`, `/sortie`,
@@ -8,6 +16,130 @@ colonne (ASC, puis DESC au second clic). Concerne potentiellement une trentaine 
 `*/index.html.twig` — à voir si un mécanisme générique (partagé entre tous les contrôleurs paginés
 KnpPaginator, qui gère déjà le tri via `sortable()`/`knp_pagination_sortable()`) est faisable
 plutôt que de dupliquer la logique dans chaque contrôleur/template.
+
+## StyleStation rempli pour toutes les dessertes métro (fait le 2026-08-15/16)
+
+Suite à la constatation que Wikidata n'a pas cette donnée (voir plus bas, section conservée pour
+mémoire), l'utilisateur a demandé de le faire quand même via dépouillement des articles Wikipédia
+individuels des ~294 stations concernées (une `Desserte` = un couple Station×Ligne, jusqu'à 5 par
+station à grosses correspondances comme Châtelet ou République — le style peut différer d'une
+ligne à l'autre à la même station, ex. Nation : ligne 1 Ouï-dire, lignes 2/6 mouton, ligne 9
+renouveau du métro, vérifié conforme à l'exemple donné par l'utilisateur pour Sèvres-Babylone :
+ligne 10 renouveau du métro, ligne 12 Nord Sud).
+
+**Résultat : 404 dessertes métro au total, 234 remplies (58%), 126 laissées vides après
+vérification (aucune mention explicite du style trouvée dans l'article Wikipédia correspondant —
+jamais devinées), 44 déjà remplies avant cette session.**
+
+**2 nouveaux styles découverts et ajoutés à `style_station`** en cours de route (absents des 5
+valeurs seedées initialement) :
+- **Ouï-dire** : style de rénovation des années 1990 (bandeaux d'éclairage colorés sur consoles
+  courbes en forme de faux), antérieur au style « Gaudin »/Renouveau du métro des années 2000 —
+  24 dessertes.
+- **Décor unique** : pour les stations à décor artistique one-off non rattachable aux styles
+  systémiques (Louvre-Rivoli, Arts et Métiers L11 "steampunk", Bastille L1, Tuileries, Varenne
+  "Rodin"...) — 12 dessertes.
+
+**Répartition finale (404 dessertes métro) :** motte 104, renouveau du métro 104, Ouï-dire 24,
+Nord Sud 20, Décor unique 12, mouton 9, CMP 5, vide 126.
+
+**Méthodologie** : une requête WebFetch par station (avec prompt demandant la citation exacte de
+l'article, jamais une reformulation/déduction), une station à la fois, en distinguant
+explicitement chaque ligne quand la station en dessert plusieurs. Règle stricte : si l'article ne
+nomme pas explicitement un style (CMP/Nord-Sud/Motte/Mouton/Ouï-dire/Gaudin) ou un décor artistique
+reconnu, la desserte reste `NULL` plutôt que d'inférer depuis des indices indirects (ex: une seule
+mention de "sièges de style Motte" sans description du carrelage mural n'a pas suffi à conclure au
+style Motte pour l'ensemble du quai). Deux cas particuliers traités avec jugement : Mouton-Duvernet
+elle-même (la station de référence du style "Mouton") a en fait été rénovée en 2007 vers le style
+Gaudin — état actuel utilisé, pas l'historique ; certaines stations ont un décor qui a changé au fil
+du temps (ex: Château Rouge, décor Motte retiré en 2023) — état actuel utilisé systématiquement.
+
+**Non trouvé malgré recherche** : quelques stations très récentes (Saint-Denis — Pleyel, Rosny —
+Bois-Perrier, Chevilly-Larue...) n'ont pas d'article Wikipédia détaillé sur leur décor, ou l'article
+existe mais ne mentionne aucun style nommé — cohérent avec le fait que ces stations viennent tout
+juste d'ouvrir et n'ont pas encore d'historique de rénovation à documenter.
+
+## StyleStation : ancienne note (Wikidata seul, avant le dépouillement Wikipédia demandé)
+
+Demande utilisateur : remplir le style de quai (CMP/Nord-Sud/Motte/Mouton-Duvernet/Renouveau du
+métro, déjà les 5 valeurs seedées dans `style_station`) pour toutes les dessertes métro (une
+`Desserte` = un couple Station×Ligne, donc jusqu'à 4 par station à correspondances comme
+Sèvres-Babylone : 2 lignes × leurs 2 quais physiques, mais un seul style par couple Station×Ligne
+dans ce modèle de données puisque les 2 sens partagent en général le même style).
+
+**Vérifié avant de se lancer (voir aussi entrée "Enrichissement Materiel" ci-dessous pour la
+méthodologie)** : sur les 316 stations RATP de Wikidata, seulement 2 ont la propriété "style
+architectural" (P149) renseignée — et ce n'est même pas la bonne taxonomie (termes génériques
+d'architecture, pas CMP/Nord-Sud/Motte). **Aucune source structurée et interrogeable trouvée pour
+cette donnée**, ni sur Wikidata ni dans les CSV IDFM déjà présents dans le projet.
+
+Seule piste restante identifiée : dépouiller les ~300 articles Wikipédia individuels de chaque
+station un par un (le style y est parfois mentionné en texte libre dans la section
+"architecture"), extraction lente et sujette à erreur d'interprétation vu le volume — pas fait
+tant que l'utilisateur n'a pas confirmé vouloir cette approche (ou une autre source qu'il
+connaîtrait, ex. un site spécialisé passionnés du métro parisien).
+
+## Enrichissement Materiel via Wikidata (fait le 2026-08-15)
+
+Demande utilisateur : auditer `Materiel`/`MaterielLigne` (bien rempli ? bonnes lignes/dates ?) et
+récupérer un maximum d'info (vitesse, moteurs...) via SPARQL Wikidata.
+
+**Bug de données corrigé au passage** : 3 paires de `Materiel` en double (MS 61, RERng, Z2N —
+chacun avait 2 lignes distinctes au lieu d'un seul Materiel utilisé sur 2 lignes via 2
+`MaterielLigne`). Fusionnés (`MaterielLigne` repointés, doublons supprimés) : 35 → 32 lignes.
+
+**Nouveaux champs `Materiel::constructeur`/`vitesseMaxKmh`**, remplis pour 21/32 matériels via
+Wikidata (propriétés P176 "fabricant" et P2052 "vitesse", vérifiées manuellement une par une,
+jamais devinées depuis la mémoire — voir la méthodologie ci-dessous). Les valeurs manquantes
+restent `null` plutôt que d'être estimées : Wikidata ne documente pas systématiquement ces deux
+infos pour le matériel roulant parisien (ex: `vitesseMaxKmh` seulement 6/32, absent même pour des
+matériels bien connus comme le MP89 ou le MF67). `Z 58000`/`Z 58500` (matériel RER NG le plus
+récent, mise en service 2025-2026) n'ont pas encore de fiche Wikidata dédiée.
+
+**`MaterielLigne` du tramway remplies** : les 14 lignes de tram n'avaient aucune date d'entrée en
+service pour `Citadis` (0/14 avant). 13/14 trouvées via la propriété P1619 "date d'ouverture
+officielle" des fiches Wikidata de chaque ligne de tram, vérifiées cohérentes avec les faits
+connus (T1=1992, T9=2021, T14=2025...). T10 (ligne récente, 2023) n'a pas de fiche Wikidata
+identifiée, T12 a une fiche mais sans date renseignée.
+
+**Méthodologie (à réutiliser pour d'autres enrichissements Wikidata futurs)** : chaque valeur a
+été vérifiée par une requête réelle (recherche du bon QID puis lecture des claims bruts), jamais
+générée depuis la connaissance générale du modèle — un premier essai de requête SPARQL générique
+a d'ailleurs renvoyé des stations de métro coréennes par erreur (mauvaise classe Wikidata
+devinée), corrigé en vérifiant chaque QID individuellement avant de l'utiliser. Une unité de
+vitesse (Q180154) a aussi été confirmée explicitement ("kilometre per hour") après qu'un résumé
+l'ait étiquetée une fois "km/h" et une fois "m/s" pour la même valeur — sans cette vérification,
+le champ `vitesseMaxKmh` aurait pu être faux d'un facteur 3,6.
+
+## Fontaines à eau en station (fait le 2026-08-15)
+
+`FontaineEau` (dataset IDFM "fontaines-a-eau-dans-le-reseau-ratp", 91 emplacements avec
+coordonnées exploitables sur 93). **Seul dataset d'équipement en station avec un rattachement
+officiel** : la colonne "id IDM de l'accès le plus proche" correspond exactement à
+`Acces::codeExterne` (vérifié avant de coder) — rattaché à `Acces` directement (pas une
+approximation géographique comme `Sanitaire`/`Defibrillateur`/`PointDeVente`), puis `Station`
+dérivée via les `Sortie` de cet Acces. 61/91 rattachés (30 référencent un `Acces::codeExterne`
+absent de notre table `acces` — écart de couverture entre les deux exports IDFM, pas un bug).
+CRUD complet (`/fontaine-eau`), section "Fontaines à eau" sur la fiche Station.
+
+## Défibrillateurs en station (fait le 2026-08-15)
+
+`Defibrillateur` (dataset IDFM "defibrillateurs-du-reseau-ratp", 451 emplacements, 448 avec
+coordonnées exploitables). Même pattern que `Sanitaire` : purge + reimport, rattachement à
+`Station` par proximité géographique (446/448, soit 99,5%). CRUD complet (`/defibrillateur`),
+section "Défibrillateurs à proximité" sur la fiche Station.
+
+## Sanitaires en station (fait le 2026-08-15)
+
+`Sanitaire` (dataset IDFM "sanitaires-reseau-ratp", 60 toilettes publiques). Aucune clé stable
+dans le CSV source : purge + reimport complet à chaque exécution (comme `ProjetArret`).
+Rattachement à `Station` par proximité géographique (même limite que `PointDeVente` : le dataset
+ne fournit qu'une adresse/coordonnées, pas d'identifiant de Station officiel) — 60/60 rattachés à
+moins de 300m. CRUD complet (`/sanitaire`), section "Sanitaires à proximité" sur la fiche Station.
+
+Tous les champs du CSV sont capturés même les booléens à forte proportion de valeurs vides
+(`Accessible au public`, `Accès bouton poussoir`, etc. : "oui" ou vide → stockés en `bool|null`,
+`null` = non renseigné plutôt que supposé "non") — ambition encyclopédique du site.
 
 ## Crash mémoire sur /correspondance (corrigé le 2026-08-15, urgence signalée en prod)
 
@@ -31,14 +163,15 @@ l'info récupérée (ex : croiser plusieurs exports d'un même jeu de données).
 
 * ~~`relations.csv`/`relations.json` : table officielle de la hiérarchie PdE → ZdC → ZdA → ArR~~
   **fait le 2026-08-16**, voir section "Pôles d'échange" plus bas.
-* `sanitaires-reseau-ratp.*` : toilettes en station RATP, rattachable par nom de station
-  directement (pas besoin de proximité géo).
+* ~~`sanitaires-reseau-ratp.*` : toilettes en station RATP~~ **fait le 2026-08-15**, voir section
+  "Sanitaires en station" plus bas.
 * ~~`sanisettesparis2011.*` : toilettes publiques Paris (hors réseau RATP), rattachable par
   proximité géographique comme `PointDeVente`.~~ **fait le 2026-08-16**, voir section
   "Sanisettes publiques" plus bas.
-* `defibrillateurs-du-reseau-ratp.*` : défibrillateurs en station, même logique que les
-  sanitaires (rattachement par nom).
-* `fontaines-a-eau-dans-le-reseau-ratp.*` : fontaines à eau en station, idem.
+* ~~`defibrillateurs-du-reseau-ratp.*` : défibrillateurs en station~~ **fait le 2026-08-15**, voir
+  section "Défibrillateurs en station" plus bas.
+* ~~`fontaines-a-eau-dans-le-reseau-ratp.*` : fontaines à eau en station~~ **fait le 2026-08-15**,
+  voir section "Fontaines à eau en station" plus bas.
 * `emplacement-des-gares-idf-data-generalisee.csv` (999 lignes) : une ligne par gare avec
   `id_ref_ZdC`/`id_ref_ZdA` (mêmes clés que `relations.csv`), coordonnées (Geo Point + x/y
   Lambert93), `exploitant`, et des indicateurs de mode (train/rer/metro/tramway/val) + terminus
@@ -110,9 +243,10 @@ site, sans obligation de les télécharger — mais avec un lien clair pour ouvr
 séparément pour qui le veut. Nouveau partial `templates/tools/visionneuse_pdf.html.twig`
 (`<object type="application/pdf">` + lien de secours si l'affichage embarqué échoue + bouton
 "Ouvrir / télécharger" toujours visible), réutilisé sur `plan/show.html.twig` et le modal PDF de
-`/carte`. Même traitement à appliquer sur `plan_region/show.html.twig` et
-`document_ligne/show.html.twig` (branches non mergées `feature/plans-regionaux` et
-`feature/horaires-lignes`).
+`/carte`. ~~Même traitement à appliquer sur `plan_region/show.html.twig` et
+`document_ligne/show.html.twig`~~ **fait** : ces deux templates utilisent déjà le partial
+`visionneuse_pdf.html.twig` (branches `feature/plans-regionaux`/`feature/horaires-lignes`
+mergées le 2026-08-15, voir "Merger les 4 branches feature dans main").
 
 Le `download` HTML n'est volontairement pas utilisé : ignoré par les navigateurs pour une URL
 cross-origin (tous les PDF sont hébergés par IDFM, jamais par ce site), donc un simple lien
@@ -181,6 +315,27 @@ proximité géographique (moins de 300 m à vol d'oiseau) dans `app:importer-poi
 `PointDeVente::station` doit être lu comme "le plus proche", pas "le point de vente officiel de
 cette station" — 1989/2012 (99%) rattachés. CRUD complet (`/point-de-vente`, paginé vu le volume),
 section "Points de vente à proximité" sur la fiche Station.
+
+## Plans régionaux (fait le 2026-08-15, branche feature/plans-regionaux)
+
+`PlanRegion` (19 grandes cartes d'ensemble du réseau : Métro, RER, réseau de Nuit, plans
+PMR/facile à lire..., dataset IDFM "plans-region"). Même traitement que `Plan` (secteurs) : PDF
+jamais auto-hébergé, lien vers l'officiel IDFM. CRUD complet (`/plan-region`). Ajouté à l'onglet
+"Carte des secteurs" existant (`/carte`) sous forme de second `<optgroup>` dans le même sélecteur
+plutôt qu'un nouvel onglet séparé — réutilise tel quel le mécanisme modal `<object>` déjà en place.
+
+## Projets d'arrêts/pôles en projet (fait le 2026-08-15, branche feature/projets-reseau)
+
+`ProjetArret` (404 arrêts/pôles multimodaux en projet ou en construction, dataset IDFM
+"projets_arrets_idf") : le futur du réseau. Jamais rattaché à une Station/Ligne existante — ce
+sont des entités distinctes, pas encore réelles. Reconstruction complète à chaque import (purge +
+réimport), pas de find-or-create : le CSV source n'a pas d'identifiant stable par ligne.
+
+Les champs `MODE_`/`SOUS_MODE`/`STATUT`/`PHASE` sont des codes internes IDFM **sans table de
+correspondance publiée** dans les métadonnées du dataset (vérifié via l'API catalog) : stockés
+tels quels plutôt que traduits en libellés inventés. Seule certitude documentée sur `STATUT` :
+échelle 1 (études préalables) à 10 (mise en service), sans le détail des valeurs intermédiaires —
+affichée telle quelle dans l'UI plutôt que de deviner un libellé par valeur.
 
 ## Accessibilité PMR par gare (fait le 2026-08-15)
 

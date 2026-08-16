@@ -484,5 +484,25 @@ séparée `StatutTache` façon `StyleStation`, une `Tache` a plusieurs `Etape`).
 | Lien "Suivi projet" ajouté dans le menu, à l'intérieur du bloc déjà réservé à `is_granted('ROLE_ADMIN')` (à côté de "Utilisateurs") | Pas de lien visible pour un utilisateur non-admin. |
 | `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe (tables créées aussi en base de test). |
 | Compte de test admin local + connexion via `javascript_tool` (le clic sur "Enregistrer" a de nouveau échoué silencieusement, comportement déjà documenté sur ce projet) | Créé une `Tache` de test (formulaire, liste déroulante des 4 statuts fonctionnelle), ajouté une `Etape` liée depuis la fiche `Tache`, vérifié l'affichage correct sur les deux fiches. Testé aussi avec un second compte `ROLE_USER` simple (sans `ROLE_ADMIN`) : `/tache` renvoie bien une 403 Access Denied, confirmant que la restriction cible spécifiquement le rôle et pas seulement l'authentification. Comptes et données de test supprimés après vérification. |
+| `git push origin main` + `gh run watch` | CI vert du premier coup, déploiement Hostinger réussi — la migration s'exécute automatiquement pendant le déploiement (pas de commande SSH manuelle nécessaire, contrairement aux commandes d'import de données). |
+| `ssh ... dbal:run-sql --env=prod "SELECT id, label FROM statut_tache"` | Table créée, 4 statuts présents avec les mêmes id qu'en local — migration appliquée correctement. |
+| Compte de test admin temporaire (prod) + connexion via `javascript_tool` | Vérifié `/tache` accessible et fonctionnel en prod. Compte supprimé après vérification. |
+
+## Session du 2026-08-16 (suite) — Incident : contenu de TODO.md accidentellement supprimé, restauré
+
+En préparant la migration de TODO.md vers `Tache`/`Etape` (tâche demandée par l'utilisateur), 9
+sections entières se sont révélées manquantes du fichier : StyleStation (les deux sections),
+Enrichissement Materiel via Wikidata, Fontaines à eau/Défibrillateurs/Sanitaires en station, Plans
+régionaux, Projets d'arrêts. Cause : le commit `e8dbd70` (début du travail sur `relations.csv`,
+2026-08-16 08:40) avait copié une version de `documentation/TODO.md` depuis le poste Desktop qui,
+pour une raison antérieure non entièrement retracée, ne contenait déjà plus ce contenu — la copie
+Desktop→clone de ce jour-là n'a pas été diffée avec suffisamment de rigueur avant d'être committée
+(contrairement à la pratique habituelle de ce projet, voir les nombreuses autres entrées de ce
+journal où un `diff --strip-trailing-cr` a bien été fait avant copie).
+
+| Commande | Objectif |
+|---|---|
+| `git log --oneline -- documentation/TODO.md` puis `git show <commit>:documentation/TODO.md` sur `13a6391` (dernier commit avant la perte, StyleStation) et `HEAD` | Comparé les deux versions complètes : 9 sections présentes dans `13a6391` mais absentes de `HEAD`, et 3 sections légitimement nouvelles présentes dans `HEAD` mais pas dans `13a6391` (`agency.txt`, écarts référentiel/OSM, Arrêt Transporteur — ajoutées entre les deux sans jamais avoir été committées avant `e8dbd70`). |
+| Fusion manuelle des deux versions (réinsertion des 9 sections perdues aux emplacements logiques, mise à jour des puces à barré qui pointaient vers elles) | Union complète des deux historiques, aucune perte, 33 sections au total dans `documentation/TODO.md`. |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
