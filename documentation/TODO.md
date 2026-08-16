@@ -9,9 +9,10 @@ retourne maintenant un `QueryBuilder`, paginé à 50/page dans le contrôleur co
 l'application). Même famille de bug que celui déjà corrigé sur `TrajetFinder::construireGraphe()`
 plus tôt dans le projet (chargement complet du réseau via l'ORM).
 
-**`SortieController::index()` a exactement le même anti-pattern** (`SortieRepository::findAllWithDetails()`
-sans pagination) mais ne casse pas encore : `sortie` ne compte que 2513 lignes. À corriger de la
-même façon avant que ce nombre grossisse, par prudence plutôt que dans l'urgence.
+**`SortieController::index()` avait exactement le même anti-pattern** (`SortieRepository::findAllWithDetails()`
+sans pagination), corrigé préventivement le 2026-08-16 (même traitement : `creerRequeteAvecDetails()`
+retourne un `QueryBuilder`, paginé 50/page) avant que les 2513 lignes actuelles ne grossissent au
+point de casser comme `/correspondance`.
 
 ## Pistes de données IDFM non encore exploitées (ajouté le 2026-08-15)
 

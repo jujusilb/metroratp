@@ -6,6 +6,7 @@ use App\Entity\Sortie;
 use App\Form\SortieType;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,14 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SortieController extends AbstractController
 {
     #[Route(name: 'app_sortie_index', methods: ['GET'])]
-    public function index(SortieRepository $sortieRepository): Response
+    public function index(Request $request, SortieRepository $sortieRepository, PaginatorInterface $paginator): Response
     {
         return $this->render('sortie/index.html.twig', [
-            'sorties' => $sortieRepository->findAllWithDetails(),
+            'sorties' => $paginator->paginate(
+                $sortieRepository->creerRequeteAvecDetails(),
+                $request->query->getInt('page', 1),
+                50,
+            ),
         ]);
     }
 

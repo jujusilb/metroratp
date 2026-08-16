@@ -326,6 +326,13 @@ source vers les Station : rattachement construit à la main après avoir écart�
 |---|---|
 | Script PHP inline (`SELECT ... WHERE label LIKE '%terme%'`) sur des termes comme "Roissy", "Charles de Gaulle", "Saint-Michel" | Confirmé le risque de faux positifs d'un matching flou : des dizaines de résultats sans rapport avec le pôle recherché (arrêts de bus homonymes dans des communes éloignées). Décision : ne pas automatiser, curer la liste à la main. |
 | Script PHP inline (`SELECT ... WHERE label = ?`, exact) pour chaque candidat plausible par pôle | Construit la liste vérifiée `STATIONS_PAR_POLE` (32 couples label+ville) de `ImporterPolesEchangeCommand`, en excluant explicitement les faux positifs identifiés (ex: "Châtelet" à Montereau-Fault-Yonne, "Saint-Michel" à Étampes/Moissy-Cramayel, "La Muette" à Chesnay-Rocquencourt). |
+| `php bin/console app:importer-poles-echange` (x2, vérif idempotence) | 10 PoleEchange créés, 32/32 Stations assignées (0 candidat introuvable) — confirme la liste manuelle contre la vraie base. Second passage : 0 création, 32 mises à jour de Pole (pas de doublon Station). |
+| Compte de test admin local (`test_pole`) + connexion via `form.submit()` en JS | Vérifié `/pole-echange` (10 lignes), `/pole-echange/7` (Châtelet - Les Halles, 4 stations correctes), `/station/336` (lien Pôle affiché) et `/station/336/edit` (11 options, la bonne présélectionnée). Compte supprimé après vérification. |
+| `php bin/phpunit` (134 tests), `npx jest` (49 tests) | Tout passe après ajout de l'entité `PoleEchange`. |
+| `git push origin main` + `gh run watch` + `gh run rerun --failed` | CI verte (le blip SSH transitoire connu a de nouveau frappé sur ce push, corrigé par un rerun). |
+| `ssh ... php bin/console app:importer-poles-echange --env=prod` | 10 PoleEchange créés, 32/32 Stations assignées — résultats identiques au local. |
+| Compte de test admin temporaire (méthode base64+SQL) + `curl` authentifié | Vérifié `/pole-echange` (10 pôles, mêmes effectifs qu'en local) et `/station/334` (lien Pôle affiché) en production. Compte supprimé après vérification. |
+| Compte de test admin temporaire supplémentaire + `curl` authentifié | Vérifié aussi la carte interactive (commit précédent, pas encore testé en prod) : `/carte` contient bien les 5 cases à cocher et l'attribut `data-trace-url`, `GET /ligne/1/trace` renvoie le JSON attendu (trace + couleur). Compte supprimé après vérification. |
 
 ## Session du 2026-08-16 — Pôles d'échange : rattachement officiel via `relations.csv`
 
@@ -349,13 +356,6 @@ auraient perdu silencieusement leur `PoleEchange` si on s'était fié uniquement
 | `ssh-keyscan` puis `ssh ... php bin/console app:importer-poles-echange --env=prod` | 34 Stations via `relations.csv` + 15/16 via le complément legacy (1 avertissement : "Saint-Michel Notre-Dame" introuvable — décalage local/prod déjà documenté dans "Stations dupliquées", pas un bug du nouveau code). Total 49 en prod (vs 50 en local). |
 | `dbal:run-sql --env=prod "SELECT COUNT(*) FROM station WHERE pole_echange_id IS NOT NULL"` | 49, conforme à l'attendu (34+15). |
 | Compte de test admin temporaire (`test_verif_pole`, méthode `Utilisateur`/bcrypt habituelle) + connexion via le Browser tool (curl seul échouait : `Invalid CSRF token`, la protection CSRF stateless du site — `config/packages/csrf.yaml`/`ux_turbo.yaml` — exige apparemment l'exécution JS de la page, pas un bug de prod) | Vérifié `/pole-echange` (49 stations réparties sur 10 pôles, somme exacte) et `/station/77` ("Gare de l'Est", la Station historique récupérée par le complément legacy, 3 vraies Dessertes lignes 4/5/7) : le lien "Pôle d'échange : Paris Est" s'affiche correctement. Compte supprimé après vérification. |
-| `php bin/console app:importer-poles-echange` (x2, vérif idempotence) | 10 PoleEchange créés, 32/32 Stations assignées (0 candidat introuvable) — confirme la liste manuelle contre la vraie base. Second passage : 0 création, 32 mises à jour de Pole (pas de doublon Station). |
-| Compte de test admin local (`test_pole`) + connexion via `form.submit()` en JS | Vérifié `/pole-echange` (10 lignes), `/pole-echange/7` (Châtelet - Les Halles, 4 stations correctes), `/station/336` (lien Pôle affiché) et `/station/336/edit` (11 options, la bonne présélectionnée). Compte supprimé après vérification. |
-| `php bin/phpunit` (134 tests), `npx jest` (49 tests) | Tout passe après ajout de l'entité `PoleEchange`. |
-| `git push origin main` + `gh run watch` + `gh run rerun --failed` | CI verte (le blip SSH transitoire connu a de nouveau frappé sur ce push, corrigé par un rerun). |
-| `ssh ... php bin/console app:importer-poles-echange --env=prod` | 10 PoleEchange créés, 32/32 Stations assignées — résultats identiques au local. |
-| Compte de test admin temporaire (méthode base64+SQL) + `curl` authentifié | Vérifié `/pole-echange` (10 pôles, mêmes effectifs qu'en local) et `/station/334` (lien Pôle affiché) en production. Compte supprimé après vérification. |
-| Compte de test admin temporaire supplémentaire + `curl` authentifié | Vérifié aussi la carte interactive (commit précédent, pas encore testé en prod) : `/carte` contient bien les 5 cases à cocher et l'attribut `data-trace-url`, `GET /ligne/1/trace` renvoie le JSON attendu (trace + couleur). Compte supprimé après vérification. |
 
 ## Session du 2026-08-14 (suite 16) — Mini-carte des accès (équivalent "plan de quartier")
 
