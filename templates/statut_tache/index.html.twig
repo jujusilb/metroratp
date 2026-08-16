@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statuts de tâche{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Statuts de tâche</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for statut_tache in statut_taches %}
+                <tr>
+                    <td>{{ statut_tache.label }}</td>
+                    <td>
+                        <a href="{{ path('app_statut_tache_show', {'id': statut_tache.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_statut_tache_edit', {'id': statut_tache.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="2">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_statut_tache_new') }}" class="btn btn-primary">Créer nouveau statut</a>
+    </div>
+{% endblock %}

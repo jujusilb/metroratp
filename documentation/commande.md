@@ -469,4 +469,20 @@ Avant d'importer `commerces-de-proximite-agrees-ratp.csv`, vérification du chev
 | `ssh ... php bin/console app:importer-commerces-proximite --env=prod` | 889 enrichis, 20 créés en plus — résultats identiques au local. |
 | Compte de test admin temporaire (prod) + connexion via `javascript_tool` | Vérifié `/point-de-vente/2` : catégorie "tabac presse" + jour de fermeture "dimanche" affichés, identique au local. Compte supprimé après vérification. |
 
+## Session du 2026-08-16 (suite) — Suivi de projet en base (`Tache`/`Etape`/`StatutTache`)
+
+Demande utilisateur : remplacer le suivi manuel dans `documentation/TODO.md` (source d'une vraie
+erreur d'édition plus tôt dans la session — une section insérée au milieu d'une autre) par un vrai
+CRUD en base, réservé à `ROLE_ADMIN`. Conçu par itérations successives avec l'utilisateur (table
+séparée `StatutTache` façon `StyleStation`, une `Tache` a plusieurs `Etape`).
+
+| Commande | Objectif |
+|---|---|
+| 3 nouvelles entités `StatutTache`/`Tache`/`Etape` (`Etape.tache` ManyToOne NOT NULL avec `orphanRemoval: true`, `Tache.statut` ManyToOne NOT NULL vers `StatutTache`) + Repository/Form/Controller/templates pour chacune (CRUD complet, même pattern que `StyleStation`/`Plan`) | `Tache` : nom, description, datetimeCreation, statut, datetimeAction, datetimeAchevement. `Etape` : nom, description, tache, datetimeCreation, datetimeAchevement. |
+| `doctrine:schema:update --dump-sql` puis migration écrite à la main (`Version20260816130000`, ordre `statut_tache` → `tache` → `etape` à cause des FK, dump alphabétique de Doctrine ne le respectait pas) + `INSERT` des 4 `StatutTache` dans la migration elle-même | Table créée avec les 4 statuts (`A_FAIRE`/`EN_COURS`/`SUSPENDUE`/`ACHEVEE`) dès le déploiement, sans étape manuelle supplémentaire en prod. |
+| `config/packages/security.yaml` : nouvelle règle `access_control` `^/(tache\|etape\|statut-tache)` → `ROLE_ADMIN`, insérée avant les règles génériques `ROLE_USER` (seule la première règle qui matche s'applique) | Zone admin-only, contrairement au reste du site en lecture libre dès `ROLE_USER` — ce n'est pas une donnée du réseau de transport. |
+| Lien "Suivi projet" ajouté dans le menu, à l'intérieur du bloc déjà réservé à `is_granted('ROLE_ADMIN')` (à côté de "Utilisateurs") | Pas de lien visible pour un utilisateur non-admin. |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe (tables créées aussi en base de test). |
+| Compte de test admin local + connexion via `javascript_tool` (le clic sur "Enregistrer" a de nouveau échoué silencieusement, comportement déjà documenté sur ce projet) | Créé une `Tache` de test (formulaire, liste déroulante des 4 statuts fonctionnelle), ajouté une `Etape` liée depuis la fiche `Tache`, vérifié l'affichage correct sur les deux fiches. Testé aussi avec un second compte `ROLE_USER` simple (sans `ROLE_ADMIN`) : `/tache` renvoie bien une 403 Access Denied, confirmant que la restriction cible spécifiquement le rôle et pas seulement l'authentification. Comptes et données de test supprimés après vérification. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

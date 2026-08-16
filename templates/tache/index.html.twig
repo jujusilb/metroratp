@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tâches{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Tâches</h1>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Statut</th>
+                    <th>Créée le</th>
+                    <th>Achevée le</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for tache in taches %}
+                <tr>
+                    <td>{{ tache.nom }}</td>
+                    <td>
+                        {% if tache.statut.label == 'ACHEVEE' %}
+                            <span class="badge text-bg-success">{{ tache.statut.label }}</span>
+                        {% elseif tache.statut.label == 'EN_COURS' %}
+                            <span class="badge text-bg-primary">{{ tache.statut.label }}</span>
+                        {% elseif tache.statut.label == 'SUSPENDUE' %}
+                            <span class="badge text-bg-warning">{{ tache.statut.label }}</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">{{ tache.statut.label }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ tache.datetimeCreation ? tache.datetimeCreation|date('d/m/Y') : '—' }}</td>
+                    <td>{{ tache.datetimeAchevement ? tache.datetimeAchevement|date('d/m/Y') : '—' }}</td>
+                    <td>
+                        <a href="{{ path('app_tache_show', {'id': tache.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_tache_edit', {'id': tache.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(taches) }}
+
+        <a href="{{ path('app_tache_new') }}" class="btn btn-primary">Créer nouvelle tâche</a>
+    </div>
+{% endblock %}

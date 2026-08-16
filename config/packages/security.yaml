@@ -49,6 +49,10 @@ security:
         - { path: ^/mentions-legales, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS }
         - { path: ^/mon-profil, roles: ROLE_USER }
+        # Suivi de travail sur le projet (Tache/Etape/StatutTache) : pas une donnee du reseau de
+        # transport, n'a pas vocation a etre visible par un utilisateur normal (contrairement au
+        # reste du site, en lecture libre a partir de ROLE_USER).
+        - { path: ^/(tache|etape|statut-tache), roles: ROLE_ADMIN }
         - { path: .*/new$, roles: ROLE_ADMIN }
         - { path: .*/edit$, roles: ROLE_ADMIN }
         - { path: ^/, methods: [POST], roles: ROLE_ADMIN }

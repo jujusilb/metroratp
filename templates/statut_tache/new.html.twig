@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un statut de tâche{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Créer un statut de tâche</h1>
+
+        {{ include('statut_tache/_form.html.twig') }}
+
+        <a href="{{ path('app_statut_tache_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}
