@@ -465,5 +465,8 @@ Avant d'importer `commerces-de-proximite-agrees-ratp.csv`, vérification du chev
 | `PointDeVenteType`/`_form.html.twig`/`show.html.twig`/`index.html.twig` mis à jour (2 nouveaux champs) | Catégorie affichée en colonne sur la liste, catégorie + jour de fermeture sur la fiche détail et le formulaire. |
 | `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe (colonnes ajoutées aussi en base de test). |
 | Compte de test admin local + connexion via `javascript_tool` (`form.submit()` direct — le clic via `computer` a de nouveau échoué silencieusement sur ce formulaire, comportement déjà documenté) | Vérifié `/point-de-vente/2` ("Librairie Fontaine", catégorie "tabac presse" + jour de fermeture "dimanche" affichés) et `/point-de-vente` (colonne "Catégorie" visible, vide pour les non-enrichis). Compte supprimé après vérification. |
+| `git push origin main` + `gh run watch` | CI vert du premier coup (pas de blip SSH cette fois), déploiement Hostinger réussi. |
+| `ssh ... php bin/console app:importer-commerces-proximite --env=prod` | 889 enrichis, 20 créés en plus — résultats identiques au local. |
+| Compte de test admin temporaire (prod) + connexion via `javascript_tool` | Vérifié `/point-de-vente/2` : catégorie "tabac presse" + jour de fermeture "dimanche" affichés, identique au local. Compte supprimé après vérification. |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
