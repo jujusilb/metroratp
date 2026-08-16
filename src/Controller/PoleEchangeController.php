@@ -6,6 +6,7 @@ use App\Entity\PoleEchange;
 use App\Form\PoleEchangeType;
 use App\Repository\PoleEchangeRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PoleEchangeController extends AbstractController
 {
     #[Route(name: 'app_pole_echange_index', methods: ['GET'])]
-    public function index(PoleEchangeRepository $poleEchangeRepository): Response
+    public function index(Request $request, PoleEchangeRepository $poleEchangeRepository, PaginatorInterface $paginator): Response
     {
+        $qb = $poleEchangeRepository->createQueryBuilder('p')->orderBy('p.label', 'ASC');
+
         return $this->render('pole_echange/index.html.twig', [
-            'pole_echanges' => $poleEchangeRepository->findBy([], ['label' => 'ASC']),
+            'pole_echanges' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
         ]);
     }
 

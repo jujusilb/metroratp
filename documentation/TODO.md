@@ -12,15 +12,6 @@ Wikidata (constaté en marge du travail sur `StyleStation` : un seul édicule d'
 Wikidata porte à la fois `P84`=Guimard et `P31`=entrée de station). À vérifier plus sérieusement
 avant de conclure que la piste n'est pas exploitable.
 
-## Tri des colonnes sur les pages d'index (demandé le 2026-08-16, pas commencé)
-
-Sur toutes les pages d'index (tableaux listant les entités : `/station`, `/ligne`, `/sortie`,
-`/pole-echange`, etc.), permettre de cliquer sur l'en-tête d'une colonne pour trier par cette
-colonne (ASC, puis DESC au second clic). Concerne potentiellement une trentaine de templates
-`*/index.html.twig` — à voir si un mécanisme générique (partagé entre tous les contrôleurs paginés
-KnpPaginator, qui gère déjà le tri via `sortable()`/`knp_pagination_sortable()`) est faisable
-plutôt que de dupliquer la logique dans chaque contrôleur/template.
-
 ## Pistes de données IDFM non encore exploitées
 
 * `emplacement-des-gares-idf-data-generalisee.csv` (999 lignes) : une ligne par gare avec

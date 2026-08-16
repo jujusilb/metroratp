@@ -9,7 +9,7 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Label</th>
+                    <th>{{ knp_pagination_sortable(style_stations, 'Label', 's.label') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -31,6 +31,8 @@
             {% endfor %}
             </tbody>
         </table>
+
+        {{ knp_pagination_render(style_stations) }}
 
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_style_station_new') }}" class="btn btn-primary">Créer nouveau style de station</a>

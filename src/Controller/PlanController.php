@@ -6,6 +6,7 @@ use App\Entity\Plan;
 use App\Form\PlanType;
 use App\Repository\PlanRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PlanController extends AbstractController
 {
     #[Route(name: 'app_plan_index', methods: ['GET'])]
-    public function index(PlanRepository $planRepository): Response
+    public function index(Request $request, PlanRepository $planRepository, PaginatorInterface $paginator): Response
     {
+        $qb = $planRepository->createQueryBuilder('p')->orderBy('p.secteur', 'ASC');
+
         return $this->render('plan/index.html.twig', [
-            'plans' => $planRepository->findBy([], ['secteur' => 'ASC']),
+            'plans' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
         ]);
     }
 

@@ -10,10 +10,10 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Projet</th>
-                    <th>Arrêt / opération</th>
-                    <th>Nature</th>
-                    <th>Statut</th>
+                    <th>{{ knp_pagination_sortable(projets_arret, 'Projet', 'p.nomProjet') }}</th>
+                    <th>{{ knp_pagination_sortable(projets_arret, 'Arrêt / opération', 'p.label') }}</th>
+                    <th>{{ knp_pagination_sortable(projets_arret, 'Nature', 'p.nature') }}</th>
+                    <th>{{ knp_pagination_sortable(projets_arret, 'Statut', 'p.statut') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

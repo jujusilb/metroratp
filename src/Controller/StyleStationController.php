@@ -6,6 +6,7 @@ use App\Entity\StyleStation;
 use App\Form\StyleStationType;
 use App\Repository\StyleStationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class StyleStationController extends AbstractController
 {
     #[Route(name: 'app_style_station_index', methods: ['GET'])]
-    public function index(StyleStationRepository $styleStationRepository): Response
+    public function index(Request $request, StyleStationRepository $styleStationRepository, PaginatorInterface $paginator): Response
     {
+        $qb = $styleStationRepository->createQueryBuilder('s')->orderBy('s.label', 'ASC');
+
         return $this->render('style_station/index.html.twig', [
-            'style_stations' => $styleStationRepository->findAll(),
+            'style_stations' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
         ]);
     }
 

@@ -9,10 +9,10 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Nom</th>
-                    <th>Statut</th>
-                    <th>Créée le</th>
-                    <th>Achevée le</th>
+                    <th>{{ knp_pagination_sortable(taches, 'Nom', 't.nom') }}</th>
+                    <th>{{ knp_pagination_sortable(taches, 'Statut', 'statut.label') }}</th>
+                    <th>{{ knp_pagination_sortable(taches, 'Créée le', 't.datetimeCreation') }}</th>
+                    <th>{{ knp_pagination_sortable(taches, 'Achevée le', 't.datetimeAchevement') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

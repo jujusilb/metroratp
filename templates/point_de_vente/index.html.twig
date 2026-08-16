@@ -10,11 +10,11 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Nom</th>
-                    <th>Type</th>
-                    <th>Catégorie</th>
-                    <th>Adresse</th>
-                    <th>Station la plus proche</th>
+                    <th>{{ knp_pagination_sortable(points_de_vente, 'Nom', 'p.label') }}</th>
+                    <th>{{ knp_pagination_sortable(points_de_vente, 'Type', 'p.type') }}</th>
+                    <th>{{ knp_pagination_sortable(points_de_vente, 'Catégorie', 'p.categorieCommerce') }}</th>
+                    <th>{{ knp_pagination_sortable(points_de_vente, 'Adresse', 'p.adresse') }}</th>
+                    <th>{{ knp_pagination_sortable(points_de_vente, 'Station la plus proche', 'station.label') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

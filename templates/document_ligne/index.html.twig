@@ -10,9 +10,9 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Ligne</th>
-                    <th>Type</th>
-                    <th>Document</th>
+                    <th>{{ knp_pagination_sortable(documents, 'Ligne', 'l.label') }}</th>
+                    <th>{{ knp_pagination_sortable(documents, 'Type', 'd.type') }}</th>
+                    <th>{{ knp_pagination_sortable(documents, 'Document', 'd.nom') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

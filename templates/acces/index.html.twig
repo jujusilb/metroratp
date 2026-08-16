@@ -9,9 +9,9 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Label</th>
-                    <th>Numéro</th>
-                    <th>Accessible PMR</th>
+                    <th>{{ knp_pagination_sortable(acces, 'Label', 'a.label') }}</th>
+                    <th>{{ knp_pagination_sortable(acces, 'Numéro', 'a.numero') }}</th>
+                    <th>{{ knp_pagination_sortable(acces, 'Accessible PMR', 'a.isAccessible') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

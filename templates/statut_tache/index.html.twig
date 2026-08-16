@@ -9,7 +9,7 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Label</th>
+                    <th>{{ knp_pagination_sortable(statut_taches, 'Label', 's.label') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -29,6 +29,8 @@
             {% endfor %}
             </tbody>
         </table>
+
+        {{ knp_pagination_render(statut_taches) }}
 
         <a href="{{ path('app_statut_tache_new') }}" class="btn btn-primary">Créer nouveau statut</a>
     </div>

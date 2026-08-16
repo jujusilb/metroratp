@@ -9,10 +9,10 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Desserte</th>
-                    <th>Ordre</th>
-                    <th>Ouverture</th>
-                    <th>Fermeture</th>
+                    <th>{{ knp_pagination_sortable(periode_ouvertures, 'Desserte', 'station.label') }}</th>
+                    <th>{{ knp_pagination_sortable(periode_ouvertures, 'Ordre', 'p.ordre') }}</th>
+                    <th>{{ knp_pagination_sortable(periode_ouvertures, 'Ouverture', 'p.ouverture') }}</th>
+                    <th>{{ knp_pagination_sortable(periode_ouvertures, 'Fermeture', 'p.fermeture') }}</th>
                     <th>Statut</th>
                     <th>Actions</th>
                 </tr>
@@ -58,6 +58,8 @@
             {% endfor %}
             </tbody>
         </table>
+
+        {{ knp_pagination_render(periode_ouvertures) }}
 
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_periode_ouverture_new') }}" class="btn btn-primary">Créer nouvelle période d'ouverture</a>

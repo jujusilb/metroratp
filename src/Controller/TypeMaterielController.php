@@ -6,6 +6,7 @@ use App\Entity\TypeMateriel;
 use App\Form\TypeMaterielType;
 use App\Repository\TypeMaterielRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TypeMaterielController extends AbstractController
 {
     #[Route(name: 'app_type_materiel_index', methods: ['GET'])]
-    public function index(TypeMaterielRepository $typeMaterielRepository): Response
+    public function index(Request $request, TypeMaterielRepository $typeMaterielRepository, PaginatorInterface $paginator): Response
     {
+        $qb = $typeMaterielRepository->createQueryBuilder('t')->orderBy('t.label', 'ASC');
+
         return $this->render('type_materiel/index.html.twig', [
-            'type_materiels' => $typeMaterielRepository->findAll(),
+            'type_materiels' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
         ]);
     }
 

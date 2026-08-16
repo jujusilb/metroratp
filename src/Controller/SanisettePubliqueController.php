@@ -18,7 +18,10 @@ final class SanisettePubliqueController extends AbstractController
     #[Route(name: 'app_sanisette_publique_index', methods: ['GET'])]
     public function index(Request $request, SanisettePubliqueRepository $sanisettePubliqueRepository, PaginatorInterface $paginator): Response
     {
-        $qb = $sanisettePubliqueRepository->createQueryBuilder('s')->orderBy('s.adresse', 'ASC');
+        $qb = $sanisettePubliqueRepository->createQueryBuilder('s')
+            ->leftJoin('s.station', 'station')->addSelect('station')
+            ->orderBy('s.adresse', 'ASC')
+        ;
 
         return $this->render('sanisette_publique/index.html.twig', [
             'sanisettes' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),

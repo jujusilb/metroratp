@@ -18,7 +18,10 @@ final class DefibrillateurController extends AbstractController
     #[Route(name: 'app_defibrillateur_index', methods: ['GET'])]
     public function index(Request $request, DefibrillateurRepository $defibrillateurRepository, PaginatorInterface $paginator): Response
     {
-        $qb = $defibrillateurRepository->createQueryBuilder('d')->orderBy('d.localisation', 'ASC');
+        $qb = $defibrillateurRepository->createQueryBuilder('d')
+            ->leftJoin('d.station', 'station')->addSelect('station')
+            ->orderBy('d.localisation', 'ASC')
+        ;
 
         return $this->render('defibrillateur/index.html.twig', [
             'defibrillateurs' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),

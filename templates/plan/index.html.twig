@@ -10,9 +10,9 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Numéro</th>
-                    <th>Secteur</th>
-                    <th>Département(s)</th>
+                    <th>{{ knp_pagination_sortable(plans, 'Numéro', 'p.numero') }}</th>
+                    <th>{{ knp_pagination_sortable(plans, 'Secteur', 'p.secteur') }}</th>
+                    <th>{{ knp_pagination_sortable(plans, 'Département(s)', 'p.departements') }}</th>
                     <th>PDF</th>
                     <th>Actions</th>
                 </tr>
@@ -38,6 +38,8 @@
             {% endfor %}
             </tbody>
         </table>
+
+        {{ knp_pagination_render(plans) }}
 
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_plan_new') }}" class="btn btn-primary">Créer un plan de secteur</a>

@@ -6,6 +6,7 @@ use App\Entity\MaterielLigne;
 use App\Form\MaterielLigneType;
 use App\Repository\MaterielLigneRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,15 @@ use Symfony\Component\Routing\Attribute\Route;
 final class MaterielLigneController extends AbstractController
 {
     #[Route(name: 'app_materiel_ligne_index', methods: ['GET'])]
-    public function index(MaterielLigneRepository $materielLigneRepository): Response
+    public function index(Request $request, MaterielLigneRepository $materielLigneRepository, PaginatorInterface $paginator): Response
     {
+        $qb = $materielLigneRepository->createQueryBuilder('ml')
+            ->leftJoin('ml.materiel', 'materiel')->addSelect('materiel')
+            ->leftJoin('ml.ligne', 'ligne')->addSelect('ligne')
+        ;
+
         return $this->render('materiel_ligne/index.html.twig', [
-            'materiel_lignes' => $materielLigneRepository->findAll(),
+            'materiel_lignes' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
         ]);
     }
 

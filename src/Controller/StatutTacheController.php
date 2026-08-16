@@ -6,6 +6,7 @@ use App\Entity\StatutTache;
 use App\Form\StatutTacheType;
 use App\Repository\StatutTacheRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class StatutTacheController extends AbstractController
 {
     #[Route(name: 'app_statut_tache_index', methods: ['GET'])]
-    public function index(StatutTacheRepository $statutTacheRepository): Response
+    public function index(Request $request, StatutTacheRepository $statutTacheRepository, PaginatorInterface $paginator): Response
     {
+        $qb = $statutTacheRepository->createQueryBuilder('s')->orderBy('s.label', 'ASC');
+
         return $this->render('statut_tache/index.html.twig', [
-            'statut_taches' => $statutTacheRepository->findAll(),
+            'statut_taches' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
         ]);
     }
 

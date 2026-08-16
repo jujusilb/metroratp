@@ -9,9 +9,9 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Ligne</th>
-                    <th>Station</th>
-                    <th>Destination</th>
+                    <th>{{ knp_pagination_sortable(position_rames, 'Ligne', 'ligne.label') }}</th>
+                    <th>{{ knp_pagination_sortable(position_rames, 'Station', 'station.label') }}</th>
+                    <th>{{ knp_pagination_sortable(position_rames, 'Destination', 'p.destination') }}</th>
                     <th>Position</th>
                     <th>Actions</th>
                 </tr>
@@ -37,6 +37,8 @@
             {% endfor %}
             </tbody>
         </table>
+
+        {{ knp_pagination_render(position_rames) }}
 
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_position_rame_new') }}" class="btn btn-primary">Créer un conseil de position</a>

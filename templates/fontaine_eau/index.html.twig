@@ -10,10 +10,10 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Ligne</th>
-                    <th>Station ou gare</th>
-                    <th>Accès le plus proche</th>
-                    <th>Station rattachée</th>
+                    <th>{{ knp_pagination_sortable(fontaines_eau, 'Ligne', 'f.ligneLabel') }}</th>
+                    <th>{{ knp_pagination_sortable(fontaines_eau, 'Station ou gare', 'f.label') }}</th>
+                    <th>{{ knp_pagination_sortable(fontaines_eau, 'Accès le plus proche', 'acces.label') }}</th>
+                    <th>{{ knp_pagination_sortable(fontaines_eau, 'Station rattachée', 'station.label') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

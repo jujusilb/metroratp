@@ -6,6 +6,7 @@ use App\Entity\Gestionnaire;
 use App\Form\GestionnaireType;
 use App\Repository\GestionnaireRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class GestionnaireController extends AbstractController
 {
     #[Route(name: 'app_gestionnaire_index', methods: ['GET'])]
-    public function index(GestionnaireRepository $gestionnaireRepository): Response
+    public function index(Request $request, GestionnaireRepository $gestionnaireRepository, PaginatorInterface $paginator): Response
     {
+        $qb = $gestionnaireRepository->createQueryBuilder('g')->orderBy('g.label', 'ASC');
+
         return $this->render('gestionnaire/index.html.twig', [
-            'gestionnaires' => $gestionnaireRepository->findAll(),
+            'gestionnaires' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
         ]);
     }
 

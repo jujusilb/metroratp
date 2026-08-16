@@ -9,11 +9,11 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Desserte A</th>
-                    <th>Desserte B</th>
-                    <th>Distance</th>
-                    <th>Temps estimé</th>
-                    <th>En zone</th>
+                    <th>{{ knp_pagination_sortable(correspondances, 'Desserte A', 'aStation.label') }}</th>
+                    <th>{{ knp_pagination_sortable(correspondances, 'Desserte B', 'bStation.label') }}</th>
+                    <th>{{ knp_pagination_sortable(correspondances, 'Distance', 'c.distance') }}</th>
+                    <th>{{ knp_pagination_sortable(correspondances, 'Temps estimé', 'c.distance') }}</th>
+                    <th>{{ knp_pagination_sortable(correspondances, 'En zone', 'c.inZone') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

@@ -6,6 +6,7 @@ use App\Entity\Materiel;
 use App\Form\MaterielType;
 use App\Repository\MaterielRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,10 @@ use Symfony\Component\Routing\Attribute\Route;
 final class MaterielController extends AbstractController
 {
     #[Route(name: 'app_materiel_index', methods: ['GET'])]
-    public function index(MaterielRepository $materielRepository): Response
+    public function index(Request $request, MaterielRepository $materielRepository, PaginatorInterface $paginator): Response
     {
         return $this->render('materiel/index.html.twig', [
-            'materiels' => $materielRepository->findAllWithDetails(),
+            'materiels' => $paginator->paginate($materielRepository->creerRequeteAvecDetails(), $request->query->getInt('page', 1), 50),
         ]);
     }
 

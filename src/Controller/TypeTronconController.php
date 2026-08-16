@@ -6,6 +6,7 @@ use App\Entity\TypeTroncon;
 use App\Form\TypeTronconType;
 use App\Repository\TypeTronconRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TypeTronconController extends AbstractController
 {
     #[Route(name: 'app_type_troncon_index', methods: ['GET'])]
-    public function index(TypeTronconRepository $typeTronconRepository): Response
+    public function index(Request $request, TypeTronconRepository $typeTronconRepository, PaginatorInterface $paginator): Response
     {
+        $qb = $typeTronconRepository->createQueryBuilder('t')->orderBy('t.label', 'ASC');
+
         return $this->render('type_troncon/index.html.twig', [
-            'type_troncons' => $typeTronconRepository->findAll(),
+            'type_troncons' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
         ]);
     }
 

@@ -21,10 +21,10 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Station</th>
-                    <th>Ligne</th>
-                    <th>Type</th>
-                    <th>Style</th>
+                    <th>{{ knp_pagination_sortable(dessertes, 'Station', 'station.label') }}</th>
+                    <th>{{ knp_pagination_sortable(dessertes, 'Ligne', 'ligne.label') }}</th>
+                    <th>{{ knp_pagination_sortable(dessertes, 'Type', 'tt.label') }}</th>
+                    <th>{{ knp_pagination_sortable(dessertes, 'Style', 'styleStation.label') }}</th>
                     <th>Première ouverture</th>
                     <th>Statut</th>
                     <th>Actions</th>

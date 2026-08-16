@@ -10,12 +10,12 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Adresse</th>
-                    <th>Arrondissement</th>
-                    <th>Type</th>
-                    <th>Statut</th>
-                    <th>Accès PMR</th>
-                    <th>Station rattachée</th>
+                    <th>{{ knp_pagination_sortable(sanisettes, 'Adresse', 's.adresse') }}</th>
+                    <th>{{ knp_pagination_sortable(sanisettes, 'Arrondissement', 's.arrondissement') }}</th>
+                    <th>{{ knp_pagination_sortable(sanisettes, 'Type', 's.type') }}</th>
+                    <th>{{ knp_pagination_sortable(sanisettes, 'Statut', 's.statut') }}</th>
+                    <th>{{ knp_pagination_sortable(sanisettes, 'Accès PMR', 's.accesPmr') }}</th>
+                    <th>{{ knp_pagination_sortable(sanisettes, 'Station rattachée', 'station.label') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

@@ -7,6 +7,7 @@ use App\Form\PeriodeOuvertureType;
 use App\Repository\DesserteRepository;
 use App\Repository\PeriodeOuvertureRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,10 +17,10 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PeriodeOuvertureController extends AbstractController
 {
     #[Route(name: 'app_periode_ouverture_index', methods: ['GET'])]
-    public function index(PeriodeOuvertureRepository $periodeOuvertureRepository): Response
+    public function index(Request $request, PeriodeOuvertureRepository $periodeOuvertureRepository, PaginatorInterface $paginator): Response
     {
         return $this->render('periode_ouverture/index.html.twig', [
-            'periode_ouvertures' => $periodeOuvertureRepository->findAllWithDetails(),
+            'periode_ouvertures' => $paginator->paginate($periodeOuvertureRepository->creerRequeteAvecDetails(), $request->query->getInt('page', 1), 50),
         ]);
     }
 

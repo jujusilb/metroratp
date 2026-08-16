@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\PeriodeOuverture;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,7 +22,7 @@ class PeriodeOuvertureRepository extends ServiceEntityRepository
      *
      * @return PeriodeOuverture[]
      */
-    public function findAllWithDetails(): array
+    public function creerRequeteAvecDetails(): QueryBuilder
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.desserte', 'desserte')->addSelect('desserte')
@@ -29,8 +30,6 @@ class PeriodeOuvertureRepository extends ServiceEntityRepository
             ->leftJoin('desserte.ligne', 'ligne')->addSelect('ligne')
             ->orderBy('station.label', 'ASC')
             ->addOrderBy('p.ordre', 'ASC')
-            ->getQuery()
-            ->getResult()
         ;
     }
 }

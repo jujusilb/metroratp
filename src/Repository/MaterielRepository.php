@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Materiel;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,13 +22,11 @@ class MaterielRepository extends ServiceEntityRepository
      *
      * @return Materiel[]
      */
-    public function findAllWithDetails(): array
+    public function creerRequeteAvecDetails(): QueryBuilder
     {
         return $this->createQueryBuilder('m')
             ->leftJoin('m.typeMateriel', 'typeMateriel')->addSelect('typeMateriel')
             ->orderBy('m.label', 'ASC')
-            ->getQuery()
-            ->getResult()
         ;
     }
 

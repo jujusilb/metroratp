@@ -10,8 +10,8 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Nom</th>
-                    <th>Date de publication</th>
+                    <th>{{ knp_pagination_sortable(plans_region, 'Nom', 'p.label') }}</th>
+                    <th>{{ knp_pagination_sortable(plans_region, 'Date de publication', 'p.datePublication') }}</th>
                     <th>PDF</th>
                     <th>Actions</th>
                 </tr>
@@ -36,6 +36,8 @@
             {% endfor %}
             </tbody>
         </table>
+
+        {{ knp_pagination_render(plans_region) }}
 
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_plan_region_new') }}" class="btn btn-primary">Créer un plan régional</a>

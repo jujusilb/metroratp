@@ -10,10 +10,10 @@
             <table class="table align-middle">
                 <thead>
                     <tr>
-                        <th>Nom d'utilisateur</th>
-                        <th>Email</th>
-                        <th>Nom complet</th>
-                        <th>Ville</th>
+                        <th>{{ knp_pagination_sortable(utilisateurs, "Nom d'utilisateur", 'u.username') }}</th>
+                        <th>{{ knp_pagination_sortable(utilisateurs, 'Email', 'u.email') }}</th>
+                        <th>{{ knp_pagination_sortable(utilisateurs, 'Nom complet', 'u.nom') }}</th>
+                        <th>{{ knp_pagination_sortable(utilisateurs, 'Ville', 'u.ville') }}</th>
                         <th>Rôle</th>
                         <th>Actions</th>
                     </tr>
@@ -53,6 +53,8 @@
                 </tbody>
             </table>
         </div>
+
+        {{ knp_pagination_render(utilisateurs) }}
 
         <a href="{{ path('app_utilisateur_new') }}" class="btn btn-primary">Créer nouvel utilisateur</a>
     </div>

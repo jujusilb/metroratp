@@ -18,7 +18,10 @@ final class PointDeVenteController extends AbstractController
     #[Route(name: 'app_point_de_vente_index', methods: ['GET'])]
     public function index(Request $request, PointDeVenteRepository $pointDeVenteRepository, PaginatorInterface $paginator): Response
     {
-        $qb = $pointDeVenteRepository->createQueryBuilder('p')->orderBy('p.label', 'ASC');
+        $qb = $pointDeVenteRepository->createQueryBuilder('p')
+            ->leftJoin('p.station', 'station')->addSelect('station')
+            ->orderBy('p.label', 'ASC')
+        ;
 
         return $this->render('point_de_vente/index.html.twig', [
             'points_de_vente' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),

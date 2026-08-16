@@ -10,11 +10,11 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Ligne</th>
-                    <th>Station</th>
-                    <th>Tarif</th>
-                    <th>Accessible PMR</th>
-                    <th>Station rattachée</th>
+                    <th>{{ knp_pagination_sortable(sanitaires, 'Ligne', 's.ligneLabel') }}</th>
+                    <th>{{ knp_pagination_sortable(sanitaires, 'Station', 's.label') }}</th>
+                    <th>{{ knp_pagination_sortable(sanitaires, 'Tarif', 's.tarif') }}</th>
+                    <th>{{ knp_pagination_sortable(sanitaires, 'Accessible PMR', 's.accessibilitePmr') }}</th>
+                    <th>{{ knp_pagination_sortable(sanitaires, 'Station rattachée', 'station.label') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

@@ -10,11 +10,11 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Localisation</th>
-                    <th>Ville</th>
-                    <th>Accès</th>
+                    <th>{{ knp_pagination_sortable(defibrillateurs, 'Localisation', 'd.localisation') }}</th>
+                    <th>{{ knp_pagination_sortable(defibrillateurs, 'Ville', 'd.ville') }}</th>
+                    <th>{{ knp_pagination_sortable(defibrillateurs, 'Accès', 'd.acces') }}</th>
                     <th>Disponibilité</th>
-                    <th>Station rattachée</th>
+                    <th>{{ knp_pagination_sortable(defibrillateurs, 'Station rattachée', 'station.label') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

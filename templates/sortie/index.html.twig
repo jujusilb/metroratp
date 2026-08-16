@@ -9,8 +9,8 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Station</th>
-                    <th>Accès</th>
+                    <th>{{ knp_pagination_sortable(sorties, 'Station', 'station.label') }}</th>
+                    <th>{{ knp_pagination_sortable(sorties, 'Accès', 'acces.numero') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>

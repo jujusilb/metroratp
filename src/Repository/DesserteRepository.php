@@ -39,6 +39,8 @@ class DesserteRepository extends ServiceEntityRepository
             ->leftJoin('d.ligne', 'ligne')
             ->leftJoin('ligne.typeTransport', 'tt')
             ->leftJoin('ligne.gestionnaire', 'g')
+            ->leftJoin('d.station', 'station')
+            ->leftJoin('d.styleStation', 'styleStation')
             ->orderBy('ligne.id', 'ASC')
             ->addOrderBy('d.id', 'ASC')
         ;
@@ -62,8 +64,7 @@ class DesserteRepository extends ServiceEntityRepository
         $qb->andWhere([] !== $conditions ? implode(' OR ', $conditions) : '1 = 0');
 
         if (null !== $recherche && '' !== trim($recherche)) {
-            $qb->leftJoin('d.station', 'station')
-                ->andWhere('station.label LIKE :recherche OR ligne.label LIKE :recherche OR g.label LIKE :recherche')
+            $qb->andWhere('station.label LIKE :recherche OR ligne.label LIKE :recherche OR g.label LIKE :recherche')
                 ->setParameter('recherche', '%'.trim($recherche).'%')
             ;
         }

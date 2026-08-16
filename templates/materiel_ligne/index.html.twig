@@ -9,10 +9,10 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Matériel</th>
-                    <th>Ligne</th>
-                    <th>Arrivée</th>
-                    <th>Fin</th>
+                    <th>{{ knp_pagination_sortable(materiel_lignes, 'Matériel', 'materiel.label') }}</th>
+                    <th>{{ knp_pagination_sortable(materiel_lignes, 'Ligne', 'ligne.label') }}</th>
+                    <th>{{ knp_pagination_sortable(materiel_lignes, 'Arrivée', 'ml.arrivee') }}</th>
+                    <th>{{ knp_pagination_sortable(materiel_lignes, 'Fin', 'ml.fin') }}</th>
                     <th>Effectif</th>
                     <th>Actions</th>
                 </tr>
@@ -59,6 +59,8 @@
             {% endfor %}
             </tbody>
         </table>
+
+        {{ knp_pagination_render(materiel_lignes) }}
 
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_materiel_ligne_new') }}" class="btn btn-primary">Créer nouveau matériel-ligne</a>

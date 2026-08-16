@@ -22,9 +22,9 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Label</th>
-                    <th>Type</th>
-                    <th>Gestionnaire</th>
+                    <th>{{ knp_pagination_sortable(lignes, 'Label', 'l.label') }}</th>
+                    <th>{{ knp_pagination_sortable(lignes, 'Type', 'tt.label') }}</th>
+                    <th>{{ knp_pagination_sortable(lignes, 'Gestionnaire', 'g.label') }}</th>
                     <th>Terminus</th>
                     <th>Nb stations</th>
                     <th>Actions</th>

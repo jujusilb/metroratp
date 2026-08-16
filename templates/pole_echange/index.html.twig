@@ -10,7 +10,7 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Nom</th>
+                    <th>{{ knp_pagination_sortable(pole_echanges, 'Nom', 'p.label') }}</th>
                     <th>Stations rattachées</th>
                     <th>Actions</th>
                 </tr>
@@ -34,6 +34,8 @@
             {% endfor %}
             </tbody>
         </table>
+
+        {{ knp_pagination_render(pole_echanges) }}
 
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_pole_echange_new') }}" class="btn btn-primary">Créer un pôle d'échange</a>

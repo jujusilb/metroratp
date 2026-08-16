@@ -6,6 +6,7 @@ use App\Entity\PositionRame;
 use App\Form\PositionRameType;
 use App\Repository\PositionRameRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,15 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PositionRameController extends AbstractController
 {
     #[Route(name: 'app_position_rame_index', methods: ['GET'])]
-    public function index(PositionRameRepository $positionRameRepository): Response
+    public function index(Request $request, PositionRameRepository $positionRameRepository, PaginatorInterface $paginator): Response
     {
+        $qb = $positionRameRepository->createQueryBuilder('p')
+            ->leftJoin('p.ligne', 'ligne')->addSelect('ligne')
+            ->leftJoin('p.station', 'station')->addSelect('station')
+        ;
+
         return $this->render('position_rame/index.html.twig', [
-            'position_rames' => $positionRameRepository->findAll(),
+            'position_rames' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
         ]);
     }
 
