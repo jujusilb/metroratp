@@ -1,6 +1,10 @@
 # À faire / pistes en attente
 
-## Style physique des Acces (demandé le 2026-08-15, jamais noté ici, pas commencé)
+Historique complet (tâches achevées, avec leur contexte technique détaillé) migré vers `/tache`
+(base de données, réservé `ROLE_ADMIN`) le 2026-08-16 — voir `documentation/commande.md` pour le
+détail de cette migration. Ce fichier ne garde désormais que ce qui reste réellement à faire.
+
+## Style physique des Acces (demandé le 2026-08-15, pas commencé)
 
 Demande utilisateur : pour chaque Acces, indiquer s'il y a un escalator, un édicule Guimard, un
 mât, ou un autre style d'entrée reconnaissable. Jamais commencé — probable faible rendement sur
@@ -17,195 +21,21 @@ colonne (ASC, puis DESC au second clic). Concerne potentiellement une trentaine 
 KnpPaginator, qui gère déjà le tri via `sortable()`/`knp_pagination_sortable()`) est faisable
 plutôt que de dupliquer la logique dans chaque contrôleur/template.
 
-## StyleStation rempli pour toutes les dessertes métro (fait le 2026-08-15/16)
+## Pistes de données IDFM non encore exploitées
 
-Suite à la constatation que Wikidata n'a pas cette donnée (voir plus bas, section conservée pour
-mémoire), l'utilisateur a demandé de le faire quand même via dépouillement des articles Wikipédia
-individuels des ~294 stations concernées (une `Desserte` = un couple Station×Ligne, jusqu'à 5 par
-station à grosses correspondances comme Châtelet ou République — le style peut différer d'une
-ligne à l'autre à la même station, ex. Nation : ligne 1 Ouï-dire, lignes 2/6 mouton, ligne 9
-renouveau du métro, vérifié conforme à l'exemple donné par l'utilisateur pour Sèvres-Babylone :
-ligne 10 renouveau du métro, ligne 12 Nord Sud).
-
-**Résultat : 404 dessertes métro au total, 234 remplies (58%), 126 laissées vides après
-vérification (aucune mention explicite du style trouvée dans l'article Wikipédia correspondant —
-jamais devinées), 44 déjà remplies avant cette session.**
-
-**2 nouveaux styles découverts et ajoutés à `style_station`** en cours de route (absents des 5
-valeurs seedées initialement) :
-- **Ouï-dire** : style de rénovation des années 1990 (bandeaux d'éclairage colorés sur consoles
-  courbes en forme de faux), antérieur au style « Gaudin »/Renouveau du métro des années 2000 —
-  24 dessertes.
-- **Décor unique** : pour les stations à décor artistique one-off non rattachable aux styles
-  systémiques (Louvre-Rivoli, Arts et Métiers L11 "steampunk", Bastille L1, Tuileries, Varenne
-  "Rodin"...) — 12 dessertes.
-
-**Répartition finale (404 dessertes métro) :** motte 104, renouveau du métro 104, Ouï-dire 24,
-Nord Sud 20, Décor unique 12, mouton 9, CMP 5, vide 126.
-
-**Méthodologie** : une requête WebFetch par station (avec prompt demandant la citation exacte de
-l'article, jamais une reformulation/déduction), une station à la fois, en distinguant
-explicitement chaque ligne quand la station en dessert plusieurs. Règle stricte : si l'article ne
-nomme pas explicitement un style (CMP/Nord-Sud/Motte/Mouton/Ouï-dire/Gaudin) ou un décor artistique
-reconnu, la desserte reste `NULL` plutôt que d'inférer depuis des indices indirects (ex: une seule
-mention de "sièges de style Motte" sans description du carrelage mural n'a pas suffi à conclure au
-style Motte pour l'ensemble du quai). Deux cas particuliers traités avec jugement : Mouton-Duvernet
-elle-même (la station de référence du style "Mouton") a en fait été rénovée en 2007 vers le style
-Gaudin — état actuel utilisé, pas l'historique ; certaines stations ont un décor qui a changé au fil
-du temps (ex: Château Rouge, décor Motte retiré en 2023) — état actuel utilisé systématiquement.
-
-**Non trouvé malgré recherche** : quelques stations très récentes (Saint-Denis — Pleyel, Rosny —
-Bois-Perrier, Chevilly-Larue...) n'ont pas d'article Wikipédia détaillé sur leur décor, ou l'article
-existe mais ne mentionne aucun style nommé — cohérent avec le fait que ces stations viennent tout
-juste d'ouvrir et n'ont pas encore d'historique de rénovation à documenter.
-
-## StyleStation : ancienne note (Wikidata seul, avant le dépouillement Wikipédia demandé)
-
-Demande utilisateur : remplir le style de quai (CMP/Nord-Sud/Motte/Mouton-Duvernet/Renouveau du
-métro, déjà les 5 valeurs seedées dans `style_station`) pour toutes les dessertes métro (une
-`Desserte` = un couple Station×Ligne, donc jusqu'à 4 par station à correspondances comme
-Sèvres-Babylone : 2 lignes × leurs 2 quais physiques, mais un seul style par couple Station×Ligne
-dans ce modèle de données puisque les 2 sens partagent en général le même style).
-
-**Vérifié avant de se lancer (voir aussi entrée "Enrichissement Materiel" ci-dessous pour la
-méthodologie)** : sur les 316 stations RATP de Wikidata, seulement 2 ont la propriété "style
-architectural" (P149) renseignée — et ce n'est même pas la bonne taxonomie (termes génériques
-d'architecture, pas CMP/Nord-Sud/Motte). **Aucune source structurée et interrogeable trouvée pour
-cette donnée**, ni sur Wikidata ni dans les CSV IDFM déjà présents dans le projet.
-
-Seule piste restante identifiée : dépouiller les ~300 articles Wikipédia individuels de chaque
-station un par un (le style y est parfois mentionné en texte libre dans la section
-"architecture"), extraction lente et sujette à erreur d'interprétation vu le volume — pas fait
-tant que l'utilisateur n'a pas confirmé vouloir cette approche (ou une autre source qu'il
-connaîtrait, ex. un site spécialisé passionnés du métro parisien).
-
-## Enrichissement Materiel via Wikidata (fait le 2026-08-15)
-
-Demande utilisateur : auditer `Materiel`/`MaterielLigne` (bien rempli ? bonnes lignes/dates ?) et
-récupérer un maximum d'info (vitesse, moteurs...) via SPARQL Wikidata.
-
-**Bug de données corrigé au passage** : 3 paires de `Materiel` en double (MS 61, RERng, Z2N —
-chacun avait 2 lignes distinctes au lieu d'un seul Materiel utilisé sur 2 lignes via 2
-`MaterielLigne`). Fusionnés (`MaterielLigne` repointés, doublons supprimés) : 35 → 32 lignes.
-
-**Nouveaux champs `Materiel::constructeur`/`vitesseMaxKmh`**, remplis pour 21/32 matériels via
-Wikidata (propriétés P176 "fabricant" et P2052 "vitesse", vérifiées manuellement une par une,
-jamais devinées depuis la mémoire — voir la méthodologie ci-dessous). Les valeurs manquantes
-restent `null` plutôt que d'être estimées : Wikidata ne documente pas systématiquement ces deux
-infos pour le matériel roulant parisien (ex: `vitesseMaxKmh` seulement 6/32, absent même pour des
-matériels bien connus comme le MP89 ou le MF67). `Z 58000`/`Z 58500` (matériel RER NG le plus
-récent, mise en service 2025-2026) n'ont pas encore de fiche Wikidata dédiée.
-
-**`MaterielLigne` du tramway remplies** : les 14 lignes de tram n'avaient aucune date d'entrée en
-service pour `Citadis` (0/14 avant). 13/14 trouvées via la propriété P1619 "date d'ouverture
-officielle" des fiches Wikidata de chaque ligne de tram, vérifiées cohérentes avec les faits
-connus (T1=1992, T9=2021, T14=2025...). T10 (ligne récente, 2023) n'a pas de fiche Wikidata
-identifiée, T12 a une fiche mais sans date renseignée.
-
-**Méthodologie (à réutiliser pour d'autres enrichissements Wikidata futurs)** : chaque valeur a
-été vérifiée par une requête réelle (recherche du bon QID puis lecture des claims bruts), jamais
-générée depuis la connaissance générale du modèle — un premier essai de requête SPARQL générique
-a d'ailleurs renvoyé des stations de métro coréennes par erreur (mauvaise classe Wikidata
-devinée), corrigé en vérifiant chaque QID individuellement avant de l'utiliser. Une unité de
-vitesse (Q180154) a aussi été confirmée explicitement ("kilometre per hour") après qu'un résumé
-l'ait étiquetée une fois "km/h" et une fois "m/s" pour la même valeur — sans cette vérification,
-le champ `vitesseMaxKmh` aurait pu être faux d'un facteur 3,6.
-
-## Fontaines à eau en station (fait le 2026-08-15)
-
-`FontaineEau` (dataset IDFM "fontaines-a-eau-dans-le-reseau-ratp", 91 emplacements avec
-coordonnées exploitables sur 93). **Seul dataset d'équipement en station avec un rattachement
-officiel** : la colonne "id IDM de l'accès le plus proche" correspond exactement à
-`Acces::codeExterne` (vérifié avant de coder) — rattaché à `Acces` directement (pas une
-approximation géographique comme `Sanitaire`/`Defibrillateur`/`PointDeVente`), puis `Station`
-dérivée via les `Sortie` de cet Acces. 61/91 rattachés (30 référencent un `Acces::codeExterne`
-absent de notre table `acces` — écart de couverture entre les deux exports IDFM, pas un bug).
-CRUD complet (`/fontaine-eau`), section "Fontaines à eau" sur la fiche Station.
-
-## Défibrillateurs en station (fait le 2026-08-15)
-
-`Defibrillateur` (dataset IDFM "defibrillateurs-du-reseau-ratp", 451 emplacements, 448 avec
-coordonnées exploitables). Même pattern que `Sanitaire` : purge + reimport, rattachement à
-`Station` par proximité géographique (446/448, soit 99,5%). CRUD complet (`/defibrillateur`),
-section "Défibrillateurs à proximité" sur la fiche Station.
-
-## Sanitaires en station (fait le 2026-08-15)
-
-`Sanitaire` (dataset IDFM "sanitaires-reseau-ratp", 60 toilettes publiques). Aucune clé stable
-dans le CSV source : purge + reimport complet à chaque exécution (comme `ProjetArret`).
-Rattachement à `Station` par proximité géographique (même limite que `PointDeVente` : le dataset
-ne fournit qu'une adresse/coordonnées, pas d'identifiant de Station officiel) — 60/60 rattachés à
-moins de 300m. CRUD complet (`/sanitaire`), section "Sanitaires à proximité" sur la fiche Station.
-
-Tous les champs du CSV sont capturés même les booléens à forte proportion de valeurs vides
-(`Accessible au public`, `Accès bouton poussoir`, etc. : "oui" ou vide → stockés en `bool|null`,
-`null` = non renseigné plutôt que supposé "non") — ambition encyclopédique du site.
-
-## Crash mémoire sur /correspondance (corrigé le 2026-08-15, urgence signalée en prod)
-
-`CorrespondanceController::index()` chargeait les 107000+ lignes de `correspondance` avec 12
-jointures chacune en une seule requête ORM, sans pagination : épuisait la mémoire PHP et causait
-une erreur 500 systématique. Corrigé en paginant (`CorrespondanceRepository::creerRequeteAvecDetails()`
-retourne maintenant un `QueryBuilder`, paginé à 50/page dans le contrôleur comme le reste de
-l'application). Même famille de bug que celui déjà corrigé sur `TrajetFinder::construireGraphe()`
-plus tôt dans le projet (chargement complet du réseau via l'ORM).
-
-**`SortieController::index()` avait exactement le même anti-pattern** (`SortieRepository::findAllWithDetails()`
-sans pagination), corrigé préventivement le 2026-08-16 (même traitement : `creerRequeteAvecDetails()`
-retourne un `QueryBuilder`, paginé 50/page) avant que les 2513 lignes actuelles ne grossissent au
-point de casser comme `/correspondance`.
-
-## Pistes de données IDFM non encore exploitées (ajouté le 2026-08-15)
-
-Fichiers vérifiés (en-têtes + échantillon) mais pas encore importés. Objectif noté pour chacun,
-à affiner en regardant tous les fichiers en rapport au moment de construire, pour maximiser
-l'info récupérée (ex : croiser plusieurs exports d'un même jeu de données).
-
-* ~~`relations.csv`/`relations.json` : table officielle de la hiérarchie PdE → ZdC → ZdA → ArR~~
-  **fait le 2026-08-16**, voir section "Pôles d'échange" plus bas.
-* ~~`sanitaires-reseau-ratp.*` : toilettes en station RATP~~ **fait le 2026-08-15**, voir section
-  "Sanitaires en station" plus bas.
-* ~~`sanisettesparis2011.*` : toilettes publiques Paris (hors réseau RATP), rattachable par
-  proximité géographique comme `PointDeVente`.~~ **fait le 2026-08-16**, voir section
-  "Sanisettes publiques" plus bas.
-* ~~`defibrillateurs-du-reseau-ratp.*` : défibrillateurs en station~~ **fait le 2026-08-15**, voir
-  section "Défibrillateurs en station" plus bas.
-* ~~`fontaines-a-eau-dans-le-reseau-ratp.*` : fontaines à eau en station~~ **fait le 2026-08-15**,
-  voir section "Fontaines à eau en station" plus bas.
 * `emplacement-des-gares-idf-data-generalisee.csv` (999 lignes) : une ligne par gare avec
   `id_ref_ZdC`/`id_ref_ZdA` (mêmes clés que `relations.csv`), coordonnées (Geo Point + x/y
   Lambert93), `exploitant`, et des indicateurs de mode (train/rer/metro/tramway/val) + terminus
   par mode (`tertrain`/`terrer`/etc.). Source alternative de géoloc/exploitant par station à
   croiser avec l'existant — vérifier si ça comble des trous plutôt que faire doublon.
 * `transfers.txt` : temps de correspondance officiel entre arrêts proches (`TrajetFinder` utilise
-  actuellement une estimation, pas cette donnée officielle).
+  actuellement une estimation, pas cette donnée officielle — déjà utilisé pour construire les
+  correspondances bus et affiner 9 correspondances existantes, mais pas encore pour la majorité).
 * `sdap-arrets-associes.csv` (36696 lignes, un ArR par ligne) : accessibilité détaillée par
   arrêt — `ArRAccessibility`/`ArRAudibleSignals`/`ArRVisualSigns` (signalétique sonore/visuelle
   PMR) + `Extensions` (JSON imbriqué, ex. climatisation) + `bookingRules`. Bien plus fin que
   `Station.accessibilitePmr` actuel ; a du sens surtout une fois un niveau Arrêt/ArT modélisé
   (voir plus bas), pour rattacher l'accessibilité au bon quai plutôt qu'à toute la station.
-* ~~`commerces-de-proximite-agrees-ratp.*` : à comparer avec `points-de-vente.csv` avant import
-  (chevauchement probable, à vérifier pour éviter les doublons).~~ **fait le 2026-08-16**, voir
-  section "Commerces de proximité (enrichissement PointDeVente)" plus bas.
-
-## Cheminement piétons réel Acces → quai (fait le 2026-08-15)
-
-`pathways.txt` (GTFS IDFM, 4973 lignes) donne le cheminement piéton réel entre chaque Acces et son
-quai le plus proche : `Acces::distanceMarcheMetres`/`tempsMarcheSecondes`/`nombreMarches`/
-`penteMaxPourcent`/`largeurMinMetres`/`signalisation`/`signalisationInverse`/
-`cheminementBidirectionnel` (`app:importer-temps-marche-acces`). Affiché sur la fiche Station
-(colonne "Marche depuis le quai" dans le tableau des sorties) et sur la fiche Acces elle-même
-(tableau "Cheminement vers le quai le plus proche").
-
-**Fichier 100% "walkway" (pathway_mode=1)** : aucun cheminement quai-à-quai (donc rien
-d'exploitable pour une correspondance inter-lignes, voir `transfers.txt` pour cette piste-là,
-toujours pas commencée). Un Acces desservant plusieurs quais (1127/2378 cas) garde le plus proche.
-
-**`stair_count`/`max_slope`/`min_width`/`signposted_as`/`reversed_signposted_as` sont vides à 100%
-sur les 4973 lignes actuelles** — importés quand même (colonnes lues et stockées, jamais
-ignorées) : rien ne garantit que ça reste vide dans un futur export IDFM, et l'ambition du site
-est encyclopédique — même une info anecdotique (nombre de marches) mérite sa place si elle existe
-un jour, pas seulement ce qui est déjà rempli aujourd'hui.
 
 ## Écarts arrêts référentiel/OpenStreetMap — piste non commencée
 
@@ -226,220 +56,6 @@ ArT : nom, coordonnées, ville, accessibilité/signalétique par arrêt physique
 shelter/tactile_paving par ArT), `sdap-arrets-associes.csv` (équipements SDAP détaillés par
 arrêt/ligne), et `relations.csv` (chaîne complète PdE→ZdC→ZdA→ArR→ArT avec géométrie à chaque
 niveau, pour rattacher proprement un ArT à sa Station). Pas commencé.
-
-## agency.txt (analysé le 2026-08-15, peu d'intérêt en l'état)
-
-`agency.txt` (65 opérateurs) mappe `agency_id` → `agency_name`, et `agency_name` correspond bien
-à `Gestionnaire::label` ("RATP", "Keolis Seine et Oise Est"...). Mais **toutes les autres colonnes
-sont identiques sur les 65 lignes** (`agency_url` = toujours le site générique IDFM,
-`agency_phone`/`agency_email` toujours vides) — vérifié en comptant les valeurs distinctes.
-Aucune vraie donnée de contact par opérateur à en tirer : pas d'enrichissement utile de
-`Gestionnaire` avec ce fichier tel quel. Laissé de côté.
-
-## PDF affichés directement sur le site (fait le 2026-08-15)
-
-Demande utilisateur : les PDF (plans, horaires...) doivent être visualisables directement sur le
-site, sans obligation de les télécharger — mais avec un lien clair pour ouvrir/télécharger
-séparément pour qui le veut. Nouveau partial `templates/tools/visionneuse_pdf.html.twig`
-(`<object type="application/pdf">` + lien de secours si l'affichage embarqué échoue + bouton
-"Ouvrir / télécharger" toujours visible), réutilisé sur `plan/show.html.twig` et le modal PDF de
-`/carte`. ~~Même traitement à appliquer sur `plan_region/show.html.twig` et
-`document_ligne/show.html.twig`~~ **fait** : ces deux templates utilisent déjà le partial
-`visionneuse_pdf.html.twig` (branches `feature/plans-regionaux`/`feature/horaires-lignes`
-mergées le 2026-08-15, voir "Merger les 4 branches feature dans main").
-
-Le `download` HTML n'est volontairement pas utilisé : ignoré par les navigateurs pour une URL
-cross-origin (tous les PDF sont hébergés par IDFM, jamais par ce site), donc un simple lien
-suffit.
-
-## Piège de cache navigateur en dev local (resolu le 2026-08-14, a retenir)
-
-`symfony server:start` (serveur PHP integre) ne renvoie aucun header `Cache-Control`/`ETag` sur
-les fichiers statiques (`public/build/*.js/css`). Sans hash de version dans le nom de fichier, le
-navigateur applique un cache heuristique base sur `Last-Modified` et peut servir un `app.js` vieux
-de plusieurs heures/jours malgre des dizaines de `npx encore dev` successifs - **sans aucune
-erreur visible**, juste un comportement JS qui semble "ne rien faire". Corrige une fois pour
-toutes via `webpack.config.js` (`.enableVersioning(true)`, meme en dev) : chaque build produit un
-nom de fichier different (`app.<hash>.js`), donc une URL differente = jamais de cache perime. Si
-un changement JS semble ne jamais prendre effet localement malgre un rebuild reussi, verifier ce
-point AVANT de chercher un bug de logique (`fetch(url, {cache:'no-store'})` permet de comparer le
-contenu reellement charge par le navigateur vs le fichier source sur disque).
-
-## Plans de secteur (fait le 2026-08-14)
-
-Nouvelle entité `Plan` (dataset IDFM `plans-de-secteur`, 73 secteurs) + `Station::plan` (FK
-many-to-one, une Station sur au plus un Plan). CRUD complet (`/plan`), lien affiché sur la fiche
-Station, champ éditable dans le formulaire Station.
-
-Les 72/73 PDF (le plan 50 "En cours de réalisation" est indisponible côté IDFM) ont été
-téléchargés dans `documentation/IDFM-gtfs/plan secteur/` (337 Mo, non commit, gitignore) pour
-référence locale, mais **le site ne les héberge pas** : `Plan::urlPdf` pointe vers le PDF officiel
-IDFM (décision utilisateur du 2026-08-14 — éviter d'alourdir l'hébergement mutualisé Hostinger).
-
-Assignation automatique de `Station::plan` (`app:importer-plans-secteur`) : le département de la
-Station est déduit de `Station::ville` (règle spéciale "Paris Ne" → 75, sinon correspondance
-exacte dans `communes_departements.csv`, extrait de `communes-par-contrat.csv` via
-`documentation/scripts/extraire_communes_departements.php`), puis le Plan n'est assigné que si ce
-département est couvert par **un seul** Plan. **Constat après avoir chargé les vraies données** :
-seul le département 75 (Paris) est couvert par un seul Plan (le n°3) — tous les départements de
-grande couronne sont scindés en plusieurs Plan (le 77 en compte 24). Résultat : 878 stations
-parisiennes assignées automatiquement, le reste du réseau (~13000 stations) doit être assigné à la
-main via le formulaire Station — c'est le comportement voulu (repli automatique + assignation
-manuelle), pas un bug.
-
-**Découverte en vérifiant le déploiement** : le `--exclude='documentation'` du rsync de
-déploiement (`.github/workflows/tests.yml`) semblait impliquer qu'il fallait uploader les CSV
-dérivés (`documentation/scripts/donnees-extraites/`) à la main par SSH après coup — en fait ce
-n'est pas nécessaire : `documentation/IDFM-gtfs/` (le seul contenu vraiment volumineux) est
-gitignore et n'existe donc jamais dans le checkout du runner, donc rien de gros n'est jamais
-exclu en pratique ; tout le reste de `documentation/` (docs + CSV dérivés commit) part bien avec
-le rsync malgré l'exclude (vérifié le 2026-08-14 : `plans-de-secteur.csv` et
-`communes_departements.csv` étaient déjà présents et à jour sur le serveur juste après le
-déploiement, hash identique au fichier commit une fois les fins de ligne normalisées).
-
-## Horaires et plans par ligne (fait le 2026-08-15, branche feature/horaires-lignes)
-
-`DocumentLigne` (4507 fiches horaires/plans PDF officiels, dataset IDFM
-"fiches-horaires-et-plans") rattachées à `Ligne` par codeExterne avec repli par label (même
-pattern que `app:importer-traces-lignes`). Vérifié que le repli label n'aide que marginalement ici
-(~20 lignes) : les ~1262 documents non rattachés correspondent surtout à des Ligne absentes de
-notre base, pas au problème de codeExterne corrompu du métro. Dédupliqué par URL (57 doublons
-exacts dans la source). CRUD complet (paginé), section "Horaires et plans" sur la fiche Ligne.
-
-## Points de vente (fait le 2026-08-15, branche feature/points-de-vente)
-
-`PointDeVente` (2012 commerces agréés/guichets Navigo, dataset IDFM "points-de-vente") rattaché à
-la Station la plus proche. **Le dataset source ne donne aucune clé de rattachement fiable**
-(`ZdAId` toujours à 0 dans cet export, vérifié sur l'ensemble du fichier) : rattachement fait par
-proximité géographique (moins de 300 m à vol d'oiseau) dans `app:importer-points-de-vente`, donc
-`PointDeVente::station` doit être lu comme "le plus proche", pas "le point de vente officiel de
-cette station" — 1989/2012 (99%) rattachés. CRUD complet (`/point-de-vente`, paginé vu le volume),
-section "Points de vente à proximité" sur la fiche Station.
-
-## Plans régionaux (fait le 2026-08-15, branche feature/plans-regionaux)
-
-`PlanRegion` (19 grandes cartes d'ensemble du réseau : Métro, RER, réseau de Nuit, plans
-PMR/facile à lire..., dataset IDFM "plans-region"). Même traitement que `Plan` (secteurs) : PDF
-jamais auto-hébergé, lien vers l'officiel IDFM. CRUD complet (`/plan-region`). Ajouté à l'onglet
-"Carte des secteurs" existant (`/carte`) sous forme de second `<optgroup>` dans le même sélecteur
-plutôt qu'un nouvel onglet séparé — réutilise tel quel le mécanisme modal `<object>` déjà en place.
-
-## Projets d'arrêts/pôles en projet (fait le 2026-08-15, branche feature/projets-reseau)
-
-`ProjetArret` (404 arrêts/pôles multimodaux en projet ou en construction, dataset IDFM
-"projets_arrets_idf") : le futur du réseau. Jamais rattaché à une Station/Ligne existante — ce
-sont des entités distinctes, pas encore réelles. Reconstruction complète à chaque import (purge +
-réimport), pas de find-or-create : le CSV source n'a pas d'identifiant stable par ligne.
-
-Les champs `MODE_`/`SOUS_MODE`/`STATUT`/`PHASE` sont des codes internes IDFM **sans table de
-correspondance publiée** dans les métadonnées du dataset (vérifié via l'API catalog) : stockés
-tels quels plutôt que traduits en libellés inventés. Seule certitude documentée sur `STATUT` :
-échelle 1 (études préalables) à 10 (mise en service), sans le détail des valeurs intermédiaires —
-affichée telle quelle dans l'UI plutôt que de deviner un libellé par valeur.
-
-## Accessibilité PMR par gare (fait le 2026-08-15)
-
-`Station::accessibilitePmr`/`accessibilitePmrCommentaire` depuis `accessibilite-en-gare.csv`
-(dataset IDFM, 459 gares - train/RER/métro principalement). Le CSV source ne donne aucune clé
-directe vers le référentiel ZdC utilisé partout ailleurs (`stop_point_id` façon
-`stop_point:IDFM:monomodalStopPlace:47915`) : résolu via `stops.txt` (`parent_station`) dans
-`documentation/scripts/extraire_accessibilite_gares.php` (455/459 résolues, 4 hors du snapshot
-GTFS téléchargé). Affiché sur la fiche Station uniquement quand renseigné (grain "gare", la
-grande majorité des Station bus n'auront jamais cette donnée - fidèle à la source, pas un import
-manquant).
-
-## Mini-carte des accès / "plan de quartier" (fait le 2026-08-14)
-
-L'utilisateur voulait l'équivalent du plan de quartier affiché sur les quais RATP (petite carte
-locale montrant où mène chaque sortie numérotée). Aucun dataset ouvert IDFM ne fournit ce visuel
-(vérifié par recherche sur data.iledefrance-mobilites.fr : rien entre `plans-de-secteur` — trop
-zoomé — et `acces` — pas de carte, juste des coordonnées). Reconstruit "maison" plutôt que
-d'essayer de sourcer un visuel propriétaire RATP :
-
-- `Acces::latitude`/`longitude` (nouveau, depuis `stop_lat`/`stop_lon` de stops.txt GTFS,
-  `location_type=2` — jamais importé avant malgré la présence du champ `AccGeopoint` dans
-  `acces.csv` source).
-- `carte-acces.js` : petite carte Leaflet par Station (fond CARTO Positron plutôt que les tuiles
-  OSM standard — plus proche visuellement d'un plan, façades de bâtiments visibles), un bandeau
-  bleu "Sortie N — libellé" par Acces connu (style RATP), sur la fiche Station.
-
-Limite assumée : pas de bâtiments/commerces nommés (Théâtre, École, Église...) sur la mini-carte,
-faute de dataset POI dans le projet — seuls le fond de carte OSM/CARTO et les accès sont affichés.
-
-## Pôles d'échange (fait le 2026-08-14, rattachement remplacé par relations.csv le 2026-08-16)
-
-Nouvelle entité `PoleEchange` (dataset IDFM `poles-d-echange`, seulement 10 hubs officiels :
-grandes gares/aéroports) + `Station::poleEchange` (FK many-to-one, une Station sur au plus un
-Pole). CRUD complet (`/pole-echange`), lien affiché sur la fiche Station, champ éditable dans son
-formulaire.
-
-### Ancienne méthode de rattachement (2026-08-14, remplacée depuis)
-
-Le dataset source ne contient qu'un id et un nom de pôle, **aucune clé de rattachement** vers les
-Station (pas de ZdCId). Un matching flou par nom a été explicitement écarté après l'avoir testé
-sur les vraies données : `LIKE '%Roissy%'` ou `LIKE '%Charles de Gaulle%'` remontent des dizaines
-d'arrêts sans rapport partout en Île-de-France (ex: "Charles de Gaulle" est aussi un nom de rue
-très commun). À la place, `app:importer-poles-echange` utilisait une liste **vérifiée à la main**
-(constante PHP `STATIONS_PAR_POLE`, 32 couples label+ville) construite en interrogeant chaque
-candidat individuellement avant de l'inclure — même piège que `schema_gares-gf`/traces de lignes
-plus tôt dans le projet (voir plus bas) : ne jamais faire confiance à un matching par nom seul sans
-vérifier les faux positifs sur le jeu de données réel.
-
-### Rattachement officiel via relations.csv (2026-08-16)
-
-`relations.csv` (referentiel officiel PdE → ZdC → ZdA → ArR → ArT, 52576 lignes, 753 avec un
-PdEId non-nul) contient une colonne `ZdCId` qui correspond exactement à `Station.codeExterne`.
-Vérifié avant de coder : les 10 `PdEId` distincts du fichier correspondent EXACTEMENT aux 10
-`PoleEchange.codeExterne` déjà importés, et les 34 `ZdCId` distincts correspondent EXACTEMENT
-(34/34, 100%) à un `Station.codeExterne` existant en base. `app:importer-poles-echange` a été
-réécrite pour utiliser cette jointure officielle (clé exacte) à la place de la liste manuelle.
-
-**Piège découvert en réécrivant la commande** : le réseau contient des Station "doublons" (voir
-section "Stations Metro/Tramway/RER dupliquées" plus bas) — une même gare physique existe parfois
-sous deux Station distinctes en base : une Station "historique" (sans `code_externe`, portant les
-vraies `Desserte` du réseau métro/RER/tram, ex. id 88 "Montparnasse — Bienvenüe", 4 dessertes
-réelles) et une Station "GTFS" plus récente (avec `code_externe`, importée via le référentiel
-officiel, souvent avec une `ville` renseignée). `relations.csv`, sourcée du GTFS, ne peut par
-construction adresser que les Station avec `code_externe` : 16 Station historiques seraient donc
-restées silencieusement sans `PoleEchange` en se fiant uniquement à `relations.csv`, alors qu'elles
-portent les données réellement utilisées ailleurs dans l'appli (jusqu'à 26 dessertes pour "Gare
-Montparnasse", mais aussi 4 pour son homologue historique "Montparnasse — Bienvenüe" — les deux
-sont réellement utilisées, ce ne sont pas de purs doublons vides). Solution retenue : garder
-`relations.csv` comme source principale (34 Stations), complétée par une liste résiduelle
-minimale — `LEGACY_GAP_SANS_CODE_EXTERNE`, 16 labels vérifiés un à un, réservée aux seuls cas
-structurellement invisibles pour le référentiel officiel (label + `ville IS NULL` +
-`code_externe IS NULL`). Résultat : 50 Stations rattachées en local (contre 32 avant), 49 en
-production — l'écart d'1 est "Saint-Michel Notre-Dame", déjà connu comme une des Stations
-dupliquées en dérive entre local et prod (voir section "Stations Metro/Tramway/RER dupliquées"
-plus bas), pas un bug de ce correctif. Commande idempotente (reset complet de
-`Station.pole_echange_id` à chaque exécution avant réassignation).
-
-## Sanisettes publiques (fait le 2026-08-16)
-
-Nouvelle entité `SanisettePublique` (dataset Paris Open Data "sanisettesparis2011", 609 toilettes
-publiques de voirie de la Ville de Paris), distincte de `Sanitaire` (toilettes RATP en station,
-autre gestionnaire, autre dataset). Rattachement à `Station` par proximité géographique (même
-seuil 300m que `PointDeVente`/`Sanitaire`/`Defibrillateur`) : **606/609 (99%) rattachées**, un
-taux bien plus élevé qu'attendu au départ (l'hypothèse initiale "majorité sans Station à proximité,
-dataset de voirie sans rapport avec le réseau" était fausse — Paris intra-muros est en réalité très
-dense en arrêts de bus, donc la plupart des sanisettes se trouvent malgré tout à moins de 300m d'un
-arrêt du réseau). `source`/`complement_adresse` du CSV source sont des colonnes constantes sur les
-609 lignes (aucune vraie donnée) : non importées, même décision que pour `agency.txt`. CRUD complet
-(`/sanisette-publique`, paginé), section "Sanisettes publiques à proximité" sur la fiche Station.
-
-## Commerces de proximité (enrichissement PointDeVente) (fait le 2026-08-16)
-
-Le dataset IDFM "commerces-de-proximite-agrees-ratp" (911 lignes : cafés-tabac, tabac-presse,
-librairies...) chevauche très largement `points-de-vente.csv` déjà importé : recoupement
-géographique (< 50m) vérifié AVANT d'importer → **889/911 (98%) déjà présents en base**. Pas de
-nouvelle entité créée (aurait dupliqué quasiment tout `PointDeVente`) : `app:importer-commerces-proximite`
-**enrichit** les `PointDeVente` existants (type "Commerce de proximité") avec deux nouveaux champs
-absents du dataset officiel — `categorieCommerce` (catégorie fine : "café tabac", "tabac presse",
-"librairie"...) et `jourFermeture` — trouvés via correspondance géographique la plus proche. Les
-~2% non retrouvés (20 commerces agréés RATP absents du référentiel `points-de-vente` officiel) sont
-créés en plus (`codeExterne` préfixé `COM-` pour ne pas entrer en collision avec le format `PdVId`
-existant), pour ne perdre aucune information réelle. Commande idempotente (un rejeu retrouve les
-commerces déjà créés/enrichis par coordonnées exactes, 0 nouvelle création).
 
 ## Lignes à embranchements complexes (RER C notamment)
 
@@ -493,148 +109,16 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
 
 ## Autres pistes notées en cours de route
 
-- ~~Coordonnées du plan schématique (`Station.schemaX/Y`) manquantes pour les stations créées
-  après l'import RER/reseau complet (~14000 stations) — la source `schema_gares-gf` n'a pas
-  été retrouvée localement.~~ — **fait le 2026-08-14** : source retrouvée (téléchargée par
-  l'utilisateur), `app:importer-coordonnees-schema` étendue à tous les modes ferrés (métro/RER/
-  tram/train, plus seulement métro) avec un garde-fou (Stations candidates restreintes a celles
-  desservies par un mode ferre lourd - sans ca, le rapprochement par nom matchait aussi des
-  milliers d'arrets de bus). 1037 Stations positionnées (contre ~300 avant). **A noter** :
-  `schemaX/Y` n'est plus utilisé par aucune fonctionnalité visible depuis que la carte du trajet
-  utilise `latitude`/`longitude` (vraies coordonnées geographiques, voir plus haut) — cette donnée
-  est complète mais dormante, utile seulement si une bascule "plan schematique officiel" est
-  ajoutée un jour.
-- ~~Église d'Auteuil (ligne 10) : sans mission dédiée~~ — vérifié le 2026-08-09 : `Mission`
-  n'est utilisée nulle part dans le site (ni le calcul de trajet ni l'affichage des lignes),
-  donc aucun effet fonctionnel. En revanche, corrigé un vrai bug trouvé au passage : le tronçon
-  Michel-Ange—Auteuil ↔ Église d'Auteuil était bidirectionnel alors que cette antenne n'est
-  desservie que dans un seul sens (Michel-Ange—Auteuil → Église d'Auteuil, confirmé par le plan
-  RATP officiel et Wikipédia — quai unique, voie nord de la boucle d'Auteuil). Audité tout le
-  reste du réseau métro/tram pour d'autres antennes mal modélisées en bidirectionnel : aucune
-  autre trouvée (la boucle 7bis Botzaris/Danube/Place des Fêtes/Pré-Saint-Gervais était déjà
-  correcte en sens unique).
 - Quais décalés (ex: Liège sur la ligne 13) : le modèle actuel suppose une distance symétrique
   par tronçon, ne capture pas les cas où la distance de marche diffère selon le sens réel.
-- ~~Lignes de bus (~1400...) : aucun tronçon construit~~ — **fait le 2026-08-11 pour les lignes
-  numérotées 20 à 299** : 20-100 toutes compagnies confondues (RATP + Keolis Roissy/Argenteuil +
-  Transdev Boucle des Lys/Vallée du Loing/Nord Seine-Saint-Denis/Côteaux de la Marne + Keolis Nord
-  Val d'Oise, voir `app:construire-topologie-bus` et `app:construire-topologie-bus-autres-operateurs`),
-  101-299 uniquement RATP/filiales "RATP Cap ..." (voir `app:construire-topologie-bus`, même
-  commande, map étendue). **Pas encore fait dans 101-299** : les lignes non-RATP de cette plage
-  (ATM Croix du Sud 179/189-191/194-195/289-290, Keolis Grand Paris Vallée de la Marne 206-207/
-  209/211-213/220, Keolis Argenteuil 262, Keolis Ouest Val-de-Marne 282 — pas encore demandé). Le
-  reste du réseau bus (~1300 lignes hors 20-299) n'a toujours aucun tronçon construit — ampleur
-  trop importante pour un seul passage, mais la méthode (extraction GTFS + réduction des
-  raccourcis, voir `documentation/scripts/extraire_troncons_bus*.php`) est directement
-  réutilisable pour étendre à d'autres plages de numéros.
-- ~~Aucune correspondance bus<->bus / bus<->metro / bus<->rer / bus<->tram (seulement metro/tram/RER
-  entre eux, `ConstruireCorrespondancesInterModesCommand`, limité aux modes lourds pour éviter
-  l'explosion combinatoire d'une approche "toutes les paires à un même arrêt" sur ~1400 lignes de
-  bus)~~ — **fait le 2026-08-11** grâce à `transfers.txt` (GTFS IDFM), qui documente déjà les vraies
-  correspondances piétonnes officielles entre deux Stations différentes (pas besoin de générer
-  toutes les combinaisons nous-mêmes, la source fait le tri) : **106 757 correspondances créées**
-  (`app:construire-correspondances-bus`, voir `extraire_correspondances_inter_zdc.php`), dont
-  102 749 bus↔bus, ~3200 bus↔tram/train, 227 RER↔bus, 119 métro↔bus. Testé de bout en bout
-  (RER A à Châtelet → correspondance → bus 21 → 15 arrêts). Au passage, 9 correspondances
-  métro/tram/RER existantes (distance NULL, estimation par défaut) ont été affinées avec un vrai
-  temps de marche GTFS (`app:affiner-distances-correspondances`) — la plupart des correspondances
-  existantes avaient déjà une distance vérifiée manuellement, non écrasée.
-
-## Carte du calculateur de trajet (fait le 2026-08-12)
-
-~~La carte du calculateur de trajet n'utilisait que `Station.schemaX/Y` (plan schématique officiel,
-METRO seulement, ~300/315 stations) — RER/tram/bus n'apparaissaient jamais, meme quand le trajet
-les traversait reellement.~~ **Remplace par de vraies coordonnees geographiques** (`Station.latitude/
-longitude`, `app:importer-coordonnees-geographiques`, depuis `zdc_coordonnees.csv` extrait du GTFS) :
-couvre tous les modes sur toute l'Ile-de-France (13696 Stations via codeExterne + 371 de plus par
-repli sur le nom exact pour les Stations "originales" sans codeExterne). Rendu passe d'un SVG
-schematique fait main a une vraie carte Leaflet/OpenStreetMap (`assets/js/trajet-carte.js`),
-affichee dans une modale plein ecran (bouton "Carte").
-
-**Limite residuelle connue** : le repli par nom exact ne resout que ~70% des ~534 Stations
-"originales" sans codeExterne (le probleme de doublons documente plus haut) — les noms dont la
-graphie differe de celle du referentiel IDFM restent sans coordonnees (ex: "Châtelet" seul, la
-jumelle ZdC-liee s'appelant "Châtelet - Les Halles" ou "Châtelet (Paris 4e)" ; "Reuilly — Diderot"
-avec son tiret cadratin). Pour ces stations precises, le trace mis en evidence sur la carte peut
-etre incomplet ou vide bien que l'itineraire textuel reste correct. Un rapprochement plus tolerant
-(normalisation + repli par inclusion de mots, comme `app:importer-coordonnees-schema`) resoudrait
-une partie du reste, mais la vraie correction reste la fusion des Stations dupliquees (voir plus
-haut). Verifie une fausse correspondance ("Saint-Paul" du Marais rapproche par erreur d'un arret de
-bus rural homonyme) : corrigee via une petite liste d'exclusion manuelle dans la commande
-(`EXCLUSIONS_CONNUES`) — a completer si un nouveau cas est repere.
-
-## Conseils de position dans la rame (fait le 2026-08-13)
-
-Nouvelle table `PositionRame` (dataset IDFM "positionnement-dans-la-rame") : pour une Ligne et une
-Station de depart, ou se placer dans la rame pour arriver au plus pres d'une sortie ou d'une
-correspondance. Affiche sur la page de chaque Station. `app:construire-positions-rame` (4671
-lignes, 18 lignes couvertes : metro 1-14+3B+7B, RER A/B - le dataset source ne couvre pas plus).
-
-**Bug decouvert au passage : `Ligne.codeExterne` incoherent pour le metro.** Nos Ligne de metro
-"doublons" (creees par `app:importer-reseau-complet`, voir plus bas "Stations dupliquees" - le
-meme phenomene existe aussi sur `Ligne`, pas seulement `Station`) ont un `codeExterne` qui ne
-correspond plus au GTFS actuel : ex. notre ligne "7" (id avec codeExterne) pointe vers `C00312`,
-qui est en realite dans le GTFS courant une ligne de BUS renommee "6402 (ex 7)" - vraisemblablement
-un residu d'un tres ancien import, jamais nettoye. Contourne pour `app:construire-positions-rame`
-en rattachant par label plutot que par codeExterne (sans risque de collision : seulement 18 lignes
-metro/RER couvertes par ce dataset, pas de bus). **Pas corrige a la source** : toute future
-fonctionnalite qui matche une Ligne de metro par `codeExterne` (a la maniere des lignes de bus)
-tombera dans le meme piege - verifier `referentiel-des-lignes.csv` (pas encore utilise) comme
-piste pour un vrai nettoyage.
-
-**Meme famille que le probleme de Station dupliquee, mais impactant cette fois l'affichage
-directement** (pas seulement une donnee derivee comme les coordonnees de la carte) : Accès/Sorties
-et PositionRame se rattachaient initialement a la Station ZdC-liee (jamais consultee en pratique)
-plutot qu'a la Station "originale" (celle affichee par `/station/{id}`). Corrige par
-`StationRepository::trouverIdCanoniqueParZdc()`, reutilisable pour toute future donnee importee
-par ZdC qui doit s'afficher sur la bonne page.
-
-## Performance de TrajetFinder (decouvert le 2026-08-12, corrige le 2026-08-13)
-
-~~`TrajetFinder::construireGraphe()` reconstruit l'integralite du graphe (tous les Troncon ET toutes
-les Correspondance) via l'ORM a **chaque** calcul de trajet, avec des fetch-joins tres larges
-(`TronconRepository`/`CorrespondanceRepository::findAllWithDetails()` : missions, directions,
-etc.). Devenu tres lent (~12s par requete, ~193 000 entites Doctrine hydratees) depuis que la table
-`correspondance` est passee de ~31 000 a ~155 000+ lignes.~~ **Corrige** : `construireGraphe()`
-reecrit en SQL brut (ids + poids seulement, aucune entite ORM chargee pour l'ensemble du reseau),
-seules les quelques dizaines de `Desserte` du chemin **trouve** sont rechargees via l'ORM a la fin
-(meme motif "requete legere + recharge par ids" que pour le fond de carte). Passe de ~12-14s
-(~193 000 entites) a ~2,5s (~30 entites, 58 Mo de pic memoire). La correction est devenue urgente
-le jour meme : l'ajout de `Ligne::trace` (potentiellement volumineux) a fait passer le probleme de
-"lent" a un **"Allowed memory size exhausted" (erreur 500) pur et simple** des qu'une Ligne
-concernee avait un gros trace, l'ancien code hydratant une Ligne complete (trace compris) par
-Desserte du reseau entier.
-
-Reste ~1,7s de temps SQL par requete (deux grosses requetes brutes scannant tout `troncon_desserte`
-et toute `correspondance` a chaque fois) : correct pour un usage normal, mais une vraie optimisation
-future consisterait a limiter/indexer davantage, ou a mettre en cache le graphe entre deux requetes
-(non fait, pas juge necessaire vu le gain deja obtenu).
-
-## Trace geometrique reel des Lignes (fait le 2026-08-13)
-
-`Ligne::trace` (JSON, liste de composantes/branches, chacune une liste de points [lon,lat]),
-depuis le dataset IDFM "traces-des-lignes-de-transport-en-commun-idfm" (tous modes : 1882 bus, 24
-RER/Transilien, 16 metro, 17 tram, 2 funiculaire/telepherique). Simplifie (Douglas-Peucker,
-tolerance ~3m) et arrondi (5 decimales, ~1,1m) a l'extraction : 76 Mo -> 22,6 Mo, forme visuelle
-inchangee. `app:importer-traces-lignes` (meme rattachement par label pour le metro que
-`app:construire-positions-rame`, `Ligne.codeExterne` etant incoherent pour ce mode - voir plus
-haut) : 1445/1936 lignes rattachees.
-
-La carte du calculateur de trajet utilise ce trace reel pour dessiner le trajet en suivant les
-rues/rails plutot qu'une ligne droite entre deux stations consecutives (`assets/js/trajet-carte.js`,
-`extraireTraceEntreDeuxPoints` : projette les deux stations sur chaque composante du trace de la
-Ligne empruntee, choisit la plus proche des deux, decoupe la portion entre les deux projections).
-Verifie sur un vrai cas (Bastille -> Gare de Lyon, ligne 1) : 13 points de trace reel utilises
-plutot qu'un simple segment. Le fond de reseau (toutes les autres lignes, attenuees) reste en
-lignes droites - seul le trajet mis en evidence beneficie du trace reel, pour ne pas alourdir la
-carte avec des traces de tout le reseau a chaque requete (seules les 1-3 lignes du trajet trouve
-sont transmises, voir `TrajetController::construireTracesLignesPourAffichage()`).
-
-**A ete l'occasion de decouvrir et corriger un bug bien plus grave (voir section Performance de
-TrajetFinder plus bas)** : l'ancien `TrajetFinder::construireGraphe()` chargeait via l'ORM
-l'integralite du reseau (Troncon+Correspondance+Desserte+**Ligne**) a chaque calcul de trajet ; en
-ajoutant `Ligne::trace` (potentiellement volumineux), ce chargement complet du reseau a fait passer
-le calculateur de trajet d'"lent" (~12s) a **totalement casse (erreur 500, memoire epuisee)**.
+- Lignes de bus : reste du réseau non traité. Fait le 2026-08-11 pour les lignes numérotées 20 à
+  299 (`app:construire-topologie-bus`/`app:construire-topologie-bus-autres-operateurs`), sauf les
+  lignes non-RATP de la plage 101-299 (ATM Croix du Sud 179/189-191/194-195/289-290, Keolis Grand
+  Paris Vallée de la Marne 206-207/209/211-213/220, Keolis Argenteuil 262, Keolis Ouest
+  Val-de-Marne 282 — pas encore demandé). Le reste du réseau bus (~1300 lignes hors 20-299) n'a
+  toujours aucun tronçon construit — ampleur trop importante pour un seul passage, mais la méthode
+  (extraction GTFS + réduction des raccourcis, voir
+  `documentation/scripts/extraire_troncons_bus*.php`) est directement réutilisable.
 
 ## Lignes Transilien V/P/R (pas encore dans la base)
 
@@ -642,3 +126,14 @@ En ajoutant le matériel roulant RER (2026-08-09), plusieurs séries sont notée
 commune" avec des lignes Transilien pas encore modélisées : Z 5600/8800/20500/20900 (RER C) avec
 la **ligne V**, Z 57000/57400 (RER D) avec la **ligne R**, Z 50000 (RER E) avec la **ligne P**. Si
 on veut représenter fidèlement ce lien un jour, il faudra créer ces 3 lignes Transilien (SNCF).
+
+## Ligne.codeExterne incohérent pour le métro — vrai nettoyage pas fait
+
+Nos Ligne de métro "doublons" (créées par `app:importer-reseau-complet`, même phénomène que les
+Stations dupliquées ci-dessus, mais sur `Ligne`) ont un `codeExterne` qui ne correspond plus au
+GTFS actuel : ex. notre ligne "7" (id avec codeExterne) pointe vers `C00312`, qui est en réalité
+dans le GTFS courant une ligne de BUS renommée "6402 (ex 7)" — vraisemblablement un résidu d'un
+très ancien import, jamais nettoyé. Contourné ponctuellement (rattachement par label) dans
+`app:construire-positions-rame` et `app:importer-traces-lignes`, mais pas corrigé à la source :
+toute future fonctionnalité qui matche une Ligne de métro par `codeExterne` tombera dans le même
+piège. `referentiel-des-lignes.csv` (pas encore utilisé) est une piste pour un vrai nettoyage.

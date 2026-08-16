@@ -505,4 +505,14 @@ journal où un `diff --strip-trailing-cr` a bien été fait avant copie).
 | `git log --oneline -- documentation/TODO.md` puis `git show <commit>:documentation/TODO.md` sur `13a6391` (dernier commit avant la perte, StyleStation) et `HEAD` | Comparé les deux versions complètes : 9 sections présentes dans `13a6391` mais absentes de `HEAD`, et 3 sections légitimement nouvelles présentes dans `HEAD` mais pas dans `13a6391` (`agency.txt`, écarts référentiel/OSM, Arrêt Transporteur — ajoutées entre les deux sans jamais avoir été committées avant `e8dbd70`). |
 | Fusion manuelle des deux versions (réinsertion des 9 sections perdues aux emplacements logiques, mise à jour des puces à barré qui pointaient vers elles) | Union complète des deux historiques, aucune perte, 33 sections au total dans `documentation/TODO.md`. |
 
+## Session du 2026-08-16 (suite) — Migration du contenu de TODO.md vers Tache/Etape
+
+Demande utilisateur : tout ce qui est achevé part en base, `TODO.md` local ne garde que ce qui
+reste à faire.
+
+| Commande | Objectif |
+|---|---|
+| Script PHP `migrer_todo_vers_tache.php` (scratchpad, non commité — même convention que les scripts d'application de données ponctuels de cette session) : tableau structuré de 43 `Tache` (dont 2 avec plusieurs `Etape` : "Pôles d'échange" et "StyleStation", chacune retraçant ses 2 phases distinctes) reprenant l'intégralité des 33 sections de `TODO.md`, exécuté en local puis en prod via SSH | 43 Tache créées (29 ACHEVEE, 14 A_FAIRE), 4 Etape créées. Vérifié en local via le Browser tool : liste correcte triée par date de création, fiche "Pôles d'échange" affichant bien ses 2 étapes avec leurs dates propres. |
+| Réduction de `documentation/TODO.md` de 645 à 139 lignes (33 sections → 10, seules les tâches encore ouvertes conservées, tout le détail technique des tâches achevées reste accessible via `/tache`) | `git status`/diff vérifié avant copie : uniquement des suppressions de sections déjà migrées, rien de nouveau perdu par erreur cette fois. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
