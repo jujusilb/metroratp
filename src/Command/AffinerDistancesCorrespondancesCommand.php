@@ -19,6 +19,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * encore NULL : ne remplace jamais une valeur deja saisie (ex: le cas documente Liege 4<->14 a
  * une distance differente selon le quai, une donnee verifiee qu'il ne faut pas ecraser par une
  * mediane generique).
+ *
+ * Repli par nom (cf. "Stations dupliquees", TODO.md) : quand la Station n'a pas de code_externe
+ * propre (originale creee avant app:importer-reseau-complet), on cherche une AUTRE Station de
+ * meme label qui, elle, a un code_externe — meme lieu reel, doublon connu et documente. On ne
+ * l'utilise que si ce label a EXACTEMENT une seule Station candidate avec code_externe : des
+ * labels comme "Republique", "Gambetta" ou "Stalingrad" existent dans des dizaines de communes
+ * sans rapport (verifie manuellement), un repli sur un label ambigu donnerait un temps de marche
+ * pour la mauvaise station. Dans ce cas ambigu, la correspondance reste volontairement NULL.
  */
 #[AsCommand(name: 'app:affiner-distances-correspondances', description: 'Remplace l\'estimation par defaut des correspondances existantes par un temps de marche reel (GTFS)')]
 class AffinerDistancesCorrespondancesCommand extends Command
@@ -48,34 +56,64 @@ class AffinerDistancesCorrespondancesCommand extends Command
         fclose($fichier);
         $io->info(\count($dureeParZdc).' ZdC avec un temps de marche connu.');
 
+        $io->section('Chargement du repli par nom (label -> code_externe, jumeau non ambigu)...');
+        $jumeauParLabel = [];
+        foreach ($connexion->executeQuery(
+            'SELECT label, code_externe FROM station WHERE code_externe IS NOT NULL'
+        )->fetchAllAssociative() as $ligne) {
+            $jumeauParLabel[$ligne['label']][] = $ligne['code_externe'];
+        }
+        $io->info(\count($jumeauParLabel).' labels distincts avec au moins un code_externe.');
+
         $io->section('Recherche des correspondances a affiner (distance NULL, meme Station)...');
         $aAffiner = $connexion->executeQuery(
             <<<'SQL'
-                SELECT c.id, sa.code_externe AS code_externe
+                SELECT c.id, sa.label AS label, sa.code_externe AS code_externe
                 FROM correspondance c
                 JOIN desserte da ON da.id = c.desserte_a_id
                 JOIN desserte db ON db.id = c.desserte_b_id
                 JOIN station sa ON sa.id = da.station_id
-                WHERE c.distance IS NULL AND da.station_id = db.station_id AND sa.code_externe IS NOT NULL
+                WHERE c.distance IS NULL AND da.station_id = db.station_id
                 SQL
         )->fetchAllAssociative();
         $io->info(\count($aAffiner).' correspondances candidates (meme Station, distance NULL).');
 
-        $nbAffinees = 0;
+        $nbAffineesDirect = 0;
+        $nbAffineesRepliNom = 0;
         foreach ($aAffiner as $ligne) {
-            $duree = $dureeParZdc[$ligne['code_externe']] ?? null;
+            $duree = null === $ligne['code_externe'] ? null : ($dureeParZdc[$ligne['code_externe']] ?? null);
+            $viaRepliNom = false;
+
+            if (null === $duree) {
+                $jumeaux = $jumeauParLabel[$ligne['label']] ?? [];
+                if (1 === \count($jumeaux)) {
+                    $duree = $dureeParZdc[$jumeaux[0]] ?? null;
+                    $viaRepliNom = null !== $duree;
+                }
+            }
+
             if (null === $duree) {
                 continue;
             }
+
             $distance = (int) round($duree * self::VITESSE_MARCHE_M_PAR_S);
             $connexion->executeStatement(
                 'UPDATE correspondance SET distance = ? WHERE id = ?',
                 [$distance, $ligne['id']],
             );
-            ++$nbAffinees;
+            if ($viaRepliNom) {
+                ++$nbAffineesRepliNom;
+            } else {
+                ++$nbAffineesDirect;
+            }
         }
 
-        $io->success(sprintf('%d correspondances affinees avec un temps de marche reel.', $nbAffinees));
+        $io->success(sprintf(
+            '%d correspondances affinees avec un temps de marche reel (%d via code_externe direct, %d via repli par nom).',
+            $nbAffineesDirect + $nbAffineesRepliNom,
+            $nbAffineesDirect,
+            $nbAffineesRepliNom,
+        ));
 
         return Command::SUCCESS;
     }

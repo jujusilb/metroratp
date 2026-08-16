@@ -19,9 +19,12 @@ avant de conclure que la piste n'est pas exploitable.
   Lambert93), `exploitant`, et des indicateurs de mode (train/rer/metro/tramway/val) + terminus
   par mode (`tertrain`/`terrer`/etc.). Source alternative de géoloc/exploitant par station à
   croiser avec l'existant — vérifier si ça comble des trous plutôt que faire doublon.
-* `transfers.txt` : temps de correspondance officiel entre arrêts proches (`TrajetFinder` utilise
-  actuellement une estimation, pas cette donnée officielle — déjà utilisé pour construire les
-  correspondances bus et affiner 9 correspondances existantes, mais pas encore pour la majorité).
+* `transfers.txt` : déjà exploité (voir `documentation/commande.md`, 2026-08-17) — 205/505
+  correspondances même-station à distance NULL affinées (9 via `code_externe` direct, 196 via un
+  repli par nom sur jumeau non ambigu). Reste 300 correspondances : soit label ambigu (167,
+  volontairement laissé NULL — ex. "République"/"Gambetta" existent dans des dizaines de communes
+  sans rapport), soit aucun jumeau exploitable (142). Vrai déblocage = fusion des Stations
+  dupliquées (voir plus bas), pas une piste transfers.txt supplémentaire.
 * `sdap-arrets-associes.csv` (36696 lignes, un ArR par ligne) : accessibilité détaillée par
   arrêt — `ArRAccessibility`/`ArRAudibleSignals`/`ArRVisualSigns` (signalétique sonore/visuelle
   PMR) + `Extensions` (JSON imbriqué, ex. climatisation) + `bookingRules`. Bien plus fin que

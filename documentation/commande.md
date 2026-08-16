@@ -533,4 +533,21 @@ pour trier par cette colonne (ASC, puis DESC au second clic), comme sur `/corres
 | `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
 | Tâche `Tache`/`Etape` correspondante marquée ACHEVEE en base (avec 4 Etape retraçant les phases : inventaire, implémentation ×2, tests) | Suivi du travail directement dans `/tache`, conformément au nouveau système mis en place plus tôt dans la session. |
 
+## Session du 2026-08-17 — Affiner les temps de correspondance via transfers.txt (repli par nom)
+
+Demande utilisateur : "continue une autre tache" (choix libre parmi les tâches A_FAIRE de `/tache`).
+Tâche choisie : id=5, "Affiner les temps de correspondance TrajetFinder via transfers.txt".
+
+| Commande | Objectif |
+|---|---|
+| `SELECT COUNT(*), SUM(distance IS NULL), SUM(distance IS NOT NULL) FROM correspondance` | 568 correspondances sur 107334 encore à distance NULL (0,5 %) — le libellé "la grande majorité utilise une estimation" dans l'ancien `TODO.md` était trompeur : la quasi-totalité (106766) a déjà une vraie distance issue de GTFS. |
+| Répartition des 568 NULL par type | 505 même-Station (candidates au repli intra-ZdC), 63 Station différente (non traitées cette session, piste `correspondances_inter_zdc.csv` à explorer séparément). |
+| Sur les 505 même-Station : combien ont déjà un `code_externe` propre | Seulement 23 — la commande existante (`AffinerDistancesCorrespondancesCommand`) ne pouvait déjà en affiner que 9, bloquée par le problème documenté "Stations dupliquées" (Station originale sans `code_externe`). |
+| Simulation d'un repli par nom (label identique → Station jumelle avec `code_externe`) : test d'abord sans filtrer l'ambiguïté | 363/505 auraient un jumeau exploitable — mais vérification supplémentaire (`GROUP BY label` sur les jumeaux) a révélé que 18 labels sources ont PLUSIEURS jumeaux candidats (`République` → 23 communes différentes, `Gambetta` → 16, `Hôtel de Ville` → 35, etc. — noms de rue/place génériques, pas des stations uniques). Un repli aveugle aurait attaché des temps de marche à la mauvaise station pour ~167 correspondances. |
+| Simulation restreinte au cas sûr (label avec EXACTEMENT un jumeau `code_externe`) | 196/505 — rendement réel et sûr, retenu pour l'implémentation. Les 167 ambigus et 142 sans jumeau restent volontairement NULL. |
+| `src/Command/AffinerDistancesCorrespondancesCommand.php` : ajout du repli par nom (map `label → code_externe`, utilisée seulement quand une seule Station porte ce `code_externe` pour ce label), rapport détaillé (direct vs repli) | Docblock mis à jour pour expliquer le choix de restreindre au cas non ambigu. |
+| `php bin/console app:affiner-distances-correspondances` (local) | "205 correspondances affinees (9 via code_externe direct, 196 via repli par nom)" — exactement la prévision de la simulation. `distance_nulle` passé de 568 à 372. |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe — aucune régression, changement purement logique dans une commande CLI. |
+| `documentation/TODO.md` | Section transfers.txt mise à jour : chiffre exact du rendement, explication des 300 restantes (167 ambigües, 142 sans jumeau), pointeur vers la fusion des Stations dupliquées comme vrai prochain déblocage. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
