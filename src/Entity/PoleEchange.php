@@ -13,11 +13,11 @@ use Doctrine\ORM\Mapping as ORM;
  * au meme endroit reel). Une Station appartient a au plus un Pole (voir Station::$poleEchange) ;
  * un Pole regroupe plusieurs Station.
  *
- * Seulement 10 poles dans le dataset source, sans cle de rattachement directe vers les Station
- * (pas de ZdCId) : le rattachement se fait via une correspondance nominative verifiee a la main
- * (voir app:importer-poles-echange), pas un matching flou automatique - trop risque de faux
- * positifs sur des noms courants (ex: "Roissy", "Charles de Gaulle" matchent des dizaines
- * d'arrets sans rapport ailleurs en Ile-de-France).
+ * Seulement 10 poles dans le dataset source (poles-d-echange.csv), sans cle de rattachement
+ * directe vers les Station. Le rattachement Station::poleEchange se fait via relations.csv
+ * (referentiel officiel PdE/ZdC/ZdA/ArR/ArT), qui donne pour chaque PdEId ses ZdCId - et ZdCId
+ * correspond exactement a Station::codeExterne. Voir app:importer-poles-echange et
+ * documentation/commande.md pour le detail de cette jointure (34 Stations rattachees).
  */
 #[ORM\Entity(repositoryClass: PoleEchangeRepository::class)]
 class PoleEchange

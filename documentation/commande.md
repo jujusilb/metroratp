@@ -326,6 +326,25 @@ source vers les Station : rattachement construit à la main après avoir écart�
 |---|---|
 | Script PHP inline (`SELECT ... WHERE label LIKE '%terme%'`) sur des termes comme "Roissy", "Charles de Gaulle", "Saint-Michel" | Confirmé le risque de faux positifs d'un matching flou : des dizaines de résultats sans rapport avec le pôle recherché (arrêts de bus homonymes dans des communes éloignées). Décision : ne pas automatiser, curer la liste à la main. |
 | Script PHP inline (`SELECT ... WHERE label = ?`, exact) pour chaque candidat plausible par pôle | Construit la liste vérifiée `STATIONS_PAR_POLE` (32 couples label+ville) de `ImporterPolesEchangeCommand`, en excluant explicitement les faux positifs identifiés (ex: "Châtelet" à Montereau-Fault-Yonne, "Saint-Michel" à Étampes/Moissy-Cramayel, "La Muette" à Chesnay-Rocquencourt). |
+
+## Session du 2026-08-16 — Pôles d'échange : rattachement officiel via `relations.csv`
+
+Remplacement de la liste `STATIONS_PAR_POLE` (32 couples label+ville, vérifiée à la main) par un
+rattachement basé sur la clé officielle `ZdCId` de `relations.csv`, qui correspond exactement à
+`Station.codeExterne`. Découverte en cours de route d'un vrai piège lié aux Station dupliquées
+(voir TODO.md) : 16 Station "historiques" sans `code_externe` porteuses de vraies `Desserte`
+auraient perdu silencieusement leur `PoleEchange` si on s'était fié uniquement à `relations.csv`.
+
+| Commande | Objectif |
+|---|---|
+| Script PHP inline (parsing `relations.csv`, comptage `array_unique`) | 753 lignes avec un `PdEId` non-nul sur 52576 au total ; 10 `PdEId` distincts, 34 `ZdCId` distincts. |
+| Script PHP inline (`SELECT code_externe FROM pole_echange`) puis comparaison en PHP | Les 10 `PdEId` distincts de `relations.csv` correspondent EXACTEMENT aux 10 `PoleEchange.codeExterne` déjà importés (aucun manquant, aucun en trop). |
+| Script PHP inline (`SELECT code_externe FROM station WHERE code_externe = ?` pour chacun des 34 `ZdCId`) | 34/34 (100%) trouvent une `Station.codeExterne` existante — confirme que `relations.csv` est une source fiable et directement exploitable, sans matching flou. |
+| Réécriture de `ImporterPolesEchangeCommand::execute()` : lecture de `relations.csv`, `UPDATE station SET pole_echange_id = NULL` puis réassignation via jointure exacte `ZdCId = code_externe` | Rendue idempotente (un rejeu repart de zéro). Premier essai : 34 Stations assignées — mais total en base après coup (`52` avant le fix du double-comptage, voir ligne suivante) a révélé le vrai souci. |
+| `SELECT s.id, s.label, s.ville, s.code_externe, p.code_externe FROM station s JOIN pole_echange p ...` (avant correctif) | 52 Stations assignées au lieu des 34 attendues : d'anciennes assignations manuelles laissées sur des Station dupliquées non retouchées par le nouveau matching. Après ajout du `UPDATE ... SET pole_echange_id = NULL` : proprement retombé à 34. |
+| Script PHP inline recoupant chaque candidat de l'ancienne `STATIONS_PAR_POLE` avec `code_externe`/`COUNT(desserte)` | Isolé précisément 16 Station "historiques" (ex: id 88 "Montparnasse — Bienvenüe", 4 dessertes réelles ; id 76 "Gare du Nord", 4 dessertes) sans aucun `code_externe`, donc structurellement invisibles pour `relations.csv`, mais bien porteuses de vraies données `Desserte` — pas de simples doublons vides à ignorer. |
+| Ajout de `LEGACY_GAP_SANS_CODE_EXTERNE` (16 labels, sous-ensemble minimal de l'ancienne liste, matching `label + ville IS NULL + code_externe IS NULL`) en complément (jamais à la place) de `relations.csv` | 34 (officiel) + 16 (complément legacy) = 50 Stations assignées au total, contre 32 avant — confirmé idempotent (rejeu → toujours 50, sans avertissement). |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe, aucune migration nécessaire (changement pur commande + données, schéma `PoleEchange`/`Station::poleEchange` déjà existant). |
 | `php bin/console app:importer-poles-echange` (x2, vérif idempotence) | 10 PoleEchange créés, 32/32 Stations assignées (0 candidat introuvable) — confirme la liste manuelle contre la vraie base. Second passage : 0 création, 32 mises à jour de Pole (pas de doublon Station). |
 | Compte de test admin local (`test_pole`) + connexion via `form.submit()` en JS | Vérifié `/pole-echange` (10 lignes), `/pole-echange/7` (Châtelet - Les Halles, 4 stations correctes), `/station/336` (lien Pôle affiché) et `/station/336/edit` (11 options, la bonne présélectionnée). Compte supprimé après vérification. |
 | `php bin/phpunit` (134 tests), `npx jest` (49 tests) | Tout passe après ajout de l'entité `PoleEchange`. |
@@ -375,28 +394,6 @@ commencer par l'accessibilité PMR.
 | `php bin/phpunit` (134 tests) | Tout passe (pas de changement JS dans cette fonctionnalité). |
 | Compte de test admin local + connexion JS | Vérifié `/station/1` (La Défense) : ligne "Accessibilité PMR" affichée avec le commentaire détaillé complet. Compte supprimé après vérification. |
 
-## Session du 2026-08-15 (suite) — PDF affichés directement sur le site
-
-| Commande | Objectif |
-|---|---|
-| `npx encore dev`, `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
-| Compte de test admin local + connexion JS | Vérifié `/plan/1` (objet PDF affiché + lien "Ouvrir / télécharger" pointant vers la bonne URL) et `/carte` (onglet secteurs, modal : même vérification). Compte supprimé après vérification. |
-
-## Session du 2026-08-15 (suite) — Cheminement piétons réel Acces → quai (pathways.txt)
-
-Demande "priorité absolue" : analyse de `pathways.txt` puis exploitation maximale.
-
-| Commande | Objectif |
-|---|---|
-| Script PHP inline (comptage des colonnes non vides de `pathways.txt`) | Confirmé avant de coder : `stair_count`/`max_slope`/`min_width`/`signposted_as`/`reversed_signposted_as` sont vides sur les 4973 lignes, seuls `length`/`traversal_time`/`is_bidirectional` ont de la donnée. Importés quand même tous les champs (ambition encyclopédique, l'utilisateur l'a explicitement demandé même vides). |
-| Script PHP inline (comptage Acces avec plusieurs pathways) | 1127/2378 Acces desservent plusieurs quais à des distances différentes — confirmé qu'on garde le plus proche. |
-| `php bin/console app:importer-temps-marche-acces` (x2, vérif idempotence) | 2377/2378 Acces mis à jour. Second passage : même résultat. |
-| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
-| Compte de test admin local + connexion JS | Vérifié `/station/1` (colonne "Marche depuis le quai" dans le tableau des sorties, ex: "203 m (~4 min)") et `/acces/11121` (tableau "Cheminement vers le quai le plus proche" complet, champs vides affichés "—" proprement). Compte supprimé après vérification. |
-| `git push origin main` + `gh run watch` | CI et déploiement verts (build assets, PHPUnit, Jest, rsync, migration, symlink). |
-| `ssh ... php bin/console app:importer-temps-marche-acces --env=prod` | 2377 Acces mis à jour — résultat identique au local. |
-| Compte de test admin temporaire + `curl` authentifié | Login `curl` en échec (302 vers `/login`) avec `_username`=l'email : le provider Symfony (`security.yaml`, `property: username`) authentifie sur la colonne `username`, distincte de `email` en base — gotcha non rencontré sur les comptes de test précédents qui avaient `username` déjà rempli par coïncidence. Une fois `username` renseigné à la même valeur que l'email sur le compte de test, connexion `curl` OK (302 → session). Vérifié `/station/395` (colonne "Marche depuis le quai" présente) et `/acces/6095` (128 m, ~3 min, "—" pour les champs vides) en production. Compte supprimé après vérification. |
-
 ## Session du 2026-08-15 (suite) — Points de vente (branche feature/points-de-vente)
 
 L'utilisateur a demandé de créer 4 branches (une par fichier restant identifié dans la fouille du
@@ -419,117 +416,5 @@ pas mergées sur main.
 | Script PHP inline (comptage URL dupliquées) | 57 doublons exacts sur 4507 lignes — dédupliqué par URL comme clé naturelle (le CSV source n'a pas d'id par document). |
 | `php bin/console app:importer-documents-lignes` (x2, vérif idempotence + timing) | ~7s. 3188 DocumentLigne créés (1262 ignorés : Ligne introuvable). Second passage : 0 création, 3188 mises à jour. |
 | Compte de test admin local + connexion JS | Vérifié `/document-ligne` (liste paginée) et `/ligne/1` (Métro 1) : section "Horaires et plans" n'affiche que le document réellement rattaché à cette Ligne précise ("Plan Métro 1"), confirmant que les entrées visuellement similaires (même badge "1") dans la liste globale appartiennent à d'autres Ligne homonymes (bus d'autres opérateurs), pas un bug de rattachement. Compte supprimé après vérification. |
-
-## Session du 2026-08-15 (suite) — PDF affichés directement sur le site (branche feature/horaires-lignes)
-
-| Commande | Objectif |
-|---|---|
-| `php bin/phpunit` (134 tests) | Tout passe. |
-| Compte de test admin local + connexion JS | Vérifié `/ligne/1` (le lien "Horaires et plans" pointe vers `/document-ligne/{id}`, plus vers le PDF brut) et `/document-ligne/1621` (objet PDF affiché directement, URL RATP correcte). Compte supprimé après vérification. |
-
-## Session du 2026-08-15 (suite) — Plans régionaux (branche feature/plans-regionaux)
-
-| Commande | Objectif |
-|---|---|
-| `php bin/console app:importer-plans-region` (x2, vérif idempotence) | 20 PlanRegion créés (dataset complet, pas de rattachement complexe nécessaire ici). Second passage : 0 création, 20 mises à jour. |
-| Compte de test admin local + connexion JS | Vérifié `/plan-region` (liste complète) et `/carte` (onglet "Carte des secteurs" : le select contient bien 2 `<optgroup>`, "Plans régionaux" avec 20 options et "Secteurs" avec 73). Compte supprimé après vérification. |
-
-## Session du 2026-08-15 (suite) — PDF affichés directement sur le site (branche feature/plans-regionaux)
-
-| Commande | Objectif |
-|---|---|
-| `php bin/phpunit` (134 tests) | Tout passe (pas de changement de schéma). |
-| Vérification manuelle du rendu Twig (`visionneuse_pdf.html.twig` inclus dans `plan_region/show.html.twig`) | Cohérent avec le même composant déjà vérifié sur `main` (`plan/show.html.twig`). |
-
-## Session du 2026-08-15 (suite) — Projets d'arrêts en projet (branche feature/projets-reseau)
-
-| Commande | Objectif |
-|---|---|
-| `WebFetch` sur l'API catalog IDFM (`.../api/explore/v2.1/catalog/datasets/projets_arrets_idf`) | Cherché une table de correspondance code→libellé pour `MODE_`/`SOUS_MODE`/`STATUT`/`PHASE` avant de coder l'import. Aucune trouvée dans les métadonnées publiées — seule certitude : `STATUT` va de 1 (études préalables) à 10 (mise en service). Décidé de stocker les codes bruts plutôt que d'inventer des libellés. |
-| `php bin/console app:importer-projets-arrets` | 404 ProjetArret créés (0 ignoré), reconstruction complète (pas de clé stable par ligne dans le CSV source). |
-| Compte de test admin local + connexion JS | Vérifié `/projet-arret` (liste paginée) et `/projet-arret/26` (TCSP Altival) : tous les champs corrects, lien OpenStreetMap fonctionnel sur les coordonnées. Compte supprimé après vérification. |
-
-## Session du 2026-08-15 (suite) — Merge des 4 branches feature dans main
-
-Demande utilisateur : merger `feature/points-de-vente`, `feature/horaires-lignes`,
-`feature/plans-regionaux`, `feature/projets-reseau` dans `main`, sans supprimer les branches.
-
-| Commande | Objectif |
-|---|---|
-| `git merge --no-ff feature/points-de-vente` (puis les 3 autres, une à une) | Conflits uniquement sur `documentation/TODO.md`/`commande.md` (entrées de log complémentaires, jamais contradictoires — simple concaténation) et `templates/menu/menu.html.twig` (2/4 merges : liens de nav de branches différentes sur la même ligne d'insertion, résolu en gardant les deux). `templates/carte/index.html.twig` et `templates/station/show.html.twig` se sont auto-mergés correctement (vérifié à la main : les deux `<optgroup>`/sections issues de branches différentes coexistent sans perte). |
-| `git push origin main` + `gh run watch` | CI verte (PHPUnit + Jest, donc les 4 branches + les fonctionnalités déjà sur `main` — PDF, pathways — cohabitent sans régression). Un premier essai du job de déploiement a échoué à "Preparer la cle SSH" (blip transitoire déjà rencontré) : `gh run rerun --failed` a suffi, tout est passé au vert ensuite. |
-| `ssh ... php bin/console app:importer-points-de-vente/app:importer-documents-lignes/app:importer-plans-region/app:importer-projets-arrets --env=prod` | Les 4 branches n'avaient jamais été déployées/importées en prod avant ce merge (voulu — "on mergera ensuite"). Résultats identiques au local : 2012 PointDeVente (1989 rattachés), 3188 DocumentLigne, 20 PlanRegion, 404 ProjetArret. |
-| Compte de test admin temporaire (avec `username` renseigné dès la création cette fois) + `curl` authentifié | Vérifié en production : `/station/1` (points de vente affichés), `/point-de-vente`, `/ligne/1` (section Horaires et plans), `/carte` (2 `<optgroup>`), `/projet-arret/26` (TCSP Altival, tous les champs corrects). Compte supprimé après vérification. |
-| `git branch` | Confirmé que les 4 branches existent toujours après le merge (non supprimées, comme demandé). |
-
-## Session du 2026-08-15 (suite) — URGENCE : crash mémoire sur /correspondance
-
-Signalé par l'utilisateur en cours de développement ("STOP TOUT !!!"), avec capture d'écran d'un
-500 sur `/correspondance` en production.
-
-| Commande | Objectif |
-|---|---|
-| `curl` local authentifié sur `/correspondance` | Reproduit immédiatement en local : `Fatal error: Allowed memory size ... exhausted` dans `PDO\Connection.php`. Cause : `CorrespondanceController::index()` chargeait la table entière (107000+ lignes, 12 jointures chacune) sans pagination. |
-| Lecture de `CorrespondanceRepository`/`CorrespondanceController` | Confirmé l'absence totale de pagination — même famille de bug que `TrajetFinder::construireGraphe()` déjà corrigé plus tôt dans le projet. `SortieController` a le même anti-pattern mais ne casse pas encore (2513 lignes seulement, noté dans TODO.md). |
-| Édition : `CorrespondanceRepository::creerRequeteAvecDetails()` retourne un `QueryBuilder` (plus `getResult()`), `CorrespondanceController::index()` utilise `PaginatorInterface` (50/page, comme le reste de l'app) | Corrige le chargement complet en mémoire. |
-| `curl` local re-test + `php bin/phpunit` (134 tests) | 200 OK, pagination visible, tout passe. |
-| `git push origin main` + `gh run watch` | CI et déploiement verts. Commit isolé (uniquement les 3 fichiers du correctif, sans mélanger avec le travail en cours sur les Sanitaires). |
-| `curl` authentifié en production sur `/correspondance` | 200 OK, 50 lignes + pagination visibles avec les vraies données de prod (107191 lignes). Compte de test supprimé après vérification. |
-
-## Session du 2026-08-15 (suite) — Sanitaires en station (entité `Sanitaire`)
-
-Reprise du TODO après l'urgence /correspondance ("np, allez! fais le todo!").
-
-| Commande | Objectif |
-|---|---|
-| `php bin/console doctrine:schema:update --dump-sql` (après création de l'entité) | Généré le SQL exact de création de table plutôt que deviner les noms de contrainte FK à la main. |
-| `php bin/console app:importer-sanitaires` | 60 Sanitaire créés, 60 rattachés à une Station à moins de 300m. |
-| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
-| Compte de test admin local + connexion JS | Vérifié `/sanitaire` (liste paginée), `/sanitaire/32` (fiche détail, "Station rattachée" correcte) et `/station/1` (section "Sanitaires à proximité" affichée avec badges "Accessible au public"/"PMR"). Compte supprimé après vérification. |
-
-## Session du 2026-08-15 (suite) — Défibrillateurs en station (entité `Defibrillateur`)
-
-| Commande | Objectif |
-|---|---|
-| `php bin/console app:importer-defibrillateurs` | 448 Defibrillateur créés (3 lignes sans coordonnées ignorées sur 451), 446 rattachés à moins de 300m. |
-| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
-| Compte de test admin local + connexion JS | Vérifié `/defibrillateur` (liste paginée) et `/station/1` (section "Défibrillateurs à proximité" affichée). Compte supprimé après vérification. |
-
-## Session du 2026-08-15 (suite) — Fontaines à eau en station (entité `FontaineEau`)
-
-| Commande | Objectif |
-|---|---|
-| Script PHP inline sur "id IDM de l'accès le plus proche" | Vérifié avant de coder que ce champ correspond exactement à `Acces::codeExterne` (ex: "50147895.0" -> "50147895" trouvé dans `acces`) : rattachement officiel possible, contrairement aux autres datasets d'équipements. 91/91 lignes ont ce champ rempli. |
-| `php bin/console app:importer-fontaines-eau` | 91 FontaineEau créés, 61 rattachés à un Acces officiel (30 référencent un codeExterne absent de notre table `acces`, écart de couverture entre exports). |
-| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
-| Compte de test admin local + connexion JS | Vérifié `/fontaine-eau` (liste paginée) et `/station/2` (section "Fontaines à eau" affichée). Compte supprimé après vérification. |
-
-## Session du 2026-08-15 (suite) — Enrichissement Materiel via Wikidata
-
-Demande utilisateur : auditer `Materiel`/`MaterielLigne`, récupérer vitesse/moteurs/etc via SPARQL.
-
-| Commande | Objectif |
-|---|---|
-| Requêtes SPARQL de calibration (`query.wikidata.org/sparql`) | Une première requête (classe Q928830 seule) a renvoyé des stations de métro coréennes — Q928830 = "metro station" générique, pas "station du métro parisien". Corrigé en filtrant par `P137=Q643290` (opéré par RATP) : 316 stations, résultats vérifiés cohérents (Denfert-Rochereau 1906, Daumesnil 1909...). |
-| Comptage `P149`/`P2043` sur les 316 stations | 2/316 ont un "style architectural" renseigné, 0/316 ont une longueur — confirmé que le style de quai (CMP/Nord-Sud/Motte/Mouton) et la longueur de quai ne sont pas exploitables via Wikidata (voir entrée TODO dédiée). |
-| Requêtes SQL inline sur `materiel_ligne` | Découvert 3 doublons `Materiel` (MS 61, RERng, Z2N, chacun avec 2 lignes séparées au lieu d'1 matériel + 2 MaterielLigne) — fusionnés (35 → 32 lignes). |
-| ~35 recherches Wikidata individuelles (`wbsearchentities` + lecture des claims bruts, jamais de requête SPARQL devinée pour les données finales) | Constructeur (P176) et vitesse max (P2052) trouvés pour 20/32 matériels. Vérifié explicitly que Q180154 = "kilometre per hour" après une incohérence d'unité dans deux résumés différents (un l'a étiqueté "km/h", l'autre "m/s" pour la même valeur). |
-| 12 recherches Wikidata (lignes de tram T1-T14, propriété P1619) | Dates d'entrée en service de `Citadis` remplies pour 13/14 lignes de tram (0/14 avant), cohérentes avec les faits connus. |
-| `php bin/console doctrine:schema:update --dump-sql` | Généré le SQL exact pour les 2 nouvelles colonnes `Materiel::constructeur`/`vitesseMaxKmh`. |
-| `php bin/phpunit` (134 tests) — échec inattendu (124 erreurs) | `Unknown column 't0.constructeur'` : la base `metroratp_test` (isolation Doctrine via `dbname_suffix: '_test'`, `config/packages/doctrine.yaml`) est une base MySQL séparée de `metroratp`, jamais synchronisée avec les migrations locales jusqu'ici. Corrigé en appliquant le même `ALTER TABLE` avec `--env=test`. Tout repasse au vert (134 tests + 51 Jest). |
-| Compte de test admin local + connexion JS | Vérifié `/materiel/16` (MS 61) : constructeur et vitesse (100 km/h) affichés correctement. Compte supprimé après vérification. |
-
-## Session du 2026-08-15/16 (suite) — Remplissage StyleStation (360 dessertes métro)
-
-Demande explicite de l'utilisateur malgré la constatation que Wikidata n'a pas cette donnée :
-dépouiller les articles Wikipédia individuels station par station.
-
-| Commande | Objectif |
-|---|---|
-| Export SQL des 360 dessertes métro sans style (`documentation/scripts/donnees-extraites/style_station_dessertes.tsv`) | Liste de travail : desserte_id, station, ligne. |
-| ~294 requêtes WebFetch (une par station, citation exacte exigée, distinction par ligne quand plusieurs) | Style trouvé et vérifié pour 234/360, laissé vide pour 126 (aucune mention explicite dans l'article, jamais deviné). 2 nouveaux styles découverts en cours de route (`Ouï-dire`, `Décor unique`) et ajoutés à `style_station`. |
-| Script PHP (`apply_style_batch.php`/`apply_style_batch_prod.php`, appliqués par lots de ~10 tout au long de la recherche, en local puis répliqués en prod via `scp`+SSH) | 234 `Desserte.styleStation` mis à jour en local et en prod, vérifié identique (même compte, même répartition par style). |
-| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe (aucun changement de code, uniquement des données). |
-| Vérification manuelle SQL sur Sèvres-Babylone (ligne 10 = renouveau du métro, ligne 12 = Nord Sud) et Nation (ligne 1 = Ouï-dire, lignes 2/6 = mouton, ligne 9 = renouveau du métro) | Conforme aux exemples donnés par l'utilisateur en début de demande. |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
