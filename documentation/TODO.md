@@ -32,11 +32,16 @@ piste concrète (ce serait une valeur par défaut déduite, pas une donnée sour
 
 ## Pistes de données IDFM non encore exploitées
 
-* `emplacement-des-gares-idf-data-generalisee.csv` (999 lignes) : une ligne par gare avec
-  `id_ref_ZdC`/`id_ref_ZdA` (mêmes clés que `relations.csv`), coordonnées (Geo Point + x/y
-  Lambert93), `exploitant`, et des indicateurs de mode (train/rer/metro/tramway/val) + terminus
-  par mode (`tertrain`/`terrer`/etc.). Source alternative de géoloc/exploitant par station à
-  croiser avec l'existant — vérifier si ça comble des trous plutôt que faire doublon.
+* `emplacement-des-gares-idf-data-generalisee.csv` — vérifié (2026-08-17), **pas exploitable pour
+  combler des trous** : sur les 999 gares du fichier, 996 correspondent déjà à une Station chez
+  nous par `code_externe` (coordonnées cohérentes avec les nôtres, écart de quelques dizaines de
+  mètres — source fiable mais redondante). Les 11 Station sans coordonnées ne sont tout simplement
+  pas dans ce fichier (11/11 absentes, aucune n'a pu être comblée). Pas de colonne ville/commune
+  dans ce fichier (donc inutile aussi pour les 571 Station sans `ville`). `exploitant` fait doublon
+  avec `Ligne.gestionnaire`, déjà modélisé. Les 3 gares du fichier sans correspondance chez nous
+  (Traité de Rome, Noveos, Louise Michel) sont des noms trop génériques pour matcher sans risque
+  (des dizaines d'homonymes dans des communes sans rapport, même phénomène que
+  "République"/"Gambetta" déjà rencontré). Rien à en tirer avec les données actuelles.
 * `transfers.txt` : déjà exploité (voir `documentation/commande.md`, 2026-08-17) — 205/505
   correspondances même-station à distance NULL affinées (9 via `code_externe` direct, 196 via un
   repli par nom sur jumeau non ambigu). Reste 300 correspondances : soit label ambigu (167,

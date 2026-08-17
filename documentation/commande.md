@@ -666,4 +666,19 @@ numero aussi ? enfin remplir tout ce que tu trouve sur les gtfs."
 | `php bin/phpunit` (134 tests) | Tout passe. |
 | Verification visuelle (Browser tool) : recherche "Nation" (17 resultats corrects, dont les 2 acces Guimard), inspection DOM directe de la pagination (`document.querySelectorAll('tbody tr').length` = 50, controle de pagination pages 1-51 present) | Confirme le correctif de bout en bout. |
 
+## Session du 2026-08-17 (suite) — emplacement-des-gares-idf-data-generalisee.csv : verifie, pas exploitable
+
+Demande utilisateur : "continu la prochaine tache si celle ci est fini" — tache id=4 choisie
+(la plus petite/sure du backlog restant, les deux plus grosses — fusion Stations dupliquees et
+topologie bus ~1300 lignes — restant explicitement hors de portee d'un seul passage).
+
+| Commande | Objectif |
+|---|---|
+| Comparaison des 999 `id_ref_ZdC` du fichier contre `station.code_externe` | 996/999 trouvent deja une Station chez nous. Coordonnees comparees sur 2 exemples (Torcy, Lagny-Thorigny) : ecart de quelques dizaines de metres avec nos coordonnees existantes — source coherente et fiable, mais totalement redondante. |
+| Recherche des Station sans coordonnees (`latitude IS NULL`, 174 au total) croisees avec ce fichier | 163/174 n'ont pas de `code_externe` (meme probleme "Stations dupliquees" que d'habitude, matching par nom risque, pas tente). Les 11 restantes (avec `code_externe`, ex. Concorde, Hotel de Ville, Villiers, Colonel Fabien...) ont ete cherchees UNE PAR UNE dans le fichier par leur `code_externe` : **aucune des 11 n'y figure**. Le fichier ne comble donc aucun des trous de coordonnees actuels. |
+| Verification de la colonne "ville" | Le fichier n'a **aucune colonne ville/commune** (verifie sur l'en-tete complet) — ne peut pas non plus combler les 571 Station sans `ville`. |
+| Verification des 3 gares du fichier sans correspondance chez nous (Traite de Rome, Noveos, Louise Michel) | Recherche par nom : les 3 existent en base sous de multiples homonymes dans des communes sans rapport (ex. "Louise Michel" : 8 candidats differents) — meme phenomene que "Republique"/"Gambetta" deja documente pour transfers.txt. Pas de match sur sans ambiguite tente, conformement a la discipline etablie. |
+| `exploitant` (colonne du fichier) | Fait doublon avec `Ligne.gestionnaire`, deja modelise a un niveau plus pertinent (par ligne, pas par station). |
+| `documentation/TODO.md` | Section reecrite : conclusion honnete que ce fichier n'apporte rien d'exploitable avec l'etat actuel des donnees, pour eviter qu'une session future ne re-instruise la meme question. Aucun code ecrit — l'investigation elle-meme est la tache. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
