@@ -135,13 +135,23 @@ commune" avec des lignes Transilien pas encore modélisées : Z 5600/8800/20500/
 la **ligne V**, Z 57000/57400 (RER D) avec la **ligne R**, Z 50000 (RER E) avec la **ligne P**. Si
 on veut représenter fidèlement ce lien un jour, il faudra créer ces 3 lignes Transilien (SNCF).
 
-## Ligne.codeExterne incohérent pour le métro — vrai nettoyage pas fait
+## Ligne.codeExterne incohérent pour le métro — fait (2026-08-17)
 
-Nos Ligne de métro "doublons" (créées par `app:importer-reseau-complet`, même phénomène que les
-Stations dupliquées ci-dessus, mais sur `Ligne`) ont un `codeExterne` qui ne correspond plus au
-GTFS actuel : ex. notre ligne "7" (id avec codeExterne) pointe vers `C00312`, qui est en réalité
-dans le GTFS courant une ligne de BUS renommée "6402 (ex 7)" — vraisemblablement un résidu d'un
-très ancien import, jamais nettoyé. Contourné ponctuellement (rattachement par label) dans
-`app:construire-positions-rame` et `app:importer-traces-lignes`, mais pas corrigé à la source :
-toute future fonctionnalité qui matche une Ligne de métro par `codeExterne` tombera dans le même
-piège. `referentiel-des-lignes.csv` (pas encore utilisé) est une piste pour un vrai nettoyage.
+Voir `documentation/commande.md` pour le détail. Au moment d'y regarder, les 16 `Ligne` de métro
+avaient en fait `codeExterne` NULL (pas une valeur fausse comme le laissait entendre l'ancienne
+note ci-dessous — les doublons décrits avaient déjà été nettoyés dans une session antérieure, sans
+que `codeExterne` soit repeuplé derrière). Rempli via `referentiel-des-lignes.csv` (16/16 labels
+sans ambiguïté, recoupé indépendamment avec `routes.txt` GTFS `route_type=1`). Un vrai risque de
+régression a été trouvé et corrigé au passage : `app:construire-positions-rame` désambiguïsait un
+label de ligne partagé avec des lignes de bus homonymes (ex. bus "7") en préférant la `Ligne` sans
+`codeExterne` — un signal qui devenait faux et dangereux une fois `codeExterne` rempli pour de bon.
+Remplacé par un filtre explicite sur `TypeTransport = 'Métro'`. `app:importer-traces-lignes` et
+`app:importer-documents-lignes` utilisaient le même repli par label mais seulement en solution de
+secours après un essai par `codeExterne` : celui-ci fonctionne maintenant directement pour le
+métro, le repli fragile n'est simplement plus jamais atteint pour ces lignes (pas de changement de
+code nécessaire). Effet de bord positif constaté : 2 `DocumentLigne` auparavant mal rattachés à une
+ligne de métro (probablement via l'ancien repli fragile) se sont correctement rattachés à leur
+vraie ligne lors du réimport.
+
+Note découverte au passage, hors périmètre de cette tâche : les lignes de métro 15 et 18 (déjà
+dans `referentiel-des-lignes.csv`/GTFS actuel) ne sont pas encore importées dans la base.

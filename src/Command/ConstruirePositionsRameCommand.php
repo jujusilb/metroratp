@@ -65,16 +65,20 @@ class ConstruirePositionsRameCommand extends Command
 
         $io->section('Chargement des Stations (par codeExterne), Lignes (par label) et Acces (par codeExterne)...');
         $stationIdParZdc = $this->stationRepository->trouverIdCanoniqueParZdc();
-        // Par label, pas par codeExterne : le codeExterne stocke sur les Ligne de metro est
-        // incoherent avec le GTFS actuel (voir docblock de la commande). En cas de doublon de
-        // label (metro : Ligne "originale" + doublons crees par l'import complet, voir TODO.md),
-        // on prefere la ligne sans codeExterne (l'originale, celle reellement utilisee par les
-        // Desserte/Troncon existants).
+        // Par label, pas par codeExterne : conseils_position.csv ne fournit qu'un label de ligne
+        // ("7", "13"...), jamais de codeExterne. Ce label existe UNIQUEMENT chez le metro (16
+        // labels distincts verifies dans le CSV source), mais le meme label existe aussi sur des
+        // lignes de bus homonymes sans rapport (ex: bus "7") : on ne prefere donc pas "la ligne
+        // sans codeExterne" (fragile depuis que Ligne.codeExterne metro est rempli, voir TODO.md)
+        // mais explicitement le Type de transport "Métro".
         $ligneIdParLabel = [];
-        foreach ($connexion->executeQuery('SELECT UPPER(label) AS label, id, code_externe FROM ligne ORDER BY (code_externe IS NULL) DESC')->iterateAssociative() as $row) {
-            if (!isset($ligneIdParLabel[$row['label']])) {
-                $ligneIdParLabel[$row['label']] = (int) $row['id'];
-            }
+        foreach ($connexion->executeQuery(
+            "SELECT UPPER(l.label) AS label, l.id
+             FROM ligne l
+             JOIN type_transport tt ON tt.id = l.type_transport_id
+             WHERE tt.label = 'Métro'"
+        )->iterateAssociative() as $row) {
+            $ligneIdParLabel[$row['label']] = (int) $row['id'];
         }
         $accesIdParCode = [];
         foreach ($connexion->executeQuery('SELECT code_externe, id FROM acces WHERE code_externe IS NOT NULL')->iterateAssociative() as $row) {
