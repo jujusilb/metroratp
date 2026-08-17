@@ -23,9 +23,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Construit les troncons/directions/missions des RER A/B/D/E, dont les lignes/stations/dessertes
+ * Construit les troncons/directions/missions des RER A/B/C/D/E, dont les lignes/stations/dessertes
  * existent deja (app:importer-lignes-rer) mais n'avaient jusqu'ici AUCUN troncon (voir
  * documentation/TODO.md) : chaque station RER etait une ile isolee dans le graphe de trajet.
+ *
+ * La ligne C (documentation/scripts/extraire_troncons_rer_c.php, fichier separe car extrait plus
+ * tard que A/B/D/E) est un cas particulier : sa reduction geometrique brute laissait 10 aretes en
+ * trop (84 au lieu des 74 attendues pour un arbre a 75 stations), a cause de plusieurs missions
+ * semi-directes qui se chevauchent sur le corridor Paris<->Choisy-le-Roi (Ivry/Vitry/Ardoines) avec
+ * des sauts de longueurs differentes — l'algorithme "plus long d'abord" (valide sur A/B/D/E) se
+ * faisait tromper par un raccourci non encore retire servant de faux chemin alternatif court. Voir
+ * le script pour l'algorithme "plus court d'abord, contre un graphe deja confirme" qui corrige ca.
+ * Une fois corrige, la ligne C est un arbre pur (verifie : 74 troncons = 75 stations - 1, aucun
+ * maillage comme celui de D), avec 6 vrais terminus (confirmes contre le plan officiel,
+ * documentation/PLAN/plan-de-ligne_rer_ligne-c.*.png) : Pontoise, Versailles-Chateau-Rive-Gauche,
+ * Saint-Quentin-en-Yvelines, Massy-Palaiseau, Saint-Martin-d'Etampes, Dourdan-la-Foret.
  *
  * Topologie extraite du GTFS complet (documentation/scripts/extraire_troncons_rer.py) : contrairement
  * aux trams (trip_headsign = vrai nom de destination), le RER utilise des codes mission SNCF/RATP
@@ -50,10 +62,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *
  * A usage unique : refuse de s'executer si une ligne a deja des troncons.
  */
-#[AsCommand(name: 'app:construire-topologie-rer', description: 'Construit les troncons/missions des RER A/B/D/E (hors maillage Evry/Corbeil/Juvisy sur D)')]
+#[AsCommand(name: 'app:construire-topologie-rer', description: 'Construit les troncons/missions des RER A/B/C/D/E (hors maillage Evry/Corbeil/Juvisy sur D)')]
 class ConstruireTopologieRerCommand extends Command
 {
-    private const TRONCONS_CSV = 'documentation/scripts/donnees-extraites/troncons_rer.csv';
+    /** @var string[] fichiers a fusionner (memes colonnes) : A/B/D/E extraits ensemble, C separement */
+    private const TRONCONS_CSV = [
+        'documentation/scripts/donnees-extraites/troncons_rer.csv',
+        'documentation/scripts/donnees-extraites/troncons_rer_c.csv',
+    ];
 
     /**
      * Paires manuelles (nom GTFS => label DB) : memes lieux reels, noms trop differents pour la
@@ -63,12 +79,16 @@ class ConstruireTopologieRerCommand extends Command
     private const ASSOCIATIONS_MANUELLES = [
         'Aéroport CDG 1 (Terminal 3)' => 'Aéroport CDG 1 (Terminal 3) - RER',
         'Aéroport CDG - Terminal 2 (TGV)' => 'Aéroport Charles de Gaulle 2 (Terminal 2)',
+        // Ligne C : nom GTFS actuel different du nom stocke lors de l'import initial (meme lieu reel).
+        'Chamarande' => 'Gare de Chamarande',
+        'Thiais - Orly (Pont de Rungis)' => 'Pont de Rungis Aéroport d\'Orly',
     ];
 
     /** @var string[] codeExterne (route_id IDFM) de chaque ligne, voir backfill du 2026-08-09 */
     private const LIGNES_CODES = [
         'A' => 'C01742',
         'B' => 'C01743',
+        'C' => 'C01727',
         'D' => 'C01728',
         'E' => 'C01729',
     ];
@@ -117,14 +137,14 @@ class ConstruireTopologieRerCommand extends Command
 
         [$adjacence, $duree] = $this->chargerGraphe();
 
-        foreach (['A', 'B', 'E'] as $label) {
+        foreach (['A', 'B', 'C', 'E'] as $label) {
             $this->construireArbreSimple($io, $label, $adjacence[$label] ?? [], $duree[$label] ?? [], $dessertesParZdc[$label] ?? []);
         }
 
         $this->construireRerD($io, $adjacence['D'] ?? [], $duree['D'] ?? [], $dessertesParZdc['D'] ?? []);
 
         $this->entityManager->flush();
-        $io->success(sprintf('Topologie des RER A/B/D/E construite : %d troncons au total (hors maillage Evry/Corbeil/Juvisy sur D, voir TODO.md).', $this->nbTronconsCrees));
+        $io->success(sprintf('Topologie des RER A/B/C/D/E construite : %d troncons au total (hors maillage Evry/Corbeil/Juvisy sur D, voir TODO.md).', $this->nbTronconsCrees));
 
         return Command::SUCCESS;
     }
@@ -195,14 +215,16 @@ class ConstruireTopologieRerCommand extends Command
     private function chargerNomsParZdc(): array
     {
         $resultat = [];
-        $fichier = fopen(self::TRONCONS_CSV, 'r');
-        fgetcsv($fichier); // en-tete
-        while (false !== ($ligneCsv = fgetcsv($fichier))) {
-            [$routeLabel, $zdcA, $zdcB, $nomA, $nomB] = $ligneCsv;
-            $resultat[$routeLabel][$zdcA] = $nomA;
-            $resultat[$routeLabel][$zdcB] = $nomB;
+        foreach (self::TRONCONS_CSV as $chemin) {
+            $fichier = fopen($chemin, 'r');
+            fgetcsv($fichier); // en-tete
+            while (false !== ($ligneCsv = fgetcsv($fichier))) {
+                [$routeLabel, $zdcA, $zdcB, $nomA, $nomB] = $ligneCsv;
+                $resultat[$routeLabel][$zdcA] = $nomA;
+                $resultat[$routeLabel][$zdcB] = $nomB;
+            }
+            fclose($fichier);
         }
-        fclose($fichier);
 
         return $resultat;
     }
@@ -216,20 +238,22 @@ class ConstruireTopologieRerCommand extends Command
         $adjacence = [];
         $duree = [];
 
-        $fichier = fopen(self::TRONCONS_CSV, 'r');
-        fgetcsv($fichier); // en-tete
-        while (false !== ($ligneCsv = fgetcsv($fichier))) {
-            [$routeLabel, $zdcA, $zdcB, , , $dureeMediane] = $ligneCsv;
+        foreach (self::TRONCONS_CSV as $chemin) {
+            $fichier = fopen($chemin, 'r');
+            fgetcsv($fichier); // en-tete
+            while (false !== ($ligneCsv = fgetcsv($fichier))) {
+                [$routeLabel, $zdcA, $zdcB, , , $dureeMediane] = $ligneCsv;
 
-            $adjacence[$routeLabel][$zdcA][] = $zdcB;
-            $adjacence[$routeLabel][$zdcB][] = $zdcA;
+                $adjacence[$routeLabel][$zdcA][] = $zdcB;
+                $adjacence[$routeLabel][$zdcB][] = $zdcA;
 
-            if ('' !== $dureeMediane) {
-                $duree[$routeLabel][$zdcA.'|'.$zdcB] = (int) $dureeMediane;
-                $duree[$routeLabel][$zdcB.'|'.$zdcA] = (int) $dureeMediane;
+                if ('' !== $dureeMediane) {
+                    $duree[$routeLabel][$zdcA.'|'.$zdcB] = (int) $dureeMediane;
+                    $duree[$routeLabel][$zdcB.'|'.$zdcA] = (int) $dureeMediane;
+                }
             }
+            fclose($fichier);
         }
-        fclose($fichier);
 
         return [$adjacence, $duree];
     }

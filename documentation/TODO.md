@@ -51,23 +51,17 @@ shelter/tactile_paving par ArT), `sdap-arrets-associes.csv` (équipements SDAP d
 arrêt/ligne), et `relations.csv` (chaîne complète PdE→ZdC→ZdA→ArR→ArT avec géométrie à chaque
 niveau, pour rattacher proprement un ArT à sa Station). Pas commencé.
 
-## Lignes à embranchements complexes (RER C notamment)
+## Lignes à embranchements complexes
 
-Le modèle actuel (`Direction` = un par terminus réel, `numero` = position du tronçon,
-réutilisée par toutes les directions qui le traversent) fonctionne pour un simple Y
-(vérifié sur les trams T4 et T8 : tronc commun + 2 branches). Mais il n'a pas encore été
-mis à l'épreuve d'un **arbre à plusieurs niveaux** (branches qui se subdivisent elles-mêmes,
-des deux côtés), typiquement la **RER C** qui a environ 8 branches côté sud et plusieurs
-côté nord/ouest.
-
-Le mécanisme lui-même devrait tenir (voir échange du 2026-08-08) : `Direction` par terminus
-quel que soit le nombre de bifurcations en chemin, `numero` assigné une fois par tronçon
-via un parcours systématique de l'arbre (ex: BFS depuis Gare d'Austerlitz), réutilisé par
-toutes les directions qui empruntent ce tronçon. La vraie difficulté est la **reconnaissance**
-(cartographier correctement toutes les bifurcations et tous les terminus réels avant de coder),
-pas le modèle de données.
-
-À traiter quand on s'attaquera à la RER C (ou toute autre ligne à embranchements profonds).
+**RER C : fait (2026-08-17)**, voir `documentation/commande.md` pour le détail. Le mécanisme
+`Direction`/tronçon (un par terminus réel, parcours récursif de l'arbre) a tenu tel quel pour un
+arbre à plusieurs niveaux — 75 stations, 74 tronçons (arbre pur, aucun maillage contrairement au
+RER D), 6 vrais terminus, 4 embranchements (Brétigny, Viroflay Rive Gauche, Choisy-le-Roi, Champ
+de Mars Tour Eiffel). La vraie difficulté n'était pas le modèle de données mais la
+**reconnaissance** : la réduction géométrique automatique (retire les raccourcis de missions
+semi-directes) laissait 10 fausses arêtes en trop sur le corridor Paris-Choisy-le-Roi à cause de
+plusieurs niveaux de missions qui se chevauchent — corrigé en changeant l'algorithme de "plus long
+d'abord" à "plus court d'abord contre un graphe déjà confirmé", plus robuste contre ce cas.
 
 **RER D, zone Évry/Corbeil/Juvisy (découvert le 2026-08-09)** : pas un simple aller-retour mais
 un vrai maillage local avec au moins 2 cycles indépendants (Villeneuve-Saint-Georges ↔
