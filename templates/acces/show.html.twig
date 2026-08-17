@@ -24,6 +24,18 @@
                     <th>Accessible</th>
                     <td>{{ acce.isAccessible ? 'Oui' : 'Non' }}</td>
                 </tr>
+                <tr>
+                    <th>Style</th>
+                    <td>
+                        {% if acce.styleAcces %}
+                            <a href="{{ path('app_style_acces_show', {'id': acce.styleAcces.id}) }}" class="link-body-emphasis">
+                                {{ acce.styleAcces.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
             </tbody>
         </table>
 

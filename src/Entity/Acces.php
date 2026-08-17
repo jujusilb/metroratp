@@ -89,6 +89,9 @@ class Acces
     #[ORM\Column(nullable: true)]
     private ?bool $cheminementBidirectionnel = null;
 
+    #[ORM\ManyToOne(inversedBy: 'acces')]
+    private ?StyleAcces $styleAcces = null;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -293,6 +296,18 @@ class Acces
     public function setCheminementBidirectionnel(?bool $cheminementBidirectionnel): static
     {
         $this->cheminementBidirectionnel = $cheminementBidirectionnel;
+
+        return $this;
+    }
+
+    public function getStyleAcces(): ?StyleAcces
+    {
+        return $this->styleAcces;
+    }
+
+    public function setStyleAcces(?StyleAcces $styleAcces): static
+    {
+        $this->styleAcces = $styleAcces;
 
         return $this;
     }

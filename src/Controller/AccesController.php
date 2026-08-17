@@ -18,7 +18,9 @@ final class AccesController extends AbstractController
     #[Route(name: 'app_acces_index', methods: ['GET'])]
     public function index(Request $request, AccesRepository $accesRepository, PaginatorInterface $paginator): Response
     {
-        $qb = $accesRepository->createQueryBuilder('a')->orderBy('a.label', 'ASC');
+        $qb = $accesRepository->createQueryBuilder('a')
+            ->leftJoin('a.styleAcces', 'styleAcces')->addSelect('styleAcces')
+            ->orderBy('a.label', 'ASC');
 
         return $this->render('acces/index.html.twig', [
             'acces' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),

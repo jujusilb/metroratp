@@ -1,0 +1,6 @@
+{% if is_granted('ROLE_ADMIN') %}
+<form method="post" action="{{ path('app_style_acces_delete', {'id': style_acces.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ style_acces.id) }}">
+    <button class="btn btn-danger">Supprimer</button>
+</form>
+{% endif %}

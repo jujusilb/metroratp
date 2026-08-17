@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Acces;
+use App\Entity\StyleAcces;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -15,6 +17,12 @@ class AccesType extends AbstractType
             ->add('label')
             ->add('numero')
             ->add('isAccessible')
+            ->add('styleAcces', EntityType::class, [
+                'class' => StyleAcces::class,
+                'label' => "Style d'accès",
+                'required' => false,
+                'placeholder' => '-- Aucun --',
+            ])
         ;
     }
 

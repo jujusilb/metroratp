@@ -4,13 +4,31 @@ Historique complet (tâches achevées, avec leur contexte technique détaillé) 
 (base de données, réservé `ROLE_ADMIN`) le 2026-08-16 — voir `documentation/commande.md` pour le
 détail de cette migration. Ce fichier ne garde désormais que ce qui reste réellement à faire.
 
-## Style physique des Acces (demandé le 2026-08-15, pas commencé)
+## Style physique des Accès — Guimard fait (2026-08-17), escalator/mât toujours sans source
 
-Demande utilisateur : pour chaque Acces, indiquer s'il y a un escalator, un édicule Guimard, un
-mât, ou un autre style d'entrée reconnaissable. Jamais commencé — probable faible rendement sur
-Wikidata (constaté en marge du travail sur `StyleStation` : un seul édicule d'entrée dans tout
-Wikidata porte à la fois `P84`=Guimard et `P31`=entrée de station). À vérifier plus sérieusement
-avant de conclure que la piste n'est pas exploitable.
+Voir `documentation/commande.md` pour le détail. `StyleAcces` créée (même schéma que
+`StyleStation`) avec CRUD complet, `Acces.styleAcces` ajouté.
+
+**Édicule Guimard** : le constat Wikidata initial était juste (confirmé : un seul accès individuel
+avec `P84`=Guimard + `P31`=entrée), mais une bien meilleure source existe — un annuaire
+patrimonial listant les 88 édicules Guimard classés/inscrits monuments historiques à Paris
+(6 stations à édicule complet protégées dès 1965 : Cité, Porte Dauphine, Abbesses, Pigalle,
+Ternes, Tuileries ; le reste par décret collectif de 1978). **22 Acces tagués avec certitude**
+(sur 64 stations candidates) : le reste a soit plusieurs Acces sans détail suffisant dans la
+source pour savoir lequel est le vrai édicule (ex. Châtelet 11 accès, Bastille 9, République 12 —
+y compris des stations emblématiques comme Porte Dauphine ou Abbesses côté "plusieurs accès"),
+soit carrément aucun Acces enregistré (lacune de données préexistante sur Saint-Lazare,
+Saint-Michel, Quatre-Septembre, Colonel Fabien, Villiers, Chardon-Lagache, Louvre—Rivoli,
+Palais Royal—Musée du Louvre, Réaumur—Sébastopol, Barbès—Rochechouart — 10 stations). Découverte
+au passage : la station de métro "Wagram" (ligne 3, existe réellement) est totalement absente de
+la base, ni comme Station complète ni comme Desserte — vraie lacune, pas liée à cette tâche.
+
+**Escalator/mât** : toujours aucune source exploitable. GTFS `pathways.txt` ne distingue pas les
+modes (tout en `pathway_mode=1` générique). OpenStreetMap interrogé en direct (Overpass API, après
+plusieurs miroirs indisponibles/en timeout — `lz4.overpass-api.de` a fini par répondre) : sur toute
+l'Île-de-France, seulement 4 entrées de métro ont un tag `escalator` renseigné, et les 4 valent
+"no" — aucun "yes" trouvé, tagging quasi inexistant sur ce point précis. `mât` n'a jamais eu de
+piste concrète (ce serait une valeur par défaut déduite, pas une donnée sourcée).
 
 ## Pistes de données IDFM non encore exploitées
 

@@ -12,6 +12,7 @@
                     <th>{{ knp_pagination_sortable(acces, 'Label', 'a.label') }}</th>
                     <th>{{ knp_pagination_sortable(acces, 'Numéro', 'a.numero') }}</th>
                     <th>{{ knp_pagination_sortable(acces, 'Accessible PMR', 'a.isAccessible') }}</th>
+                    <th>{{ knp_pagination_sortable(acces, 'Style', 'styleAcces.label') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -28,6 +29,15 @@
                         {% endif %}
                     </td>
                     <td>
+                        {% if acce.styleAcces %}
+                            <a href="{{ path('app_style_acces_show', {'id': acce.styleAcces.id}) }}" class="link-body-emphasis">
+                                {{ acce.styleAcces.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
                         <a href="{{ path('app_acces_show', {'id': acce.id}) }}" class="btn btn-info btn-sm">Affichage</a>
                         {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('app_acces_edit', {'id': acce.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
@@ -36,7 +46,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="4">Aucun enregistrement trouvé</td>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
                 </tr>
             {% endfor %}
             </tbody>
