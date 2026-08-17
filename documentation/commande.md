@@ -681,4 +681,23 @@ topologie bus ~1300 lignes — restant explicitement hors de portee d'un seul pa
 | `exploitant` (colonne du fichier) | Fait doublon avec `Ligne.gestionnaire`, deja modelise a un niveau plus pertinent (par ligne, pas par station). |
 | `documentation/TODO.md` | Section reecrite : conclusion honnete que ce fichier n'apporte rien d'exploitable avec l'etat actuel des donnees, pour eviter qu'une session future ne re-instruise la meme question. Aucun code ecrit — l'investigation elle-meme est la tache. |
 
+## Session du 2026-08-17 (suite) — TrajetFinder ne changeait jamais de mode depuis un bus
+
+Demande utilisateur : trajet reel attendu ("Les Coquettes" bus 131 au Kremlin-Bicêtre vers "Les
+Mousquetaires" bus 206 a Villiers-sur-Marne, en passant par metro 7 puis RER A) mais obtenu
+"si on prend le bus, il ne nous montre QUE du bus".
+
+| Commande | Objectif |
+|---|---|
+| Lecture de `TrajetFinder.php`/`TrajetController.php` | Algorithme et filtrage de modes corrects (Dijkstra multi-source generique, modes selectionnes via checkboxes, tout coche par defaut) — pas de bug evident dans le code de calcul lui-meme. |
+| Investigation concrete sur l'exemple de l'utilisateur : `station.label LIKE '%Coquettes%'` puis ses `Correspondance` | "Les Coquettes" (bus 131) n'a de Correspondance qu'avec d'autres arrets de bus proches (Chastenet de Géry, Rue des Guipons, Paul Lafarge) — aucune vers "Le Kremlin-Bicêtre". |
+| Recherche de "Le Kremlin-Bicêtre" en base | Confirme le phenomene "Stations dupliquees" deja documente : Station id=159 (sans `code_externe`, porte l'UNIQUE Desserte metro ligne 7) et Station id=20522 (avec `code_externe`, porte 6 Desserte de bus). Toutes les `Correspondance` existantes pour ce lieu sont rattachees a id=20522 (bus<->bus uniquement) — id=159 (le metro) n'a AUCUNE correspondance du tout. Les deux Station ne se rencontrent jamais dans le graphe de `TrajetFinder`. |
+| Mesure de l'ampleur reelle | 512 Station "historiques" (`code_externe` NULL) portent une Desserte metro/RER/tram. Parmi elles, 358 ont exactement une jumelle GTFS (`code_externe` NOT NULL, meme label) identifiable sans ambiguite ; 74 ont plusieurs jumeaux possibles (labels generiques, ignores) ; 80 n'ont aucune jumelle trouvee. |
+| `ConstruireCorrespondancesInterModesCommand` (existant, relit son docblock) | Relie deja les modes LOURDS (metro/RER/tram) partageant un label, mais explicitement PAS le bus ("Volontairement limite a Metro/Tramway/RER") — confirme que le trou est specifiquement bus<->lourd, jamais couvert jusqu'ici. |
+| `src/Command/ConstruireCorrespondancesStationsDupliqueesCommand.php` (nouveau) : pour chaque Station historique a desserte lourde avec exactement une jumelle GTFS non ambigue, cree une Correspondance entre CHAQUE Desserte de l'historique et CHAQUE Desserte de la jumelle (tous modes, bus compris), `inZone=true`, distance non renseignee (retombe sur l'estimation par defaut de TrajetFinder) | Meme discipline de securite que partout ailleurs cette session : uniquement les labels a UN SEUL candidat jumeau, jamais de rapprochement ambigu. Alternative bien moins risquee que fusionner les ~486 paires de Station (`FusionnerStations`, tache id=10, toujours volontairement pas faite). |
+| `php bin/console app:construire-correspondances-stations-dupliquees` (local) | 3071 correspondances creees, pontant 358 Station historiques (74 labels ambigus et 80 sans jumelle ignores, comme prevu). |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
+| Verification en conditions reelles (Browser tool) : `/trajet?origine=21621&destination=22545` (Les Coquettes -> Les Mousquetaires, tous modes coches) | **Avant** : uniquement du bus (non re-teste explicitement, mais impossible autrement vu l'absence totale de correspondance sortante du metro a Kremlin-Bicêtre). **Apres** : 64.5 min, 5 correspondances, changement de mode reel — bus 131 -> métro 7 -> métro 14 -> RER A -> RER E -> bus 207. Confirme le correctif. |
+| `documentation/TODO.md` | Section "Stations dupliquées" mise a jour : impact concret documente, contournement complementaire explique, la vraie correction (fusion des Station) reste ouverte (tache id=10). |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

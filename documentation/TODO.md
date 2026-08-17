@@ -104,9 +104,22 @@ ZdCId officiel une fois résolu, mais deux lignes `Station` distinctes (l'origin
 d'origine est concerné, pas seulement les gros hubs.
 
 Contournement en place : `ConstruireCorrespondancesInterModesCommand` regroupe par **label** de
-station plutôt que par id, donc les correspondances fonctionnent malgré les doublons. Mais le
-problème de fond reste : toute future fonctionnalité qui regroupe par `Station` (pas par label)
-tombera dans le même piège.
+station plutôt que par id, donc les correspondances entre modes LOURDS (métro/RER/tram) fonctionnent
+malgré les doublons. Mais le problème de fond reste : toute future fonctionnalité qui regroupe par
+`Station` (pas par label) tombera dans le même piège.
+
+**Impact concret trouvé le 2026-08-17** : ce contournement ne couvrait jamais le bus, ce qui
+cassait silencieusement tout trajet censé changer de mode bus↔métro/RER/tram — signalé par
+l'utilisateur (`/trajet` ne proposait jamais de sortir du bus). Cause : la Station "originale"
+porte la vraie Desserte métro/RER/tram (et toute sa topologie de Troncon), la Station "doublon
+GTFS" porte toutes les Correspondance construites depuis transfers.txt (bus compris, puisque leur
+construction a besoin d'un `code_externe`) — les deux ne se rencontrent jamais dans le graphe.
+Nouveau contournement complémentaire : `app:construire-correspondances-stations-dupliquees` relie
+chaque Desserte de la Station originale à chaque Desserte de sa jumelle GTFS quand le label
+correspond à exactement une seule jumelle (358/512 stations concernées, 3071 correspondances
+créées ; 74 labels ambigus et 80 sans jumelle laissés de côté, même discipline que partout ailleurs
+cette session). Restaure le changement de mode bus↔lourd sans fusionner les Station. Vérifié en
+conditions réelles : Kremlin-Bicêtre (bus 131) → métro 7 → métro 14 → RER A → RER E → bus 207.
 
 Vraie correction : fusionner ces ~486 paires de `Station` dupliquées (réassigner toutes les FK —
 `Desserte`, `TronconDesserte`, `Direction`, `Correspondance`, `Sortie` — de l'originale vers la
