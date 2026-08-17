@@ -34,11 +34,21 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * la meme ligne physique, ce qui rendrait la cle "route_label" du CSV RATP ambigue ici.
  *
  * A usage unique par ligne : ignore une ligne qui a deja des troncons.
+ *
+ * Lit plusieurs fichiers CSV (memes colonnes) : le premier pour les lignes 20-100 hors RATP,
+ * le second pour le reste de la plage 101-299 hors RATP (ATM Croix du Sud, Keolis Grand Paris
+ * Vallee de la Marne, ligne 282 — voir extraire_troncons_bus_101_299_restant.php et TODO.md).
+ * Fichiers separes plutot que fusionner dans le premier, pour ne pas re-generer des donnees deja
+ * verifiees (meme convention que pour troncons_rer.csv/troncons_rer_c.csv).
  */
-#[AsCommand(name: 'app:construire-topologie-bus-autres-operateurs', description: 'Construit les troncons des lignes de bus 20-100 hors RATP depuis troncons_bus_autres_operateurs.csv')]
+#[AsCommand(name: 'app:construire-topologie-bus-autres-operateurs', description: 'Construit les troncons des lignes de bus hors RATP (20-100 et 101-299 restant) depuis les CSV extraits')]
 class ConstruireTopologieBusAutresOperateursCommand extends Command
 {
-    private const TRONCONS_CSV = 'documentation/scripts/donnees-extraites/troncons_bus_autres_operateurs.csv';
+    /** @var string[] */
+    private const TRONCONS_CSV = [
+        'documentation/scripts/donnees-extraites/troncons_bus_autres_operateurs.csv',
+        'documentation/scripts/donnees-extraites/troncons_bus_101_299_restant.csv',
+    ];
 
     private TypeDesserte $depart;
     private TypeDesserte $arrivee;
@@ -76,37 +86,39 @@ class ConstruireTopologieBusAutresOperateursCommand extends Command
         $nbTronconsTotal = 0;
         $nbIgnores = 0;
 
-        $fichier = fopen(self::TRONCONS_CSV, 'r');
-        fgetcsv($fichier); // en-tete
-        while (false !== ($ligneCsv = fgetcsv($fichier))) {
-            [$codeExterne, $zdcA, $zdcB, $nomA, $nomB, $dureeMediane] = $ligneCsv;
+        foreach (self::TRONCONS_CSV as $chemin) {
+            $fichier = fopen($chemin, 'r');
+            fgetcsv($fichier); // en-tete
+            while (false !== ($ligneCsv = fgetcsv($fichier))) {
+                [$codeExterne, $zdcA, $zdcB, $nomA, $nomB, $dureeMediane] = $ligneCsv;
 
-            if (!isset($lignesDejaVues[$codeExterne])) {
-                $lignesDejaVues[$codeExterne] = $this->preparerLigne($io, $codeExterne);
-            }
-            $ligne = $lignesDejaVues[$codeExterne];
-            if (null === $ligne) {
-                continue;
-            }
+                if (!isset($lignesDejaVues[$codeExterne])) {
+                    $lignesDejaVues[$codeExterne] = $this->preparerLigne($io, $codeExterne);
+                }
+                $ligne = $lignesDejaVues[$codeExterne];
+                if (null === $ligne) {
+                    continue;
+                }
 
-            $desserteA = $this->trouverDesserte($ligne, $stationsParCode, $zdcA, $nomA);
-            $desserteB = $this->trouverDesserte($ligne, $stationsParCode, $zdcB, $nomB);
-            if (null === $desserteA || null === $desserteB) {
-                $io->warning(sprintf(
-                    'Ligne %s : desserte introuvable pour "%s" ou "%s" (station sans codeExterne correspondant ?), tronçon ignoré.',
-                    $codeExterne,
-                    $nomA,
-                    $nomB,
-                ));
-                ++$nbIgnores;
-                continue;
-            }
+                $desserteA = $this->trouverDesserte($ligne, $stationsParCode, $zdcA, $nomA);
+                $desserteB = $this->trouverDesserte($ligne, $stationsParCode, $zdcB, $nomB);
+                if (null === $desserteA || null === $desserteB) {
+                    $io->warning(sprintf(
+                        'Ligne %s : desserte introuvable pour "%s" ou "%s" (station sans codeExterne correspondant ?), tronçon ignoré.',
+                        $codeExterne,
+                        $nomA,
+                        $nomB,
+                    ));
+                    ++$nbIgnores;
+                    continue;
+                }
 
-            $duree = '' !== $dureeMediane ? (int) $dureeMediane : null;
-            $this->creerTronconBidirectionnel($desserteA, $desserteB, $duree);
-            ++$nbTronconsTotal;
+                $duree = '' !== $dureeMediane ? (int) $dureeMediane : null;
+                $this->creerTronconBidirectionnel($desserteA, $desserteB, $duree);
+                ++$nbTronconsTotal;
+            }
+            fclose($fichier);
         }
-        fclose($fichier);
 
         $this->entityManager->flush();
 

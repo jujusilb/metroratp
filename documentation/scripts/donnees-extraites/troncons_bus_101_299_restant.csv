@@ -1,0 +1,452 @@
+code_externe,zdc_a,zdc_b,nom_a,nom_b,duree_mediane_secondes,nb_observations
+C00007,412570,415240,"Docteur Roux","Jules Guesde",120,110
+C00007,415225,415229,"Rue Tortue","Rue des Fusillés",60,110
+C00007,415225,415244,"Rue Tortue","Eugène Hénaff",60,110
+C00007,415229,415236,"Rue des Fusillés",Passerelle,120,110
+C00007,415236,415240,Passerelle,"Jules Guesde",120,110
+C00007,69725,69732,"Institut Grignon","Stade Alain Mimoun",60,54
+C00007,69725,69754,"Institut Grignon","Ferme de Grignon / Marmontel",60,50
+C00007,69732,69770,"Stade Alain Mimoun","Pavé Grignon",60,54
+C00007,69751,69754,"E. Levassor","Ferme de Grignon / Marmontel",60,110
+C00007,69754,69770,"Ferme de Grignon / Marmontel","Pavé Grignon",120,56
+C00007,69770,426139,"Pavé Grignon","Cité des Vergers",60,110
+C00007,69791,426139,"Guy Môquet","Cité des Vergers",60,110
+C00007,69791,69819,"Guy Môquet","Général Leclerc",120,110
+C00007,69819,69846,"Général Leclerc","Rouget de Lisle",120,54
+C00007,69819,69852,"Général Leclerc",Choisy-le-Roi,120,56
+C00007,69846,69852,"Rouget de Lisle",Choisy-le-Roi,180,54
+C00007,69852,69878,Choisy-le-Roi,"8 mai 1945",180,110
+C00007,69878,412570,"8 mai 1945","Docteur Roux",120,110
+C00007,70235,415244,"Charles Heller","Eugène Hénaff",120,110
+C00007,70235,70242,"Charles Heller","Pont de Vitry",60,110
+C00007,70242,495693,"Pont de Vitry","Centre Commercial Pont de Vitry",60,110
+C01200,420144,420177,"Vélizy 2","De Lattre de Tassigny",120,1544
+C01200,69460,69463,"Maison de Quartier - André Charré / Rond Point du Petit Clamart - RD 906","Avenue de la Sygrie",120,1477
+C01200,69460,69959,"Maison de Quartier - André Charré / Rond Point du Petit Clamart - RD 906","La Boursidière",120,1445
+C01200,69463,420177,"Avenue de la Sygrie","De Lattre de Tassigny",120,625
+C01200,69463,69466,"Avenue de la Sygrie",Meudon-la-Forêt,120,588
+C01200,69466,420144,Meudon-la-Forêt,"Vélizy 2",120,705
+C01200,69474,420177,"Aérodrome Morane / Le Mail","De Lattre de Tassigny",60,746
+C01200,69474,69478,"Aérodrome Morane / Le Mail","Lycée de Villebon / Ermitage de Villebon",60,772
+C01200,69478,69505,"Lycée de Villebon / Ermitage de Villebon","Rond-Point des Bruyères",360,772
+C01200,69502,420144,"Docteur Roux / Les Postillons des Bruyères","Vélizy 2",480,705
+C01200,69502,69505,"Docteur Roux / Les Postillons des Bruyères","Rond-Point des Bruyères",60,527
+C01200,69505,69520,"Rond-Point des Bruyères","Les Capucins / Stade des Fontaines",60,1451
+C01200,69520,417630,"Les Capucins / Stade des Fontaines","Gare de Sèvres - Rive Gauche",60,1477
+C01200,69537,417630,"Brimborion - Division Leclerc / Les Binelles","Gare de Sèvres - Rive Gauche",120,1477
+C01200,69537,70684,"Brimborion - Division Leclerc / Les Binelles","Parc de Saint-Cloud",60,1084
+C01200,69923,480872,Séverine,Malabry,120,1483
+C01200,69923,69945,Séverine,"Léon Blum",60,1482
+C01200,69926,480872,"Avenue Galilée",Malabry,60,740
+C01200,69926,69959,"Avenue Galilée","La Boursidière",60,724
+C01200,69945,69984,"Léon Blum","Cité Jardins - Place des Alliés / Grand Marché",60,1483
+C01200,69984,70018,"Cité Jardins - Place des Alliés / Grand Marché","Charles Pasqua",60,1483
+C01200,70018,70044,"Charles Pasqua","Coeur de Ville",60,1483
+C01200,70024,427230,Robinson,Robinson,120,1483
+C01200,70024,70058,Robinson,"Cité Basse",60,1483
+C01200,70044,70063,"Coeur de Ville",L'Escalier,60,1324
+C01200,70058,70063,"Cité Basse",L'Escalier,60,1393
+C01200,70684,70692,"Parc de Saint-Cloud","Musée de Sèvres",120,1111
+C01200,70692,70698,"Musée de Sèvres","Pont de Sèvres",60,1477
+C01210,477254,478887,"Île de France","Cimetière Intercommunal",60,1331
+C01210,70149,477254,"Georges Pompidou","Île de France",60,1692
+C01210,70163,478887,"Jardin Parisien","Cimetière Intercommunal",120,1702
+C01210,70163,70176,"Jardin Parisien","Jardin Parisien - Coquelicots",60,1700
+C01210,70176,70186,"Jardin Parisien - Coquelicots","Soleil Levant",60,1637
+C01210,70186,70218,"Soleil Levant",Cimetière,60,1686
+C01210,70218,70272,Cimetière,"Plessis - Piquet",120,1686
+C01210,70272,485504,"Plessis - Piquet",Marché,120,1686
+C01210,70354,485504,"Gabriel Péri / Centre Municipal de Santé",Marché,60,1567
+C01210,70354,70389,"Gabriel Péri / Centre Municipal de Santé","Pierre Louvrier",60,1351
+C01210,70389,70434,"Pierre Louvrier","Lazare - Carnot",60,1567
+C01210,70434,70505,"Lazare - Carnot",Clamart,120,1686
+C01210,70503,70505,"Clos Montholon",Clamart,120,1686
+C01210,70503,70542,"Clos Montholon","Stade de Vanves",60,1492
+C01210,70542,70567,"Stade de Vanves","Rue de Châtillon",60,1680
+C01210,70567,70633,"Rue de Châtillon","Place Du Maréchal de Lattre de Tassigny",360,1686
+C01210,70633,70661,"Place Du Maréchal de Lattre de Tassigny","Général De Gaulle",60,1686
+C01210,70661,70990,"Général De Gaulle","Corentin Celton",120,1686
+C01210,70990,70999,"Corentin Celton","Victor Hugo",120,1686
+C01210,70999,71004,"Victor Hugo","Président Robert Schuman",120,1686
+C01210,71004,71016,"Président Robert Schuman","Issy Val de Seine",60,1686
+C01210,71016,71025,"Issy Val de Seine","Quai du Point du Jour",120,843
+C01210,71016,71051,"Issy Val de Seine","Abel Gance / Voie Lactée / Le Jour se Lève",240,843
+C01210,71025,71051,"Quai du Point du Jour","Abel Gance / Voie Lactée / Le Jour se Lève",120,843
+C01210,71051,71052,"Abel Gance / Voie Lactée / Le Jour se Lève","Pierre de Coubertin",60,1124
+C01210,71052,71084,"Pierre de Coubertin","Porte de Saint-Cloud",120,1686
+C01211,477254,480755,"Île de France","Picardie / Cité de la Plaine / Parc Auzelle",60,274
+C01211,478887,480755,"Cimetière Intercommunal","Picardie / Cité de la Plaine / Parc Auzelle",60,351
+C01211,69460,69463,"Maison de Quartier - André Charré / Rond Point du Petit Clamart - RD 906","Avenue de la Sygrie",180,1152
+C01211,69460,70012,"Maison de Quartier - André Charré / Rond Point du Petit Clamart - RD 906","Charles Debry / Gaîté",60,1101
+C01211,69463,69466,"Avenue de la Sygrie",Meudon-la-Forêt,120,1034
+C01211,69466,424078,Meudon-la-Forêt,"Pierre aux Moines",60,576
+C01211,69466,69468,Meudon-la-Forêt,"Le Lac",120,576
+C01211,69468,69472,"Le Lac","Église - Avenue de Celle",120,576
+C01211,69472,424078,"Église - Avenue de Celle","Pierre aux Moines",60,499
+C01211,70012,70049,"Charles Debry / Gaîté","Pavé Blanc",60,902
+C01211,70049,70099,"Pavé Blanc","Mail de la Plaine",180,1152
+C01211,70099,480755,"Mail de la Plaine","Picardie / Cité de la Plaine / Parc Auzelle",60,1020
+C01211,70163,478887,"Jardin Parisien","Cimetière Intercommunal",60,1152
+C01211,70163,70176,"Jardin Parisien","Jardin Parisien - Coquelicots",60,1142
+C01211,70176,70186,"Jardin Parisien - Coquelicots","Soleil Levant",60,1054
+C01211,70186,70218,"Soleil Levant",Cimetière,60,1083
+C01211,70218,70272,Cimetière,"Plessis - Piquet",120,1083
+C01211,70272,485504,"Plessis - Piquet",Marché,120,1083
+C01211,70296,485504,Mairie,Marché,60,965
+C01211,70296,70302,Mairie,"Place Hunebelle",60,1041
+C01211,70302,70346,"Place Hunebelle","Place du Garde",120,1083
+C01211,70346,70379,"Place du Garde",Marquis,60,1083
+C01211,70379,70428,Marquis,"D'Estienne d'Orves",60,1083
+C01211,70428,70466,"D'Estienne d'Orves",Fleury,60,826
+C01211,70466,70512,Fleury,"Pont d'Amour - Hopital Percy",60,1002
+C01211,70512,70589,"Pont d'Amour - Hopital Percy","Chemin des Vignes",120,1083
+C01211,70589,70612,"Chemin des Vignes",Issy,60,1023
+C01211,70612,70618,Issy,"Place John Fitzgerald Kennedy",120,1083
+C01211,70618,70638,"Place John Fitzgerald Kennedy","Gallieni / Bourgain - Général Gallieni",60,1083
+C01211,70638,70671,"Gallieni / Bourgain - Général Gallieni","Mairie d'Issy",180,1083
+C01212,485504,491386,Marché,"Marguerite Renaudin",60,352
+C01212,485505,491386,"Voie Verte","Marguerite Renaudin",60,9
+C01212,70296,485504,Mairie,Marché,60,695
+C01212,70296,70302,Mairie,"Place Hunebelle",60,695
+C01212,70302,70346,"Place Hunebelle","Place du Garde",120,695
+C01212,70317,485504,"Pierre Corby",Marché,120,343
+C01212,70317,70370,"Pierre Corby","Marie Doffe",60,343
+C01212,70346,70379,"Place du Garde",Marquis,60,679
+C01212,70370,415850,"Marie Doffe","Lazare Carnot (Rue des Roissys)",60,583
+C01212,70370,485505,"Marie Doffe","Voie Verte",60,317
+C01212,70379,70397,Marquis,"Vallée du Bois",60,676
+C01212,70383,70406,"Père Brottier - Charles Infroit","Rue des Peupliers",60,335
+C01212,70383,70412,"Père Brottier - Charles Infroit","Meudon Val Fleury",60,335
+C01212,70397,70401,"Vallée du Bois","Hôpital Sainte-Emilie",60,355
+C01212,70401,70406,"Hôpital Sainte-Emilie","Rue des Peupliers",60,325
+C01212,70406,70413,"Rue des Peupliers","Galliera - Saint-Philippe",60,344
+C01212,70412,70462,"Meudon Val Fleury","Paul Bert",120,344
+C01212,70413,70462,"Galliera - Saint-Philippe","Paul Bert",60,344
+C01212,70446,415850,Piscine,"Lazare Carnot (Rue des Roissys)",120,343
+C01212,70446,70461,Piscine,"Barbusse - Vedrines",60,343
+C01212,70461,70473,"Barbusse - Vedrines","Colonel Fabien / Malakoff / Marthe Fonteneau",180,325
+C01212,70461,70504,"Barbusse - Vedrines","Rond-Point Henri Barbusse / Jules Guesde",60,668
+C01212,70465,415850,Hébert,"Lazare Carnot (Rue des Roissys)",60,299
+C01212,70465,70473,Hébert,"Colonel Fabien / Malakoff / Marthe Fonteneau",60,232
+C01212,70492,70504,"Le Parc","Rond-Point Henri Barbusse / Jules Guesde",60,343
+C01212,70492,70562,"Le Parc","Malakoff - Rue Étienne Dolet",60,343
+C01212,70504,70541,"Rond-Point Henri Barbusse / Jules Guesde",Hoche,120,319
+C01212,70541,482835,Hoche,"Paul Bert / Etienne Dolet - Métro",60,325
+C01212,70544,70562,"Maurice Thorez / Jacqueline Fourré","Malakoff - Rue Étienne Dolet",60,316
+C01212,70544,70566,"Maurice Thorez / Jacqueline Fourré","Augustin Dumont / Eugénie Labolle",60,67
+C01212,70566,70591,"Augustin Dumont / Eugénie Labolle","Gabriel Péri - André Coin",60,316
+C01212,70591,482835,"Gabriel Péri - André Coin","Paul Bert / Etienne Dolet - Métro",60,351
+C01212,70591,70597,"Gabriel Péri - André Coin","Pierre Larousse - Carrefour du 8 mai 1945",60,721
+C01212,70597,70647,"Pierre Larousse - Carrefour du 8 mai 1945","Victor Hugo",120,721
+C01212,70647,70658,"Victor Hugo","Rue Legrand",60,721
+C01212,70658,70978,"Rue Legrand","Pont de la Vallée / Adolphe Pinard",120,370
+C01212,70978,71006,"Pont de la Vallée / Adolphe Pinard","Porte de Vanves",60,370
+C01214,69829,422453,"Président Allende / Théâtre La Piscine","Faculté de Pharmacie",120,660
+C01214,69829,69855,"Président Allende / Théâtre La Piscine","Docteur le Savoureux / Jules Verne",60,660
+C01214,69855,69894,"Docteur le Savoureux / Jules Verne","Jean Jaurès / Roger Salengro",60,364
+C01214,69894,69931,"Jean Jaurès / Roger Salengro","Eugène Sinet / Marc Sangnier",60,1265
+C01214,69931,69968,"Eugène Sinet / Marc Sangnier","Edouard Depreux - Roger Salengro / Professeur Einstein",60,1254
+C01214,69968,427230,"Edouard Depreux - Roger Salengro / Professeur Einstein",Robinson,120,1265
+C01214,70076,427230,"Carrefour des Mouilleboeufs",Robinson,120,1305
+C01214,70076,70080,"Carrefour des Mouilleboeufs","Edmond About",60,1299
+C01214,70080,70094,"Edmond About",Pasteur,60,1092
+C01214,70094,70122,Pasteur,"Abbé Grandjean",60,1299
+C01214,70122,415687,"Abbé Grandjean","Les Ormeaux",60,441
+C01214,70177,415687,"Carnot - Jean Jaurès","Les Ormeaux",60,520
+C01214,70177,70181,"Carnot - Jean Jaurès",Mairie,60,621
+C01214,70177,70215,"Carnot - Jean Jaurès","André Salel",60,684
+C01214,70181,70215,Mairie,"André Salel",60,621
+C01214,70215,70246,"André Salel","Le Plateau",60,1344
+C01214,70246,70279,"Le Plateau","Pierrelais - Fontenay",60,1095
+C01214,70279,70289,"Pierrelais - Fontenay","D'Estienne d'Orves - Division Leclerc",60,1344
+C01214,70289,70342,"D'Estienne d'Orves - Division Leclerc","Centre de Châtillon - Marché / Jean-Pierre Timbaud",120,1175
+C01214,70342,70362,"Centre de Châtillon - Marché / Jean-Pierre Timbaud","Centre de Châtillon",120,1175
+C01214,70362,70381,"Centre de Châtillon","Félix Faure",60,1185
+C01214,70381,70411,"Félix Faure","Clément Perrière / Notre-Dame du Calvaire",60,1293
+C01214,70411,70419,"Clément Perrière / Notre-Dame du Calvaire","Jean Mermoz / Stade de Châtillon",60,1293
+C01214,70419,70433,"Jean Mermoz / Stade de Châtillon","Marcelin Berthelot",120,1293
+C01214,70433,461505,"Marcelin Berthelot","Châtillon - Montrouge",120,1293
+C01214,70502,461505,"Etienne Dolet - Pierre Brossolette","Châtillon - Montrouge",60,1293
+C01214,70502,70566,"Etienne Dolet - Pierre Brossolette","Augustin Dumont / Eugénie Labolle",60,1293
+C01214,70566,70570,"Augustin Dumont / Eugénie Labolle","12 février 1934",60,1192
+C01214,70570,478742,"12 février 1934","Pierre Brossolette - Gabriel Péri",60,1183
+C01214,70630,478742,Depinoy,"Pierre Brossolette - Gabriel Péri",120,1293
+C01214,70630,70669,Depinoy,"Jean Moulin",60,1293
+C01214,70657,70669,"Porte d'Orléans","Jean Moulin",120,1293
+C01214,73611,422453,"Sophie Barat","Faculté de Pharmacie",120,1265
+C01215,425723,488232,"Vallée aux Loups","Lycée Polyvalent Jean Jaurès",60,331
+C01215,480872,488232,Malabry,"Lycée Polyvalent Jean Jaurès",120,320
+C01215,69921,480872,"Maximilien Robespierre",Malabry,120,626
+C01215,69921,69941,"Maximilien Robespierre","Moulin Fidel",120,640
+C01215,69941,69984,"Moulin Fidel","Cité Jardins - Place des Alliés / Grand Marché",120,651
+C01215,69984,70018,"Cité Jardins - Place des Alliés / Grand Marché","Charles Pasqua",60,651
+C01215,70018,70046,"Charles Pasqua","Daniel Defoe / La Poste",60,651
+C01215,70046,70093,"Daniel Defoe / La Poste","Moulin de la Tour (rue Paul Rivet)",120,651
+C01215,70093,417846,"Moulin de la Tour (rue Paul Rivet)","Rue Gabrielle / Les Fées",60,114
+C01215,70093,70138,"Moulin de la Tour (rue Paul Rivet)","La Cavée",60,295
+C01215,70131,70135,"Louis Pergaud / Progrès","Moulin de la Tour (Rue du Plateau) / Rue du Midi",120,331
+C01215,70131,70222,"Louis Pergaud / Progrès","Division Leclerc",60,331
+C01215,70135,417846,"Moulin de la Tour (Rue du Plateau) / Rue du Midi","Rue Gabrielle / Les Fées",60,331
+C01215,70138,70186,"La Cavée","Soleil Levant",120,320
+C01215,70186,70222,"Soleil Levant","Division Leclerc",180,320
+C01215,70222,70245,"Division Leclerc","Centre Bus",60,603
+C01215,70225,70244,"Pierrelais - Blanchard","Chartres - Blanchard",60,609
+C01215,70225,70279,"Pierrelais - Blanchard","Pierrelais - Fontenay",60,578
+C01215,70244,70311,"Chartres - Blanchard","République - Liberté / Paul Eluard",60,228
+C01215,70245,70257,"Centre Bus","Les Sablons",120,594
+C01215,70257,480557,"Les Sablons","Division Leclerc - Brosselette",60,473
+C01215,70279,70289,"Pierrelais - Fontenay","D'Estienne d'Orves - Division Leclerc",60,279
+C01215,70289,480557,"D'Estienne d'Orves - Division Leclerc","Division Leclerc - Brosselette",60,330
+C01215,70311,427085,"République - Liberté / Paul Eluard",Perrotin,60,616
+C01215,70345,427085,"République - Deforges",Perrotin,120,616
+C01215,70345,70386,"République - Deforges","Pierre Sémard - Châtillon-Montrouge",60,616
+C01221,412697,479919,"Noisy-le-Grand - Mont d'Est",Cimetière,120,954
+C01221,73030,73037,"Place de Verdun","Avenue Bertrand",60,951
+C01221,73035,73037,"Avenue Ardouin - Saint-Pierre / Jean Kiffer","Avenue Bertrand",60,955
+C01221,73035,73049,"Avenue Ardouin - Saint-Pierre / Jean Kiffer",Mairie,120,957
+C01221,73049,73050,Mairie,"Maurice Berteaux - Général Leclerc",60,951
+C01221,73050,73059,"Maurice Berteaux - Général Leclerc","Georges Foureau",60,350
+C01221,73059,73070,"Georges Foureau","Maurice Berteaux - Tramway / Michel Bony",60,468
+C01221,73070,73074,"Maurice Berteaux - Tramway / Michel Bony","Georges Courteline",60,877
+C01221,73074,73082,"Georges Courteline","La Dame Blanche",60,887
+C01221,73082,73089,"La Dame Blanche","Les Mousquetaires",60,759
+C01221,73089,73092,"Les Mousquetaires","Georges Demésy",60,921
+C01221,73092,73097,"Georges Demésy","Villiers-sur-Marne - Le Plessis-Trévise",120,957
+C01221,73097,73103,"Villiers-sur-Marne - Le Plessis-Trévise","Église / Mairie",120,957
+C01221,73103,73114,"Église / Mairie",Friedberg,120,957
+C01221,73114,73125,Friedberg,"Square des Allobroges",120,957
+C01221,73125,73139,"Square des Allobroges","Moulin à Vent",60,957
+C01221,73139,479919,"Moulin à Vent",Cimetière,120,957
+C01222,412697,479919,"Noisy-le-Grand - Mont d'Est",Cimetière,90,602
+C01222,72971,72976,"Hôpital / Église / Les Murets","Paul Valéry",60,602
+C01222,72976,72982,"Paul Valéry","Hôtel de Ville",120,601
+C01222,72982,72989,"Hôtel de Ville","Saint-Jean - Les Bordes",60,602
+C01222,72989,72990,"Saint-Jean - Les Bordes","Pierre de Coubertin",60,598
+C01222,72990,73014,"Pierre de Coubertin","Plessis - Saint-Antoine",180,602
+C01222,73014,73029,"Plessis - Saint-Antoine","Collège Albert Camus - ZA Ponroy",60,602
+C01222,73029,73035,"Collège Albert Camus - ZA Ponroy","Avenue Ardouin - Saint-Pierre / Jean Kiffer",60,577
+C01222,73035,73049,"Avenue Ardouin - Saint-Pierre / Jean Kiffer",Mairie,60,602
+C01222,73049,73050,Mairie,"Maurice Berteaux - Général Leclerc",60,602
+C01222,73050,73059,"Maurice Berteaux - Général Leclerc","Georges Foureau",60,223
+C01222,73059,73070,"Georges Foureau","Maurice Berteaux - Tramway / Michel Bony",60,303
+C01222,73070,73074,"Maurice Berteaux - Tramway / Michel Bony","Georges Courteline",60,601
+C01222,73074,73082,"Georges Courteline","La Dame Blanche",60,558
+C01222,73082,73089,"La Dame Blanche","Les Mousquetaires",60,467
+C01222,73089,73092,"Les Mousquetaires","Georges Demésy",60,602
+C01222,73092,73097,"Georges Demésy","Villiers-sur-Marne - Le Plessis-Trévise",120,602
+C01222,73097,73103,"Villiers-sur-Marne - Le Plessis-Trévise","Église / Mairie",120,602
+C01222,73101,73104,"Avenue de Gaumont","Courts Sillons",60,550
+C01222,73101,73109,"Avenue de Gaumont","Les Stades",120,602
+C01222,73103,73104,"Église / Mairie","Courts Sillons",60,303
+C01222,73103,73107,"Église / Mairie",République,120,299
+C01222,73104,73107,"Courts Sillons",République,60,299
+C01222,73109,73113,"Les Stades","Collège Les Prunais",60,602
+C01222,73113,73125,"Collège Les Prunais","Square des Allobroges",120,602
+C01222,73125,73139,"Square des Allobroges","Moulin à Vent",60,601
+C01222,73139,479919,"Moulin à Vent",Cimetière,120,602
+C01225,68086,463417,"Les Campanules","Rue de la Ferme",60,324
+C01225,68086,68093,"Les Campanules","Segrais - Gabriel",60,324
+C01225,68093,68118,"Segrais - Gabriel","Le Corbusier",120,324
+C01225,68096,68102,"Collège du Segrais","Camille Saint-Saëns",120,219
+C01225,68096,68103,"Collège du Segrais","Lycée Jean Moulin",60,315
+C01225,68102,479109,"Camille Saint-Saëns","Médiathèque du Segrais / Sous-Préfecture",60,324
+C01225,68103,68129,"Lycée Jean Moulin",Torcy,120,324
+C01225,68118,68135,"Le Corbusier","La Tour d'Auvergne",60,97
+C01225,68123,463417,Lognes,"Rue de la Ferme",60,324
+C01225,68123,68137,Lognes,"Cours des Lacs",120,324
+C01225,68129,482351,Torcy,"Cités Unies",60,316
+C01225,68131,479109,"Rû de Maubuée","Médiathèque du Segrais / Sous-Préfecture",60,324
+C01225,68131,68143,"Rû de Maubuée","Collège Jean Monnet",60,226
+C01225,68135,68148,"La Tour d'Auvergne",Baudelaire,120,324
+C01225,68137,74231,"Cours des Lacs","Le Verger",60,324
+C01225,68143,68148,"Collège Jean Monnet",Baudelaire,60,324
+C01225,68145,482351,"Salvador Allende","Cités Unies",120,316
+C01225,68145,68164,"Salvador Allende","Rives de Maubuée",60,303
+C01225,68152,68153,"Ferme du Buisson",Noisiel,120,324
+C01225,68152,74231,"Ferme du Buisson","Le Verger",60,324
+C01225,68153,68173,Noisiel,"Collège Le Luzard",60,316
+C01225,68164,68178,"Rives de Maubuée","Jacques Prévert",60,316
+C01225,68173,68181,"Collège Le Luzard","Tour des Jeunes Mariés",60,310
+C01225,68178,68187,"Jacques Prévert","Rue des Épinettes",60,316
+C01225,68181,68217,"Tour des Jeunes Mariés","Les Quatre Pavés",120,316
+C01225,68187,68216,"Rue des Épinettes","Les Bondrolles",60,316
+C01225,68197,68206,"Cité Scolaire","La Remise aux Fraises",60,266
+C01225,68197,68213,"Cité Scolaire","La Mogotte",60,316
+C01225,68206,68212,"La Remise aux Fraises","Jules Ferry",60,135
+C01225,68212,68250,"Jules Ferry",Mairie,60,316
+C01225,68213,68247,"La Mogotte","La Fosse aux Loups",60,316
+C01225,68216,68257,"Les Bondrolles","Le Clos",120,316
+C01225,68217,68263,"Les Quatre Pavés",Chocolaterie,120,316
+C01225,68247,68253,"La Fosse aux Loups","La Maltournée",60,221
+C01225,68250,68263,Mairie,Chocolaterie,60,316
+C01225,68253,68280,"La Maltournée","Les Cantines",60,316
+C01225,68257,486993,"Le Clos","Rue de Chèvre",60,316
+C01225,68280,486993,"Les Cantines","Rue de Chèvre",120,316
+C01226,415522,425238,"Gare de Pontault (Place Beilstein / Parking relais)",Marché,60,98
+C01226,67757,67758,"Centre Commercial",Pavé,120,194
+C01226,67758,67771,Pavé,Église,120,98
+C01226,67758,67773,Pavé,"Rue du Four",120,96
+C01226,67771,67775,Église,"Château Candalle",120,98
+C01226,67773,67775,"Rue du Four","Château Candalle",120,96
+C01226,67775,67779,"Château Candalle",Berchères,60,194
+C01226,67779,67781,Berchères,"Grande Haie",,0
+C01226,67781,67791,"Grande Haie","La Pépinière",120,194
+C01226,67791,67796,"La Pépinière","Lycée Claudel",60,98
+C01226,67796,463400,"Lycée Claudel",Danton,60,194
+C01226,67819,463400,"Pré Saint Martin",Danton,60,194
+C01226,67819,67844,"Pré Saint Martin","Les Bleuets",60,194
+C01226,67844,478849,"Les Bleuets","Centre Commercial 2000",60,96
+C01226,67844,67861,"Les Bleuets","Médiathèque François Mitterrand",60,98
+C01226,67861,67874,"Médiathèque François Mitterrand",Bellevue,60,98
+C01226,67872,478847,"République / Hôtel de Ville","Cinéma Apollo",60,96
+C01226,67872,478849,"République / Hôtel de Ville","Centre Commercial 2000",60,96
+C01226,67874,425238,Bellevue,Marché,60,98
+C01226,67897,415522,"Émerainville - Pontault-Combault","Gare de Pontault (Place Beilstein / Parking relais)",120,96
+C01226,67897,478847,"Émerainville - Pontault-Combault","Cinéma Apollo",60,96
+C01226,67913,415522,"Le Parc","Gare de Pontault (Place Beilstein / Parking relais)",120,194
+C01226,67913,67921,"Le Parc",Mairie,60,194
+C01226,67921,67930,Mairie,"Rue d'Émery",60,163
+C01226,67930,67959,"Rue d'Émery",Cimetière,60,194
+C01226,67959,68021,Cimetière,"Malnoue - Stade Dominique Rocheteau",180,194
+C01226,68021,68069,"Malnoue - Stade Dominique Rocheteau","Malnoue - Avenue de L'Europe",120,194
+C01226,68031,68056,"Malnoue - Place Auguste Legemble","Malnoue - Ancien Monastère",60,194
+C01226,68031,68065,"Malnoue - Place Auguste Legemble","Malnoue - Bois des Souches",120,194
+C01226,68056,68069,"Malnoue - Ancien Monastère","Malnoue - Avenue de L'Europe",60,194
+C01226,68065,68070,"Malnoue - Bois des Souches","Les 2 Lacs",60,194
+C01226,68070,73116,"Les 2 Lacs","Les Aérostiers",60,172
+C01226,68112,416071,Nobel,CROUS,60,194
+C01226,68112,73116,Nobel,"Les Aérostiers",180,194
+C01226,73163,416071,"Noisy - Champs",CROUS,60,98
+C01227,416071,420857,CROUS,"Lycée René Descartes",120,345
+C01227,68106,68111,"Frères Lumière - IFU","Bois de l'Étang - Université",180,690
+C01227,68106,68112,"Frères Lumière - IFU",Nobel,90,690
+C01227,68112,416071,Nobel,CROUS,60,690
+C01227,68159,420857,Ampère,"Lycée René Descartes",60,335
+C01227,68159,73163,Ampère,"Noisy - Champs",60,345
+C01227,68204,73905,"Général De Gaulle","Flandres - Dunkerque 1940",60,623
+C01227,68204,74195,"Général De Gaulle","Bois de Grâce",60,690
+C01227,68242,73196,"Claude Bernard","Rond-Point des Pyramides",60,690
+C01227,68242,73746,"Claude Bernard","Xavier Bichat",120,682
+C01227,68342,68369,"Rue du Port","Avenue des Martyrs",60,690
+C01227,68342,73231,"Rue du Port","Pont de Gournay",60,690
+C01227,68369,68387,"Avenue des Martyrs","Parmentier - Jules Ferry",60,481
+C01227,68387,68407,"Parmentier - Jules Ferry","Chelles - Gournay",120,690
+C01227,73163,416071,"Noisy - Champs",CROUS,60,345
+C01227,73196,73207,"Rond-Point des Pyramides","Place Churchill",60,690
+C01227,73207,73216,"Place Churchill","Place Roosevelt",120,690
+C01227,73216,73220,"Place Roosevelt","Église de Gournay",60,676
+C01227,73220,73231,"Église de Gournay","Pont de Gournay",60,690
+C01227,73746,73905,"Xavier Bichat","Flandres - Dunkerque 1940",60,457
+C01227,74195,420857,"Bois de Grâce","Lycée René Descartes",120,690
+C01232,68129,482351,Torcy,"Cités Unies",60,660
+C01232,68145,482351,"Salvador Allende","Cités Unies",120,664
+C01232,68145,68164,"Salvador Allende","Rives de Maubuée",60,498
+C01232,68153,68162,Noisiel,"Les Provinces",60,663
+C01232,68153,68173,Noisiel,"Collège Le Luzard",120,663
+C01232,68162,68217,"Les Provinces","Les Quatre Pavés",120,663
+C01232,68164,68178,"Rives de Maubuée","Jacques Prévert",60,657
+C01232,68173,68181,"Collège Le Luzard","Tour des Jeunes Mariés",60,663
+C01232,68178,68187,"Jacques Prévert","Rue des Épinettes",120,664
+C01232,68181,424837,"Tour des Jeunes Mariés","Square de Diane",60,518
+C01232,68187,68208,"Rue des Épinettes","La Mare aux Marchais",60,664
+C01232,68193,68201,"Bel Air","Les Tilleuls",120,664
+C01232,68193,68213,"Bel Air","La Mogotte",60,664
+C01232,68194,424837,"Le Carré du Faon","Square de Diane",60,663
+C01232,68194,68225,"Le Carré du Faon","Les Deux Parcs",60,354
+C01232,68197,68206,"Cité Scolaire","La Remise aux Fraises",60,505
+C01232,68197,68213,"Cité Scolaire","La Mogotte",60,535
+C01232,68201,68210,"Les Tilleuls",Mairie,60,664
+C01232,68206,68212,"La Remise aux Fraises","Jules Ferry",60,639
+C01232,68208,68210,"La Mare aux Marchais",Mairie,60,661
+C01232,68212,68217,"Jules Ferry","Les Quatre Pavés",60,644
+C01232,68224,68227,Mairie,"Maison de Retraite",120,663
+C01232,68224,68246,Mairie,"Pointe de Champs",60,663
+C01232,68225,68227,"Les Deux Parcs","Maison de Retraite",60,662
+C01232,68246,68256,"Pointe de Champs","Les Iris",60,645
+C01232,68256,68262,"Les Iris","Place Matteoti",60,651
+C01232,68262,73196,"Place Matteoti","Rond-Point des Pyramides",60,663
+C01232,73166,73169,Bry-sur-Marne,"Marx Dormoy - Carnot",60,545
+C01232,73169,73175,"Marx Dormoy - Carnot",Verdun,60,658
+C01232,73174,495453,"Mairie de Noisy-le-Grand - Jean Vaquier",Pasteur,60,317
+C01232,73174,73182,"Mairie de Noisy-le-Grand - Jean Vaquier",Mairie,120,317
+C01232,73175,73178,Verdun,"Route de Neuilly",120,658
+C01232,73178,495453,"Route de Neuilly",Pasteur,120,317
+C01232,73178,73179,"Route de Neuilly","Chemin de la Baronnerie",60,341
+C01232,73179,73184,"Chemin de la Baronnerie",Église,60,341
+C01232,73180,73182,"Carrefour de Malnoue",Mairie,60,658
+C01232,73180,73183,"Carrefour de Malnoue","Pointe de Gournay",120,658
+C01232,73182,73184,Mairie,Église,120,341
+C01232,73183,496943,"Pointe de Gournay","Les Saules",60,317
+C01232,73189,496943,"Les Prévoyants","Les Saules",60,317
+C01232,73189,73197,"Les Prévoyants","Les Rosiers",60,658
+C01232,73196,73207,"Rond-Point des Pyramides","Place Churchill",120,649
+C01232,73197,73207,"Les Rosiers","Place Churchill",60,658
+C01264,69468,425791,"Le Lac","Espace Culturel - Robert Doisneau",120,1110
+C01264,69468,69472,"Le Lac","Église - Avenue de Celle",60,1136
+C01264,69472,73839,"Église - Avenue de Celle","Tapis Vert",60,1140
+C01264,69485,482726,"Trivaux - Hangar Y","Trivaux - Vertugadins",120,1140
+C01264,69485,73839,"Trivaux - Hangar Y","Tapis Vert",540,1140
+C01264,70149,425791,"Georges Pompidou","Espace Culturel - Robert Doisneau",180,1140
+C01264,70355,482726,"D'Alembert - Vertugadins - Lycée","Trivaux - Vertugadins",60,565
+C01264,70355,70387,"D'Alembert - Vertugadins - Lycée","Victor Hugo - Louvois",120,565
+C01264,70387,70410,"Victor Hugo - Louvois",Église,60,272
+C01264,70387,70412,"Victor Hugo - Louvois","Meudon Val Fleury",60,1140
+C01264,70410,482726,Église,"Trivaux - Vertugadins",120,575
+C01264,70412,70437,"Meudon Val Fleury","Saint-Germain - Jean Jaurès",60,942
+C01264,70437,70489,"Saint-Germain - Jean Jaurès",Viaduc,60,1140
+C01264,70489,70572,Viaduc,"Carrefour de la Ferme",120,1140
+C01264,70572,70583,"Carrefour de la Ferme",Verdun,60,102
+C01264,70572,70585,"Carrefour de la Ferme","Paul Besnard",60,550
+C01264,70583,70622,Verdun,"Les Moulineaux",120,575
+C01264,70585,70622,"Paul Besnard","Les Moulineaux",60,575
+C01264,70622,70652,"Les Moulineaux","Ile Saint Germain / Bas Meudon / Pierre Poli",60,1147
+C01264,70652,70979,"Ile Saint Germain / Bas Meudon / Pierre Poli","Pont de Billancourt",120,1150
+C01264,70979,71009,"Pont de Billancourt","Rue de Seine",60,1144
+C01264,71009,412434,"Rue de Seine","Rue du Point du Jour (Boulevard de la République)",120,961
+C01264,71084,73891,"Porte de Saint-Cloud","Les Peupliers",120,1150
+C01264,73891,412434,"Les Peupliers","Rue du Point du Jour (Boulevard de la République)",60,1135
+C01265,69959,70005,"La Boursidière",Réaumur,120,454
+C01265,70005,70049,Réaumur,"Pavé Blanc",60,444
+C01265,70049,70060,"Pavé Blanc","Le Hameau",240,454
+C01265,70060,423879,"Le Hameau","Hôpital Béclère",120,437
+C01265,70163,423879,"Jardin Parisien","Hôpital Béclère",60,437
+C01265,70163,70346,"Jardin Parisien","Place du Garde",240,877
+C01265,70346,70379,"Place du Garde",Marquis,60,640
+C01265,70379,70466,Marquis,Fleury,120,877
+C01265,70466,70512,Fleury,"Pont d'Amour - Hopital Percy",60,875
+C01265,70512,70563,"Pont d'Amour - Hopital Percy",Épinettes,60,877
+C01265,70563,70593,Épinettes,"Défense - Egalité",60,877
+C01265,70593,70600,"Défense - Egalité","Parc Henri Barbusse",60,877
+C01265,70600,478861,"Parc Henri Barbusse","Musée / Emile Zola / Etienne Dolet",120,437
+C01265,70600,497021,"Parc Henri Barbusse",Robespierre,120,440
+C01265,70628,497021,"André Chenier",Robespierre,60,440
+C01265,70628,70671,"André Chenier","Mairie d'Issy",60,440
+C01265,70671,478861,"Mairie d'Issy","Musée / Emile Zola / Etienne Dolet",120,437
+C01265,70671,492985,"Mairie d'Issy",Marceau,120,877
+C01265,71004,492985,"Président Robert Schuman",Marceau,120,877
+C01265,71004,71016,"Président Robert Schuman","Issy Val de Seine",120,437
+C01265,71004,71022,"Président Robert Schuman","Gallieni - Camille Desmoulins",120,440
+C01265,71016,71022,"Issy Val de Seine","Gallieni - Camille Desmoulins",60,440
+C02437,478849,487151,"Centre Commercial 2000","Stade Lucien Morane",60,206
+C02437,480998,481093,Pasteur,"Maréchal Mortier",60,378
+C02437,480998,481094,Pasteur,"Château des Tourelles",60,410
+C02437,481092,481093,"Gros Chêne","Maréchal Mortier",60,410
+C02437,481094,481095,"Château des Tourelles","Île Caroline",120,410
+C02437,481095,481098,"Île Caroline",Thérèse,120,410
+C02437,481096,481098,"François Mansard",Thérèse,60,410
+C02437,487151,496644,"Stade Lucien Morane","Hôtel de Ville",60,204
+C02437,67833,67840,"Salle des Fêtes Jacques Brel","L'Orme au Charron",60,410
+C02437,67833,67844,"Salle des Fêtes Jacques Brel","Les Bleuets",60,410
+C02437,67840,67852,"L'Orme au Charron","Résidence des Tilleuls",60,206
+C02437,67844,478849,"Les Bleuets","Centre Commercial 2000",120,206
+C02437,67844,496644,"Les Bleuets","Hôtel de Ville",60,204
+C02437,67852,67860,"Résidence des Tilleuls",Masséna,60,266
+C02437,67860,67873,Masséna,"Collège Condorcet",60,362
+C02437,67873,415522,"Collège Condorcet","Gare de Pontault (Place Beilstein / Parking relais)",60,410
+C02437,67889,487151,"Bois la Croix / Ferme Caminha","Stade Lucien Morane",120,410
+C02437,67889,67892,"Bois la Croix / Ferme Caminha","Village Anglais",60,80
+C02437,67892,481097,"Village Anglais",Buffon,120,410
+C02437,73026,481096,Cimetière,"François Mansard",120,410
+C02437,73026,481097,Cimetière,Buffon,60,410
+C02437,73092,481092,"Georges Demésy","Gros Chêne",120,410
+C02437,73092,73097,"Georges Demésy","Villiers-sur-Marne - Le Plessis-Trévise",120,410

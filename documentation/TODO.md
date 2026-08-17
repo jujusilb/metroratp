@@ -119,14 +119,21 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
   point à point.
 - Quais décalés (ex: Liège sur la ligne 13) : le modèle actuel suppose une distance symétrique
   par tronçon, ne capture pas les cas où la distance de marche diffère selon le sens réel.
-- Lignes de bus : reste du réseau non traité. Fait le 2026-08-11 pour les lignes numérotées 20 à
-  299 (`app:construire-topologie-bus`/`app:construire-topologie-bus-autres-operateurs`), sauf les
-  lignes non-RATP de la plage 101-299 (ATM Croix du Sud 179/189-191/194-195/289-290, Keolis Grand
-  Paris Vallée de la Marne 206-207/209/211-213/220, Keolis Argenteuil 262, Keolis Ouest
-  Val-de-Marne 282 — pas encore demandé). Le reste du réseau bus (~1300 lignes hors 20-299) n'a
-  toujours aucun tronçon construit — ampleur trop importante pour un seul passage, mais la méthode
-  (extraction GTFS + réduction des raccourcis, voir
-  `documentation/scripts/extraire_troncons_bus*.php`) est directement réutilisable.
+- Lignes de bus : plage 20-299 complète depuis le 2026-08-17 (voir `documentation/commande.md`).
+  Les 16 lignes non-RATP restantes de la plage 101-299 sont faites : ATM Croix du Sud
+  (179/189-191/194-195/289-290), Keolis Grand Paris Vallée de la Marne (206-207/209/211-213/220),
+  et la 282 (aujourd'hui "Keolis Grand Paris Seine Orly", TODO.md la notait encore sous son ancien
+  nom "Keolis Ouest Val-de-Marne"). La 262 (Keolis Argenteuil) de la note originale n'existe plus
+  sous ce numéro dans le référentiel actuel (réseau intégralement renuméroté en série "64xx")  —
+  pas importée, pas de correspondance fiable trouvée plutôt que deviner. Au passage : un bug
+  d'algorithme identique à celui trouvé sur le RER C (coercition de clés de tableau PHP cassant
+  Dijkstra) a été audité sur `extraire_troncons_bus_autres_operateurs.php` — présent dans le code,
+  mais sans impact visible sur les données déjà construites (les bus n'ont quasiment jamais de
+  missions semi-directes à filtrer, contrairement au RER), donc pas de reconstruction nécessaire ;
+  corrigé uniquement dans le nouveau script utilisé pour ces 16 lignes.
+  Le reste du réseau bus (~1300 lignes hors 20-299) n'a toujours aucun tronçon construit — ampleur
+  trop importante pour un seul passage, mais la méthode (extraction GTFS + réduction des
+  raccourcis, voir `documentation/scripts/extraire_troncons_bus*.php`) est directement réutilisable.
 
 ## Lignes Transilien V/P/R — fait (2026-08-17)
 

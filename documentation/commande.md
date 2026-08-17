@@ -608,4 +608,23 @@ Transilien V/P/R" parmi le backlog A_FAIRE.
 | `php bin/phpunit` (134 tests) | Tout passe. |
 | `documentation/TODO.md` | Section corrigee : la note "pas encore dans la base" etait perimee, remplacee par le vrai etat (lignes deja importees, materiel desormais relie). |
 
+## Session du 2026-08-17 (suite) — Topologie bus 101-299 restante (non-RATP)
+
+Demande utilisateur : "GO topologie bus restante !!!" — tache id=12 (les 16 lignes non-RATP
+restantes de la plage 101-299 ; la tache id=13, ~1300 lignes hors 20-299, reste hors de portee
+d'un seul passage, non traitee ici).
+
+| Commande | Objectif |
+|---|---|
+| Recherche des 4 operateurs cites dans TODO.md (ATM Croix du Sud, Keolis Grand Paris Vallee de la Marne, Keolis Argenteuil, Keolis Ouest Val-de-Marne) dans `referentiel-des-lignes.csv` | 2 noms perimes trouves : la ligne 282 existe bien mais sous l'operateur renomme "Keolis Grand Paris Seine Orly" ; la ligne 262 (Keolis Argenteuil) n'existe plus du tout sous ce numero (reseau renumerote en serie "64xx") — non importee plutot que deviner un remplacant. 16 lignes au total confirmees avec un route_id GTFS exact. |
+| Verification en base : `Ligne`/`Desserte` pour les 16 codeExterne trouves | Toutes deja presentes avec de vraies Desserte (18 a 43 par ligne) — comme pour Transilien V/P/R, `app:importer-reseau-complet` les avait deja importees, seule la topologie (Troncon) manquait, confirmee a 0 pour les 16. |
+| Audit de `extraire_troncons_bus_autres_operateurs.php` (script existant, deja utilise pour 22 lignes 20-100 hors RATP) avant de le reutiliser/etendre | Meme bug que celui trouve et corrige sur le RER C cette session : la fonction de plus court chemin compare une cle de tableau (coercee en int par PHP) a la destination (string) sans recast, cassant la reconnaissance "destination atteinte" — la reduction geometrique ne retire alors jamais aucune arete. |
+| Verification empirique de l'impact reel sur les donnees deja construites (22 lignes bus 20-100 + reste RATP 20-299) : ecart tronçons/dessertes par ligne | Ecarts systematiquement petits (0 a 7 sur des lignes de 20 a 46 arrets), coherents avec des vraies boucles/asymetries aller-retour — contrairement au RER C ou l'ecart etait concentre en un seul point (Choisy-le-Roi, degre 6). Conclusion : les bus n'ont quasiment jamais de missions semi-directes/express a filtrer (contrairement au RER), donc le bug n'a probablement rien casse dans les donnees deja construites — **aucune reconstruction retroactive necessaire**. |
+| `documentation/scripts/extraire_troncons_bus_101_299_restant.php` (nouveau, meme structure que le script existant mais avec l'algorithme de reduction corrige — "plus court d'abord contre un graphe confirme", meme technique que pour le RER C) | 13223 trips GTFS trouves sur les 16 lignes, 462 aretes brutes, 451 retenues apres reduction (11 raccourcis reellement filtres, preuve que le correctif fait quelque chose ici). Ecarts par ligne verifies avant import : 0 a 4, rien d'anormal. |
+| `src/Command/ConstruireTopologieBusAutresOperateursCommand.php` : `TRONCONS_CSV` devient un tableau (fusionne l'ancien CSV + le nouveau), meme pattern que pour `troncons_rer.csv`/`troncons_rer_c.csv` | Fichier separe plutot que regenerer l'existant (deja verifie, aucun risque pris dessus). |
+| `php bin/console app:construire-topologie-bus-autres-operateurs` (local) | 445 troncons crees sur les 16 lignes (6 ignores : ZdC "Hotel de Ville" sur la ligne 209 sans Station correspondante en base — lacune de donnees preexistante, sans rapport avec ce travail, geree normalement par le mecanisme d'avertissement deja en place). Les 22 lignes deja construites correctement ignorees (`dejaConstruite`). |
+| `php bin/phpunit` (134 tests) | Tout passe. |
+| Verification `/ligne/2109` (179, ATM Croix du Sud) via le Browser tool | Parcours affiche correctement, embranchement reel visible ("rejoint la ligne principale"), badges de correspondance corrects vers plusieurs autres lignes. |
+| `documentation/TODO.md` | Section mise a jour : 16/17 lignes de la note originale faites (262 introuvable sous ce numero), audit du bug de reduction documente (present dans le code, sans impact constate sur les donnees existantes), tache ~1300 lignes restante clairement separee. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
