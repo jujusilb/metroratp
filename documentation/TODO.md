@@ -97,6 +97,26 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
 
 ## Autres pistes notées en cours de route
 
+- Lisibilité des badges de ligne (demandé le 2026-08-17) : actuellement (`.ligne-badge`/
+  `.ligne-badge-sm`, `assets/styles/app.scss`, utilisé dans 18 templates) le label de la ligne est
+  écrit EN texte À L'INTÉRIEUR du rond colorisé (`background-color: {{ ligne.couleur|default(...)
+  }}`), donc illisible si la couleur est claire/proche du blanc, et une couleur grise par défaut
+  est utilisée quand `couleur` est NULL. Cible demandée : le rond coloré reste vierge de tout texte
+  (juste la couleur, absent s'il n'y a pas de `couleur` connue) ; le nom de la ligne s'affiche
+  toujours À CÔTÉ, en texte noir sur fond blanc (jamais dans le rond) ; le mode de transport
+  (`Ligne.typeTransport`, ex: Bus/Tram/RER/Métro) doit aussi être visible à côté. Implique de
+  revoir les 18 templates utilisant ce badge, pas juste le CSS.
+- Tracés de bus vs vol d'oiseau (signalé le 2026-08-17, capture d'écran `/trajet` à l'appui) :
+  `assets/js/trajet-carte.js` essaie déjà d'extraire, pour chaque tronçon affiché, la portion du
+  vrai tracé GPS de la `Ligne` (`Ligne::trace`, importé par `app:importer-traces-lignes` depuis
+  `traces-des-lignes-de-transport-en-commun-idfm.csv`, couvre tous les modes dont le bus) entre
+  les deux arrêts, avec repli sur une ligne droite si aucune composante du tracé n'est jugée assez
+  proche des deux points. Ce repli se déclenche visiblement pour au moins une ligne de bus (trait
+  bleu rectiligne traversant plusieurs pâtés de maisons au lieu de suivre les rues). À vérifier :
+  le tracé de cette ligne est-il manquant/mal rattaché en base, ou est-ce l'heuristique de
+  proximité (la plus proche à la fois de A et B) qui échoue sur ce cas précis ? S'assurer que
+  chaque tronçon de bus est bien synchronisé avec son vrai tracé GPS, pas juste une approximation
+  point à point.
 - Quais décalés (ex: Liège sur la ligne 13) : le modèle actuel suppose une distance symétrique
   par tronçon, ne capture pas les cas où la distance de marche diffère selon le sens réel.
 - Lignes de bus : reste du réseau non traité. Fait le 2026-08-11 pour les lignes numérotées 20 à
