@@ -128,12 +128,14 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
   (extraction GTFS + réduction des raccourcis, voir
   `documentation/scripts/extraire_troncons_bus*.php`) est directement réutilisable.
 
-## Lignes Transilien V/P/R (pas encore dans la base)
+## Lignes Transilien V/P/R — fait (2026-08-17)
 
-En ajoutant le matériel roulant RER (2026-08-09), plusieurs séries sont notées "exploitation
-commune" avec des lignes Transilien pas encore modélisées : Z 5600/8800/20500/20900 (RER C) avec
-la **ligne V**, Z 57000/57400 (RER D) avec la **ligne R**, Z 50000 (RER E) avec la **ligne P**. Si
-on veut représenter fidèlement ce lien un jour, il faudra créer ces 3 lignes Transilien (SNCF).
+Cette note datait d'avant qu'`app:importer-reseau-complet` ne tourne sur l'ensemble du réseau :
+en y regardant à nouveau, les Ligne V/P/R existaient déjà (avec leurs Station/Desserte réelles,
+7/24/32 stations), simplement jamais reliées à leur matériel roulant partagé avec le RER. Lien
+`MaterielLigne` ajouté : Z 5600/8800/20500/20900 → V, Z 57000/57400 → R, Z 50000 → P. Comme pour
+`app:importer-reseau-complet` en général, ces lignes n'ont pas de tronçons/parcours (seulement
+Ligne/Station/Desserte) — voir `documentation/commande.md` pour le détail.
 
 ## Ligne.codeExterne incohérent pour le métro — fait (2026-08-17)
 

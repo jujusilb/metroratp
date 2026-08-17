@@ -592,4 +592,20 @@ id=14 "Nettoyer Ligne.codeExterne incoherent pour le metro" parmi le backlog A_F
 | `php bin/phpunit` (134 tests) | Tout passe. |
 | `documentation/TODO.md` | Section mise a jour avec le vrai diagnostic (codeExterne NULL, pas faux) et le detail du risque de regression trouve/corrige. |
 
+## Session du 2026-08-17 (suite) — Lignes Transilien V/P/R : rattachement du materiel roulant
+
+Demande utilisateur : "enchaine avec une autre" — choix de la tache id=15 "Modeliser les lignes
+Transilien V/P/R" parmi le backlog A_FAIRE.
+
+| Commande | Objectif |
+|---|---|
+| `referentiel-des-lignes.csv` filtre sur `TransportMode=rail` et labels V/P/R | 3 vraies lignes ferroviaires trouvees (route_id C02711/C01731/C01730, reseau Transilien SNCF), distinctes des lignes de bus homonymes du meme referentiel (operateurs locaux sans rapport). |
+| `documentation/scripts/extraire_stations_transilien_vpr.php` (nouveau, meme methode que `extraire_stations_rer.py`) : extraction des stations reelles par ligne depuis stop_times.txt | V : 7 stations, P : 32, R : 24 — a comparer aux Station existantes. |
+| Comparaison des 63 paires ligne/station contre la base (nom normalise) | **0 station manquante : les 3 lignes existent deja completement en base** (Ligne + Station + Desserte, comptes exacts 7/24/32) — importees par `app:importer-reseau-complet` a un moment posterieur a la note TODO.md, jamais mis a jour depuis. Le vrai travail restant n'est pas d'importer les lignes mais de relier le materiel roulant partage (deja fait pour le RER le 2026-08-09, jamais fait pour V/P/R). |
+| Verification des 11 noms ambigus (2 Station candidates, meme nom normalise) trouves au passage | Confirme le phenomene "Stations dupliquees" deja documente (une Station "historique" bien connectee au reseau lourd RER/metro existant, une Station "GTFS" separee ou les Dessertes bus/Transilien s'accumulent) — comportement attendu, pas une anomalie de cette tache, non traite ici (fusion des doublons = tache separee id=10). |
+| Script `lier_materiel_transilien_vpr.php` (scratchpad, non commite) : `INSERT INTO materiel_ligne` pour les 6 paires deja documentees dans TODO.md (Z 5600/8800/20500/20900 -> V, Z 57000/57400 -> R, Z 50000 -> P), sans ecraser un lien deja existant | 6/6 crees en local, aucune date arrivee/fin renseignee (coherent avec les liens RER equivalents deja en base, tous vides aussi). |
+| Verification `/ligne/2904` (V), `/materiel/27` (Z 5600) via le Browser tool | Fiche Ligne V affiche "7 stations, Train, SNCF" (parcours non disponible, normal — pas de troncons pour les lignes issues de `app:importer-reseau-complet`). Fiche materiel Z 5600 liste desormais "C" et "V" dans ses lignes desservies. |
+| `php bin/phpunit` (134 tests) | Tout passe. |
+| `documentation/TODO.md` | Section corrigee : la note "pas encore dans la base" etait perimee, remplacee par le vrai etat (lignes deja importees, materiel desormais relie). |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
