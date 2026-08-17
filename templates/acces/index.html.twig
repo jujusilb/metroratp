@@ -6,12 +6,29 @@
     <div class="container py-4">
         <h1 class="mb-4">Accès</h1>
 
+        <form method="get" action="{{ path('app_acces_index') }}" class="row g-3 mb-4 align-items-end">
+            <div class="col-md-6">
+                <label for="filtre-recherche" class="form-label">Rechercher</label>
+                <input type="text" name="q" id="filtre-recherche" class="form-control" value="{{ recherche }}" placeholder="Nom d'accès, numéro ou nom de station...">
+            </div>
+            <div class="col-md-6 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+                {% if recherche %}
+                    <a href="{{ path('app_acces_index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
+                {% endif %}
+            </div>
+        </form>
+
+        <p class="text-muted small">{{ acces.getTotalItemCount }} accès</p>
+
         <table class="table align-middle">
             <thead>
                 <tr>
                     <th>{{ knp_pagination_sortable(acces, 'Label', 'a.label') }}</th>
                     <th>{{ knp_pagination_sortable(acces, 'Numéro', 'a.numero') }}</th>
                     <th>{{ knp_pagination_sortable(acces, 'Accessible PMR', 'a.isAccessible') }}</th>
+                    <th>{{ knp_pagination_sortable(acces, 'Entrée', 'a.estEntree') }}</th>
+                    <th>{{ knp_pagination_sortable(acces, 'Sortie', 'a.estSortie') }}</th>
                     <th>{{ knp_pagination_sortable(acces, 'Style', 'styleAcces.label') }}</th>
                     <th>Actions</th>
                 </tr>
@@ -26,6 +43,24 @@
                             <span class="badge text-bg-success">Oui</span>
                         {% else %}
                             <span class="badge text-bg-secondary">Non</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if acce.estEntree == true %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% elseif acce.estEntree == false %}
+                            <span class="badge text-bg-secondary">Non</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if acce.estSortie == true %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% elseif acce.estSortie == false %}
+                            <span class="badge text-bg-secondary">Non</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
                         {% endif %}
                     </td>
                     <td>
@@ -46,11 +81,13 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="5">Aucun enregistrement trouvé</td>
+                    <td colspan="7">Aucun enregistrement trouvé</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+
+        {{ knp_pagination_render(acces) }}
 
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_acces_new') }}" class="btn btn-primary">Créer nouvel accès</a>

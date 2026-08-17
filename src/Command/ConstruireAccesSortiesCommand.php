@@ -28,6 +28,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * pas 2500+ acces individuels) : Acces::isAccessible reste NULL, ce qui reflete l'absence reelle
  * de donnee plutot qu'une fausse valeur.
  *
+ * Acces::estEntree/estSortie (AccIsEntry/AccIsExit du dataset "acces") : seuls champs du dataset
+ * au-dela du libelle/numero qui se sont averes exploitables (voir le docblock de
+ * extraire_acces_entrees.php pour le detail des pistes verifiees et ecartees, dont le numero
+ * manquant sur ~42% des acces — une vraie absence dans la donnee source, pas une extraction
+ * incomplete).
+ *
  * Rattachement par StationRepository::trouverIdCanoniqueParZdc() (et non directement par
  * codeExterne) : sans ca, les Sortie atterriraient sur la Station ZdC-liee plutot que sur la
  * Station "originale" que /station/{id} affiche reellement pour tout le reseau metro/RER/tram
@@ -102,6 +108,8 @@ class ConstruireAccesSortiesCommand extends Command
             $acces->setCodeExterne($ligne['accId']);
             $acces->setLatitude('' !== $ligne['lat'] ? (float) $ligne['lat'] : null);
             $acces->setLongitude('' !== $ligne['lon'] ? (float) $ligne['lon'] : null);
+            $acces->setEstEntree('' !== ($ligne['estEntree'] ?? '') ? 'true' === $ligne['estEntree'] : null);
+            $acces->setEstSortie('' !== ($ligne['estSortie'] ?? '') ? 'true' === $ligne['estSortie'] : null);
             $this->entityManager->persist($acces);
 
             $sortie = new Sortie();

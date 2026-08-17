@@ -647,4 +647,23 @@ d'acces, puis mettre dans acces mettre le lien vers ca".
 | `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
 | `documentation/TODO.md` | Section reecrite avec le vrai etat : Guimard fait (22/64, detail des exclusions), escalator/mat toujours sans source malgre une investigation serieuse sur OSM. |
 
+## Session du 2026-08-17 (suite) — Pagination Accès, filtre, et champs entrée/sortie GTFS
+
+Demande utilisateur : "j'ai 2513 en base... pourquoi j'en ai si peu sur la page acces du site en
+prod ? peut tu mettre en place un filtre et une pagination sur la page des acces ? et mettre les
+numero aussi ? enfin remplir tout ce que tu trouve sur les gtfs."
+
+| Commande | Objectif |
+|---|---|
+| Verification en prod (Browser tool, compte de test) | La pagination existait deja cote controleur (50/page, ajoutee lors du gros chantier de tri du 2026-08-16) mais `templates/acces/index.html.twig` n'a jamais eu `{{ knp_pagination_render(acces) }}` — bug preexistant, pas cause par le travail d'aujourd'hui. Resultat : seules les 50 premieres lignes (alphabetique) etaient visibles, sans aucun moyen d'atteindre les 2463 autres ni de rechercher. |
+| `AccesRepository::creerRequeteFiltree()` (nouveau, meme pattern que `DesserteRepository`) : recherche sur label/numero/nom de station | Le nom de station est filtre via une sous-requete EXISTS plutot qu'un JOIN classique : un Acces peut desservir plusieurs Station (correspondance), un JOIN aurait multiplie les lignes SQL et fausse le compte total de KnpPaginatorBundle (meme piege que documente dans `DesserteRepository`). |
+| `AccesController::index()` + `templates/acces/index.html.twig` | Formulaire de recherche ajoute, `{{ knp_pagination_render(acces) }}` ajoute (le vrai correctif du bug signale), compteur total affiche. |
+| Audit de `Acces.numero` (l'utilisateur demandait "mettre les numero aussi") | Deja rempli a 58% (1468/2515) depuis `acces_entrees.csv` — verifie que ce n'est pas un bug d'extraction : le repli vers `stop_code` du GTFS (`?? $row['stop_code']`) ne se declenche en pratique jamais (ne s'active que si l'accId est absent d'`acces.csv`, pas si son numero y est vide) MAIS `stop_code` est de toute facon vide sur 100% des 2515 entrees GTFS — verifie directement. Egalement verifies et vides sur 100% des entrees : `wheelchair_boarding`, `platform_code`, `stop_desc`, `level_id`, `stop_access`, `stop_url`. Le numero manquant sur ~42% des acces est donc une vraie absence dans la donnee source IDFM, pas une extraction incomplete de notre cote. |
+| Audit des colonnes inexploitees de `acces.csv` (dataset IDFM) pour repondre a "remplir tout ce que tu trouve sur les gtfs" | `AccDescription` : 45% rempli mais quasi exclusivement "Source IDFM" (texte generique, un exemplaire litteralement "test") — pas retenu. `AccIsEntry`/`AccIsExit` : bien remplis (2376/2515 et 2502/2515 a "true", des vraies valeurs "false" existent aussi, ex. grilles de sortie uniquement) — genuinement exploitable, jamais capture jusqu'ici. |
+| `Acces::estEntree`/`estSortie` (bool nullable) + migration `Version20260817200000.php` | Colonnes ajoutees (local, test, prod). `extraire_acces_entrees.php` etendu (2 colonnes CSV de plus) et chemin GTFS corrige au passage (`documentation/IDFM-gtfs/` -> `.../csv/`, meme correctif deja fait cette session pour d'autres scripts). `ConstruireAccesSortiesCommand` mis a jour pour les futurs re-imports complets. |
+| Script `backfill_entree_sortie_acces.php` (scratchpad, non commite) : `UPDATE acces SET est_entree=?, est_sortie=? WHERE code_externe=?`, PAS un re-import complet | `app:construire-acces-sorties` purge et recree tous les Acces/Sortie a chaque execution (nouveaux id auto-increment a chaque fois) : le relancer aurait casse les 22 liens `StyleAcces` (Guimard) crees cette session et les references `PositionRame`. Un backfill cible par `code_externe` (stable, unique) evite ce risque. 2512/2513 Acces mis a jour en local et prod. |
+| `templates/acces/index.html.twig` et `show.html.twig` : colonnes/lignes Entrée et Sortie ajoutees | Rendu Oui/Non/— selon la valeur. |
+| `php bin/phpunit` (134 tests) | Tout passe. |
+| Verification visuelle (Browser tool) : recherche "Nation" (17 resultats corrects, dont les 2 acces Guimard), inspection DOM directe de la pagination (`document.querySelectorAll('tbody tr').length` = 50, controle de pagination pages 1-51 present) | Confirme le correctif de bout en bout. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

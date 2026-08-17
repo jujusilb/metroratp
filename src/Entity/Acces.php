@@ -92,6 +92,19 @@ class Acces
     #[ORM\ManyToOne(inversedBy: 'acces')]
     private ?StyleAcces $styleAcces = null;
 
+    /**
+     * AccIsEntry/AccIsExit du dataset "acces" IDFM (data.iledefrance-mobilites.fr) : si cet Acces
+     * peut etre emprunte pour entrer/sortir de la station (ex: certaines grilles ne sont que
+     * sortie). Distinct de cheminementBidirectionnel (qui porte sur le cheminement pietonnier vers
+     * le quai, pas sur l'usage autorise de l'entree elle-meme). Null pour les Acces crees a la
+     * main ou absents du dataset "acces" (voir app:construire-acces-sorties).
+     */
+    #[ORM\Column(nullable: true)]
+    private ?bool $estEntree = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $estSortie = null;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -308,6 +321,30 @@ class Acces
     public function setStyleAcces(?StyleAcces $styleAcces): static
     {
         $this->styleAcces = $styleAcces;
+
+        return $this;
+    }
+
+    public function isEstEntree(): ?bool
+    {
+        return $this->estEntree;
+    }
+
+    public function setEstEntree(?bool $estEntree): static
+    {
+        $this->estEntree = $estEntree;
+
+        return $this;
+    }
+
+    public function isEstSortie(): ?bool
+    {
+        return $this->estSortie;
+    }
+
+    public function setEstSortie(?bool $estSortie): static
+    {
+        $this->estSortie = $estSortie;
 
         return $this;
     }

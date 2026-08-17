@@ -25,6 +25,14 @@
                     <td>{{ acce.isAccessible ? 'Oui' : 'Non' }}</td>
                 </tr>
                 <tr>
+                    <th>Entrée</th>
+                    <td>{{ acce.estEntree is null ? '—' : (acce.estEntree ? 'Oui' : 'Non') }}</td>
+                </tr>
+                <tr>
+                    <th>Sortie</th>
+                    <td>{{ acce.estSortie is null ? '—' : (acce.estSortie ? 'Oui' : 'Non') }}</td>
+                </tr>
+                <tr>
                     <th>Style</th>
                     <td>
                         {% if acce.styleAcces %}
