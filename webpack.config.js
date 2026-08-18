@@ -2,19 +2,18 @@ const Encore = require('@symfony/webpack-encore');
 
 Encore
     .setOutputPath('public/build/')
-    // L'app est servie a la racine en dev local (127.0.0.1:8000) mais sous le sous-repertoire
-    // /metroratp en prod (julien-silberstein.fr/metroratp, symlink vers public_html/metroratp) :
-    // sans ce prefixe conditionnel, les URLs generees par Encore (entry_link_tags/script_tags)
-    // pointent vers https://julien-silberstein.fr/build/... (404, hors du site) au lieu de
-    // https://julien-silberstein.fr/metroratp/build/... - repere en prod le 2026-08-18 : le site
-    // entier (CSS/JS) etait casse pour tout visiteur sans cache navigateur prealable sur les
-    // anciens hash de fichiers.
-    .setPublicPath(Encore.isProduction() ? '/metroratp/build' : '/build')
-    // Sans ca, Encore ne sait plus deriver le prefixe des cles de manifest.json depuis
-    // publicPath/outputPath des que les deux ne partagent plus le meme dernier segment
-    // (a cause du prefixe /metroratp ci-dessus) : erreur "Cannot determine how to prefix
-    // the keys in manifest.json" au build de prod.
-    .setManifestKeyPrefix('build')
+    // ATTENTION avant de retoucher ce chemin : le site de prod a DEUX points d'entree distincts
+    // vers la meme app - le sous-domaine metroratp.julien-silberstein.fr (document root = ce
+    // depot directement, '/build' correct) ET le sous-repertoire julien-silberstein.fr/metroratp
+    // (symlink public_html/metroratp -> metroratp-app/public, aurait besoin de '/metroratp/build').
+    // Le 2026-08-18, un premier correctif avait bascule ce chemin en conditionnel
+    // ('/metroratp/build' en prod) pour reparer le sous-repertoire - repere ensuite AVEC PERTES
+    // (l'utilisateur a signale "la page est cassee" sur le sous-domaine, casse par ce changement) :
+    // le sous-domaine est le point d'entree reellement utilise, donc reverti a '/build'
+    // inconditionnel. Le sous-repertoire /metroratp reste casse (memes assets 404) mais rien
+    // n'indique qu'il soit reellement utilise - voir documentation/commande.md avant de re-tenter
+    // un correctif base sur l'hypothese inverse.
+    .setPublicPath('/build')
     .addEntry('app', './assets/app.js')
     .splitEntryChunks()
     .enableSingleRuntimeChunk()
