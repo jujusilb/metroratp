@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import { formaterBulleStation } from './carte-tooltip';
+import { formaterLigneDesserte } from './carte-tooltip';
 
 // Echelle approximative degres -> metres (latitude de reference Ile-de-France) : suffisant pour
 // comparer des distances localement, pas pour une mesure absolue precise.
@@ -99,8 +99,11 @@ export function extraireTraceEntreDeuxPoints(traceLigne, pointA, pointB) {
 /**
  * Dessine la carte du trajet (fond OpenStreetMap + uniquement les arrets/troncons traverses par
  * ce trajet - pas tout le reseau) dans le conteneur DOM donne, avec zoom/deplacement natifs
- * Leaflet. Chaque station porte une bulle au survol (voir carte-tooltip.js) listant les lignes
- * empruntees a cet arret. Construit aussi la legende numerotee dans le conteneur donne.
+ * Leaflet. Chaque station porte une bulle (voir carte-tooltip.js) listant les lignes empruntees a
+ * cet arret, qui s'ouvre au CLIC sur le numero (pas au survol - trop intrusif avec plusieurs
+ * arrets proches). Une fois la bulle ouverte, survoler une ligne met en surbrillance le trace
+ * emprunte par cette ligne sur ce trajet ; cliquer dessus suit le lien vers le detail de la
+ * Desserte. Construit aussi la legende numerotee dans le conteneur donne.
  *
  * @param {HTMLElement} mapContainer
  * @param {HTMLElement} legendeContainer
@@ -117,6 +120,9 @@ export function initTrajetCarte(mapContainer, legendeContainer, donnees) {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(carte);
+
+    const coucheSurbrillance = L.layerGroup().addTo(carte);
+    const segmentsParLigne = new Map();
 
     const tracesLignes = donnees.tracesLignes || {};
     for (const e of donnees.trajet) {
@@ -140,7 +146,30 @@ export function initTrajetCarte(mapContainer, legendeContainer, donnees) {
             weight: 5,
             opacity: 1,
         }).addTo(carte);
+
+        if (!segmentsParLigne.has(e.ligneId)) {
+            segmentsParLigne.set(e.ligneId, []);
+        }
+        segmentsParLigne.get(e.ligneId).push(points);
     }
+
+    carte.on('popupopen', (evt) => {
+        const element = evt.popup.getElement();
+        if (!element) {
+            return;
+        }
+        for (const ligne of element.querySelectorAll('[data-ligne-id]')) {
+            const ligneId = Number(ligne.dataset.ligneId);
+            ligne.addEventListener('mouseenter', () => {
+                coucheSurbrillance.clearLayers();
+                for (const points of segmentsParLigne.get(ligneId) || []) {
+                    L.polyline(points, { color: '#000', weight: 9, opacity: 0.35 }).addTo(coucheSurbrillance);
+                }
+            });
+            ligne.addEventListener('mouseleave', () => coucheSurbrillance.clearLayers());
+        }
+    });
+    carte.on('popupclose', () => coucheSurbrillance.clearLayers());
 
     const stationsInfo = donnees.stationsInfo || {};
     const stationsTrajet = new Map();
@@ -173,7 +202,12 @@ export function initTrajetCarte(mapContainer, legendeContainer, donnees) {
 
         const dessertes = stationsInfo[label];
         if (dessertes && dessertes.length > 0) {
-            marqueur.bindTooltip(formaterBulleStation(label, dessertes), { sticky: true });
+            const contenuBulle = dessertes
+                .map((d) => (d.desserteUrl
+                    ? `<a href="${d.desserteUrl}" class="carte-bulle-ligne" data-ligne-id="${d.ligneId}">${formaterLigneDesserte(d, label)}</a>`
+                    : `<div>${formaterLigneDesserte(d, label)}</div>`))
+                .join('');
+            marqueur.bindPopup(contenuBulle);
         }
 
         if (legendeContainer) {

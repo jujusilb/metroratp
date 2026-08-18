@@ -273,11 +273,17 @@ final class TrajetController extends AbstractController
 
             $cle = $station->getLabel();
             $gestionnaireLabel = $ligne->getGestionnaire()?->getLabel();
+            // Dedoublonne par ligne (pas par Desserte) : plusieurs Desserte de la meme Ligne a la
+            // meme Station (sens/direction differents) ne doivent apparaitre qu'une fois dans la
+            // bulle - on garde la premiere rencontree pour le lien vers le detail.
+            $cleLigne = $ligne->getId().'|'.($ligne->getLabel() ?? '?');
 
-            $infos[$cle][] = [
+            $infos[$cle][$cleLigne] ??= [
                 'mode' => $ligne->getTypeTransport()?->getLabel(),
                 'ligne' => $ligne->getLabel() ?? '?',
+                'ligneId' => $ligne->getId(),
                 'gestionnaire' => 'RATP' !== $gestionnaireLabel ? $gestionnaireLabel : null,
+                'desserteUrl' => $this->generateUrl('app_desserte_show', ['id' => $desserte->getId()]),
             ];
         };
 
@@ -286,10 +292,7 @@ final class TrajetController extends AbstractController
             $ajouter($etape->arrivee);
         }
 
-        return array_map(
-            static fn (array $lignes): array => array_values(array_unique($lignes, SORT_REGULAR)),
-            $infos,
-        );
+        return array_map(static fn (array $lignes): array => array_values($lignes), $infos);
     }
 
     /**

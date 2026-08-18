@@ -207,12 +207,17 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     color: #333;
 }
 
-// Bulle interactive d'une station sur la carte du reseau complet : une ligne par desserte,
-// survolable/cliquable individuellement pour mettre en surbrillance son trace (carte-reseau.js).
+// Bulle interactive d'une station : une ligne par desserte, survolable/cliquable individuellement
+// pour mettre en surbrillance son trace (carte-reseau.js, trajet-carte.js). Utilise aussi bien
+// comme <div> (carte reseau) que comme <a> vers le detail de la Desserte (calculateur de trajet) -
+// d'ou le reset de la decoration/couleur de lien par defaut.
 .carte-bulle-ligne {
+    display: block;
     cursor: pointer;
     padding: 1px 3px;
     border-radius: 3px;
+    color: inherit;
+    text-decoration: none;
 
     &:hover {
         background: rgba(13, 110, 253, 0.15);
