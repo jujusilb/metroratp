@@ -61,7 +61,7 @@
 
     {% if resultat %}
         <div class="container-fluid px-4">
-            <div class="d-flex gap-3 mb-3">
+            <div class="d-flex flex-wrap gap-3 mb-3">
                 <span class="badge text-bg-primary fs-6">{{ resultat.dureeMinutesTotale|round(1) }} min</span>
                 <span class="badge text-bg-secondary fs-6">{{ resultat.nombreCorrespondances }} correspondance{{ resultat.nombreCorrespondances > 1 ? 's' : '' }}</span>
                 <span class="badge text-bg-light text-dark fs-6">{{ resultat.etapes|length }} étapes</span>
@@ -103,7 +103,7 @@
                         </p>
                         <ul class="list-group">
                             {% for segment in resumeSimple.segments %}
-                                <li class="list-group-item d-flex align-items-center gap-2">
+                                <li class="list-group-item d-flex flex-wrap align-items-center gap-2">
                                     {% if segment.ligneId %}
                                         <a href="{{ path('app_ligne_show', {'id': segment.ligneId}) }}" class="link-body-emphasis text-decoration-none d-inline-flex align-items-center gap-1">
                                             <span class="badge" style="background-color: {{ segment.couleur }};">&nbsp;</span> {{ segment.ligne }}
@@ -125,7 +125,7 @@
                         <ul class="list-group">
                             {% for segment in segments %}
                                 {% if segment.type == 'correspondance' %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center border-start border-danger border-3">
+                                    <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center border-start border-danger border-3">
                                         <span>
                                             <span class="badge text-bg-danger me-2">
                                                 Correspondance
@@ -147,7 +147,7 @@
                                         <span class="text-muted">{{ segment.duree|round(1) }} min</span>
                                     </li>
                                 {% else %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <li class="list-group-item d-flex flex-wrap justify-content-between align-items-start">
                                         <span>
                                             {% if segment.dessertes|first.ligne %}
                                                 <a href="{{ path('app_ligne_show', {'id': segment.dessertes|first.ligne.id}) }}" class="link-body-emphasis text-decoration-none me-2">
