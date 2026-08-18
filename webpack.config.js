@@ -2,7 +2,19 @@ const Encore = require('@symfony/webpack-encore');
 
 Encore
     .setOutputPath('public/build/')
-    .setPublicPath('/build')
+    // L'app est servie a la racine en dev local (127.0.0.1:8000) mais sous le sous-repertoire
+    // /metroratp en prod (julien-silberstein.fr/metroratp, symlink vers public_html/metroratp) :
+    // sans ce prefixe conditionnel, les URLs generees par Encore (entry_link_tags/script_tags)
+    // pointent vers https://julien-silberstein.fr/build/... (404, hors du site) au lieu de
+    // https://julien-silberstein.fr/metroratp/build/... - repere en prod le 2026-08-18 : le site
+    // entier (CSS/JS) etait casse pour tout visiteur sans cache navigateur prealable sur les
+    // anciens hash de fichiers.
+    .setPublicPath(Encore.isProduction() ? '/metroratp/build' : '/build')
+    // Sans ca, Encore ne sait plus deriver le prefixe des cles de manifest.json depuis
+    // publicPath/outputPath des que les deux ne partagent plus le meme dernier segment
+    // (a cause du prefixe /metroratp ci-dessus) : erreur "Cannot determine how to prefix
+    // the keys in manifest.json" au build de prod.
+    .setManifestKeyPrefix('build')
     .addEntry('app', './assets/app.js')
     .splitEntryChunks()
     .enableSingleRuntimeChunk()
