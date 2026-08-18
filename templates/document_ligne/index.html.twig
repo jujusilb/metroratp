@@ -21,7 +21,7 @@
                 <tr>
                     <td>
                         {% if document.ligne %}
-                            <a href="{{ path('app_ligne_show', {'id': document.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ document.ligne.couleur|default('#6c757d') }};">
+                            <a href="{{ path('app_ligne_show', {'id': document.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ document.ligne.couleur|default('#6c757d') }};">
                                 {{ document.ligne.label }}
                             </a>
                         {% else %}

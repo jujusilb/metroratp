@@ -48,7 +48,7 @@ export function initCarteAcces(mapContainer, donnees) {
         L.marker([acces.lat, acces.lon], {
             icon: L.divIcon({
                 className: 'carte-acces-sortie',
-                html: `<span>${formaterLibelleSortie(acces)}</span>`,
+                html: `<span class="badge text-white">${formaterLibelleSortie(acces)}</span>`,
                 iconSize: null,
             }),
         }).addTo(carte);

@@ -10,7 +10,7 @@
             {% for ligne in lignes %}
                 <div class="col">
                     <a href="{{ path('app_mission_choix_direction', {'id': ligne.id}) }}" class="text-decoration-none">
-                        <div class="card h-100 shadow-sm border-0 ligne-card">
+                        <div class="card h-100 shadow-sm border-0 rounded-4 ligne-card">
                             <div class="card-header text-center fw-bold fs-4" style="background-color: {{ ligne.couleur|default('#6c757d') }};">
                                 {{ ligne.label }}
                             </div>

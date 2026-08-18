@@ -31,7 +31,7 @@
                     </td>
                     <td>
                         {% if materiel_ligne.ligne %}
-                            <a href="{{ path('app_ligne_show', {'id': materiel_ligne.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ materiel_ligne.ligne.couleur|default('#6c757d') }};">
+                            <a href="{{ path('app_ligne_show', {'id': materiel_ligne.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ materiel_ligne.ligne.couleur|default('#6c757d') }};">
                                 {{ materiel_ligne.ligne.label }}
                             </a>
                         {% else %}

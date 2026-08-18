@@ -44,6 +44,22 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.15);
 }
 
+// Sous le breakpoint Bootstrap "sm" (576px, smartphones en portrait) : header et carrelage
+// reduits de moitie. --metro-panel-text-size est fixe explicitement (pas derive de la formule
+// basee sur le carrelage comme en desktop) : a la formule habituelle, "Métroratp" en 63px
+// debordait largement d'un ecran de 375px (white-space:nowrap empeche le retour a la ligne).
+// DOIT rester APRES la regle de base ci-dessus : meme selecteur, meme specificite -> sans cet
+// ordre, la regle inconditionnelle (venant apres) ecraserait toujours celle-ci, quelle que soit
+// la largeur d'ecran (bug reellement rencontre en verifiant cette page en mobile).
+@media (max-width: 575.98px) {
+    .metro-header {
+        --metro-header-height: 120px;
+        --metro-tile-width: 40px;
+        --metro-tile-height: 20px;
+        --metro-panel-text-size: 1.75rem;
+    }
+}
+
 .metro-header__panel {
     display: inline-flex;
     align-items: center;
@@ -83,10 +99,9 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     white-space: nowrap;
 }
 
-// Bootstrap card-header/footer corners follow --bs-card-border-radius automatically,
-// so bumping this one variable (Bootstrap's own mechanism) is enough to round the whole card.
+// L'arrondi vient de la classe Bootstrap "rounded-4" posee directement sur la card (voir
+// mission/choix_ligne.html.twig) : ne reste ici que l'effet de survol, sans equivalent Bootstrap.
 .ligne-card {
-    --bs-card-border-radius: 1rem;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 
     &:hover {
@@ -103,13 +118,13 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     }
 }
 
+// Forme/alignement (cercle centre) fournis par les classes Bootstrap utilitaires directement
+// dans le HTML (rounded-circle d-inline-flex align-items-center justify-content-center) : ne
+// reste ici que ce que Bootstrap ne fournit pas (taille fixe en px, couleur dynamique par Ligne
+// donc pas de classe statique possible, ombre de texte, transition au survol).
 .ligne-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     width: 3rem;
     height: 3rem;
-    border-radius: 50%;
     color: #fff;
     font-weight: 700;
     font-size: 1.25rem;
@@ -118,13 +133,9 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
 }
 
 .ligne-badge-sm {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     min-width: 1.75rem;
     height: 1.75rem;
     padding: 0 0.4rem;
-    border-radius: 50%;
     color: #fff;
     font-weight: 700;
     font-size: 0.75rem;
@@ -140,6 +151,10 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     }
 }
 
+// Le survol vient de la classe Bootstrap "list-group-item-action" posee sur chaque <li> (voir
+// ligne/show.html.twig et mission/trajet.html.twig) : ne reste ici que la couleur d'accent par
+// Ligne (dynamique, pas de classe Bootstrap statique possible pour une couleur arbitraire) qui
+// vient surcharger la bordure Bootstrap "border-start border-4" deja posee sur chaque <li>.
 .parcours {
     --ligne-couleur: #6c757d;
 }
@@ -148,11 +163,6 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     .list-group-item {
         border-left-color: var(--ligne-couleur) !important;
         font-weight: 500;
-        transition: background-color 0.1s ease;
-
-        &:hover {
-            background-color: rgba(0, 0, 0, 0.02);
-        }
     }
 }
 
@@ -163,43 +173,21 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     margin-top: 0;
 }
 
-// Suggestion d'autocomplétion de station (calculateur de trajet) : mode de transport a
-// gauche, station (+ville) a droite, separes par un filet vertical.
-.suggestion-station {
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    padding: 0;
-
-    .suggestion-mode {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex: 0 0 5.5rem;
-        padding: 0.5rem;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: var(--bs-secondary-color, #6c757d);
-        border-right: 1px solid var(--bs-border-color, #dee2e6);
-    }
-
-    .suggestion-label {
-        display: flex;
-        align-items: center;
-        flex: 1 1 auto;
-        padding: 0.5rem 0.75rem;
-    }
+// Suggestion d'autocomplétion de station (calculateur de trajet) : mode de transport a gauche,
+// station (+ville) a droite. Tout le reste (flex, alignement, couleur, filet vertical) vient des
+// classes Bootstrap posees directement dans trajet-autocomplete.js - ne reste ici que la largeur
+// fixe de la colonne mode, sans equivalent Bootstrap (les utilitaires de largeur sont en %, pas
+// en valeur absolue).
+.suggestion-mode {
+    flex: 0 0 5.5rem;
 }
 
-// Badge numerote d'une station du trajet sur la carte Leaflet (calculateur de trajet).
+// Badge numerote d'une station du trajet sur la carte Leaflet (calculateur de trajet) : forme/
+// alignement fournis par les classes Bootstrap posees dans trajet-carte.js - ne reste ici que la
+// taille fixe en px (pas d'utilitaire Bootstrap pour une taille absolue) et les couleurs/bordure.
 .carte-station-numero span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: 22px;
     height: 22px;
-    border-radius: 50%;
     background: var(--bs-body-bg, #fff);
     border: 1.5px solid #333;
     font-size: 0.7rem;
@@ -208,16 +196,13 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
 }
 
 // Bulle interactive d'une station : une ligne par desserte, survolable/cliquable individuellement
-// pour mettre en surbrillance son trace (carte-reseau.js, trajet-carte.js). Utilise aussi bien
-// comme <div> (carte reseau) que comme <a> vers le detail de la Desserte (calculateur de trajet) -
-// d'ou le reset de la decoration/couleur de lien par defaut.
+// pour mettre en surbrillance son trace (carte-reseau.js, trajet-carte.js). Forme/couleur/
+// decoration fournies par des classes Bootstrap posees directement dans le HTML genere - ne
+// reste ici que le curseur (necessaire sur la variante <div>, sans href donc sans curseur pointer
+// par defaut) et le fond au survol, sans utilitaire Bootstrap statique possible (declenche par
+// JS, pas par :hover pur dans les autres usages de ce pattern sur le site).
 .carte-bulle-ligne {
-    display: block;
     cursor: pointer;
-    padding: 1px 3px;
-    border-radius: 3px;
-    color: inherit;
-    text-decoration: none;
 
     &:hover {
         background: rgba(13, 110, 253, 0.15);
@@ -225,16 +210,12 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
 }
 
 // Bandeau "Sortie N - libelle" sur la mini-carte des acces d'une Station (carte-acces.js),
-// imitant le style des plans de quartier affiches sur les quais RATP.
+// imitant le style des plans de quartier affiches sur les quais RATP : forme/texte fournis par
+// la classe Bootstrap "badge" posee directement dans le HTML genere - ne reste ici que la
+// couleur bespoke (bleu marine signaletique, pas une couleur Bootstrap) et l'ombre.
 .carte-acces-sortie span {
-    display: inline-block;
-    white-space: nowrap;
     background: #1a237e;
-    color: #fff;
-    font-size: 0.75rem;
     font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 

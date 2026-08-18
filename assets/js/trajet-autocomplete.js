@@ -51,15 +51,15 @@ export function initTrajetAutocomplete(inputTexte, inputCache, inputModeCache, c
     function creerLigneSuggestion(libelleMode, texteAffiche, onClick) {
         const item = document.createElement('button');
         item.type = 'button';
-        item.className = 'list-group-item list-group-item-action suggestion-station';
+        item.className = 'list-group-item list-group-item-action d-flex align-items-stretch gap-0 p-0';
 
         const pastilleMode = document.createElement('span');
-        pastilleMode.className = 'suggestion-mode';
+        pastilleMode.className = 'suggestion-mode d-flex align-items-center justify-content-center text-uppercase small fw-semibold text-body-secondary border-end p-2';
         pastilleMode.textContent = libelleMode;
         item.appendChild(pastilleMode);
 
         const texte = document.createElement('span');
-        texte.className = 'suggestion-label';
+        texte.className = 'd-flex align-items-center flex-fill px-3 py-2';
         texte.textContent = texteAffiche;
         item.appendChild(texte);
 

@@ -156,7 +156,7 @@ export function initCarteReseau(mapContainer, stations, options = {}) {
         const modeLourd = station.dessertes.some((d) => d.mode && !['Bus', 'Car'].includes(d.mode));
         const lignes = construireLignesUniques(station.dessertes, station.label);
         const contenuBulle = lignes
-            .map((l) => `<div class="carte-bulle-ligne" data-ligne-id="${l.ligneId}">${l.texte}</div>`)
+            .map((l) => `<div class="carte-bulle-ligne d-block link-body-emphasis text-decoration-none rounded-1 py-0 px-1" data-ligne-id="${l.ligneId}">${l.texte}</div>`)
             .join('');
         const buckets = bucketsPourDessertes(station.dessertes);
 

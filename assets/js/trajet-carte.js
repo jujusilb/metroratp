@@ -194,7 +194,7 @@ export function initTrajetCarte(mapContainer, legendeContainer, donnees) {
         const marqueur = L.marker([lat, lon], {
             icon: L.divIcon({
                 className: 'carte-station-numero',
-                html: `<span>${i}</span>`,
+                html: `<span class="rounded-circle d-flex align-items-center justify-content-center">${i}</span>`,
                 iconSize: [22, 22],
                 iconAnchor: [11, 11],
             }),
@@ -204,8 +204,8 @@ export function initTrajetCarte(mapContainer, legendeContainer, donnees) {
         if (dessertes && dessertes.length > 0) {
             const contenuBulle = dessertes
                 .map((d) => (d.desserteUrl
-                    ? `<a href="${d.desserteUrl}" class="carte-bulle-ligne" data-ligne-id="${d.ligneId}">${formaterLigneDesserte(d, label)}</a>`
-                    : `<div>${formaterLigneDesserte(d, label)}</div>`))
+                    ? `<a href="${d.desserteUrl}" class="carte-bulle-ligne d-block link-body-emphasis text-decoration-none rounded-1 py-0 px-1" data-ligne-id="${d.ligneId}">${formaterLigneDesserte(d, label)}</a>`
+                    : `<div class="py-0 px-1">${formaterLigneDesserte(d, label)}</div>`))
                 .join('');
             marqueur.bindPopup(contenuBulle);
         }

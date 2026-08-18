@@ -49,7 +49,7 @@
                             <tr>
                                 <td>
                                     {% if desserte.ligne %}
-                                        <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ desserte.ligne.couleur|default('#6c757d') }};">
+                                        <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ desserte.ligne.couleur|default('#6c757d') }};">
                                             {{ desserte.ligne.label }}
                                         </a>
                                     {% else %}
@@ -215,7 +215,7 @@
                             <tr>
                                 <td>
                                     {% if conseil.ligne %}
-                                        <a href="{{ path('app_ligne_show', {'id': conseil.ligne.id}) }}" class="ligne-badge-sm" style="background-color: {{ conseil.ligne.couleur|default('#6c757d') }};">
+                                        <a href="{{ path('app_ligne_show', {'id': conseil.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ conseil.ligne.couleur|default('#6c757d') }};">
                                             {{ conseil.ligne.label }}
                                         </a>
                                     {% else %}
