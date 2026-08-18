@@ -32,12 +32,12 @@
             {% endfor %}
         </div>
     </div>
-    <div class="col-md-5">
+    <div class="col-12 col-md-5">
         <label for="filtre-recherche" class="form-label">Rechercher {{ libelleRecherche }}</label>
         <input type="text" name="q" id="filtre-recherche" class="form-control" value="{{ recherche }}" placeholder="{{ placeholderRecherche }}">
     </div>
     {% if gestionnaires is defined %}
-        <div class="col-md-4">
+        <div class="col-12 col-md-4">
             <label for="filtre-gestionnaire" class="form-label">Gestionnaire</label>
             <select name="gestionnaires[]" id="filtre-gestionnaire" class="form-select" multiple size="1">
                 {% for gestionnaire in gestionnaires %}
@@ -48,7 +48,7 @@
         </div>
     {% endif %}
     {% if avecTroncons is defined %}
-        <div class="col-md-3">
+        <div class="col-12 col-md-3">
             <label for="filtre-avec-troncons" class="form-label">Tronçons construits</label>
             <select name="avecTroncons" id="filtre-avec-troncons" class="form-select">
                 <option value="" {{ avecTroncons is null ? 'selected' : '' }}>Tous</option>
@@ -57,7 +57,7 @@
             </select>
         </div>
     {% endif %}
-    <div class="col-md-12 d-flex gap-2">
+    <div class="col-12 d-flex gap-2">
         <button type="submit" class="btn btn-primary">Filtrer</button>
         {% if recherche or modesSelectionnes|length < 5 or gestionnairesSelectionnes|length > 0 or (avecTroncons is defined and avecTroncons is not null) %}
             <a href="{{ path(route) }}" class="btn btn-outline-secondary">Réinitialiser</a>

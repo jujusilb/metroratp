@@ -7,11 +7,11 @@
         <h1 class="mb-4">Accès</h1>
 
         <form method="get" action="{{ path('app_acces_index') }}" class="row g-3 mb-4 align-items-end">
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label for="filtre-recherche" class="form-label">Rechercher</label>
                 <input type="text" name="q" id="filtre-recherche" class="form-control" value="{{ recherche }}" placeholder="Nom d'accès, numéro ou nom de station...">
             </div>
-            <div class="col-md-6 d-flex gap-2">
+            <div class="col-12 col-md-6 d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Filtrer</button>
                 {% if recherche %}
                     <a href="{{ path('app_acces_index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
