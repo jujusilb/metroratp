@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un équipement d'arrêt{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Créer un équipement d'arrêt</h1>
+
+        {{ include('equipement_arret/_form.html.twig') }}
+
+        <a href="{{ path('app_equipement_arret_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}

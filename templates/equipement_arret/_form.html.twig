@@ -1,0 +1,18 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.artId) }}
+    {{ form_row(form.nom) }}
+    {{ form_row(form.ville) }}
+    {{ form_row(form.latitude) }}
+    {{ form_row(form.longitude) }}
+    {{ form_row(form.accessibleFauteuilRoulant) }}
+    {{ form_row(form.banc) }}
+    {{ form_row(form.poubelle) }}
+    {{ form_row(form.eclairage) }}
+    {{ form_row(form.abri) }}
+    {{ form_row(form.bandeTactile) }}
+    {{ form_row(form.distanceReferentielOsm) }}
+    {{ form_row(form.station) }}
+
+    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

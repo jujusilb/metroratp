@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Équipements des arrêts{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Équipements des arrêts</h1>
+        <p class="text-muted">
+            Équipements relevés sur OpenStreetMap pour chaque arrêt physique (fauteuil roulant,
+            banc, abri, bande tactile...) — dataset IDFM « écarts arrêts référentiel/OpenStreetMap ».
+        </p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>{{ knp_pagination_sortable(equipementArrets, 'Nom', 'e.nom') }}</th>
+                    <th>{{ knp_pagination_sortable(equipementArrets, 'Ville', 'e.ville') }}</th>
+                    <th>Fauteuil roulant</th>
+                    <th>Banc</th>
+                    <th>Abri</th>
+                    <th>Bande tactile</th>
+                    <th>{{ knp_pagination_sortable(equipementArrets, 'Station rattachée', 'station.label') }}</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for equipementArret in equipementArrets %}
+                <tr>
+                    <td>{{ equipementArret.nom }}</td>
+                    <td>{{ equipementArret.ville ?? '—' }}</td>
+                    <td>
+                        {% if equipementArret.accessibleFauteuilRoulant is null %}
+                            <span class="text-muted">—</span>
+                        {% elseif equipementArret.accessibleFauteuilRoulant %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Non</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if equipementArret.banc is null %}
+                            <span class="text-muted">—</span>
+                        {% elseif equipementArret.banc %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Non</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if equipementArret.abri is null %}
+                            <span class="text-muted">—</span>
+                        {% elseif equipementArret.abri %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Non</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if equipementArret.bandeTactile is null %}
+                            <span class="text-muted">—</span>
+                        {% elseif equipementArret.bandeTactile %}
+                            <span class="badge text-bg-success">Oui</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">Non</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if equipementArret.station %}
+                            <a href="{{ path('app_station_show', {'id': equipementArret.station.id}) }}">{{ equipementArret.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_equipement_arret_show', {'id': equipementArret.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_equipement_arret_edit', {'id': equipementArret.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(equipementArrets) }}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_equipement_arret_new') }}" class="btn btn-primary">Créer un équipement d'arrêt</a>
+        {% endif %}
+    </div>
+{% endblock %}

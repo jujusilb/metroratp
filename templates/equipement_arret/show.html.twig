@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Équipement {{ equipement_arret.nom }}{% endblock %}
+
+{% macro oui_non(valeur) %}
+    {% if valeur is null %}
+        <span class="text-muted">Non renseigné</span>
+    {% elseif valeur %}
+        <span class="badge text-bg-success">Oui</span>
+    {% else %}
+        <span class="badge text-bg-secondary">Non</span>
+    {% endif %}
+{% endmacro %}
+
+{% import _self as macros %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ equipement_arret.nom }}{% if equipement_arret.ville %} <small class="text-muted fs-5">({{ equipement_arret.ville }})</small>{% endif %}</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Accessible fauteuil roulant</th>
+                    <td>{{ macros.oui_non(equipement_arret.accessibleFauteuilRoulant) }}</td>
+                </tr>
+                <tr>
+                    <th>Banc</th>
+                    <td>{{ macros.oui_non(equipement_arret.banc) }}</td>
+                </tr>
+                <tr>
+                    <th>Poubelle</th>
+                    <td>{{ macros.oui_non(equipement_arret.poubelle) }}</td>
+                </tr>
+                <tr>
+                    <th>Éclairage</th>
+                    <td>{{ macros.oui_non(equipement_arret.eclairage) }}</td>
+                </tr>
+                <tr>
+                    <th>Abri</th>
+                    <td>{{ macros.oui_non(equipement_arret.abri) }}</td>
+                </tr>
+                <tr>
+                    <th>Bande tactile</th>
+                    <td>{{ macros.oui_non(equipement_arret.bandeTactile) }}</td>
+                </tr>
+                <tr>
+                    <th>Coordonnées</th>
+                    <td>{{ equipement_arret.latitude }}, {{ equipement_arret.longitude }}</td>
+                </tr>
+                <tr>
+                    <th>Écart référentiel / OpenStreetMap</th>
+                    <td>{{ equipement_arret.distanceReferentielOsm is not null ? equipement_arret.distanceReferentielOsm ~ ' m' : '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Station rattachée</th>
+                    <td>
+                        {% if equipement_arret.station %}
+                            <a href="{{ path('app_station_show', {'id': equipement_arret.station.id}) }}">{{ equipement_arret.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">Aucune</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_equipement_arret_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_equipement_arret_edit', {'id': equipement_arret.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('equipement_arret/_delete_form.html.twig') }}
+    </div>
+{% endblock %}
