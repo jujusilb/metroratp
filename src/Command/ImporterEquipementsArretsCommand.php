@@ -29,7 +29,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'app:importer-equipements-arrets', description: "Importe les equipements OSM par arret physique (ecarts-arrets-referentiel-et-openstreetmap.csv), rattaches a Station via relations.csv")]
 class ImporterEquipementsArretsCommand extends Command
 {
-    private const ECARTS_CSV = 'documentation/IDFM-gtfs/csv/ecarts-arrets-referentiel-et-openstreetmap.csv';
+    private const ECARTS_CSV = 'documentation/scripts/donnees-extraites/ecarts-arrets-referentiel-et-openstreetmap.csv';
     private const RELATIONS_CSV = 'documentation/scripts/donnees-extraites/relations.csv';
 
     public function __construct(
