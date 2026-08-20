@@ -4,7 +4,7 @@ Historique complet (tâches achevées, avec leur contexte technique détaillé) 
 (base de données, réservé `ROLE_ADMIN`) le 2026-08-16 — voir `documentation/commande.md` pour le
 détail de cette migration. Ce fichier ne garde désormais que ce qui reste réellement à faire.
 
-## Style physique des Accès — Guimard fait (2026-08-17), escalator/mât toujours sans source
+## Style physique des Accès — Guimard fait (2026-08-17), escalator/ascenseur fait (2026-08-20), mât toujours sans source
 
 Voir `documentation/commande.md` pour le détail. `StyleAcces` créée (même schéma que
 `StyleStation`) avec CRUD complet, `Acces.styleAcces` ajouté.
@@ -23,12 +23,19 @@ Palais Royal—Musée du Louvre, Réaumur—Sébastopol, Barbès—Rochechouart 
 au passage : la station de métro "Wagram" (ligne 3, existe réellement) est totalement absente de
 la base, ni comme Station complète ni comme Desserte — vraie lacune, pas liée à cette tâche.
 
-**Escalator/mât** : toujours aucune source exploitable. GTFS `pathways.txt` ne distingue pas les
-modes (tout en `pathway_mode=1` générique). OpenStreetMap interrogé en direct (Overpass API, après
-plusieurs miroirs indisponibles/en timeout — `lz4.overpass-api.de` a fini par répondre) : sur toute
-l'Île-de-France, seulement 4 entrées de métro ont un tag `escalator` renseigné, et les 4 valent
-"no" — aucun "yes" trouvé, tagging quasi inexistant sur ce point précis. `mât` n'a jamais eu de
-piste concrète (ce serait une valeur par défaut déduite, pas une donnée sourcée).
+**Escalator/ascenseur : fait (2026-08-20)**, en reprenant l'investigation ci-dessus qui avait
+conclu à tort à une impasse. Le vrai problème n'était pas l'absence de données OSM, mais le tag
+interrogé : `escalator` (générique, quasi inexistant) au lieu du tagage standard
+`highway=steps`+`conveying=*` (escalier mécanique) et `highway=elevator` (ascenseur). Réinterrogé
+via Overpass API (même miroir `lz4.overpass-api.de`) : 1512 escaliers mécaniques + 1427 ascenseurs
+sur toute l'Île-de-France. Rattaché par proximité géographique à `Acces` (aucun identifiant officiel
+ne relie OSM à nos données), avec un seuil de confiance strict (30m + deuxième candidat nettement
+plus loin, même discipline que le tagging Guimard) : 227 Acces avec escalier mécanique, 209 avec
+ascenseur (`Acces.aEscalierMecanique`/`aAscenseur`, voir `app:importer-escaliers-ascenseurs-osm`).
+Voir `documentation/commande.md` pour le détail.
+
+**Mât** : toujours aucune piste concrète (ce serait une valeur par défaut déduite, pas une donnée
+sourcée) — contrairement à escalator/ascenseur, aucun tag OSM standard équivalent identifié.
 
 ## Pistes de données IDFM non encore exploitées
 

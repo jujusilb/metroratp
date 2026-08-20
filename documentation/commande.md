@@ -794,4 +794,25 @@ Demande utilisateur : "arret transporteur" (piste TODO suivante, choisie directe
 | `ssh ... php -d memory_limit=2048M bin/console app:importer-arrets-transporteur` (prod) | Memes chiffres exacts qu'en local (48890/13706/3626). |
 | `documentation/TODO.md` | Section marquee "fait partiellement" : les deux entites (EquipementArret/ArretTransporteur) restent volontairement separees, pas de vraie hierarchie ArT unifiee - laisse ouvert pour une session future si besoin. |
 
+## Session du 2026-08-20 — Escalator/ascenseur : l'impasse du 2026-08-17 était une fausse piste
+
+Demande utilisateur : reprendre "Style physique des Accès — escalator/mât toujours sans source".
+
+| Commande | Objectif |
+|---|---|
+| Recherche `escalator\|ascenseur\|mât` dans les en-têtes des 32 CSV IDFM disponibles | Confirme qu'aucun fichier officiel IDFM ne porte cette info - le referentiel est bien exploite a fond. |
+| Requete Overpass API (`lz4.overpass-api.de`) sur `highway=steps`+`conveying=*` et `highway=elevator` en Ile-de-France (au lieu du tag generique `escalator` interroge le 2026-08-17) | **1512 escaliers mecaniques (13 seulement en `conveying=no`) + 1427 ascenseurs** - a l'oppose du "4 resultats, tous no" de la session precedente. Le tag standard OSM pour un escalier mecanique n'est pas `escalator=yes/no` sur le nœud d'entree, mais `conveying=*` sur la voie (`way`) `highway=steps` elle-meme. |
+| Test de rattachement par proximite : au niveau `Acces` (mediane 44m) vs au niveau `Station` (mediane 88m, moins precis - les coordonnees de Station ne sont pas systematiquement au niveau de l'entree) | Retenu au niveau Acces. |
+| Verification de la confiance du rattachement (seuil 30m + le 2eme Acces le plus proche doit etre nettement plus loin, meme discipline que le tagging Guimard) | Sur 2926 elements OSM : 695 rattachements confiants, 419 ambigus (deux portes voisines competitives, frequent dans les grandes stations) et ~1800 trop loin - tous ecartes sauf les 695 confiants. |
+| `src/Entity/Acces.php` : ajout de `aEscalierMecanique`/`aAscenseur` (nullable bool) | Sur Acces (pas Station) : c'est la precision au niveau d'un Acces individuel qui rend le rattachement fiable. |
+| `documentation/scripts/donnees-extraites/osm-escaliers-mecaniques-ascenseurs-idf.json` (resultat Overpass sauvegarde) | Reproductible sans redependre d'Overpass a chaque reimport (miroirs connus flaky, voir session du 2026-08-17). |
+| `migrations/Version20260820120000.php`, `src/Command/ImporterEscaliersAscenseursOsmCommand.php` | Commande d'enrichissement (pas un import complet - modifie des Acces existants). |
+| `php bin/console app:importer-escaliers-ascenseurs-osm` (local) | **227 Acces avec escalier mecanique, 209 avec ascenseur** (366 Acces distincts). |
+| `templates/acces/show.html.twig` : deux nouvelles lignes | Pas ajoute a `index.html.twig` (deja 7 colonnes, meme convention que `nombreMarches`/`penteMaxPourcent` : detail sur la fiche, pas dans la liste). |
+| `php bin/phpunit` | **Echoue d'abord** : `Unknown column 't0.a_escalier_mecanique'` - la base de test locale (`metroratp_test`, suffixe automatique ajoute par `config/packages/doctrine.yaml` en environnement test, base physiquement distincte de `metroratp`) n'avait pas les nouvelles colonnes (l'`ALTER TABLE` n'avait ete applique qu'a `metroratp`). Corrige avec `php bin/console dbal:run-sql --env=test "ALTER TABLE ..."`. Piege a retenir : toute nouvelle colonne doit etre appliquee aux DEUX bases locales, pas seulement `metroratp`. |
+| `git commit`/`git push`, `gh run watch` | Deploiement OK, migration appliquee automatiquement (CI recree son propre schema de test a chaque run, pas concerne par le piege ci-dessus). |
+| `ssh ... php bin/console app:importer-escaliers-ascenseurs-osm` (prod) | Memes chiffres exacts qu'en local (227/209/366). |
+| Verification Browser tool (local + prod, compte de test) sur un Acces reel (av. de Friedland, sortie 2 de Charles de Gaulle - Étoile) | "Escalier mécanique : Oui" - plausible pour cette station tres frequentee. |
+| `documentation/TODO.md`, mise a jour de la Tache #2 "Style physique des Accès" (EN_COURS, deja existante - pas de nouvelle Tache creee cette fois) | Reste ouvert : `mât`, aucune piste identifiee (pas d'equivalent au tag `conveying` trouve pour ce concept). |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
