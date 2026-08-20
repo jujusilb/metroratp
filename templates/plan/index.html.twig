@@ -1,10 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Plans de secteur{% endblock %}
+{% block title %}Plans{% endblock %}
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">Plans de secteur</h1>
+        <h1 class="mb-4">Plans</h1>
+        {{ include('tools/_onglets.html.twig', {onglets: [
+            {label: 'Secteur', route: 'app_plan_index', actif: true},
+            {label: 'Région', route: 'app_plan_region_index', actif: false},
+        ]}) }}
         <p class="text-muted">Cartes schématiques papier IDFM couvrant chacune une portion du réseau. Le PDF officiel est hébergé par IDFM (lien ci-dessous), pas par ce site.</p>
 
         <table class="table align-middle">

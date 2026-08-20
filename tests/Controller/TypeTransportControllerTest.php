@@ -31,7 +31,7 @@ final class TypeTransportControllerTest extends DatabaseTestCase
         $this->client->request('GET', $this->path);
 
         self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('Types de transport');
+        self::assertPageTitleContains('Types');
     }
 
     public function testNew(): void

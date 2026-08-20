@@ -1,10 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Plans régionaux{% endblock %}
+{% block title %}Plans{% endblock %}
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">Plans régionaux</h1>
+        <h1 class="mb-4">Plans</h1>
+        {{ include('tools/_onglets.html.twig', {onglets: [
+            {label: 'Secteur', route: 'app_plan_index', actif: false},
+            {label: 'Région', route: 'app_plan_region_index', actif: true},
+        ]}) }}
         <p class="text-muted">Grandes cartes d'ensemble du réseau (Métro, RER, réseau de Nuit, plans PMR/facile à lire...).</p>
 
         <table class="table align-middle">

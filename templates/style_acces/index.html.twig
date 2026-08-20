@@ -1,10 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Style d'accès{% endblock %}
+{% block title %}Styles{% endblock %}
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">Style d'accès</h1>
+        <h1 class="mb-4">Styles</h1>
+        {{ include('tools/_onglets.html.twig', {onglets: [
+            {label: 'Station', route: 'app_style_station_index', actif: false},
+            {label: 'Accès', route: 'app_style_acces_index', actif: true},
+        ]}) }}
 
         <table class="table align-middle">
             <thead>

@@ -1,0 +1,16 @@
+{#
+    Barre d'onglets partagee entre plusieurs pages qui listent des variantes d'un meme concept
+    (ex: Plans de secteur / Plans regionaux). Chaque onglet est un lien normal vers sa propre page
+    (pas de JS, pas de partitionnement en un seul document) : evite tout conflit entre les
+    paginations independantes de chaque page, au prix d'un rechargement de page au changement
+    d'onglet - acceptable ici, ce sont des listes consultees ponctuellement, pas un tableau de bord.
+
+    Variable attendue : onglets, liste de {label, route, actif}.
+#}
+<ul class="nav nav-pills mb-4">
+    {% for onglet in onglets %}
+        <li class="nav-item">
+            <a class="nav-link{{ onglet.actif ? ' active' : '' }}" href="{{ path(onglet.route) }}">{{ onglet.label }}</a>
+        </li>
+    {% endfor %}
+</ul>

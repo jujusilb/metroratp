@@ -1,10 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Type de matériel{% endblock %}
+{% block title %}Types{% endblock %}
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">Type de matériel</h1>
+        <h1 class="mb-4">Types</h1>
+        {{ include('tools/_onglets.html.twig', {onglets: [
+            {label: 'Transport', route: 'app_type_transport_index', actif: false},
+            {label: 'Matériel', route: 'app_type_materiel_index', actif: true},
+            {label: 'Tronçon', route: 'app_type_troncon_index', actif: false},
+        ]}) }}
 
         <table class="table align-middle">
             <thead>

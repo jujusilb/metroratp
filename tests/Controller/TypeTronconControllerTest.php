@@ -31,7 +31,7 @@ final class TypeTronconControllerTest extends DatabaseTestCase
         $this->client->request('GET', $this->path);
 
         self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('Type de tronçon');
+        self::assertPageTitleContains('Types');
     }
 
     public function testNew(): void

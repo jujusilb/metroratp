@@ -1,10 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Sanisettes publiques{% endblock %}
+{% block title %}Toilettes{% endblock %}
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">Sanisettes publiques</h1>
+        <h1 class="mb-4">Toilettes</h1>
+        {{ include('tools/_onglets.html.twig', {onglets: [
+            {label: 'Réseau RATP', route: 'app_sanitaire_index', actif: false},
+            {label: 'Voie publique', route: 'app_sanisette_publique_index', actif: true},
+        ]}) }}
         <p class="text-muted">Toilettes publiques de voirie de la Ville de Paris (hors réseau RATP).</p>
 
         <table class="table align-middle">

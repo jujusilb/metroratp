@@ -31,7 +31,7 @@ final class TypeMaterielControllerTest extends DatabaseTestCase
         $this->client->request('GET', $this->path);
 
         self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('Type de matériel');
+        self::assertPageTitleContains('Types');
     }
 
     public function testNew(): void

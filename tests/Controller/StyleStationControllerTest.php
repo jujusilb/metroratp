@@ -33,7 +33,7 @@ final class StyleStationControllerTest extends DatabaseTestCase
         $this->client->request('GET', $this->path);
 
         self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('Style de station');
+        self::assertPageTitleContains('Styles');
     }
 
     public function testNew(): void
