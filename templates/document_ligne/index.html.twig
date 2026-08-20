@@ -1,10 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Horaires et plans par ligne{% endblock %}
+{% block title %}Plans{% endblock %}
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">Horaires et plans par ligne</h1>
+        <h1 class="mb-4">Plans</h1>
+        {{ include('tools/_onglets.html.twig', {onglets: [
+            {label: 'Secteur', route: 'app_plan_index', actif: false},
+            {label: 'Région', route: 'app_plan_region_index', actif: false},
+            {label: 'Ligne', route: 'app_document_ligne_index', actif: true},
+        ]}) }}
         <p class="text-muted">Fiches horaires et plans PDF officiels IDFM, par ligne.</p>
 
         <table class="table align-middle">
