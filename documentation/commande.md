@@ -774,4 +774,24 @@ Choisie : la piste TODO "Écarts arrêts référentiel/OpenStreetMap", pas encor
 | `ssh ... php -d memory_limit=2048M bin/console app:importer-equipements-arrets` (prod) | Memes chiffres exacts qu'en local (40511/12867) - confirme la coherence des deux bases. |
 | `documentation/TODO.md` | Section marquee "fait (2026-08-19)", note que `arrets-transporteur.csv` et le niveau ArT complet restent pertinents si la piste "Arrêt Transporteur" est un jour entreprise. |
 
+## Session du 2026-08-19 (suite) — ArretTransporteur : piste "Arrêt Transporteur (ArT)"
+
+Demande utilisateur : "arret transporteur" (piste TODO suivante, choisie directement).
+
+| Commande | Objectif |
+|---|---|
+| Inspection de `arrets-transporteur.csv` (52516 lignes, 1 ligne = 1 ArTId, aucun doublon) via PHP | 99% Ile-de-France. Types : bus 93%, rail/metro/tram/cableway le reste. Accessibilite : 25215 vrai / 20048 faux / 7248 inconnue / 5 partiel - signal fort et fiable, a la difference du tag OSM wheelchair (souvent vide). Signalisation sonore/visuelle : ~89% inconnue mais des milliers de valeurs reelles. |
+| Verification du chainage ArTId -> relations.csv -> Station.codeExterne | 100% des 52516 ArT chainent vers un ZdCId, 93% (48890) vers une Station existante - encore meilleur que pour EquipementArret. |
+| Verification du recouvrement avec EquipementArret (deja importe) | 42766/42768 ArTId d'EquipementArret existent aussi dans ce fichier (99.99%) - confirme qu'il s'agit bien des memes arrets, deux sources d'info complementaires (OSM vs referentiel officiel), pas redondantes. |
+| `src/Entity/ArretTransporteur.php`, Repository, Controller (CRUD complet), Type, templates (meme structure que EquipementArret/Sanitaire), lien menu | Entite separee d'EquipementArret plutot qu'unifiee (chacune rattachee directement a Station) : une vraie hierarchie ArT commune serait un refactor plus lourd, pas entrepris ici - documente dans TODO.md pour une session future. |
+| `documentation/scripts/donnees-extraites/arrets-transporteur.csv` (copie) | Meme raison qu'EquipementArret : le fichier source vit sous `documentation/IDFM-gtfs/`, exclu par `.gitignore`. |
+| `migrations/Version20260819110000.php` | SQL isole via `doctrine:schema:update --dump-sql` (meme methode qu'EquipementArret). |
+| `php bin/console app:importer-arrets-transporteur` (local) | **Plante immediatement** : `SQLSTATE[42000]... error in your SQL syntax ... near 'accessible, signalisation_sonore...'` - `ACCESSIBLE` est un mot reserve MariaDB (utilisable tel quel dans le DDL de creation de table car Doctrine le quote automatiquement au diff de schema, mais PAS dans les requetes INSERT/UPDATE generees par le persister ORM au runtime). Renomme en `estAccessible` (colonne `est_accessible`) partout (entite, formulaire, templates, commande) plutot que de gerer des guillemets partout - table locale recreee avec le bon nom avant de relancer. |
+| Import relance (local) | 48890 ArretTransporteur crees, couvrant 13706 Station distinctes (quasi toutes celles a `code_externe`), 3626 ArT sans Station ignores - conforme aux chiffres attendus. |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
+| Verification Browser tool (local + prod, compte de test) | Liste paginee/triable, aucune erreur console. |
+| `git commit`/`git push`, `gh run watch` | Deploiement OK, migration appliquee automatiquement. |
+| `ssh ... php -d memory_limit=2048M bin/console app:importer-arrets-transporteur` (prod) | Memes chiffres exacts qu'en local (48890/13706/3626). |
+| `documentation/TODO.md` | Section marquee "fait partiellement" : les deux entites (EquipementArret/ArretTransporteur) restent volontairement separees, pas de vraie hierarchie ArT unifiee - laisse ouvert pour une session future si besoin. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

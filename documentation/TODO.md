@@ -67,16 +67,21 @@ que `PoleEchange`. 40511 `EquipementArret` importés (`app:importer-equipements-
 N'utilise pas encore `arrets-transporteur.csv` ni le niveau ArT complet — reste pertinent pour la
 piste "Arrêt Transporteur (ArT)" ci-dessous si elle est un jour entreprise.
 
-## Arrêt Transporteur (ArT) — piste non commencée
+## Arrêt Transporteur (ArT) — fait partiellement (2026-08-19)
 
-Descendre au niveau le plus fin de la hiérarchie IDFM (ZdC → ZdA → ArR → **ArT**, un ArT = un
-arrêt physique d'un opérateur donné) plutôt que de rester au niveau Station (ZdC) comme
-actuellement. Fichiers à croiser pour en tirer le maximum : `arrets-transporteur.csv` (référentiel
-ArT : nom, coordonnées, ville, accessibilité/signalétique par arrêt physique),
-`ecarts-arrets-referentiel-et-openstreetmap.csv` (recoupement avec OSM, wheelchair/bench/bin/lit/
-shelter/tactile_paving par ArT), `sdap-arrets-associes.csv` (équipements SDAP détaillés par
-arrêt/ligne), et `relations.csv` (chaîne complète PdE→ZdC→ZdA→ArR→ArT avec géométrie à chaque
-niveau, pour rattacher proprement un ArT à sa Station). Pas commencé.
+Nouvelle entité `ArretTransporteur` (référentiel officiel IDFM par arrêt physique, distincte
+d'`EquipementArret` qui relève des tags OpenStreetMap pour le même niveau ArT) : type
+(bus/rail/metro/tram/cableway), zone tarifaire, accessibilité/signalisation sonore/visuelle
+**officielles** (bien plus fiables que les tags OSM). Rattachement via `relations.csv`, même
+mécanisme que `PoleEchange`/`EquipementArret`. 48890 `ArretTransporteur` importés
+(`app:importer-arrets-transporteur`), couvrant 13706 Station distinctes (quasi-totalité des 13710
+à `codeExterne`) — voir `documentation/commande.md` pour le détail.
+
+**Ce qui reste ouvert** : `ArretTransporteur` et `EquipementArret` sont deux entités
+**indépendantes**, chacune rattachée directement à `Station` — pas de vraie hiérarchie ArT unifiée
+(un ArT qui porterait lui-même les équipements OSM). Les unifier serait un refactor plus lourd,
+volontairement pas entrepris ici. `sdap-arrets-associes.csv` (accessibilité SDAP détaillée par
+arrêt/ligne) reste aussi non exploité — a du sens une fois cette unification faite, pas avant.
 
 ## Lignes à embranchements complexes
 
