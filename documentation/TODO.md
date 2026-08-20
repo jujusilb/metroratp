@@ -63,32 +63,38 @@ sourcée) — contrairement à escalator/ascenseur, aucun tag OSM standard équi
 
 ## Écarts arrêts référentiel/OpenStreetMap — fait (2026-08-19)
 
-`ecarts-arrets-referentiel-et-openstreetmap.csv` : nouvelle entité `EquipementArret` (même esprit
-que `Sanitaire`/`Defibrillateur`/`FontaineEau`, rattachée à `Station` plutôt que des champs
-directement dessus — une Station a plusieurs arrêts physiques aux équipements parfois différents).
-Rattachement via `relations.csv` (ArTId → ZdCId → `Station.codeExterne`), même mécanisme officiel
-que `PoleEchange`. 40511 `EquipementArret` importés (`app:importer-equipements-arrets`), couvrant
-12867 Station distinctes, en local et en prod — voir `documentation/commande.md` pour le détail
-(dédoublonnage des ArTId multiples, incident mémoire résolu par `-d memory_limit=2048M`).
+`ecarts-arrets-referentiel-et-openstreetmap.csv` : entité `EquipementArret` (mobilier physique OSM
+— banc, abri, poubelle, éclairage, bande tactile — rattachée à `Station` via `relations.csv`, ArTId
+→ ZdCId → `codeExterne`). 40511 `EquipementArret` importés, couvrant 12867 Station.
 
-N'utilise pas encore `arrets-transporteur.csv` ni le niveau ArT complet — reste pertinent pour la
-piste "Arrêt Transporteur (ArT)" ci-dessous si elle est un jour entreprise.
+## Arrêt Transporteur (ArT) — fait, modèle revu le 2026-08-20
 
-## Arrêt Transporteur (ArT) — fait partiellement (2026-08-19)
+**Décision de modélisation** (discussion avec l'utilisateur, 2026-08-20) : pas de table
+`ArretTransporteur` séparée — elle dupliquait l'identité de Station (nom/coordonnées) sans lui
+apporter de granularité réelle. Le principe retenu : une Station est unique par nom+position, une
+Desserte = Station+Ligne ; chaque donnée ArT est rangée selon si elle dépend ou non de la ligne :
 
-Nouvelle entité `ArretTransporteur` (référentiel officiel IDFM par arrêt physique, distincte
-d'`EquipementArret` qui relève des tags OpenStreetMap pour le même niveau ArT) : type
-(bus/rail/metro/tram/cableway), zone tarifaire, accessibilité/signalisation sonore/visuelle
-**officielles** (bien plus fiables que les tags OSM). Rattachement via `relations.csv`, même
-mécanisme que `PoleEchange`/`EquipementArret`. 48890 `ArretTransporteur` importés
-(`app:importer-arrets-transporteur`), couvrant 13706 Station distinctes (quasi-totalité des 13710
-à `codeExterne`) — voir `documentation/commande.md` pour le détail.
+* **`Station.zoneTarifaire`** (`arrets-transporteur.csv`, ArTFareZone) — propriété du lieu, pas de
+  la ligne. `app:importer-zone-tarifaire`. **Piège découvert** : un ZdCId peut regrouper des ArT de
+  villes différentes (collision de nom au niveau du référentiel source — ex. "Les Sablons" existe à
+  la fois comme station de métro à Neuilly ET comme arrêt de bus à Ecquevilly, à 30km). Deux
+  vérifications ajoutées (cohérence des villes ; distance ArT↔Station quand connue) : 12768 Station
+  fiables sur 13643 candidates. Résidu documenté dans le code : quand la Station elle-même n'a pas
+  de coordonnées (phénomène "Stations dupliquées" ci-dessous), aucune vérification n'est possible.
+* **`Desserte.estAccessible`/`signalisationSonore`/`signalisationVisuelle`** — dépend du matériel
+  roulant de CETTE ligne précise (un bus à plancher bas sur une ligne peut être accessible pendant
+  qu'une autre ligne au même arrêt physique ne l'est pas). Source : `sdap-arrets-associes.csv`
+  (route_id/stop_id, un lien 100% officiel vers Ligne ET Station — bien plus précis que
+  `arrets-transporteur.csv` seul, qui n'a aucune notion de ligne). `app:importer-accessibilite-dessertes`,
+  35005 Desserte mises à jour.
+* **`Desserte.equipementArret`** (FK vers `EquipementArret`, conservée) — le mobilier physique est
+  RÉFÉRENCÉ plutôt que dupliqué : plusieurs Desserte d'une même Station (une par ligne) qui
+  partagent le même arrêt physique (cas fréquent en bus, un seul poteau/banc pour plusieurs lignes)
+  pointent vers le MÊME EquipementArret. `app:importer-equipements-arrets` (étendue), 29977 Desserte
+  reliées.
 
-**Ce qui reste ouvert** : `ArretTransporteur` et `EquipementArret` sont deux entités
-**indépendantes**, chacune rattachée directement à `Station` — pas de vraie hiérarchie ArT unifiée
-(un ArT qui porterait lui-même les équipements OSM). Les unifier serait un refactor plus lourd,
-volontairement pas entrepris ici. `sdap-arrets-associes.csv` (accessibilité SDAP détaillée par
-arrêt/ligne) reste aussi non exploité — a du sens une fois cette unification faite, pas avant.
+Voir `documentation/commande.md` (session du 2026-08-20) pour le détail complet de la discussion et
+des vérifications.
 
 ## Lignes à embranchements complexes
 

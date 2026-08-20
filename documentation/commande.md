@@ -815,4 +815,29 @@ Demande utilisateur : reprendre "Style physique des Accès — escalator/mât to
 | Verification Browser tool (local + prod, compte de test) sur un Acces reel (av. de Friedland, sortie 2 de Charles de Gaulle - Étoile) | "Escalier mécanique : Oui" - plausible pour cette station tres frequentee. |
 | `documentation/TODO.md`, mise a jour de la Tache #2 "Style physique des Accès" (EN_COURS, deja existante - pas de nouvelle Tache creee cette fois) | Reste ouvert : `mât`, aucune piste identifiee (pas d'equivalent au tag `conveying` trouve pour ce concept). |
 
+## Session du 2026-08-20 (suite) — Reorganisation du modele ArT
+
+Demande utilisateur : critique du modele ArretTransporteur/EquipementArret juste cree ("ca donne
+vraiment l'impression que tu as plusieur table pour les arret de bus... il faut mettre l'arret
+dans station et la ligne dans desserte"). Discussion en plusieurs rounds pour trouver la bonne
+repartition (voir le fil de conversation pour le detail du raisonnement).
+
+| Commande | Objectif |
+|---|---|
+| Suppression de `ArretTransporteur` (entite/repository/controller/form/templates/commande/lien menu) | Dupliquait nom/coordonnees de Station sans apporter de granularite reelle. |
+| `Station.zoneTarifaire` (nouveau champ) | Propriete du lieu, ne varie pas selon la ligne - reste sur Station. |
+| `Desserte.estAccessible`/`signalisationSonore`/`signalisationVisuelle` (nouveaux champs) | Depend du materiel roulant de LA ligne precise a cet arret - direction tranchee par l'utilisateur ("si c'est bus, meme arret pour tout le monde -> station ; sinon -> desserte", puis affine : le materiel roulant varie par ligne meme en bus, donc accessibilite reste desserte). Source : `sdap-arrets-associes.csv` (route_id/stop_id), un lien **100% officiel** vers Ligne ET Station - verifie avant d'implementer : 35005/36695 lignes (95%) chainent vers une Desserte deja existante. |
+| `Desserte.equipementArret` (nouvelle relation ManyToOne vers `EquipementArret`, conservee) | Idee finale de l'utilisateur : plutot que dupliquer les booleens de mobilier physique sur chaque Desserte d'une Station qui partagent le meme arret (cas frequent en bus), chaque Desserte REFERENCE le meme EquipementArret - une seule source de verite, pas de duplication. Quand une Station a plusieurs EquipementArret distincts (gros pole a plusieurs abribus), retient celui au rapprochement OSM/referentiel le plus fiable (distance la plus petite) - meme limite que precedemment, aucune info de ligne dans le referentiel ArT pour trancher plus finement. |
+| `app:importer-zone-tarifaire`, `app:importer-accessibilite-dessertes` (nouvelles), `app:importer-equipements-arrets` (etendue : relie aussi chaque Desserte a son EquipementArret) | |
+| **Piege decouvert en verifiant "Les Sablons"** (station de metro ligne 1 a Neuilly-sur-Seine) : zone tarifaire 5 au lieu de 1 | Trace : le ZdCId de notre Station correspond en realite, dans arrets-transporteur.csv, a un arret de BUS homonyme a **Ecquevilly** (Yvelines, ~30km, zone 5 authentique la-bas) - collision de nom au niveau du referentiel source IDFM lui-meme (relations.csv), pas un bug du code. |
+| Verification de l'ampleur (coherence des ArTTown par ZdCId) | 873/13643 Station (6.4%) ont un ZdCId associe a plusieurs villes distinctes - pas un cas isole. Filtre ajoute : ignorer ces ZdCId plutot que deviner (meme discipline que le tagging Guimard/les correspondances par nom). |
+| Deuxieme piege : "Les Sablons" restait faux MEME apres ce filtre | Ce ZdCId n'a qu'UN SEUL ArT (Ecquevilly) - aucune incoherence de ville a detecter, un seul son de cloche, mais c'est le mauvais. Deuxieme verification ajoutee : distance geographique ArT (arrets-transporteur.csv, ArTGeopoint) <-> Station (latitude/longitude), seuil 2000m - 3 cas de plus ecartes. |
+| Residu : "Les Sablons" reste a zone 5 malgre les deux filtres | Cette Station precise n'a **pas de coordonnees** (latitude/longitude NULL - phenomene "Stations dupliquees" deja documente, ~570 Station concernees) : le controle de distance ne peut pas s'appliquer. Documente comme limite connue et acceptee dans le code (docblock de `ImporterZoneTarifaireCommand`) plutot que masque - ne sera resolu qu'en comblant les coordonnees manquantes ou en fusionnant les Stations dupliquees (tache id=10, hors perimetre). |
+| `php bin/console dbal:run-sql --env=test "ALTER TABLE ..."` puis `doctrine:schema:update --env=test --force` | Meme piege que la session precedente (base de test locale distincte de la base de dev, suffixe `_test` automatique) - resolu plus largement cette fois par un `--force` complet sur la base de test (jetable, sans risque, contrairement a la base de dev reelle). |
+| `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe. |
+| Verification Browser tool (local + prod, compte de test) : fiche Desserte (accessibilite + equipement lie affiches), fiche Station (zone tarifaire affichee) | Conforme. |
+| `git commit`/`git push` (2 commits : ajout puis reorganisation), `gh run watch` | Deploiement OK, migration appliquee automatiquement. |
+| Import des 3 commandes en prod | Chiffres quasi-identiques au local : 12767/12768 Station (zone tarifaire), 40511 EquipementArret / 29978 Desserte reliees, 35005 Desserte (accessibilite/signalisation). |
+| `documentation/TODO.md` | Section "Arrêt Transporteur (ArT)" reecrite pour refleter le modele final. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
