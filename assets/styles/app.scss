@@ -118,37 +118,20 @@ $metro-tile-svg: '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=
     }
 }
 
-// Forme/alignement (cercle centre) fournis par les classes Bootstrap utilitaires directement
-// dans le HTML (rounded-circle d-inline-flex align-items-center justify-content-center) : ne
-// reste ici que ce que Bootstrap ne fournit pas (taille fixe en px, couleur dynamique par Ligne
-// donc pas de classe statique possible, ombre de texte, transition au survol).
-.ligne-badge {
-    width: 3rem;
-    height: 3rem;
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.25rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    flex-shrink: 0;
-}
-
-.ligne-badge-sm {
-    min-width: 1.75rem;
-    height: 1.75rem;
-    padding: 0 0.4rem;
-    color: #fff;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-decoration: none;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-    flex-shrink: 0;
-    transition: transform 0.1s ease;
-
-    &:hover {
-        transform: scale(1.12);
-        color: #fff;
-    }
+// Pastille de couleur devant un nom de ligne (remplace l'ancien medaillon rond "ligne-badge" /
+// "ligne-badge-sm", illisible des que la couleur de la ligne est trop pale pour du texte blanc -
+// voir ligne/index.html.twig pour le principe d'origine : un petit carre de couleur, suivi du nom
+// en texte noir a cote, jamais a l'interieur). Couleur transmise en variable CSS (--ligne-couleur,
+// meme convention que .parcours) plutot qu'en propriete "background-color" directement en ligne :
+// une seule classe a poser dans le HTML, pas de repetition de toute la mise en forme a chaque
+// utilisation (30+ endroits dans le projet).
+.pastille-ligne {
+    display: inline-block;
+    width: 0.85em;
+    height: 0.85em;
+    background-color: var(--ligne-couleur, #6c757d);
+    border-radius: 0.2em;
+    vertical-align: middle;
 }
 
 // Le survol vient de la classe Bootstrap "list-group-item-action" posee sur chaque <li> (voir

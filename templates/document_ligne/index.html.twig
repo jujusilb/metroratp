@@ -26,9 +26,7 @@
                 <tr>
                     <td>
                         {% if document.ligne %}
-                            <a href="{{ path('app_ligne_show', {'id': document.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ document.ligne.couleur|default('#6c757d') }};">
-                                {{ document.ligne.label }}
-                            </a>
+                            <a href="{{ path('app_ligne_show', {'id': document.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ document.ligne.couleur|default('#6c757d') }};"></span> {{ document.ligne.label }}</a>
                         {% else %}
                             <span class="text-muted">—</span>
                         {% endif %}

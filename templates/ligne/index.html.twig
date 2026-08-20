@@ -34,7 +34,7 @@
             {% for ligne in lignes %}
                 <tr>
                     <td>
-                        {% if ligne.couleur %}<span class="badge" style="background-color: {{ ligne.couleur }};">&nbsp;</span>{% endif %}
+                        {% if ligne.couleur %}<span class="pastille-ligne" style="--ligne-couleur: {{ ligne.couleur }};"></span>{% endif %}
                         {{ ligne.label }}
                     </td>
                     <td>{{ ligne.typeTransport ? ligne.typeTransport.label : '—' }}</td>

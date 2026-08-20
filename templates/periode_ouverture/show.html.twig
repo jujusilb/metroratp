@@ -20,9 +20,7 @@
                                 {{ periode_ouverture.desserte.station.label|default('#' ~ periode_ouverture.desserte.id) }}
                             </a>
                             {% if periode_ouverture.desserte.ligne %}
-                                <a href="{{ path('app_ligne_show', {'id': periode_ouverture.desserte.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ periode_ouverture.desserte.ligne.couleur|default('#6c757d') }};">
-                                    {{ periode_ouverture.desserte.ligne.label }}
-                                </a>
+                                <a href="{{ path('app_ligne_show', {'id': periode_ouverture.desserte.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ periode_ouverture.desserte.ligne.couleur|default('#6c757d') }};"></span> {{ periode_ouverture.desserte.ligne.label }}</a>
                             {% endif %}
                         {% else %}
                             <span class="text-muted">—</span>

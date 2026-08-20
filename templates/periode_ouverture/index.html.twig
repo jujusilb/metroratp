@@ -25,9 +25,7 @@
                             <a href="{{ path('app_desserte_show', {'id': periode_ouverture.desserte.id}) }}" class="link-body-emphasis">
                                 {{ periode_ouverture.desserte.station.label|default('#' ~ periode_ouverture.desserte.id) }}
                                 {% if periode_ouverture.desserte.ligne %}
-                                    <span class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ periode_ouverture.desserte.ligne.couleur|default('#6c757d') }};">
-                                        {{ periode_ouverture.desserte.ligne.label }}
-                                    </span>
+                                    <span><span class="pastille-ligne" style="--ligne-couleur: {{ periode_ouverture.desserte.ligne.couleur|default('#6c757d') }};"></span> {{ periode_ouverture.desserte.ligne.label }}</span>
                                 {% endif %}
                             </a>
                         {% else %}

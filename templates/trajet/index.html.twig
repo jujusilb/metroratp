@@ -88,10 +88,10 @@
                             {% for ligne in resumeSimple.lignes %}
                                 {% if ligne.id %}
                                     <a href="{{ path('app_ligne_show', {'id': ligne.id}) }}" class="link-body-emphasis text-decoration-none">
-                                        <span class="badge" style="background-color: {{ ligne.couleur }};">&nbsp;</span> {{ ligne.label }}
+                                        <span class="pastille-ligne" style="--ligne-couleur: {{ ligne.couleur }};"></span> {{ ligne.label }}
                                     </a>
                                 {% else %}
-                                    <span class="badge" style="background-color: {{ ligne.couleur }};">&nbsp;</span> {{ ligne.label }}
+                                    <span class="pastille-ligne" style="--ligne-couleur: {{ ligne.couleur }};"></span> {{ ligne.label }}
                                 {% endif %}
                                 {% if not loop.last %} <span aria-hidden="true">→</span> {% endif %}
                             {% endfor %}
@@ -106,11 +106,11 @@
                                 <li class="list-group-item d-flex flex-wrap align-items-center gap-2">
                                     {% if segment.ligneId %}
                                         <a href="{{ path('app_ligne_show', {'id': segment.ligneId}) }}" class="link-body-emphasis text-decoration-none d-inline-flex align-items-center gap-1">
-                                            <span class="badge" style="background-color: {{ segment.couleur }};">&nbsp;</span> {{ segment.ligne }}
+                                            <span class="pastille-ligne" style="--ligne-couleur: {{ segment.couleur }};"></span> {{ segment.ligne }}
                                         </a>
                                     {% else %}
                                         <span class="d-inline-flex align-items-center gap-1">
-                                            <span class="badge" style="background-color: {{ segment.couleur }};">&nbsp;</span> {{ segment.ligne }}
+                                            <span class="pastille-ligne" style="--ligne-couleur: {{ segment.couleur }};"></span> {{ segment.ligne }}
                                         </span>
                                     {% endif %}
                                     <a href="{{ path('app_station_show', {'id': segment.depart.id}) }}" class="link-body-emphasis">{{ segment.depart.label }}</a>
@@ -134,13 +134,13 @@
                                             <a href="{{ path('app_station_show', {'id': segment.depart.station.id}) }}" class="link-body-emphasis">{{ segment.depart.station.label }}</a>
                                             {% if segment.depart.ligne %}
                                                 <a href="{{ path('app_ligne_show', {'id': segment.depart.ligne.id}) }}" class="link-body-emphasis text-decoration-none">
-                                                    <span class="badge" style="background-color: {{ segment.depart.ligne.couleur|default('#6c757d') }};">&nbsp;</span> {{ segment.depart.ligne.label }}
+                                                    <span class="pastille-ligne" style="--ligne-couleur: {{ segment.depart.ligne.couleur|default('#6c757d') }};"></span> {{ segment.depart.ligne.label }}
                                                 </a>
                                             {% endif %}
                                             <span aria-hidden="true">→</span>
                                             {% if segment.arrivee.ligne %}
                                                 <a href="{{ path('app_ligne_show', {'id': segment.arrivee.ligne.id}) }}" class="link-body-emphasis text-decoration-none">
-                                                    <span class="badge" style="background-color: {{ segment.arrivee.ligne.couleur|default('#6c757d') }};">&nbsp;</span> {{ segment.arrivee.ligne.label }}
+                                                    <span class="pastille-ligne" style="--ligne-couleur: {{ segment.arrivee.ligne.couleur|default('#6c757d') }};"></span> {{ segment.arrivee.ligne.label }}
                                                 </a>
                                             {% endif %}
                                         </span>
@@ -151,7 +151,7 @@
                                         <span>
                                             {% if segment.dessertes|first.ligne %}
                                                 <a href="{{ path('app_ligne_show', {'id': segment.dessertes|first.ligne.id}) }}" class="link-body-emphasis text-decoration-none me-2">
-                                                    <span class="badge" style="background-color: {{ segment.dessertes|first.ligne.couleur|default('#6c757d') }};">&nbsp;</span> {{ segment.dessertes|first.ligne.label }}
+                                                    <span class="pastille-ligne" style="--ligne-couleur: {{ segment.dessertes|first.ligne.couleur|default('#6c757d') }};"></span> {{ segment.dessertes|first.ligne.label }}
                                                 </a>
                                             {% endif %}
                                             {% for desserte in segment.dessertes %}

@@ -40,9 +40,7 @@
                     <th>Ligne</th>
                     <td>
                         {% if desserte.ligne %}
-                            <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ desserte.ligne.couleur|default('#6c757d') }};">
-                                {{ desserte.ligne.label }}
-                            </a>
+                            <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ desserte.ligne.couleur|default('#6c757d') }};"></span> {{ desserte.ligne.label }}</a>
                         {% else %}
                             <span class="text-muted">—</span>
                         {% endif %}
@@ -160,9 +158,7 @@
                                     {{ autre.station.label }}
                                 </a>
                                 {% if autre.ligne %}
-                                    <a href="{{ path('app_ligne_show', {'id': autre.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ autre.ligne.couleur|default('#6c757d') }};">
-                                        {{ autre.ligne.label }}
-                                    </a>
+                                    <a href="{{ path('app_ligne_show', {'id': autre.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ autre.ligne.couleur|default('#6c757d') }};"></span> {{ autre.ligne.label }}</a>
                                 {% endif %}
                             {% else %}
                                 <span class="text-muted">—</span>

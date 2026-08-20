@@ -20,9 +20,7 @@
                                 {{ correspondance.desserteA.station.label }}
                             </a>
                             {% if correspondance.desserteA.ligne %}
-                                <a href="{{ path('app_ligne_show', {'id': correspondance.desserteA.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ correspondance.desserteA.ligne.couleur|default('#6c757d') }};">
-                                    {{ correspondance.desserteA.ligne.label }}
-                                </a>
+                                <a href="{{ path('app_ligne_show', {'id': correspondance.desserteA.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ correspondance.desserteA.ligne.couleur|default('#6c757d') }};"></span> {{ correspondance.desserteA.ligne.label }}</a>
                             {% endif %}
                         {% else %}
                             <span class="text-muted">—</span>
@@ -47,9 +45,7 @@
                                 {{ correspondance.desserteB.station.label }}
                             </a>
                             {% if correspondance.desserteB.ligne %}
-                                <a href="{{ path('app_ligne_show', {'id': correspondance.desserteB.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ correspondance.desserteB.ligne.couleur|default('#6c757d') }};">
-                                    {{ correspondance.desserteB.ligne.label }}
-                                </a>
+                                <a href="{{ path('app_ligne_show', {'id': correspondance.desserteB.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ correspondance.desserteB.ligne.couleur|default('#6c757d') }};"></span> {{ correspondance.desserteB.ligne.label }}</a>
                             {% endif %}
                         {% else %}
                             <span class="text-muted">—</span>

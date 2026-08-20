@@ -5,7 +5,7 @@
 {% block body %}
     <div class="container py-4">
         <div class="d-flex align-items-center gap-3 mb-4">
-            <span class="ligne-badge rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ ligne.couleur|default('#6c757d') }};">{{ ligne.label }}</span>
+            <span><span class="pastille-ligne" style="--ligne-couleur: {{ ligne.couleur|default('#6c757d') }};"></span> {{ ligne.label }}</span>
             <h1 class="mb-0">Choisir une direction</h1>
         </div>
 

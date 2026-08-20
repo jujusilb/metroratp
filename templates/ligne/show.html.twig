@@ -9,7 +9,7 @@
                 {% if station.correspondances|length > 0 %}
                     <span class="d-flex gap-1">
                         {% for correspondance in station.correspondances %}
-                            <a href="{{ path('app_ligne_show', {'id': correspondance.ligneId}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ correspondance.couleur|default('#6c757d') }};" title="Correspondance ligne {{ correspondance.label }}">{{ correspondance.label }}</a>
+                            <a href="{{ path('app_ligne_show', {'id': correspondance.ligneId}) }}" class="link-body-emphasis text-decoration-none" title="Correspondance ligne {{ correspondance.label }}"><span class="pastille-ligne" style="--ligne-couleur: {{ correspondance.couleur|default('#6c757d') }};"></span> {{ correspondance.label }}</a>
                         {% endfor %}
                     </span>
                 {% endif %}
@@ -38,7 +38,7 @@
 {% block body %}
     <div class="container py-4">
         <div class="d-flex align-items-center gap-3 mb-4">
-            <span class="ligne-badge rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ ligne.couleur|default('#6c757d') }};">{{ ligne.label }}</span>
+            <span><span class="pastille-ligne" style="--ligne-couleur: {{ ligne.couleur|default('#6c757d') }};"></span> {{ ligne.label }}</span>
             <h1 class="mb-0">Ligne {{ ligne.label }}</h1>
         </div>
 

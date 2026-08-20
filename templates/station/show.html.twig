@@ -52,9 +52,7 @@
                             <tr>
                                 <td>
                                     {% if desserte.ligne %}
-                                        <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ desserte.ligne.couleur|default('#6c757d') }};">
-                                            {{ desserte.ligne.label }}
-                                        </a>
+                                        <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ desserte.ligne.couleur|default('#6c757d') }};"></span> {{ desserte.ligne.label }}</a>
                                     {% else %}
                                         <span class="text-muted">—</span>
                                     {% endif %}
@@ -218,9 +216,7 @@
                             <tr>
                                 <td>
                                     {% if conseil.ligne %}
-                                        <a href="{{ path('app_ligne_show', {'id': conseil.ligne.id}) }}" class="ligne-badge-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="background-color: {{ conseil.ligne.couleur|default('#6c757d') }};">
-                                            {{ conseil.ligne.label }}
-                                        </a>
+                                        <a href="{{ path('app_ligne_show', {'id': conseil.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ conseil.ligne.couleur|default('#6c757d') }};"></span> {{ conseil.ligne.label }}</a>
                                     {% else %}
                                         <span class="text-muted">—</span>
                                     {% endif %}
