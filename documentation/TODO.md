@@ -54,14 +54,18 @@ piste concrète (ce serait une valeur par défaut déduite, pas une donnée sour
   `Station.accessibilitePmr` actuel ; a du sens surtout une fois un niveau Arrêt/ArT modélisé
   (voir plus bas), pour rattacher l'accessibilité au bon quai plutôt qu'à toute la station.
 
-## Écarts arrêts référentiel/OpenStreetMap — piste non commencée
+## Écarts arrêts référentiel/OpenStreetMap — fait (2026-08-19)
 
-`ecarts-arrets-referentiel-et-openstreetmap.csv` : recoupement par arrêt (ArT) entre le
-référentiel IDFM et OpenStreetMap (distance entre les deux positions + équipements OSM :
-wheelchair, bench, bin, lit, shelter, tactile_paving). Colonnes d'équipements potentiellement
-utiles (banc, poubelle, éclairage, abri, bande tactile) qui n'existent nulle part ailleurs dans le
-projet. À croiser avec `arrets-transporteur.csv` (même niveau ArT) et `relations.csv` (chaîne vers
-ZdC/Station) pour maximiser ce qu'on peut en tirer avant de décider quoi importer. Pas commencé.
+`ecarts-arrets-referentiel-et-openstreetmap.csv` : nouvelle entité `EquipementArret` (même esprit
+que `Sanitaire`/`Defibrillateur`/`FontaineEau`, rattachée à `Station` plutôt que des champs
+directement dessus — une Station a plusieurs arrêts physiques aux équipements parfois différents).
+Rattachement via `relations.csv` (ArTId → ZdCId → `Station.codeExterne`), même mécanisme officiel
+que `PoleEchange`. 40511 `EquipementArret` importés (`app:importer-equipements-arrets`), couvrant
+12867 Station distinctes, en local et en prod — voir `documentation/commande.md` pour le détail
+(dédoublonnage des ArTId multiples, incident mémoire résolu par `-d memory_limit=2048M`).
+
+N'utilise pas encore `arrets-transporteur.csv` ni le niveau ArT complet — reste pertinent pour la
+piste "Arrêt Transporteur (ArT)" ci-dessous si elle est un jour entreprise.
 
 ## Arrêt Transporteur (ArT) — piste non commencée
 

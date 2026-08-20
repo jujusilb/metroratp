@@ -722,4 +722,56 @@ lien vers le detail de la Desserte au clic.
 | `git commit`/`git push` (`ecf3ba3`), `gh run watch` | Deploiement OK. `curl` post-deploiement : tous les assets de la page d'accueil et de `/trajet` en 200 sous `/metroratp/build/...`. Verifie aussi via Browser tool (compte de test prod) : `read_network_requests` confirme uniquement des 200 sur la page fraichement chargee (les 404 visibles dans `read_console_messages` etaient les anciens, d'avant le correctif, accumules dans le log de l'onglet). |
 | SSH prod (`ssh -i ~/.ssh/deploy-metroratp/id_ed25519 -p 65002 u396779750@195.35.49.152`) : creation/suppression de comptes de test (`test_verif_ui`) | Rappel : `julien-silberstein.fr` (port 22) est **injoignable** depuis cet environnement ("Network is unreachable") — seule l'IP+port+cle documentes dans la memoire du projet fonctionnent. |
 
+## Session du 2026-08-18 (suite) — Remplacement du CSS personnalisé par des classes Bootstrap (compatibilité mobile)
+
+Demande utilisateur : remplacer TOUTES les CSS personnalisées, sur TOUTES les pages, par des
+classes Bootstrap, pour la compatibilité media query/mobile. Confirmé "quand même" après avoir
+appris que le bug critique du publicPath (session precedente) etait peut-etre la vraie cause du
+souci observe.
+
+| Commande | Objectif |
+|---|---|
+| Lecture complete de `assets/styles/app.scss` (13 regles/blocs) | Catalogue de tout le CSS personnalise du projet, classe par classe. |
+| `sed` sur `templates/**/*.twig` : `class="ligne-badge-sm"` -> `+rounded-circle d-inline-flex align-items-center justify-content-center` (14 fichiers) et pareil pour `class="ligne-badge"` (4 fichiers) | Remplacement mecanique surete par verification prealable qu'aucune occurrence ne combinait deja d'autres classes. Forme/alignement passes en Bootstrap ; ne reste en CSS que taille fixe/couleur dynamique/ombre. |
+| `templates/mission/choix_ligne.html.twig` (+`rounded-4`), `templates/ligne/show.html.twig` et `templates/mission/trajet.html.twig` (+`list-group-item-action`), `assets/js/trajet-autocomplete.js`, `assets/js/carte-acces.js`, `assets/js/trajet-carte.js`, `assets/js/carte-reseau.js` (classes Bootstrap dans le HTML genere en JS) | Meme logique appliquee partout : `.ligne-card`, `.parcours-list`, `.suggestion-station/mode/label`, `.carte-station-numero`, `.carte-bulle-ligne`, `.carte-acces-sortie`. |
+| `.metro-header` : ajout d'un `@media (max-width: 575.98px)` | Bespoke (carrelage RATP + plaque emaillee), aucun equivalent Bootstrap, mais rendu responsive. |
+| `.profil-dropdown` et `th a.sortable/.asc/.desc` | Volontairement laisses en CSS pur : comportement hover et glyphes de tri generes par KnpPaginatorBundle, aucune classe Bootstrap ne peut les remplacer. |
+| `npx jest` (51 tests), `php bin/phpunit` | Tout passe. |
+| Verification Browser tool (local, `127.0.0.1:8000`, compte de test) : desktop puis mobile (375px) sur page d'accueil | **Bug trouve** : le texte du panneau "Métroratp" debordait largement de l'ecran a 375px (formule de taille basee sur le carrelage, non adaptee). Egalement trouve : la media query ne s'appliquait pas du tout (ordre CSS - regle inconditionnelle placee APRES dans le fichier source, donc toujours gagnante meme sous le breakpoint). Les deux corriges : taille de texte fixee explicitement sous le breakpoint, media query deplacee apres la regle de base. |
+| Re-verification (local + prod, desktop + mobile) : en-tete, badges de ligne, parcours-list, bulle carte-acces, marqueurs numerotes de la carte du trajet | Tout conforme (classes Bootstrap presentes, aucun debordement, aucune erreur console). |
+| `git commit`/`git push`, `gh run watch` (deploiement) | OK. |
+
+## Session du 2026-08-18 (suite) — INCIDENT : le correctif du publicPath cassait le vrai site
+
+L'utilisateur signale "la page est cassée" en prod juste apres le deploiement precedent.
+
+| Commande | Objectif |
+|---|---|
+| `curl` sur `metroratp.julien-silberstein.fr` et `julien-silberstein.fr/metroratp` | **Decouvre l'erreur** : le site de prod a DEUX points d'entree distincts vers la meme app. `metroratp.julien-silberstein.fr` est un vrai SOUS-DOMAINE (document root = ce depot directement, assets a `/build/...`) - la memoire du projet affirmait a tort qu'il n'existait pas de sous-domaine. Le correctif de la session precedente (webpack `publicPath` -> `/metroratp/build`) visait le sous-repertoire `julien-silberstein.fr/metroratp` et a casse le sous-domaine (le vrai point d'entree utilise par l'utilisateur) en echange. |
+| `webpack.config.js` : revert a `.setPublicPath('/build')` inconditionnel, commentaire etaye pour eviter de refaire la meme erreur | Repare le sous-domaine. Le sous-repertoire `/metroratp` redevient casse comme avant toute intervention - aucune preuve qu'il soit reellement utilise. |
+| `npm run build`, verification `entrypoints.json` | `/build/...` sans prefixe, comme attendu. |
+| `git commit`/`git push` (urgent), `gh run watch` | Deploiement OK. |
+| `curl` post-deploiement sur `metroratp.julien-silberstein.fr` : assets JS/CSS | 200 (repare). Verifie aussi via Browser tool (compte de test) : CSS Bootstrap + CSS personnalise charges, aucune erreur console. |
+| Correction de la memoire du projet (`project_metroratp_desktop_copy_incomplete.md`) | L'affirmation "pas son propre sous-domaine" etait fausse et a directement cause cet incident - corrigee, avec avertissement explicite pour ne pas refaire le meme correctif sans confirmer avec l'utilisateur lequel des deux points d'entree est reellement utilise. |
+
+## Session du 2026-08-19 — EquipementArret : piste "Écarts arrêts référentiel/OpenStreetMap"
+
+Demande utilisateur : "passe à une autre tâche" (après un souci mobile non résolu, mis de côté).
+Choisie : la piste TODO "Écarts arrêts référentiel/OpenStreetMap", pas encore commencée.
+
+| Commande | Objectif |
+|---|---|
+| Inspection de `ecarts-arrets-referentiel-et-openstreetmap.csv` (46300 lignes) via PHP (`fgetcsv`, pas `awk` — les champs contiennent des `;` entre guillemets) | 96% des lignes en Île-de-France (codes postaux 75/77/78/91/92/93/94/95), 85% avec au moins un equipement OSM renseigne (wheelchair/bench/bin/lit/shelter/tactile_paving) - confirme que la donnee est exploitable et dans le perimetre du projet. |
+| Verification du chainage ArTId (CSV) -> `relations.csv` -> `Station.codeExterne` | 42768 ArTId distincts, 42767 trouves dans relations.csv, 43929/46300 lignes (95%) rattachables a une Station existante - meme mecanisme officiel deja fiable pour PoleEchange. |
+| Verification de la coherence des ArTId dupliques (1593 ArTId apparaissent plusieurs fois) | 705/1593 groupes ont des valeurs wheelchair/bench incoherentes entre doublons (plusieurs elements OSM proches, parfois contradictoires) - dedoublonnage retenu : garder la ligne a la plus petite `Distance (m)` (le rapprochement OSM/referentiel le plus fiable), pas de fusion de valeurs. |
+| `src/Entity/EquipementArret.php`, `EquipementArretRepository`, `EquipementArretController` (CRUD complet), `EquipementArretType`, templates `templates/equipement_arret/*` (meme structure que Sanitaire), lien menu | Nouvelle entite plutot que des champs sur Station : une Station a plusieurs arrets physiques (quais) aux equipements parfois differents, les fusionner sur Station perdrait cette granularite. |
+| `documentation/scripts/donnees-extraites/ecarts-arrets-referentiel-et-openstreetmap.csv` (copie) | Le fichier source vivait sous `documentation/IDFM-gtfs/` (exclu par `.gitignore` - donnees brutes non versionnees) : copie vers le dossier suivi par git, meme convention que `relations.csv`/`poles-d-echange.csv`, chemin ajuste dans la commande. |
+| `migrations/Version20260818200000.php` (creation table `equipement_arret`) | SQL genere via `doctrine:schema:update --dump-sql` puis isole a la main (le dump complet contenait aussi des `CHANGE` cosmetiques sans rapport sur des dizaines d'autres tables, deja connus - voir memoire projet, jamais appliques en bloc). |
+| `php bin/console app:importer-equipements-arrets` (local) | Plante en cours de route : `Allowed memory size of 536870912 bytes exhausted` dans `Doctrine\ORM\Internal\TopologicalSort` malgre un `flush()`/`clear()` tous les 500 - ~43000 entites chacune liee a une Station differente (13710 distinctes) rendent le calcul d'ordre de commit couteux. Relance avec `php -d memory_limit=2048M` (idempotent grace a la cle unique `artId`) : **40511 EquipementArret crees**, couvrant **12867 Station distinctes** (2257 ArT sans Station correspondante, ignores). |
+| `php bin/phpunit` (134 tests), `npx jest` | Tout passe. |
+| Verification Browser tool (local + prod, compte de test) : liste paginee/triable, fiche detail, aucune erreur console | Conforme. |
+| `git commit`/`git push` (3 commits : entite+CRUD, correction du chemin CSV exclu par gitignore), `gh run watch` | Deploiement OK, migration appliquee automatiquement par le pipeline. |
+| `ssh ... php -d memory_limit=2048M bin/console app:importer-equipements-arrets` (prod) | Memes chiffres exacts qu'en local (40511/12867) - confirme la coherence des deux bases. |
+| `documentation/TODO.md` | Section marquee "fait (2026-08-19)", note que `arrets-transporteur.csv` et le niveau ArT complet restent pertinents si la piste "Arrêt Transporteur" est un jour entreprise. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
