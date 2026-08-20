@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un arrêt transporteur{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Créer un arrêt transporteur</h1>
+
+        {{ include('arret_transporteur/_form.html.twig') }}
+
+        <a href="{{ path('app_arret_transporteur_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}

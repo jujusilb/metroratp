@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Arrêt {{ arret_transporteur.nom }}{% endblock %}
+
+{% macro oui_non(valeur) %}
+    {% if valeur is null %}
+        <span class="text-muted">Non renseigné</span>
+    {% elseif valeur %}
+        <span class="badge text-bg-success">Oui</span>
+    {% else %}
+        <span class="badge text-bg-secondary">Non</span>
+    {% endif %}
+{% endmacro %}
+
+{% import _self as macros %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">{{ arret_transporteur.nom }}{% if arret_transporteur.ville %} <small class="text-muted fs-5">({{ arret_transporteur.ville }})</small>{% endif %}</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td><span class="badge text-bg-light text-dark">{{ arret_transporteur.type }}</span></td>
+                </tr>
+                <tr>
+                    <th>Zone tarifaire</th>
+                    <td>{{ arret_transporteur.zoneTarifaire ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Accessible</th>
+                    <td>{{ macros.oui_non(arret_transporteur.estAccessible) }}</td>
+                </tr>
+                <tr>
+                    <th>Signalisation sonore</th>
+                    <td>{{ macros.oui_non(arret_transporteur.signalisationSonore) }}</td>
+                </tr>
+                <tr>
+                    <th>Signalisation visuelle</th>
+                    <td>{{ macros.oui_non(arret_transporteur.signalisationVisuelle) }}</td>
+                </tr>
+                <tr>
+                    <th>Coordonnées</th>
+                    <td>{{ arret_transporteur.latitude }}, {{ arret_transporteur.longitude }}</td>
+                </tr>
+                <tr>
+                    <th>Station rattachée</th>
+                    <td>
+                        {% if arret_transporteur.station %}
+                            <a href="{{ path('app_station_show', {'id': arret_transporteur.station.id}) }}">{{ arret_transporteur.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">Aucune</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_arret_transporteur_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_arret_transporteur_edit', {'id': arret_transporteur.id}) }}" class="btn btn-warning">Modifier</a>
+            {% endif %}
+        </div>
+
+        {{ include('arret_transporteur/_delete_form.html.twig') }}
+    </div>
+{% endblock %}
