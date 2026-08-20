@@ -32,6 +32,38 @@ class Desserte
     private ?StyleStation $styleStation = null;
 
     /**
+     * Accessibilite/signaletique officielles IDFM par couple (Station, Ligne) - dataset
+     * "sdap-arrets-associes" (route_id -> Ligne::codeExterne, stop_id -> ArRId -> relations.csv ->
+     * ZdCId -> Station::codeExterne). Sur Desserte (pas Station) : depend du materiel roulant/du
+     * service de CETTE ligne precise a cet arret, pas du lieu en general - un meme arret de bus
+     * physique peut etre accessible pour une ligne (bus a plancher bas) et pas une autre. Voir
+     * app:importer-accessibilite-dessertes. Null = non trouve dans le dataset source, pas
+     * "non accessible". Nommee estAccessible (pas accessible) : ACCESSIBLE est un mot reserve
+     * MariaDB, deja rencontre sur ArretTransporteur - meme plantage SQL a l'exacte meme etape la
+     * premiere fois.
+     */
+    #[ORM\Column(nullable: true)]
+    private ?bool $estAccessible = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $signalisationSonore = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $signalisationVisuelle = null;
+
+    /**
+     * Mobilier physique de l'arret (banc, abri, poubelle...) releve sur OpenStreetMap - voir
+     * EquipementArret. Reference plutot que duplique : quand un meme arret physique dessert
+     * plusieurs lignes (cas frequent en bus - un seul poteau/banc pour plusieurs lignes), leurs
+     * Desserte partagent le MEME EquipementArret (une seule source de verite, pas de valeurs
+     * copiees a tenir a jour a plusieurs endroits). Des que le rapprochement peut cibler une ligne
+     * precise (gros pole avec plusieurs abribus distincts, ex. Gare de l'Est), chaque Desserte
+     * pointe vers son propre EquipementArret. Voir app:importer-equipements-arrets.
+     */
+    #[ORM\ManyToOne]
+    private ?EquipementArret $equipementArret = null;
+
+    /**
      * @var Collection<int, TronconDesserte>
      */
     #[ORM\OneToMany(targetEntity: TronconDesserte::class, mappedBy: 'desserte')]
@@ -67,6 +99,18 @@ class Desserte
 
     public function getStyleStation(): ?StyleStation { return $this->styleStation; }
     public function setStyleStation(?StyleStation $styleStation): static { $this->styleStation = $styleStation; return $this; }
+
+    public function isEstAccessible(): ?bool { return $this->estAccessible; }
+    public function setEstAccessible(?bool $estAccessible): static { $this->estAccessible = $estAccessible; return $this; }
+
+    public function isSignalisationSonore(): ?bool { return $this->signalisationSonore; }
+    public function setSignalisationSonore(?bool $signalisationSonore): static { $this->signalisationSonore = $signalisationSonore; return $this; }
+
+    public function isSignalisationVisuelle(): ?bool { return $this->signalisationVisuelle; }
+    public function setSignalisationVisuelle(?bool $signalisationVisuelle): static { $this->signalisationVisuelle = $signalisationVisuelle; return $this; }
+
+    public function getEquipementArret(): ?EquipementArret { return $this->equipementArret; }
+    public function setEquipementArret(?EquipementArret $equipementArret): static { $this->equipementArret = $equipementArret; return $this; }
 
     /**
      * @return Collection<int, TronconDesserte>

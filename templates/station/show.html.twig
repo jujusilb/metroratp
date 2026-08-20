@@ -31,6 +31,9 @@
                 {% endif %}
             </p>
         {% endif %}
+        {% if station.zoneTarifaire %}
+            <p><strong>Zone tarifaire :</strong> {{ station.zoneTarifaire }}</p>
+        {% endif %}
 
         <h2 class="h5">Dessertes</h2>
         {% if station.dessertes|length > 0 %}

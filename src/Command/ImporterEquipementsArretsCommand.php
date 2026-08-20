@@ -25,6 +25,16 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * que de risquer un merge incoherent de plusieurs valeurs.
  *
  * Cle d'import stable : ArTId (unique en base) - rejouable sans creer de doublons.
+ *
+ * Deuxieme phase : relie chaque Desserte de la Station a un EquipementArret (Desserte::equipementArret)
+ * plutot que de dupliquer les booleens sur chaque Desserte - une Station a souvent plusieurs
+ * Desserte (une par ligne) qui se partagent le meme arret physique (cas frequent en bus, un seul
+ * poteau/banc pour plusieurs lignes) : elles pointent alors toutes vers le MEME EquipementArret,
+ * une seule source de verite. Quand une Station a plusieurs EquipementArret distincts (plusieurs
+ * arrets physiques, ex. gros pole d'echange a plusieurs abribus), impossible de savoir depuis ce
+ * jeu de donnees lequel dessert quelle ligne precisement (aucune info de ligne dans le referentiel
+ * ArT) : on retient alors celui dont le rapprochement OSM/referentiel est le plus fiable
+ * (distanceReferentielOsm la plus petite) comme repli raisonnable, pas une verite absolue.
  */
 #[AsCommand(name: 'app:importer-equipements-arrets', description: "Importe les equipements OSM par arret physique (ecarts-arrets-referentiel-et-openstreetmap.csv), rattaches a Station via relations.csv")]
 class ImporterEquipementsArretsCommand extends Command
@@ -143,6 +153,7 @@ class ImporterEquipementsArretsCommand extends Command
             }
         }
         $this->entityManager->flush();
+        $this->entityManager->clear();
 
         $io->success(sprintf(
             '%d EquipementArret crees, %d mis a jour (%d ArT sans Station correspondante, ignores).',
@@ -150,6 +161,25 @@ class ImporterEquipementsArretsCommand extends Command
             $nbMaj,
             $nbSansStation,
         ));
+
+        $io->section('Rattachement des Desserte a leur EquipementArret...');
+        $meilleurEquipementParStation = [];
+        foreach ($connexion->executeQuery('SELECT id, station_id, distance_referentiel_osm FROM equipement_arret WHERE station_id IS NOT NULL')->iterateAssociative() as $row) {
+            $stationId = (int) $row['station_id'];
+            $distance = null !== $row['distance_referentiel_osm'] ? (int) $row['distance_referentiel_osm'] : \PHP_INT_MAX;
+            if (!isset($meilleurEquipementParStation[$stationId]) || $distance < $meilleurEquipementParStation[$stationId]['distance']) {
+                $meilleurEquipementParStation[$stationId] = ['id' => (int) $row['id'], 'distance' => $distance];
+            }
+        }
+
+        $nbDessertesLiees = 0;
+        foreach ($meilleurEquipementParStation as $stationId => ['id' => $equipementId]) {
+            $nbDessertesLiees += $connexion->executeStatement(
+                'UPDATE desserte SET equipement_arret_id = ? WHERE station_id = ?',
+                [$equipementId, $stationId],
+            );
+        }
+        $io->success(sprintf('%d Desserte reliees a un EquipementArret (%d Station distinctes).', $nbDessertesLiees, count($meilleurEquipementParStation)));
 
         return Command::SUCCESS;
     }

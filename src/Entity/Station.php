@@ -90,6 +90,14 @@ class Station
     private ?string $accessibilitePmrCommentaire = null;
 
     /**
+     * Zone tarifaire Ile-de-France Mobilites (1 a 5, referentiel officiel "arrets-transporteur",
+     * ArTFareZone) - propriete du lieu, pas de la ligne : ne varie pas selon la ligne empruntee
+     * depuis cette Station.
+     */
+    #[ORM\Column(nullable: true)]
+    private ?int $zoneTarifaire = null;
+
+    /**
      * @var Collection<int, Sortie>
      */
     #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'station')]
@@ -292,6 +300,18 @@ class Station
     public function setAccessibilitePmrCommentaire(?string $accessibilitePmrCommentaire): static
     {
         $this->accessibilitePmrCommentaire = $accessibilitePmrCommentaire;
+
+        return $this;
+    }
+
+    public function getZoneTarifaire(): ?int
+    {
+        return $this->zoneTarifaire;
+    }
+
+    public function setZoneTarifaire(?int $zoneTarifaire): static
+    {
+        $this->zoneTarifaire = $zoneTarifaire;
 
         return $this;
     }

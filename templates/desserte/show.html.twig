@@ -2,6 +2,18 @@
 
 {% block title %}Desserte{% endblock %}
 
+{% macro oui_non(valeur) %}
+    {% if valeur is null %}
+        <span class="text-muted">Non renseigné</span>
+    {% elseif valeur %}
+        <span class="badge text-bg-success">Oui</span>
+    {% else %}
+        <span class="badge text-bg-secondary">Non</span>
+    {% endif %}
+{% endmacro %}
+
+{% import _self as macros %}
+
 {% block body %}
     <div class="container py-4">
         <h1 class="mb-4">Desserte</h1>
@@ -59,6 +71,30 @@
                             <span class="badge text-bg-success">Ouverte</span>
                         {% else %}
                             <span class="badge text-bg-secondary">Fermée depuis le {{ desserte.dernierePeriode.fermeture|date('Y-m-d') }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Accessible (officiel IDFM)</th>
+                    <td>{{ macros.oui_non(desserte.estAccessible) }}</td>
+                </tr>
+                <tr>
+                    <th>Signalisation sonore</th>
+                    <td>{{ macros.oui_non(desserte.signalisationSonore) }}</td>
+                </tr>
+                <tr>
+                    <th>Signalisation visuelle</th>
+                    <td>{{ macros.oui_non(desserte.signalisationVisuelle) }}</td>
+                </tr>
+                <tr>
+                    <th>Équipement de l'arrêt</th>
+                    <td>
+                        {% if desserte.equipementArret %}
+                            <a href="{{ path('app_equipement_arret_show', {'id': desserte.equipementArret.id}) }}" class="link-body-emphasis">
+                                {{ desserte.equipementArret.nom }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
                         {% endif %}
                     </td>
                 </tr>
