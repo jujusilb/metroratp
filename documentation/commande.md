@@ -840,4 +840,19 @@ repartition (voir le fil de conversation pour le detail du raisonnement).
 | Import des 3 commandes en prod | Chiffres quasi-identiques au local : 12767/12768 Station (zone tarifaire), 40511 EquipementArret / 29978 Desserte reliees, 35005 Desserte (accessibilite/signalisation). |
 | `documentation/TODO.md` | Section "Arrêt Transporteur (ArT)" reecrite pour refleter le modele final. |
 
+## Session du 2026-08-20 (suite) — Audit et consolidation du menu
+
+Demande utilisateur : audit des pages du menu, puis "carte blanche" pour la mise en oeuvre.
+
+| Commande | Objectif |
+|---|---|
+| `debug:router` + verification HTTP (curl authentifie, local et prod) des 36 pages du menu | Toutes les routes existent, toutes les pages repondent 200, aucune erreur PHP/Twig masquee dans le contenu. |
+| Identification des groupes fusionnables : Plans (secteur/region), Styles (station/acces), Toilettes (sanitaire/sanisette publique), Types (transport/materiel/troncon) | Meme structure, perimetre different - meme logique que l'exemple donne par l'utilisateur. |
+| `templates/tools/_onglets.html.twig` (nouveau partiel) | Barre d'onglets Bootstrap, liens normaux entre pages independantes (pas de fusion de controleur/pagination JS) - evite tout conflit entre les paginations independantes de chaque page. |
+| Verification prealable : `Statuts de tache` est reserve ROLE_ADMIN, contrairement aux 3 autres Types (visibles par tout utilisateur connecte) | Volontairement PAS fusionne avec les 3 autres malgre la ressemblance structurelle - les fusionner aurait masque Transport/Materiel/Troncon aux utilisateurs non-admin. |
+| `Sortie.acces` / `Etape.tache` (verification des relations) | Confirme que Sortie et Etape sont deja visibles depuis la fiche de leur parent (Acces, Tache) - retires du niveau superieur du menu plutot que dupliques. |
+| `php bin/phpunit` | 4 echecs (assertions de titre de page obsoletes sur Style/Type*) - corriges dans les 4 fichiers de test concernes. |
+| `git commit`/`git push`, `gh run watch` | Deploiement OK. |
+| Verification Browser tool (local + prod, compte de test) | Menu passe de 32 a 26 liens, aucune erreur console. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
