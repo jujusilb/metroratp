@@ -37,17 +37,22 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *
  * Lit plusieurs fichiers CSV (memes colonnes) : le premier pour les lignes 20-100 hors RATP,
  * le second pour le reste de la plage 101-299 hors RATP (ATM Croix du Sud, Keolis Grand Paris
- * Vallee de la Marne, ligne 282 — voir extraire_troncons_bus_101_299_restant.php et TODO.md).
+ * Vallee de la Marne, ligne 282 — voir extraire_troncons_bus_101_299_restant.php et TODO.md), le
+ * troisieme pour TOUTES les lignes de bus/car restantes toutes plages confondues (~1167 lignes,
+ * decouvert le 2026-08-20 en croisant Desserte/Troncon - voir extraire_troncons_bus_reste.php :
+ * meme algorithme, mais liste de lignes a traiter lue programmatiquement en base plutot que tapee
+ * a la main, ce qui leve la limite de volume qui bloquait jusqu'ici une reprise complete).
  * Fichiers separes plutot que fusionner dans le premier, pour ne pas re-generer des donnees deja
  * verifiees (meme convention que pour troncons_rer.csv/troncons_rer_c.csv).
  */
-#[AsCommand(name: 'app:construire-topologie-bus-autres-operateurs', description: 'Construit les troncons des lignes de bus hors RATP (20-100 et 101-299 restant) depuis les CSV extraits')]
+#[AsCommand(name: 'app:construire-topologie-bus-autres-operateurs', description: 'Construit les troncons des lignes de bus hors RATP (20-100, 101-299 restant, et le reste) depuis les CSV extraits')]
 class ConstruireTopologieBusAutresOperateursCommand extends Command
 {
     /** @var string[] */
     private const TRONCONS_CSV = [
         'documentation/scripts/donnees-extraites/troncons_bus_autres_operateurs.csv',
         'documentation/scripts/donnees-extraites/troncons_bus_101_299_restant.csv',
+        'documentation/scripts/donnees-extraites/troncons_bus_reste.csv',
     ];
 
     private TypeDesserte $depart;
