@@ -105,6 +105,22 @@ class Acces
     #[ORM\Column(nullable: true)]
     private ?bool $estSortie = null;
 
+    /**
+     * Rattache par proximite geographique a un escalier mecanique (way OSM highway=steps +
+     * conveying=*) ou un ascenseur (node OSM highway=elevator) - aucun identifiant officiel ne relie
+     * OpenStreetMap a cet Acces, contrairement a codeExterne. Uniquement quand l'Acces le plus proche
+     * de l'element OSM est nettement plus proche que le deuxieme plus proche (seuil 30m, meme
+     * discipline que pour l'edicule Guimard : jamais de rattachement ambigu) - voir
+     * app:importer-escaliers-ascenseurs-osm. Null = aucun element OSM trouve avec assez de confiance
+     * a proximite, PAS "absence constatee" (GTFS pathways.txt ne distingue pas les modes de
+     * cheminement, voir TODO.md).
+     */
+    #[ORM\Column(nullable: true)]
+    private ?bool $aEscalierMecanique = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $aAscenseur = null;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -345,6 +361,30 @@ class Acces
     public function setEstSortie(?bool $estSortie): static
     {
         $this->estSortie = $estSortie;
+
+        return $this;
+    }
+
+    public function isAEscalierMecanique(): ?bool
+    {
+        return $this->aEscalierMecanique;
+    }
+
+    public function setAEscalierMecanique(?bool $aEscalierMecanique): static
+    {
+        $this->aEscalierMecanique = $aEscalierMecanique;
+
+        return $this;
+    }
+
+    public function isAAscenseur(): ?bool
+    {
+        return $this->aAscenseur;
+    }
+
+    public function setAAscenseur(?bool $aAscenseur): static
+    {
+        $this->aAscenseur = $aAscenseur;
 
         return $this;
     }

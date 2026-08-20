@@ -33,6 +33,14 @@
                     <td>{{ acce.estSortie is null ? '—' : (acce.estSortie ? 'Oui' : 'Non') }}</td>
                 </tr>
                 <tr>
+                    <th>Escalier mécanique</th>
+                    <td>{{ acce.aEscalierMecanique is null ? '—' : (acce.aEscalierMecanique ? 'Oui' : 'Non') }}</td>
+                </tr>
+                <tr>
+                    <th>Ascenseur</th>
+                    <td>{{ acce.aAscenseur is null ? '—' : (acce.aAscenseur ? 'Oui' : 'Non') }}</td>
+                </tr>
+                <tr>
                     <th>Style</th>
                     <td>
                         {% if acce.styleAcces %}
