@@ -108,12 +108,16 @@ semi-directes) laissait 10 fausses arêtes en trop sur le corridor Paris-Choisy-
 plusieurs niveaux de missions qui se chevauchent — corrigé en changeant l'algorithme de "plus long
 d'abord" à "plus court d'abord contre un graphe déjà confirmé", plus robuste contre ce cas.
 
-**RER D, zone Évry/Corbeil/Juvisy (découvert le 2026-08-09)** : pas un simple aller-retour mais
-un vrai maillage local avec au moins 2 cycles indépendants (Villeneuve-Saint-Georges ↔
-Corbeil-Essonnes via Juvisy *ou* via Melun ; Corbeil-Essonnes ↔ Viry-Châtillon via
-Évry-Val-de-Seine *ou* via Grigny-Centre). Même limite du modèle Direction/tronçon (pense un
-arbre, pas un graphe avec cycles) que pour la RER C. Le reste de la ligne D (tronc Creil ↔
-Villeneuve-Saint-Georges, branche Malesherbes) est un arbre normal et a été construit.
+**RER D, zone Évry/Corbeil/Juvisy (découvert le 2026-08-09) — troncons faits (2026-08-21)** : pas
+un simple aller-retour mais un vrai maillage local avec au moins 2 cycles indépendants
+(Villeneuve-Saint-Georges ↔ Corbeil-Essonnes via Juvisy *ou* via Melun ; Corbeil-Essonnes ↔
+Viry-Châtillon via Évry-Val-de-Seine *ou* via Grigny-Centre). Même limite du modèle
+Direction/tronçon (pense un arbre, pas un graphe avec cycles) que pour la RER C. Le reste de la
+ligne D (tronc Creil ↔ Villeneuve-Saint-Georges, branche Malesherbes) est un arbre normal et a été
+construit. Le maillage lui-même reste sans `Direction`/`Mission` (le modèle ne peut toujours pas
+les représenter), mais ses `Troncon`/`TronconDesserte` sont désormais construits
+(`app:construire-maillage-rer-d`, voir section "Résiduel..." ci-dessous) : suffisant pour le
+calculateur de trajet, qui ne lit pas Direction/Mission.
 
 ## Stations Metro/Tramway/RER dupliquées (découvert le 2026-08-09)
 
@@ -206,16 +210,23 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
   et choisi par Dijkstra quand il est le plus rapide (La Végétale→Valenton, 4 min direct) ;
   Funiculaire correctement concurrencé par une alternative bus plus rapide sur le seul trajet testé
   (comportement voulu, pas un bug). Isolées : Téléphérique et Funiculaire à 0 des deux côtés.
-- RER D (28 Desserte isolées) — **investigué (2026-08-21), pas encore corrigé** : ce n'est PAS un
-  manque d'extraction GTFS (`troncons_rer.csv` contient déjà les arêtes de la branche
-  Melun/Corbeil-Essonnes/Malesherbes). C'est une instance du problème "Stations dupliquées"
-  ci-dessus : ces gares existent en base sous une Station SANS `codeExterne` (utilisée par le RER
-  D) distincte de leur jumelle AVEC `codeExterne` (utilisée par bus/Transilien R au même endroit),
-  sans Correspondance entre les deux — le rattachement par `Station.codeExterne` utilisé par
-  `ConstruireTopologieBusAutresOperateursCommand::trouverDesserte()` ne peut donc pas fonctionner
-  ici sans traitement spécifique. Piste à explorer : relier ces paires précises via une
-  Correspondance (comme fait pour bus↔métro/RER, voir plus haut), sans la fusion complète des ~486
-  paires (toujours jugée trop invasive).
+- RER D (28 Desserte isolées) — **fait (2026-08-21)**. Premier diagnostic erroné (attribué aux
+  "Stations dupliquées" ci-dessus) corrigé après lecture de `ConstruireTopologieRerCommand` : la
+  vraie cause est exactement celle déjà documentée plus haut ("Lignes à embranchements complexes",
+  maillage Évry/Corbeil/Juvisy découvert le 2026-08-09) — confirmé que les 28 Desserte isolées
+  correspondent pile à cette zone. `documentation/scripts/donnees-extraites/troncons_rer.csv`
+  contenait déjà les 60 arêtes de la ligne D (dont celles du maillage), simplement jamais
+  importées par `ConstruireTopologieRerCommand::construireRerD()` car son modèle Direction/tronçon
+  suppose un arbre et ne peut pas représenter un graphe à cycles. Solution retenue : nouvelle
+  commande `app:construire-maillage-rer-d` (`src/Command/ConstruireMaillageRerDCommand.php`) qui
+  importe uniquement les `Troncon`/`TronconDesserte` manquants (rattachement par label de Station,
+  comme la commande existante), **sans** créer de `Direction`/`Mission` — `TrajetFinder::construireGraphe()`
+  ne lit que `Troncon`/`TronconDesserte` (vérifié, aucune référence à Direction/Mission dans sa
+  requête), donc ça suffit à rendre le maillage utilisable par le calculateur sans résoudre le
+  problème plus dur (et non nécessaire ici) de représenter un cycle dans un modèle pensé pour un
+  arbre. Idempotente (ne recrée pas les arêtes déjà là). 31 troncons créés (29 déjà présents). RER
+  isolé : 28 → 0. Vérifié : Melun → Juvisy trouve maintenant un trajet RER D direct (12 étapes,
+  35,7 min, 0 correspondance) au lieu d'être introuvable.
 
 ## Lignes Transilien V/P/R — fait (2026-08-17)
 
