@@ -925,4 +925,19 @@ Demande utilisateur : "GO !" pour continuer sur les Desserte isolées restantes 
 | Import identique en prod (SSH) : `app:construire-topologie-transilien` (2 exécutions, avec puis sans les associations manuelles) | 308 troncons créés au total, identique au local. |
 | Compte de test admin (créé/supprimé en prod via SSH) + Browser tool : Luzarches → Persan-Beaumont, modes=[train] seul | Identique au local (ligne H, 25,3 min, 8 étapes), aucune erreur console. |
 
+## Session du 2026-08-21 (suite) — Libellé "Transilien", puis climatisation par Desserte
+
+Demande utilisateur : afficher "Transilien" au lieu de "Train" dans le calculateur/filtres (fait, voir ci-dessous), puis choix de la tâche #6 du backlog (import `sdap-arrets-associes.csv`) parmi les tâches restantes proposées.
+
+| Commande | Objectif |
+|---|---|
+| `templates/trajet/index.html.twig`, `templates/tools/filtre_liste.html.twig` (modifiés) | Renomme le libellé affiché du mode `train` en "Transilien" (le mode interne reste `train`). Vérifié en local et en prod (case à cocher + suggestion d'autocomplétion sur "Sèvres - Ville-d'Avray"). |
+| Lecture de `src/Command/ImporterAccessibiliteDessertesCommand.php` avant de commencer la tâche #6 | **Découverte** : la tâche est en réalité déjà largement faite (session antérieure "EquipementArret/ArretTransporteur", 2026-08-20) — `ArRAccessibility`/`ArRAudibleSignals`/`ArRVisualSigns` sont déjà importés sur `Desserte` (16075/31787 dessertes déjà renseignées, vérifié). Seuls les champs `Extensions` (climatisation, JSON imbriqué) et `bookingRules` du même dataset restaient inexploités. |
+| Analyse du CSV : remplissage de `Extensions`/`bookingRules` | `Extensions.ServiceFacilitySet.ClimateControlList` rempli sur 36695/36695 lignes (noConditioning: 14189, other: 14056, airConditioning: 6270, unknown: 2180) — donnée réelle exploitable. `bookingRules` : seulement 51/36695, non significatif, laissé de côté. |
+| Ajout `Desserte::climatisation` (nullable string) + migration | `make:migration` cassé sur cette copie locale (`doctrine_migration_versions` désynchronisé : 13 migrations 2026-08-15→08-20 appliquées par `schema:update` manuel lors de sessions antérieures, jamais enregistrées dans le tracker — confirmé sans rapport avec prod, dont le tracker a bien les 42/42 migrations). Migration `Version20260821160000.php` écrite à la main (même format que les précédentes) ; colonne ajoutée directement en local via `ALTER TABLE` (contournement du tracker cassé, sans impact sur prod qui exécute `doctrine:migrations:migrate` normalement). |
+| `ImporterAccessibiliteDessertesCommand` (étendue) | Ajout de `versClimatisation()` (regex sur le JSON, évite de parser tout le document pour une seule valeur) ; traduit vers 'Climatisé'/'Non climatisé'/'Autre' (unknown → null). Réexécution : 35005 Desserte mises à jour (identique au nombre de la session du 2026-08-20, confirmant l'idempotence). |
+| `templates/desserte/show.html.twig` | Nouvelle ligne "Climatisation" dans le tableau, juste après signalisation visuelle. |
+| `php bin/console lint:twig`, `php bin/phpunit` (134 tests) | Tout passe. |
+| Vérification navigateur locale (Desserte #32669, ligne de bus climatisée) | "Climatisation → Climatisé" bien affiché. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

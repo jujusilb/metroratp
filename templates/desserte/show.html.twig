@@ -85,6 +85,16 @@
                     <td>{{ macros.oui_non(desserte.signalisationVisuelle) }}</td>
                 </tr>
                 <tr>
+                    <th>Climatisation</th>
+                    <td>
+                        {% if desserte.climatisation %}
+                            {{ desserte.climatisation }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
                     <th>Équipement de l'arrêt</th>
                     <td>
                         {% if desserte.equipementArret %}

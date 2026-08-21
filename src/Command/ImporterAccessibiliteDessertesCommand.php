@@ -10,9 +10,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Importe l'accessibilite et la signaletique sonore/visuelle officielles IDFM par couple
- * (Station, Ligne) depuis sdap-arrets-associes.csv - une ligne par (route_id, stop_id), bien plus
- * precis que le referentiel ArT seul (arrets-transporteur.csv) qui n'a aucune notion de ligne.
+ * Importe l'accessibilite, la signaletique sonore/visuelle et la climatisation officielles IDFM
+ * par couple (Station, Ligne) depuis sdap-arrets-associes.csv - une ligne par (route_id, stop_id),
+ * bien plus precis que le referentiel ArT seul (arrets-transporteur.csv) qui n'a aucune notion de
+ * ligne. La climatisation vient du champ Extensions (JSON imbrique,
+ * ServiceFacilitySet.ClimateControlList) - seul le champ bookingRules du meme dataset reste
+ * inexploite (51/36695 lignes seulement, non significatif).
  *
  * Rattachement 100% par identifiants officiels, aucune proximite geographique :
  * - route_id (ex "IDFM:C01100") -> Ligne::codeExterne (le prefixe "IDFM:" retire) ;
@@ -66,6 +69,26 @@ class ImporterAccessibiliteDessertesCommand extends Command
         };
     }
 
+    /**
+     * Extrait Extensions.ServiceFacilitySet.ClimateControlList (JSON imbrique en texte dans une
+     * colonne CSV) plutot que de parser tout le JSON pour une seule valeur - regex volontairement
+     * simple, verifiee sur les 36695 lignes (aucune valeur avec guillemet echappe rencontree).
+     * 'unknown' -> null (information inconnue, pas "non climatise").
+     */
+    private function versClimatisation(string $extensions): ?string
+    {
+        if (!preg_match('/"ClimateControlList":\s*"([^"]*)"/', $extensions, $matches)) {
+            return null;
+        }
+
+        return match ($matches[1]) {
+            'airConditioning' => 'Climatisé',
+            'noConditioning' => 'Non climatisé',
+            'other' => 'Autre',
+            default => null,
+        };
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -111,11 +134,12 @@ class ImporterAccessibiliteDessertesCommand extends Command
             }
 
             $connexion->executeStatement(
-                'UPDATE desserte SET est_accessible = ?, signalisation_sonore = ?, signalisation_visuelle = ? WHERE id = ?',
+                'UPDATE desserte SET est_accessible = ?, signalisation_sonore = ?, signalisation_visuelle = ?, climatisation = ? WHERE id = ?',
                 [
                     $this->versBool($ligne['ArRAccessibility']),
                     $this->versBool($ligne['ArRAudibleSignals']),
                     $this->versBool($ligne['ArRVisualSigns']),
+                    $this->versClimatisation($ligne['Extensions']),
                     $desserteId,
                 ],
             );

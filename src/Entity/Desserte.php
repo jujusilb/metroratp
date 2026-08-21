@@ -52,6 +52,15 @@ class Desserte
     private ?bool $signalisationVisuelle = null;
 
     /**
+     * Climatisation du materiel roulant de CETTE ligne a cet arret - meme dataset/rattachement que
+     * estAccessible ci-dessus (sdap-arrets-associes, champ Extensions.ServiceFacilitySet.ClimateControlList),
+     * stockee directement en libelle francais lisible ('Climatise'/'Non climatise'/'Autre') plutot
+     * que la valeur GTFS brute. Null = non trouve ou valeur 'unknown' dans le dataset source.
+     */
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $climatisation = null;
+
+    /**
      * Mobilier physique de l'arret (banc, abri, poubelle...) releve sur OpenStreetMap - voir
      * EquipementArret. Reference plutot que duplique : quand un meme arret physique dessert
      * plusieurs lignes (cas frequent en bus - un seul poteau/banc pour plusieurs lignes), leurs
@@ -108,6 +117,9 @@ class Desserte
 
     public function isSignalisationVisuelle(): ?bool { return $this->signalisationVisuelle; }
     public function setSignalisationVisuelle(?bool $signalisationVisuelle): static { $this->signalisationVisuelle = $signalisationVisuelle; return $this; }
+
+    public function getClimatisation(): ?string { return $this->climatisation; }
+    public function setClimatisation(?string $climatisation): static { $this->climatisation = $climatisation; return $this; }
 
     public function getEquipementArret(): ?EquipementArret { return $this->equipementArret; }
     public function setEquipementArret(?EquipementArret $equipementArret): static { $this->equipementArret = $equipementArret; return $this; }
