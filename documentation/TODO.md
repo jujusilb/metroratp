@@ -227,6 +227,23 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
   arbre. Idempotente (ne recrée pas les arêtes déjà là). 31 troncons créés (29 déjà présents). RER
   isolé : 28 → 0. Vérifié : Melun → Juvisy trouve maintenant un trajet RER D direct (12 étapes,
   35,7 min, 0 correspondance) au lieu d'être introuvable.
+- Transilien H/J/K/L/N/P/R/U (252 Desserte isolées) — **fait (2026-08-21)**, sur demande explicite
+  de continuer après le RER D. Même méthode que le RER (`extraire_troncons_transilien.php`, PHP
+  autonome basé sur `stops.txt`/haversine plutôt que le script Python original qui dépend d'un
+  référentiel Lambert-93 externe au dépôt). 7 des 8 lignes ont un excédent d'arêtes par rapport à
+  un arbre pur (embranchements + au moins une vraie boucle connue sur H, Argenteuil/Ermont) :
+  plutôt que d'auditer chaque ligne une par une comme pour le RER, choix (comme pour le RER D) de
+  construire uniquement `Troncon`/`TronconDesserte` (`app:construire-topologie-transilien`, nouvelle
+  commande), sans `Direction`/`Mission`. Rattachement par label de Station au sein de chaque Ligne ;
+  4 paires nécessitaient une correspondance manuelle (tiret manquant côté DB : "Neuville -
+  Université", "Saint-Nom-la-Bretèche - Forêt de Marly", "Viroflay - Rive Droite", "Nemours -
+  Saint-Pierre"). 308 troncons créés. **Bug supplémentaire découvert et corrigé** : `Train` n'était
+  pas non plus reconnu par `Ligne::getModeFiltre()`/`TrajetFinder` (même bug de fond que
+  Téléphérique/Funiculaire) — ajout de `train` comme 8e mode reconnu partout où le filtre existe.
+  Vérifié : Luzarches → Persan-Beaumont (2 branches de la ligne H) trouve un trajet H direct en
+  filtrant sur Train seul (25,3 min, 8 étapes) ; avec tous les modes cochés, un bus plus rapide de
+  1,3 min est choisi à la place (comportement Dijkstra correct, pas un bug). Desserte isolées
+  toutes lignes : 344 → 92 (Train résiduel : TER/V/CDG VAL/ORLYVAL, hors périmètre Transilien).
 
 ## Lignes Transilien V/P/R — fait (2026-08-17)
 

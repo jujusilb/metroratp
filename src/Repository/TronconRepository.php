@@ -60,6 +60,9 @@ class TronconRepository extends ServiceEntityRepository
         if (\in_array('funiculaire', $modes, true)) {
             $conditions[] = "tt.label = 'Funiculaire'";
         }
+        if (\in_array('train', $modes, true)) {
+            $conditions[] = "tt.label = 'Train'";
+        }
 
         if ([] === $conditions) {
             $qb->andWhere('1 = 0');

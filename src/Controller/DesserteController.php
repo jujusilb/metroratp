@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DesserteController extends AbstractController
 {
     /** @var string[] */
-    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers', 'telepherique', 'funiculaire'];
+    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers', 'telepherique', 'funiculaire', 'train'];
 
     #[Route(name: 'app_desserte_index', methods: ['GET'])]
     public function index(Request $request, DesserteRepository $desserteRepository, GestionnaireRepository $gestionnaireRepository, PaginatorInterface $paginator): Response

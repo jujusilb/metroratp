@@ -96,6 +96,9 @@ class LigneRepository extends ServiceEntityRepository
         if (\in_array('funiculaire', $modes, true)) {
             $conditions[] = "tt.label = 'Funiculaire'";
         }
+        if (\in_array('train', $modes, true)) {
+            $conditions[] = "tt.label = 'Train'";
+        }
 
         // Aucun mode coche : cul-de-sac garanti (meme logique que TrajetController), pas la
         // table entiere par defaut.

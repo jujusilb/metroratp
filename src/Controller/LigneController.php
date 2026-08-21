@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class LigneController extends AbstractController
 {
     /** @var string[] */
-    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers', 'telepherique', 'funiculaire'];
+    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers', 'telepherique', 'funiculaire', 'train'];
 
     #[Route(name: 'app_ligne_index', methods: ['GET'])]
     public function index(Request $request, LigneRepository $ligneRepository, GestionnaireRepository $gestionnaireRepository, PaginatorInterface $paginator): Response

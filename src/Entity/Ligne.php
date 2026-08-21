@@ -138,9 +138,10 @@ class Ligne
 
     /**
      * Cle de mode utilisee pour le filtre "Metro / Tram / RER / Bus RATP / Bus tiers /
-     * Telepherique / Funiculaire" du calculateur de trajet. Null pour les types sans case a
-     * cocher dediee (Car, Train...) : ces lignes ne sont alors jamais proposees quand un filtre
-     * est actif, mais restent utilisables quand aucun filtre n'est applique.
+     * Telepherique / Funiculaire / Train" du calculateur de trajet. Null pour les types sans case
+     * a cocher dediee (Car, TER, navettes aeroport...) : ces lignes ne sont alors jamais
+     * proposees quand un filtre est actif, mais restent utilisables quand aucun filtre n'est
+     * applique.
      */
     public function getModeFiltre(): ?string
     {
@@ -151,6 +152,7 @@ class Ligne
             'Bus' => 'RATP' === $this->gestionnaire?->getLabel() ? 'bus_ratp' : 'bus_tiers',
             'Téléphérique' => 'telepherique',
             'Funiculaire' => 'funiculaire',
+            'Train' => 'train',
             default => null,
         };
     }

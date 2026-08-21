@@ -1,0 +1,309 @@
+route_label,zdc_a,zdc_b,nom_a,nom_b,duree_mediane_secondes,nb_observations
+H,411327,411330,Précy-sur-Oise,Saint-Leu-d'Esserent,170,226
+H,411327,411333,Précy-sur-Oise,Boran-sur-Oise,220,226
+H,411330,411441,Saint-Leu-d'Esserent,Creil,360,226
+H,65227,65360,"Épinay - Villetaneuse","La Barre Ormesson",100,1316
+H,65227,65485,"Épinay - Villetaneuse",Enghien-les-Bains,160,116
+H,65227,65562,"Épinay - Villetaneuse","Deuil - Montmagny",150,951
+H,65227,66079,"Épinay - Villetaneuse","Sarcelles - Saint-Brice",290,30
+H,65227,71410,"Épinay - Villetaneuse","Gare du Nord",500,128
+H,65227,72323,"Épinay - Villetaneuse",Saint-Denis,170,2285
+H,65360,65485,"La Barre Ormesson",Enghien-les-Bains,90,1316
+H,65485,65663,Enghien-les-Bains,"Champ de Courses d'Enghien",110,1290
+H,65485,65669,Enghien-les-Bains,"Ermont - Eaubonne",200,142
+H,65562,65749,"Deuil - Montmagny",Groslay,100,951
+H,65663,65669,"Champ de Courses d'Enghien","Ermont - Eaubonne",120,1290
+H,65669,65752,"Ermont - Eaubonne",Cernay,110,728
+H,65669,65910,"Ermont - Eaubonne","Ermont Halte",120,743
+H,65749,66079,Groslay,"Sarcelles - Saint-Brice",130,951
+H,65752,66005,Cernay,"Franconville - Le Plessis-Bouchard",130,728
+H,65910,66063,"Ermont Halte","Gros Noyer Saint-Prix",70,743
+H,66005,66335,"Franconville - Le Plessis-Bouchard","Montigny - Beauchamp",180,728
+H,66063,66452,"Gros Noyer Saint-Prix",Saint-Leu-la-Forêt,150,743
+H,66079,66533,"Sarcelles - Saint-Brice","Écouen - Ézanville",170,692
+H,66079,67000,"Sarcelles - Saint-Brice","Montsoult - Maffliers",465,10
+H,66079,71410,"Sarcelles - Saint-Brice","Gare du Nord",730,36
+H,66335,66491,"Montigny - Beauchamp",Pierrelaye,170,728
+H,66452,66520,Saint-Leu-la-Forêt,Vaucelles,100,602
+H,66452,67107,Saint-Leu-la-Forêt,Valmondois,730,21
+H,66491,66659,Pierrelaye,"Saint-Ouen-l'Aumône Liesse",150,728
+H,66520,66557,Vaucelles,Taverny,70,602
+H,66533,66654,"Écouen - Ézanville",Domont,140,692
+H,66557,66672,Taverny,Bessancourt,110,602
+H,66654,66795,Domont,"Bouffémont - Moisselles",130,692
+H,66659,66803,"Saint-Ouen-l'Aumône Liesse",Saint-Ouen-l'Aumône,150,728
+H,66672,66798,Bessancourt,Frépillon,110,602
+H,66795,67000,"Bouffémont - Moisselles","Montsoult - Maffliers",150,692
+H,66798,66934,Frépillon,Méry-sur-Oise,115,602
+H,66803,66816,Saint-Ouen-l'Aumône,Pontoise,100,1019
+H,66803,66915,Saint-Ouen-l'Aumône,Épluches,150,291
+H,66915,66952,Épluches,"Pont Petit",80,291
+H,66934,67065,Méry-sur-Oise,Mériel,150,602
+H,66952,67016,"Pont Petit",Chaponval,100,291
+H,67000,67072,"Montsoult - Maffliers",Villaines,190,312
+H,67000,67169,"Montsoult - Maffliers","Presles - Courcelles",330,341
+H,67016,67027,Chaponval,Auvers-sur-Oise,150,291
+H,67027,67107,Auvers-sur-Oise,Valmondois,170,297
+H,67027,71410,Auvers-sur-Oise,"Gare du Nord",,0
+H,67065,67107,Mériel,Valmondois,140,602
+H,67072,67126,Villaines,"Belloy - Saint-Martin",160,312
+H,67107,67172,Valmondois,"L'Isle-Adam - Parmain",160,721
+H,67126,67176,"Belloy - Saint-Martin",Viarmes,150,312
+H,67169,67227,"Presles - Courcelles","Nointel - Mours",150,341
+H,67172,67241,"L'Isle-Adam - Parmain",Champagne-sur-Oise,190,721
+H,67176,67180,Viarmes,Seugy,150,312
+H,67177,67180,Luzarches,Seugy,150,312
+H,67227,67292,"Nointel - Mours","Persan - Beaumont",240,341
+H,67241,67292,Champagne-sur-Oise,"Persan - Beaumont",240,721
+H,67292,67325,"Persan - Beaumont",Bruyères-sur-Oise,250,226
+H,67325,411333,Bruyères-sur-Oise,Boran-sur-Oise,180,226
+H,71410,72323,"Gare du Nord",Saint-Denis,370,2285
+J,411339,411346,Trie-Château,Chaumont-en-Vexin,240,194
+J,411343,411346,Liancourt-Saint-Pierre,Chaumont-en-Vexin,250,194
+J,411343,411349,Liancourt-Saint-Pierre,Lavilletertre,150,194
+J,64741,64883,"Houilles - Carrières-sur-Seine",Poissy,480,497
+J,64741,64918,"Houilles - Carrières-sur-Seine",Sartrouville,180,13
+J,64741,65691,"Houilles - Carrières-sur-Seine","Vernouillet - Verneuil",770,24
+J,64741,71370,"Houilles - Carrières-sur-Seine","Gare Saint-Lazare",660,534
+J,64883,64949,Poissy,Villennes-sur-Seine,220,534
+J,64883,65048,Poissy,Maisons-Laffitte,360,13
+J,64883,65691,Poissy,"Vernouillet - Verneuil",360,1
+J,64883,71370,Poissy,"Gare Saint-Lazare",1055,18
+J,64918,65048,Sartrouville,Maisons-Laffitte,110,13
+J,64949,65691,Villennes-sur-Seine,"Vernouillet - Verneuil",240,534
+J,65063,65110,Argenteuil,"Val d'Argenteuil",160,1607
+J,65063,65399,Argenteuil,Cormeilles-en-Parisis,300,78
+J,65063,65441,Argenteuil,Sannois,190,1280
+J,65063,66095,Argenteuil,"Conflans Sainte-Honorine",560,9
+J,65063,71370,Argenteuil,"Gare Saint-Lazare",610,1633
+J,65063,72287,Argenteuil,"Le Stade",130,1360
+J,65110,65399,"Val d'Argenteuil",Cormeilles-en-Parisis,190,1498
+J,65110,65659,"Val d'Argenteuil","La Frette - Montigny",240,19
+J,65110,65897,"Val d'Argenteuil",Herblay,310,90
+J,65326,65490,"Épône - Mézières","Aubergenville Élisabethville",200,466
+J,65326,65770,"Épône - Mézières","Mantes Station",370,456
+J,65399,65659,Cormeilles-en-Parisis,"La Frette - Montigny",120,1367
+J,65399,65897,Cormeilles-en-Parisis,Herblay,210,33
+J,65399,66095,Cormeilles-en-Parisis,"Conflans Sainte-Honorine",360,176
+J,65441,65669,Sannois,"Ermont - Eaubonne",140,1280
+J,65443,463843,Chanteloup-les-Vignes,Triel-sur-Seine,140,613
+J,65443,65542,Chanteloup-les-Vignes,Andrésy,120,613
+J,65490,65994,"Aubergenville Élisabethville","Les Mureaux",270,466
+J,65542,65827,Andrésy,Maurecourt,120,613
+J,65659,65897,"La Frette - Montigny",Herblay,120,1384
+J,65659,66095,"La Frette - Montigny","Conflans Sainte-Honorine",370,2
+J,65668,65732,"Issou - Porcheville",Gargenville,130,613
+J,65668,65788,"Issou - Porcheville",Limay,160,613
+J,65691,65985,"Vernouillet - Verneuil","Les Clairières de Verneuil",180,535
+J,65691,65994,"Vernouillet - Verneuil","Les Mureaux",420,24
+J,65732,65988,Gargenville,Juziers,160,613
+J,65770,65788,"Mantes Station",Limay,160,613
+J,65770,65931,"Mantes Station",Mantes-la-Jolie,130,1069
+J,65827,73605,Maurecourt,"Conflans Fin d'Oise",110,613
+J,65897,66095,Herblay,"Conflans Sainte-Honorine",230,1507
+J,65931,66157,Mantes-la-Jolie,Rosny-sur-Seine,250,120
+J,65931,71370,Mantes-la-Jolie,"Gare Saint-Lazare",,0
+J,65985,65994,"Les Clairières de Verneuil","Les Mureaux",220,535
+J,65988,66321,Juziers,"Meulan - Hardricourt",220,613
+J,66095,66484,"Conflans Sainte-Honorine","Éragny - Neuville",220,692
+J,66095,66816,"Conflans Sainte-Honorine",Pontoise,420,122
+J,66095,71370,"Conflans Sainte-Honorine","Gare Saint-Lazare",1470,2
+J,66095,73605,"Conflans Sainte-Honorine","Conflans Fin d'Oise",130,613
+J,66157,66741,Rosny-sur-Seine,Bonnières,320,120
+J,66321,66334,"Meulan - Hardricourt","Thun le Paradis",100,613
+J,66334,66338,"Thun le Paradis",Vaux-sur-Seine,180,613
+J,66338,463843,Vaux-sur-Seine,Triel-sur-Seine,210,613
+J,66484,66731,"Éragny - Neuville","Saint-Ouen-l'Aumône Quartier de l'Église",150,799
+J,66484,73605,"Éragny - Neuville","Conflans Fin d'Oise",200,107
+J,66731,66816,"Saint-Ouen-l'Aumône Quartier de l'Église",Pontoise,130,799
+J,66741,74127,Bonnières,"Vernon - Giverny",420,120
+J,66816,66977,Pontoise,Osny,250,509
+J,66977,67056,Osny,Boissy-l'Aillerie,160,509
+J,67056,67076,Boissy-l'Aillerie,"Montgeroult - Courcelles",120,191
+J,67056,67131,Boissy-l'Aillerie,Us,220,46
+J,67076,67131,"Montgeroult - Courcelles",Us,170,191
+J,67131,67196,Us,"Santeuil - Le Perchay",170,191
+J,67131,67352,Us,Chars,320,46
+J,67196,67352,"Santeuil - Le Perchay",Chars,210,191
+J,67352,411346,Chars,Chaumont-en-Vexin,480,43
+J,67352,411349,Chars,Lavilletertre,220,194
+J,71370,72132,"Gare Saint-Lazare",Asnières-sur-Seine,350,1356
+J,71370,72179,"Gare Saint-Lazare",Bois-Colombes,515,4
+J,71370,73605,"Gare Saint-Lazare","Conflans Fin d'Oise",1260,106
+J,72132,72179,Asnières-sur-Seine,Bois-Colombes,110,1356
+J,72179,72244,Bois-Colombes,Colombes,120,1360
+J,72244,72287,Colombes,"Le Stade",80,1360
+J,74348,411339,Gisors,Trie-Château,190,194
+J,74348,411346,Gisors,Chaumont-en-Vexin,360,43
+K,411388,411391,Ormoy-Villers,Nanteuil-le-Haudouin,290,244
+K,411388,411397,Ormoy-Villers,Crépy-en-Valois,300,244
+K,411391,411397,Nanteuil-le-Haudouin,Crépy-en-Valois,490,54
+K,411391,411406,Nanteuil-le-Haudouin,"Le Plessis-Belleville",270,298
+K,69065,69136,"Mitry - Claye",Compans,160,244
+K,69065,69254,"Mitry - Claye","Dammartin - Juilly - Saint-Mard",370,54
+K,69065,72646,"Mitry - Claye",Aulnay-sous-Bois,500,62
+K,69136,69196,Compans,"Thieux - Nantouillet",140,244
+K,69196,69254,"Thieux - Nantouillet","Dammartin - Juilly - Saint-Mard",170,244
+K,69254,411406,"Dammartin - Juilly - Saint-Mard","Le Plessis-Belleville",300,298
+K,71410,72646,"Gare du Nord",Aulnay-sous-Bois,690,62
+L,63989,422420,Montreuil,"Viroflay - Rive Droite",100,1151
+L,63989,64021,Montreuil,"Versailles Rive Droite",150,1151
+L,64251,64301,"La Celle-Saint-Cloud",Bougival,110,987
+L,64251,70705,"La Celle-Saint-Cloud",Vaucresson,100,987
+L,64301,64341,Bougival,Louveciennes,100,987
+L,64341,64405,Louveciennes,Marly-le-Roi,160,987
+L,64382,73603,"Saint-Nom-la-Bretèche - Forêt de Marly",L'Étang-la-Ville,210,987
+L,64405,73603,Marly-le-Roi,L'Étang-la-Ville,120,987
+L,64741,64918,"Houilles - Carrières-sur-Seine",Sartrouville,160,955
+L,64741,70956,"Houilles - Carrières-sur-Seine","Nanterre Université",190,955
+L,64918,65048,Sartrouville,Maisons-Laffitte,90,877
+L,64918,73604,Sartrouville,"Achères Ville",410,78
+L,65048,73604,Maisons-Laffitte,"Achères Ville",340,372
+L,66436,66696,"Neuville - Université","Cergy Préfecture",170,450
+L,66436,73605,"Neuville - Université","Conflans Fin d'Oise",150,450
+L,66696,66858,"Cergy Préfecture","Cergy Saint-Christophe",210,450
+L,66834,66858,"Cergy le Haut","Cergy Saint-Christophe",210,450
+L,69503,422420,"Chaville Rive Droite","Viroflay - Rive Droite",130,1151
+L,69503,70686,"Chaville Rive Droite","Sèvres - Ville-d'Avray",130,1151
+L,70686,73749,"Sèvres - Ville-d'Avray",Saint-Cloud,170,1151
+L,70705,70713,Vaucresson,"Garches - Marnes-la-Coquette",170,987
+L,70713,73749,"Garches - Marnes-la-Coquette",Saint-Cloud,170,987
+L,70829,422067,"Suresnes Mont Valérien","Le Val d'Or",120,638
+L,70829,71422,"Suresnes Mont Valérien",Puteaux,110,634
+L,70829,71517,"Suresnes Mont Valérien","La Défense",190,646
+L,70829,73749,"Suresnes Mont Valérien",Saint-Cloud,200,642
+L,70956,72148,"Nanterre Université","La Garenne-Colombes",130,1531
+L,71370,71475,"Gare Saint-Lazare","Pont Cardinet",170,2748
+L,71370,71517,"Gare Saint-Lazare","La Défense",540,180
+L,71370,72124,"Gare Saint-Lazare","Bécon les Bruyères",410,678
+L,71422,422067,Puteaux,"Le Val d'Or",200,678
+L,71422,71517,Puteaux,"La Défense",90,1312
+L,71475,72073,"Pont Cardinet","Clichy - Levallois",110,2748
+L,71517,72132,"La Défense",Asnières-sur-Seine,260,640
+L,71517,73614,"La Défense",Courbevoie,90,1254
+L,71517,73749,"La Défense",Saint-Cloud,300,180
+L,72073,72132,"Clichy - Levallois",Asnières-sur-Seine,110,2748
+L,72124,72132,"Bécon les Bruyères",Asnières-sur-Seine,90,2100
+L,72124,72177,"Bécon les Bruyères","Les Vallées",110,1532
+L,72124,73614,"Bécon les Bruyères",Courbevoie,120,1246
+L,72132,73614,Asnières-sur-Seine,Courbevoie,170,8
+L,72148,72177,"La Garenne-Colombes","Les Vallées",100,1532
+L,73604,73605,"Achères Ville","Conflans Fin d'Oise",140,450
+L,73749,422067,Saint-Cloud,"Le Val d'Or",100,1316
+N,411493,411496,Dreux,"Marchezais - Broué",430,299
+N,60665,62804,Rambouillet,"Le Perray",320,592
+N,60665,63812,Rambouillet,"Saint-Quentin en Yvelines - Montigny-le-Bretonneux",800,25
+N,62804,63240,"Le Perray","Les Essarts-le-Roi",200,592
+N,63240,63369,"Les Essarts-le-Roi",Coignières,180,592
+N,63369,63426,Coignières,"La Verrière",140,592
+N,63426,463850,"La Verrière",Trappes,270,593
+N,63812,463850,"Saint-Quentin en Yvelines - Montigny-le-Bretonneux",Trappes,170,593
+N,63812,63880,"Saint-Quentin en Yvelines - Montigny-le-Bretonneux","Versailles Chantiers",335,40
+N,63812,73731,"Saint-Quentin en Yvelines - Montigny-le-Bretonneux",Saint-Cyr,160,593
+N,63880,63923,"Versailles Chantiers","Viroflay Rive Gauche",190,1254
+N,63880,64199,"Versailles Chantiers","Plaisir - Grignon",810,314
+N,63880,71139,"Versailles Chantiers","Gare Montparnasse",800,355
+N,63880,73731,"Versailles Chantiers",Saint-Cyr,290,1244
+N,63893,411493,Houdan,Dreux,640,15
+N,63893,411496,Houdan,"Marchezais - Broué",290,299
+N,63893,63955,Houdan,"Montfort-l'Amaury - Méré",600,15
+N,63893,64194,Houdan,"Tacoignières - Richebourg",270,299
+N,63923,463754,"Viroflay Rive Gauche","Sèvres Rive Gauche",280,2
+N,63923,70505,"Viroflay Rive Gauche",Clamart,470,120
+N,63923,73718,"Viroflay Rive Gauche","Chaville Rive Gauche",120,1132
+N,63955,424296,"Montfort-l'Amaury - Méré","Villiers - Neauphle - Pontchartrain",220,299
+N,63955,64025,"Montfort-l'Amaury - Méré","Garancières - La Queue",200,299
+N,63955,64199,"Montfort-l'Amaury - Méré","Plaisir - Grignon",430,15
+N,63999,64145,Fontenay-le-Fleury,"Villepreux - Les Clayes",220,651
+N,63999,73731,Fontenay-le-Fleury,Saint-Cyr,180,651
+N,64025,64175,"Garancières - La Queue","Orgerus - Béhoust",230,299
+N,64145,64195,"Villepreux - Les Clayes","Plaisir - Les Clayes",180,651
+N,64175,64194,"Orgerus - Béhoust","Tacoignières - Richebourg",150,299
+N,64195,64199,"Plaisir - Les Clayes","Plaisir - Grignon",150,651
+N,64199,424296,"Plaisir - Grignon","Villiers - Neauphle - Pontchartrain",300,299
+N,64199,64338,"Plaisir - Grignon",Beynes,330,318
+N,64338,64572,Beynes,Mareil-sur-Mauldre,200,318
+N,64572,64674,Mareil-sur-Mauldre,Maule,150,318
+N,64674,64945,Maule,"Nézel - Aulnay",200,318
+N,64945,65326,"Nézel - Aulnay","Épône - Mézières",280,318
+N,65326,65931,"Épône - Mézières",Mantes-la-Jolie,480,238
+N,69528,463754,"Gare de Bellevue","Sèvres Rive Gauche",100,1134
+N,69528,70515,"Gare de Bellevue",Meudon,100,1134
+N,70505,70515,Clamart,Meudon,160,1124
+N,70505,70584,Clamart,"Vanves - Malakoff",120,1124
+N,70505,71139,Clamart,"Gare Montparnasse",330,120
+N,70515,70584,Meudon,"Vanves - Malakoff",300,10
+N,70584,71139,"Vanves - Malakoff","Gare Montparnasse",280,1134
+N,73718,463754,"Chaville Rive Gauche","Sèvres Rive Gauche",170,1132
+P,411373,411376,"La Ferté-Milon",Mareuil-sur-Ourcq,350,43
+P,411379,411382,Château-Thierry,Chézy-sur-Marne,320,311
+P,411382,411385,Chézy-sur-Marne,"Nogent-L'Artaud - Charly",200,311
+P,61858,61961,Longueville,"Sainte-Colombe Septveilles",170,279
+P,61858,62168,Longueville,Nangis,780,279
+P,61961,62064,"Sainte-Colombe Septveilles","Champbenoist Poigny",230,279
+P,62064,62139,"Champbenoist Poigny",Provins,210,279
+P,62168,62351,Nangis,Mormant,480,279
+P,62351,62471,Mormant,Verneuil-l'Étang,300,279
+P,62471,71359,Verneuil-l'Étang,"Gare de l'Est",,0
+P,67604,67625,Marles-en-Brie,Tournan,360,49
+P,67604,67805,Marles-en-Brie,Mortcerf,320,49
+P,67625,71359,Tournan,"Gare de l'Est",1640,257
+P,67805,67924,Mortcerf,"Guérard - La Celle-sur-Morin",320,49
+P,67917,67924,"Faremoutiers - Pommeuse","Guérard - La Celle-sur-Morin",190,49
+P,67917,67944,"Faremoutiers - Pommeuse",Mouroux,200,49
+P,67920,67944,Coulommiers,Mouroux,360,49
+P,68407,68419,"Chelles - Gournay","Vaires - Torcy",250,626
+P,68407,71359,"Chelles - Gournay","Gare de l'Est",840,626
+P,68419,68494,"Vaires - Torcy","Lagny - Thorigny",230,626
+P,68494,68653,"Lagny - Thorigny",Esbly,330,626
+P,68653,68963,Esbly,Meaux,360,626
+P,68918,68980,"La Ferté-sous-Jouarre","Changis - Saint-Jean",290,311
+P,68918,69072,"La Ferté-sous-Jouarre","Nanteuil - Saâcy",330,311
+P,68963,68984,Meaux,Trilport,270,354
+P,68963,71359,Meaux,"Gare de l'Est",1500,313
+P,68980,68984,"Changis - Saint-Jean",Trilport,300,311
+P,68984,69162,Trilport,"Isles - Armentières - Congis",300,43
+P,69072,411385,"Nanteuil - Saâcy","Nogent-L'Artaud - Charly",370,311
+P,69162,69237,"Isles - Armentières - Congis",Lizy-sur-Ourcq,190,43
+P,69237,69435,Lizy-sur-Ourcq,Crouy-sur-Ourcq,400,43
+P,69435,411376,Crouy-sur-Ourcq,Mareuil-sur-Ourcq,260,43
+R,411483,411489,Montargis,"Ferrières - Fontenay",520,371
+R,61094,411483,"Souppes - Château-Landon",Montargis,790,45
+R,61094,61145,"Souppes - Château-Landon",Bagneaux-sur-Loing,360,371
+R,61094,61218,"Souppes - Château-Landon","Nemours - Saint-Pierre",470,45
+R,61094,74077,"Souppes - Château-Landon",Dordives,260,371
+R,61145,61218,Bagneaux-sur-Loing,"Nemours - Saint-Pierre",250,371
+R,61218,61318,"Nemours - Saint-Pierre","Bourron-Marlotte - Grez",360,371
+R,61218,61410,"Nemours - Saint-Pierre","Moret - Veneux-les-Sablons",700,45
+R,61318,61327,"Bourron-Marlotte - Grez",Montigny-sur-Loing,200,371
+R,61327,61410,Montigny-sur-Loing,"Moret - Veneux-les-Sablons",390,371
+R,61410,61423,"Moret - Veneux-les-Sablons",Saint-Mammès,110,357
+R,61410,61480,"Moret - Veneux-les-Sablons",Thomery,210,430
+R,61410,61579,"Moret - Veneux-les-Sablons","Fontainebleau - Avon",350,343
+R,61412,61414,"La Grande-Paroisse",Montereau,250,290
+R,61412,61450,"La Grande-Paroisse",Vernou-sur-Seine,210,290
+R,61414,61423,Montereau,Saint-Mammès,410,357
+R,61414,61537,Montereau,Champagne-sur-Seine,545,6
+R,61450,61537,Vernou-sur-Seine,Champagne-sur-Seine,250,290
+R,61480,61579,Thomery,"Fontainebleau - Avon",230,430
+R,61537,61630,Champagne-sur-Seine,"Vulaines-sur-Seine - Samoreau",240,290
+R,61537,61926,Champagne-sur-Seine,Melun,865,6
+R,61579,61727,"Fontainebleau - Avon",Bois-le-Roi,350,773
+R,61630,61658,"Vulaines-sur-Seine - Samoreau",Héricy,110,290
+R,61658,61767,Héricy,Fontaine-le-Port,260,290
+R,61727,61926,Bois-le-Roi,Melun,310,773
+R,61763,61767,Chartrettes,Fontaine-le-Port,200,290
+R,61763,61826,Chartrettes,Livry-sur-Seine,170,290
+R,61826,61926,Livry-sur-Seine,Melun,220,290
+R,61926,73626,Melun,"Gare de Lyon",1710,605
+R,74077,411489,Dordives,"Ferrières - Fontenay",290,371
+U,63426,463850,"La Verrière",Trappes,300,651
+U,63812,463850,"Saint-Quentin en Yvelines - Montigny-le-Bretonneux",Trappes,190,651
+U,63812,73731,"Saint-Quentin en Yvelines - Montigny-le-Bretonneux",Saint-Cyr,180,651
+U,63880,69503,"Versailles Chantiers","Chaville Rive Droite",320,651
+U,63880,73731,"Versailles Chantiers",Saint-Cyr,290,651
+U,69503,70686,"Chaville Rive Droite","Sèvres - Ville-d'Avray",150,651
+U,70686,73749,"Sèvres - Ville-d'Avray",Saint-Cloud,190,651
+U,70829,71422,"Suresnes Mont Valérien",Puteaux,130,651
+U,70829,73749,"Suresnes Mont Valérien",Saint-Cloud,200,651
+U,71422,71517,Puteaux,"La Défense",120,651

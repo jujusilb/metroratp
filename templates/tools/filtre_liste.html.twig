@@ -16,7 +16,7 @@
     - avecTroncons : optionnel, ?string ('1'/'0'/null) — si fourni, affiche le filtre "Tronçons
       construits" (pertinent pour Ligne uniquement pour l'instant)
 #}
-{% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers', 'telepherique': 'Téléphérique', 'funiculaire': 'Funiculaire'} %}
+{% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers', 'telepherique': 'Téléphérique', 'funiculaire': 'Funiculaire', 'train': 'Train'} %}
 {% set libelleRecherche = libelleRecherche|default('une station') %}
 {% set placeholderRecherche = placeholderRecherche|default('Nom de station...') %}
 {% set gestionnairesSelectionnes = gestionnairesSelectionnes|default([]) %}
@@ -59,7 +59,7 @@
     {% endif %}
     <div class="col-12 d-flex gap-2">
         <button type="submit" class="btn btn-primary">Filtrer</button>
-        {% if recherche or modesSelectionnes|length < 7 or gestionnairesSelectionnes|length > 0 or (avecTroncons is defined and avecTroncons is not null) %}
+        {% if recherche or modesSelectionnes|length < 8 or gestionnairesSelectionnes|length > 0 or (avecTroncons is defined and avecTroncons is not null) %}
             <a href="{{ path(route) }}" class="btn btn-outline-secondary">Réinitialiser</a>
         {% endif %}
     </div>

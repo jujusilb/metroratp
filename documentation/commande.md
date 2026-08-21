@@ -902,4 +902,27 @@ Demande utilisateur : suite au résiduel de 379 Desserte isolées, vérification
 | Test navigateur local : Melun → Juvisy, modes=[rer] seul | **35,7 min, 12 étapes, 0 correspondance**, tout en RER D (traverse le maillage) — introuvable avant ce correctif. Avec tous les modes cochés : trouve une alternative via Transilien R (34,3 min, 2 correspondances), ce qui est cohérent (Dijkstra compare les deux et choisit le plus rapide). |
 | Correction de `documentation/TODO.md` (section RER D, remplace le faux diagnostic "Stations dupliquées") et de `documentation/commande.md` (ce tableau) | Le premier diagnostic donné à l'utilisateur était incorrect ; corrigé avant tout déploiement/tracker. |
 
+## Session du 2026-08-21 (suite) — Topologie Transilien (H, J, K, L, N, P, R, U) + mode Train
+
+Demande utilisateur : "GO !" pour continuer sur les Desserte isolées restantes après le RER D (79 sur les 8 lignes Transilien).
+
+| Commande | Objectif |
+|---|---|
+| `php -r` (PDO) : Desserte isolées par Ligne Train | Confirme 8 lignes Transilien (H:50, J:54, K:10, L:36, N:35, P:32, R:24, U:11 - 252 au total) entièrement sans topologie ; codeExterne vérifiés stables contre le GTFS actuel (`grep routes.txt`). |
+| `documentation/scripts/extraire_troncons_transilien.php` (nouveau) | Réécriture PHP autonome (stops.txt + haversine) du script Python original (`extraire_troncons_rer.py`, qui dépend d'un référentiel Lambert-93 externe au dépôt). Union des paires consécutives + réduction géométrique (même algorithme). 308 troncons retenus. |
+| Comparaison nœuds/arêtes par ligne | 7 des 8 lignes ont un excédent d'arêtes par rapport à un arbre pur (H:+10, J:+24, K:+2, L:+9, N:+11, P:+1, R:+7, U:+0) — embranchements légitimes et/ou vrais maillages (H a une boucle connue Argenteuil/Ermont). Décision : comme pour le RER D, construire uniquement `Troncon`/`TronconDesserte` (pas de `Direction`/`Mission`), pour éviter d'auditer chaque ligne une par une. |
+| `src/Command/ConstruireTopologieTransilienCommand.php` (nouvelle, `app:construire-topologie-transilien`) | Rattachement par label de Station au sein de chaque Ligne (même technique que RER D). 1re exécution : 299 troncons créés, 9 ignorés (4 paires de noms avec tiret manquant côté DB : "Neuville - Université", "Saint-Nom-la-Bretèche - Forêt de Marly", "Viroflay - Rive Droite", "Nemours - Saint-Pierre"). |
+| Ajout de `ASSOCIATIONS_MANUELLES` (4 paires) + réexécution (idempotente) | 9 troncons supplémentaires créés, 0 ignoré. Desserte isolées Transilien : 252 → 0 (H/J/K/N/P/U direct, L et R via les associations manuelles). |
+| `php bin/phpunit` (134 tests) | Tout passe. |
+| Test navigateur local : Luzarches → Persan-Beaumont (2 branches de la ligne H), tous modes cochés | **Trouve un trajet bus (ligne 100, 24 min)**, pas de ligne H — signe que le mode Train est probablement filtré comme Téléphérique/Funiculaire avant leur correctif. |
+| Lecture de `Ligne::getModeFiltre()` | Confirmé : `'Train'` tombe toujours dans `default => null`, comme Téléphérique/Funiculaire avant correction — même bug de fond, pas encore étendu à ce mode. |
+| Ajout de `train` comme 8e mode reconnu : `Ligne::getModeFiltre()`, `TrajetFinder::modeFiltre()`, les 3 Repository, les 4 `MODES_DISPONIBLES`, 2 templates (seuil `length < 7` → `< 8`) | Même procédure exacte que pour telepherique/funiculaire. |
+| `php bin/console lint:twig`, `php bin/phpunit` (134 tests) | Tout passe. |
+| Test navigateur local : Luzarches → Persan-Beaumont, modes=[train] seul | **Ligne H, 25,3 min, 8 étapes, 0 correspondance** — confirme le fix. Avec tous les modes cochés : bus 100 toujours choisi (24 min, plus rapide de 1,3 min) — comportement Dijkstra correct, pas un bug (comme pour le funiculaire). |
+| Desserte isolées finales (tous modes) | 344 → 92 (résiduel : 79 Train = TER/V/CDG VAL/ORLYVAL, hors périmètre Transilien ; 13 Bus déjà connus). |
+| `documentation/TODO.md` | Nouvelle entrée "Transilien H/J/K/L/N/P/R/U" détaillant la méthode et le bug de filtre corrigé. |
+| Le dépôt local (`Desktop\metroratp\.git`) reste illisible — copie des fichiers vers le clone de secours (`scratchpad/repo-clone-2`), `git commit`/`git push` depuis ce clone, `gh run list` pour vérifier le déploiement | Même contournement que documenté en mémoire projet. |
+| Import identique en prod (SSH) : `app:construire-topologie-transilien` (2 exécutions, avec puis sans les associations manuelles) | 308 troncons créés au total, identique au local. |
+| Compte de test admin (créé/supprimé en prod via SSH) + Browser tool : Luzarches → Persan-Beaumont, modes=[train] seul | Identique au local (ligne H, 25,3 min, 8 étapes), aucune erreur console. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
