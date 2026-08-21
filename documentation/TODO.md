@@ -175,8 +175,21 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
   proximité (la plus proche à la fois de A et B) qui échoue sur ce cas précis ? S'assurer que
   chaque tronçon de bus est bien synchronisé avec son vrai tracé GPS, pas juste une approximation
   point à point.
-- Quais décalés (ex: Liège sur la ligne 13) : le modèle actuel suppose une distance symétrique
-  par tronçon, ne capture pas les cas où la distance de marche diffère selon le sens réel.
+- Quais décalés (ex: Liège sur la ligne 13) — **fait (2026-08-21)** : ajout de
+  `TronconDesserte::dureeReelleSecondes` (nullable, uniquement significatif côté "Départ"),
+  `Troncon::dureeReelleSecondes` restant le repli symétrique (`TrajetFinder::construireGraphe()`
+  fait `COALESCE(TronconDesserte, Troncon)`). En creusant `troncon_durees.csv`, découverte que le
+  cas n'est pas isolé : **661 des 772 paires (86%)** ont un aller et un retour présents ET
+  différents dans le CSV source (déjà là depuis le début, seulement jamais exploité — le sens
+  précis était perdu par `$durees[$nomA][$nomB] ?? $durees[$nomB][$nomA]`, qui traitait les 2 sens
+  comme interchangeables). `ImporterDureesTronconCommand` réécrit pour écrire les deux sens quand
+  ils existent. Vérifié sur Liège : Clichy→Saint-Lazare 2,6 min (64+89s) vs Saint-Lazare→Clichy
+  2,2 min (65+69s), désormais bien distingués par le calculateur. **Limite résiduelle** : seul
+  `troncon_durees.csv` (réseau historique métro/RER/tram, 772 paires, la donnée déjà utilisée
+  avant cette session) a ce niveau de détail directionnel ; les topologies bus/RER D/Transilien
+  construites cette même session (2026-08-20/21) utilisent une durée médiane déjà fusionnée par
+  sens à l'extraction (`sort($paire)` avant calcul) — pas encore réextraites en gardant la
+  directionnalité, resterait à faire si jugé utile.
 - Lignes de bus : plage 20-299 complète depuis le 2026-08-17 (voir `documentation/commande.md`).
   Les 16 lignes non-RATP restantes de la plage 101-299 sont faites : ATM Croix du Sud
   (179/189-191/194-195/289-290), Keolis Grand Paris Vallée de la Marne (206-207/209/211-213/220),

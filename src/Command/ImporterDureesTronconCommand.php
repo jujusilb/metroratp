@@ -2,6 +2,9 @@
 
 namespace App\Command;
 
+use App\Entity\Desserte;
+use App\Entity\Troncon;
+use App\Entity\TronconDesserte;
 use App\Repository\TronconRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -20,6 +23,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * d'identifiant commun avec notre base) : on normalise les deux cotes (accents, tirets,
  * casse) et on applique un petit dictionnaire pour les quelques variantes de nommage
  * restantes (parentheses, mots en plus/en moins).
+ *
+ * Le CSV source distingue deja les deux sens de circulation (chaque stop_id de depart a son
+ * propre stop_id d'arrivee) : 661 des 772 paires ont un aller et un retour presents ET
+ * DIFFERENTS (ex: Liege sur la ligne 13 metro, 89s vers Saint-Lazare mais 65s vers Clichy - vrai
+ * quai decale, pas juste un artefact d'arrondi). Jusqu'ici cette nuance etait perdue : seule une
+ * valeur (le premier sens trouve, ou son inverse a defaut) etait appliquee symetriquement aux
+ * DEUX sens via Troncon::dureeReelleSecondes. Ecrit desormais aussi sur
+ * TronconDesserte::dureeReelleSecondes (role Depart), un par sens reel - Troncon::dureeReelleSecondes
+ * reste rempli en repli (utilise par TrajetFinder si un sens precis manque, voir sa docblock).
  */
 #[AsCommand(name: 'app:importer-durees-troncon', description: 'Importe les durees reelles de troncon depuis un CSV GTFS pre-calcule')]
 class ImporterDureesTronconCommand extends Command
@@ -46,6 +58,17 @@ class ImporterDureesTronconCommand extends Command
             ->addArgument('fichier', InputArgument::REQUIRED, 'Chemin du CSV troncon_durees.csv')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'N\'ecrit rien en base, affiche seulement le rapport')
         ;
+    }
+
+    private function trouverTronconDesserteDepart(Troncon $troncon, Desserte $depart): ?TronconDesserte
+    {
+        foreach ($troncon->getTronconDessertes() as $tronconDesserte) {
+            if ('Départ' === $tronconDesserte->getTypeDesserte()?->getLabel() && $tronconDesserte->getDesserte() === $depart) {
+                return $tronconDesserte;
+            }
+        }
+
+        return null;
     }
 
     private function normaliser(string $label): string
@@ -80,6 +103,7 @@ class ImporterDureesTronconCommand extends Command
         $troncons = $this->tronconRepository->findAllWithDetails();
         $matches = 0;
         $sansCorrespondance = [];
+        $sensAsymetriques = 0;
 
         foreach ($troncons as $troncon) {
             $sens = $troncon->getSensCirculation();
@@ -103,9 +127,34 @@ class ImporterDureesTronconCommand extends Command
                 continue;
             }
 
-            $matches++;
+            ++$matches;
             if (!$dryRun) {
+                // Repli symetrique (utilise par TrajetFinder si un sens precis manque ci-dessous).
                 $troncon->setDureeReelleSecondes($trouve['secondes']);
+            }
+
+            // Par-dessus le repli : un sens precis (asymetrique) par TronconDesserte Depart,
+            // quand le CSV a bien ce sens exact (pas juste son inverse).
+            foreach ($sens as $unSens) {
+                if (null === $unSens['depart'] || null === $unSens['arrivee']) {
+                    continue;
+                }
+                $nomDepart = $this->normaliser($unSens['depart']->getStation()?->getLabel() ?? '');
+                $nomArrivee = $this->normaliser($unSens['arrivee']->getStation()?->getLabel() ?? '');
+                $trouveExact = $durees[$nomDepart][$nomArrivee] ?? null;
+                if (null === $trouveExact) {
+                    continue;
+                }
+
+                $tronconDesserteDepart = $this->trouverTronconDesserteDepart($troncon, $unSens['depart']);
+                if (null === $tronconDesserteDepart) {
+                    continue;
+                }
+
+                if (!$dryRun) {
+                    $tronconDesserteDepart->setDureeReelleSecondes($trouveExact['secondes']);
+                }
+                ++$sensAsymetriques;
             }
         }
 
@@ -113,7 +162,13 @@ class ImporterDureesTronconCommand extends Command
             $this->entityManager->flush();
         }
 
-        $io->success(sprintf('%d / %d troncons avec une duree reelle trouvee (%s)', $matches, count($troncons), $dryRun ? 'dry-run, rien ecrit' : 'ecrit en base'));
+        $io->success(sprintf(
+            '%d / %d troncons avec une duree reelle trouvee, dont %d sens precis (asymetriques ou non) sur TronconDesserte (%s)',
+            $matches,
+            count($troncons),
+            $sensAsymetriques,
+            $dryRun ? 'dry-run, rien ecrit' : 'ecrit en base',
+        ));
 
         if (count($sansCorrespondance) > 0) {
             $io->section(sprintf('%d troncons sans correspondance GTFS (garderont le poids fixe par defaut) :', count($sansCorrespondance)));

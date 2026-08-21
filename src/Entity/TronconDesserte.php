@@ -28,6 +28,17 @@ class TronconDesserte
     private ?TypeDesserte $typeDesserte = null;
 
     /**
+     * Duree reelle (secondes) du trajet DEPUIS cette desserte jusqu'a l'autre bout du troncon -
+     * uniquement significatif sur les lignes de role "Depart" (voir TypeDesserte). Permet de
+     * representer un temps asymetrique entre l'aller et le retour (quais decales, ex: Liege sur la
+     * ligne 13 metro : 89s vers Saint-Lazare, 65s vers Place de Clichy) - Troncon::dureeReelleSecondes
+     * reste le repli symetrique utilise quand cette valeur plus precise est absente. Voir
+     * app:importer-durees-troncon et TrajetFinder::construireGraphe().
+     */
+    #[ORM\Column(nullable: true)]
+    private ?int $dureeReelleSecondes = null;
+
+    /**
      * @var Collection<int, Mission>
      */
     #[ORM\OneToMany(targetEntity: Mission::class, mappedBy: 'tronconDesserte')]
@@ -75,6 +86,18 @@ class TronconDesserte
     public function setTypeDesserte(?TypeDesserte $typeDesserte): static
     {
         $this->typeDesserte = $typeDesserte;
+
+        return $this;
+    }
+
+    public function getDureeReelleSecondes(): ?int
+    {
+        return $this->dureeReelleSecondes;
+    }
+
+    public function setDureeReelleSecondes(?int $dureeReelleSecondes): static
+    {
+        $this->dureeReelleSecondes = $dureeReelleSecondes;
 
         return $this;
     }

@@ -11,9 +11,11 @@ use Doctrine\ORM\EntityManagerInterface;
  * Calcule le plus court chemin entre deux dessertes (algorithme de Dijkstra), sur un graphe
  * ou les noeuds sont les dessertes (un quai = station+ligne) et les aretes sont :
  *  - les troncons (rester sur la meme ligne), dont le poids est la duree reelle calculee a
- *    partir des horaires theoriques GTFS IDFM (Troncon::getDureeReelleSecondes(), voir la
- *    commande app:importer-durees-troncon) quand elle est connue (369 troncons sur 376),
- *    sinon le poids fixe DUREE_TRONCON_MINUTES par defaut ;
+ *    partir des horaires theoriques GTFS IDFM, PAR SENS de circulation quand elle est connue
+ *    (TronconDesserte::getDureeReelleSecondes() sur le cote Depart - capture les temps
+ *    asymetriques des quais decales, ex: Liege sur la ligne 13 metro), sinon le repli symetrique
+ *    Troncon::getDureeReelleSecondes() (voir la commande app:importer-durees-troncon), sinon le
+ *    poids fixe DUREE_TRONCON_MINUTES par defaut ;
  *  - les correspondances (changer de ligne a la meme station), dont le poids cumule :
  *      1. le temps de marche estime (distance renseignee, sinon DUREE_CORRESPONDANCE_DEFAUT_MINUTES) ;
  *      2. une penalite d'attente du prochain train, DUREE_ATTENTE_CORRESPONDANCE_MINUTES.
@@ -222,7 +224,8 @@ class TrajetFinder
         foreach ($connexion->executeQuery(
             <<<'SQL'
                 SELECT tda.desserte_id AS depart_id, tdb.desserte_id AS arrivee_id,
-                       t.id AS troncon_id, t.duree_reelle_secondes,
+                       t.id AS troncon_id,
+                       COALESCE(tda.duree_reelle_secondes, t.duree_reelle_secondes) AS duree_reelle_secondes,
                        tt.label AS type_transport, g.label AS gestionnaire
                 FROM troncon_desserte tda
                 JOIN type_desserte ttypeA ON ttypeA.id = tda.type_desserte_id AND ttypeA.label = 'Départ'

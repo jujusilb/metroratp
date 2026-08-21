@@ -939,5 +939,24 @@ Demande utilisateur : afficher "Transilien" au lieu de "Train" dans le calculate
 | `templates/desserte/show.html.twig` | Nouvelle ligne "Climatisation" dans le tableau, juste après signalisation visuelle. |
 | `php bin/console lint:twig`, `php bin/phpunit` (134 tests) | Tout passe. |
 | Vérification navigateur locale (Desserte #32669, ligne de bus climatisée) | "Climatisation → Climatisé" bien affiché. |
+| Déploiement (clone de secours, voir mémoire projet) : migration `Version20260821160000`, `gh run list` | Déploiement OK (2m9s). Migration appliquée en prod (vérifié via `information_schema.columns`, `dbal:run-sql DESCRIBE` renvoyant 0 lignes de façon trompeuse — piège déjà connu). |
+| `php bin/console app:importer-accessibilite-dessertes` en prod (SSH) | 35005 Desserte mises à jour, identique au local. Répartition climatisation identique (Non climatisé 7728, Autre 7394, Climatisé 3090). |
+| Compte de test admin (créé/supprimé en prod via SSH) + Browser tool (Desserte #1535 "Les Violettes") | "Climatisation → Climatisé" confirmé en prod. |
+| Tâche #6 (tracker, local + prod) | Corrigée et marquée ACHEVÉE : reflète que l'essentiel était déjà fait en session antérieure, seule la climatisation manquait. |
+
+## Session du 2026-08-21 (suite) — Quais décalés (temps de trajet asymétrique)
+
+Demande utilisateur : enchaîner sur une autre tâche du backlog une fois la climatisation terminée. Choix de la tâche #11 (#2 bloquée par absence de donnée, #10 trop invasive).
+
+| Commande | Objectif |
+|---|---|
+| Lecture de `Troncon`/`TronconDesserte`/`TrajetFinder::construireGraphe()` | `Troncon::dureeReelleSecondes` est une seule valeur partagée par les 2 sens (aller/retour) — confirmé comme seule limite du modèle empêchant de représenter un quai décalé. Seul consommateur : `TrajetFinder` (aucun template n'affiche ce champ). |
+| Analyse de `documentation/scripts/donnees-extraites/troncon_durees.csv` (source de `app:importer-durees-troncon`) | **Découverte** : 661 des 772 paires (86%) ont déjà les deux sens présents et DIFFÉRENTS dans le CSV (ex: Liège, 89s vers Saint-Lazare / 65s vers Clichy — vrai quai décalé, pas un artefact d'arrondi). L'import existant fusionnait les deux sens (`$durees[$nomA][$nomB] ?? $durees[$nomB][$nomA]`), perdant cette nuance déjà disponible depuis le début. |
+| Ajout `TronconDesserte::dureeReelleSecondes` (nullable, significatif côté "Départ" seulement) + migration `Version20260821180000` (écrite à la main, même souci de tracker de migrations local que pour la climatisation) | `Troncon::dureeReelleSecondes` devient le repli symétrique. |
+| `TrajetFinder::construireGraphe()` (modifié) | `COALESCE(tda.duree_reelle_secondes, t.duree_reelle_secondes)` — changement d'une ligne SQL, aucune autre logique touchée. |
+| `ImporterDureesTronconCommand` (réécrite) | Pour chaque Troncon, essaie une correspondance EXACTE par sens (pas de repli croisé) sur chaque `TronconDesserte` "Départ" ; le repli symétrique historique (`Troncon::dureeReelleSecondes`) reste écrit en plus, pour ne rien régresser. `php -d memory_limit=4096M bin/console app:importer-durees-troncon ...` (OOM à 512M et 2048M — réseau bien plus gros qu'à l'écriture initiale de la commande, avec tout le travail bus/RER/Transilien de cette session) : 795/32224 troncons avec une durée trouvée (inchangé, c'est la couverture du CSV historique), dont 1569 sens précis écrits sur `TronconDesserte`. |
+| `php bin/phpunit` (134 tests) | Tout passe. |
+| Vérification SQL puis navigateur locale : Place de Clichy ↔ Saint-Lazare (ligne 13, via Liège), mode métro seul | **2,6 min aller (64+89s) vs 2,2 min retour (65+69s)** — l'asymétrie du quai décalé de Liège est maintenant bien reflétée par le calculateur. |
+| `documentation/TODO.md` | Section "quais décalés" marquée faite, avec la limite résiduelle documentée : seul le CSV historique métro/RER a cette précision directionnelle : les topologies bus/RER D/Transilien construites cette session fusionnent déjà les deux sens à l'extraction (`sort($paire)`), pas encore réextraites avec la directionnalité conservée. |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
