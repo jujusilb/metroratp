@@ -61,6 +61,12 @@ class DesserteRepository extends ServiceEntityRepository
         if (\in_array('bus_tiers', $modes, true)) {
             $conditions[] = "(tt.label = 'Bus' AND (g.label IS NULL OR g.label != 'RATP'))";
         }
+        if (\in_array('telepherique', $modes, true)) {
+            $conditions[] = "tt.label = 'Téléphérique'";
+        }
+        if (\in_array('funiculaire', $modes, true)) {
+            $conditions[] = "tt.label = 'Funiculaire'";
+        }
         $qb->andWhere([] !== $conditions ? implode(' OR ', $conditions) : '1 = 0');
 
         if (null !== $recherche && '' !== trim($recherche)) {

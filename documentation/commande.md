@@ -855,4 +855,25 @@ Demande utilisateur : audit des pages du menu, puis "carte blanche" pour la mise
 | `git commit`/`git push`, `gh run watch` | Deploiement OK. |
 | Verification Browser tool (local + prod, compte de test) | Menu passe de 32 a 26 liens, aucune erreur console. |
 
+## Session du 2026-08-20 (suite) — Pastilles carrées et complétion de la topologie bus
+
+Demande utilisateur : remplacer tous les médaillons ronds restants par le motif carré (couleur + nom en noir), factoriser en une classe CSS ; puis, suite à une observation de l'utilisateur sur les compteurs Desserte/Troncon, construire la topologie bus manquante.
+
+| Commande | Objectif |
+|---|---|
+| Script ponctuel `convertir_medaillons.php` (scratchpad, non versionné) sur 17 templates | Convertit les derniers médaillons ronds (`ligne-badge rounded-circle`) vers le motif carré + texte noir, 22 remplacements. |
+| Script ponctuel `convertir_pastilles.php` (scratchpad, non versionné) sur 19 templates (les 17 + les 2 templates d'origine du motif) | Factorise `<span class="badge" style="background-color: X">` en `<span class="pastille-ligne" style="--ligne-couleur: X">`, 30 remplacements. Classe définie dans `assets/styles/app.scss` (remplace les anciennes `.ligne-badge`/`.ligne-badge-sm` supprimées). |
+| `php bin/console lint:twig` (sur chaque template touché), `php bin/phpunit` (134 tests), `npx jest` (51 tests) | Tout passe, deux fois (après chaque script). |
+| `git commit`/`git push` (`8eaa3bd`), `gh run list` | Déploiement OK. Vérification Browser tool (local + prod) : inspection `getComputedStyle` sur les pastilles, aucune erreur console. |
+| `php -r` (PDO) : comptage `Desserte` (31787) vs `Desserte` reliées à un `Troncon` (7760 puis 7517 selon la requête) | Confirme l'observation de l'utilisateur : 24270 Desserte isolées (76%), quasi toutes en bus (78% des Desserte de bus isolées, 0% métro/tram). Explique pourquoi le calculateur de trajet échouait sur la plupart des lignes de bus. |
+| `documentation/scripts/extraire_troncons_bus_reste.php` (nouveau) | Généralise l'extraction GTFS déjà utilisée pour les lots précédents : au lieu d'une liste de lignes tapée à la main, lit en base **toute** Ligne Bus/Car dont aucune Desserte n'a de Troncon (1167 lignes). Même algorithme de réduction géométrique (plus courtes arêtes d'abord, Dijkstra de confirmation). Traite le fichier `stop_times.txt` complet (~11,8M lignes) en tâche de fond (`b84tdl7fk`). Sortie : `troncons_bus_reste.csv` (24231 troncons). |
+| `src/Command/ConstruireTopologieBusAutresOperateursCommand.php` (modifié) | Ajout du 3e CSV dans `TRONCONS_CSV` ; aucune autre modification (logique déjà générique). |
+| `php -d memory_limit=4096M bin/console app:construire-topologie-bus-autres-operateurs` (local) | 1re tentative OOM (limite 512M par défaut) ; relancée avec `memory_limit=4096M` : `24120 troncons crees sur 1159 ligne(s)`. |
+| `php bin/phpunit` (134 tests), test Browser tool local sur ligne 482 (Cimetières → Paul Painlevé / Place Gounot, isolée avant le fix) | Tout passe ; calcul de trajet réussi (2 min, 1 étape). |
+| `git commit`/`git push` (`4f17041`), `gh run list` | Déploiement OK (2m26s). |
+| Même import en prod (SSH, `memory_limit=4096M`) | Résultat identique au local : `24120 troncons crees sur 1159 ligne(s)`. |
+| Vérification prod : `dbal:run-sql` (total Desserte / Desserte reliées) | 31787 / 31408 = 379 Desserte isolées, identique au local. |
+| Compte de test admin (créé/supprimé en prod via SSH, hash bcrypt encodé en base64 pour éviter la corruption du `$` shell) + Browser tool | Calcul de trajet réussi en prod sur la ligne 482, identique au local (2 min, 1 étape), aucune erreur console. |
+| Résiduel des 379 Desserte encore isolées (répartition par mode) | Train 331, RER 28, Bus 13, Téléphérique 5, Funiculaire 2 — cas marginaux (lignes fermées/spéciales), non traités ici. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

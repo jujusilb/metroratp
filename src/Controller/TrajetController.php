@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TrajetController extends AbstractController
 {
     /** @var string[] */
-    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers'];
+    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers', 'telepherique', 'funiculaire'];
 
     #[Route(name: 'app_trajet_index', methods: ['GET'])]
     public function index(Request $request, StationRepository $stationRepository, TrajetFinder $trajetFinder): Response

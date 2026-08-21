@@ -54,8 +54,9 @@ class TrajetFinder
      * (Dijkstra multi-source/multi-puits : chaque desserte de depart est inseree a distance 0).
      *
      * @param ?string[] $modesAutorises      Cles Ligne::getModeFiltre() a autoriser (metro, tram,
-     *                                       rer, bus_ratp, bus_tiers). Null ou vide = aucune
-     *                                       restriction (comportement historique).
+     *                                       rer, bus_ratp, bus_tiers, telepherique, funiculaire).
+     *                                       Null ou vide = aucune restriction (comportement
+     *                                       historique).
      * @param ?string   $modeEntreeOrigine   Force le point d'entree a un mode precis (ex: entrer
      *                                       a Nation uniquement par le RER) : ne restreint que
      *                                       les dessertes de depart candidates, independamment de
@@ -184,6 +185,8 @@ class TrajetFinder
             'Tramway' => 'tram',
             'RER' => 'rer',
             'Bus' => 'RATP' === $gestionnaire ? 'bus_ratp' : 'bus_tiers',
+            'Téléphérique' => 'telepherique',
+            'Funiculaire' => 'funiculaire',
             default => null,
         };
     }

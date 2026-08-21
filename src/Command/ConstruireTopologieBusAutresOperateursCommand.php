@@ -42,10 +42,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * decouvert le 2026-08-20 en croisant Desserte/Troncon - voir extraire_troncons_bus_reste.php :
  * meme algorithme, mais liste de lignes a traiter lue programmatiquement en base plutot que tapee
  * a la main, ce qui leve la limite de volume qui bloquait jusqu'ici une reprise complete).
+ * Le quatrieme fichier n'est pas du bus : les 2 dernieres lignes du reseau sans aucune topologie
+ * (Cable A / C1 a Creteil, Funiculaire de Montmartre) - la commande etant deja 100% generique
+ * (cle par codeExterne, sans hypothese sur le mode), reutilisee telle quelle plutot que dupliquee
+ * pour 5 troncons (voir extraire_troncons_telepherique_funiculaire.php).
  * Fichiers separes plutot que fusionner dans le premier, pour ne pas re-generer des donnees deja
  * verifiees (meme convention que pour troncons_rer.csv/troncons_rer_c.csv).
  */
-#[AsCommand(name: 'app:construire-topologie-bus-autres-operateurs', description: 'Construit les troncons des lignes de bus hors RATP (20-100, 101-299 restant, et le reste) depuis les CSV extraits')]
+#[AsCommand(name: 'app:construire-topologie-bus-autres-operateurs', description: 'Construit les troncons des lignes de bus hors RATP (20-100, 101-299 restant, et le reste), plus le telepherique et le funiculaire, depuis les CSV extraits')]
 class ConstruireTopologieBusAutresOperateursCommand extends Command
 {
     /** @var string[] */
@@ -53,6 +57,7 @@ class ConstruireTopologieBusAutresOperateursCommand extends Command
         'documentation/scripts/donnees-extraites/troncons_bus_autres_operateurs.csv',
         'documentation/scripts/donnees-extraites/troncons_bus_101_299_restant.csv',
         'documentation/scripts/donnees-extraites/troncons_bus_reste.csv',
+        'documentation/scripts/donnees-extraites/troncons_telepherique_funiculaire.csv',
     ];
 
     private TypeDesserte $depart;

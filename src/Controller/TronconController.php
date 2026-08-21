@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TronconController extends AbstractController
 {
     /** @var string[] */
-    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers'];
+    private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers', 'telepherique', 'funiculaire'];
 
     #[Route(name: 'app_troncon_index', methods: ['GET'])]
     public function index(Request $request, TronconRepository $tronconRepository, GestionnaireRepository $gestionnaireRepository, PaginatorInterface $paginator): Response

@@ -1,0 +1,6 @@
+code_externe,zdc_a,zdc_b,nom_a,nom_b,duree_mediane_secondes,nb_observations
+C01385,73848,73849,"Funiculaire de Montmartre - Gare haute","Funiculaire de Montmartre - Gare basse",300,1170
+C02666,69591,69636,"Villa Nova","La Végétale",420,8472
+C02666,69636,69685,"La Végétale",Valenton,240,8440
+C02666,69685,74103,Valenton,Limeil-Brévannes,240,8432
+C02666,69884,74103,"Pointe du Lac",Limeil-Brévannes,540,8448

@@ -155,15 +155,11 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
 
 ## Autres pistes notées en cours de route
 
-- Lisibilité des badges de ligne (demandé le 2026-08-17) : actuellement (`.ligne-badge`/
-  `.ligne-badge-sm`, `assets/styles/app.scss`, utilisé dans 18 templates) le label de la ligne est
-  écrit EN texte À L'INTÉRIEUR du rond colorisé (`background-color: {{ ligne.couleur|default(...)
-  }}`), donc illisible si la couleur est claire/proche du blanc, et une couleur grise par défaut
-  est utilisée quand `couleur` est NULL. Cible demandée : le rond coloré reste vierge de tout texte
-  (juste la couleur, absent s'il n'y a pas de `couleur` connue) ; le nom de la ligne s'affiche
-  toujours À CÔTÉ, en texte noir sur fond blanc (jamais dans le rond) ; le mode de transport
-  (`Ligne.typeTransport`, ex: Bus/Tram/RER/Métro) doit aussi être visible à côté. Implique de
-  revoir les 18 templates utilisant ce badge, pas juste le CSS.
+- Lisibilité des badges de ligne — **fait (2026-08-20)** : remplacé par la classe `.pastille-ligne`
+  (`assets/styles/app.scss`), un carré de couleur (`--ligne-couleur`) suivi du nom de la ligne en
+  texte noir sur fond blanc, jamais de texte dans le carré. Anciennes classes `.ligne-badge`/
+  `.ligne-badge-sm` supprimées, 19 templates convertis (30 emplacements). Voir
+  `documentation/commande.md`.
 - Tracés de bus vs vol d'oiseau (signalé le 2026-08-17, capture d'écran `/trajet` à l'appui) :
   `assets/js/trajet-carte.js` essaie déjà d'extraire, pour chaque tronçon affiché, la portion du
   vrai tracé GPS de la `Ligne` (`Ligne::trace`, importé par `app:importer-traces-lignes` depuis
@@ -189,9 +185,15 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
   mais sans impact visible sur les données déjà construites (les bus n'ont quasiment jamais de
   missions semi-directes à filtrer, contrairement au RER), donc pas de reconstruction nécessaire ;
   corrigé uniquement dans le nouveau script utilisé pour ces 16 lignes.
-  Le reste du réseau bus (~1300 lignes hors 20-299) n'a toujours aucun tronçon construit — ampleur
-  trop importante pour un seul passage, mais la méthode (extraction GTFS + réduction des
-  raccourcis, voir `documentation/scripts/extraire_troncons_bus*.php`) est directement réutilisable.
+  Reste du réseau bus (~1300 lignes hors 20-299) — **fait (2026-08-20)** : la limite "trop
+  volumineux pour un seul passage" est levée en lisant la liste des lignes à traiter directement en
+  base (toute Ligne Bus/Car sans aucun Troncon) au lieu d'une liste tapée à la main — l'algorithme
+  d'extraction GTFS + réduction géométrique était déjà générique. 1167 lignes traitées en un seul
+  passage (`extraire_troncons_bus_reste.php` + `app:construire-topologie-bus-autres-operateurs`),
+  24120 troncons créés. Le nombre de Desserte isolées (sans aucun Troncon, tous modes confondus)
+  passe de 24270 à 379 (-98,4%), vérifié identique en local et en prod. Résiduel (379) réparti en
+  Train (331), RER (28), Bus (13), Téléphérique (5), Funiculaire (2) — cas marginaux (lignes
+  fermées/spéciales), non traités. Voir `documentation/commande.md`.
 
 ## Lignes Transilien V/P/R — fait (2026-08-17)
 
