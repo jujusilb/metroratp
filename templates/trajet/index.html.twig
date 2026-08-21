@@ -16,7 +16,7 @@
             confondus (métro, RER, tram, bus) sur toute l'Île-de-France.
         </p>
 
-        {% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers', 'telepherique': 'Téléphérique', 'funiculaire': 'Funiculaire', 'train': 'Train'} %}
+        {% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers', 'telepherique': 'Téléphérique', 'funiculaire': 'Funiculaire', 'train': 'Transilien'} %}
         <form method="get" class="row g-3 mb-4"
               data-recherche-station-url="{{ path('app_trajet_recherche_station') }}"
               data-mode-labels="{{ modeLabels|json_encode }}">

@@ -16,7 +16,7 @@
     - avecTroncons : optionnel, ?string ('1'/'0'/null) — si fourni, affiche le filtre "Tronçons
       construits" (pertinent pour Ligne uniquement pour l'instant)
 #}
-{% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers', 'telepherique': 'Téléphérique', 'funiculaire': 'Funiculaire', 'train': 'Train'} %}
+{% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers', 'telepherique': 'Téléphérique', 'funiculaire': 'Funiculaire', 'train': 'Transilien'} %}
 {% set libelleRecherche = libelleRecherche|default('une station') %}
 {% set placeholderRecherche = placeholderRecherche|default('Nom de station...') %}
 {% set gestionnairesSelectionnes = gestionnairesSelectionnes|default([]) %}
