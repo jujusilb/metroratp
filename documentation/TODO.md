@@ -193,7 +193,29 @@ ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement
   24120 troncons créés. Le nombre de Desserte isolées (sans aucun Troncon, tous modes confondus)
   passe de 24270 à 379 (-98,4%), vérifié identique en local et en prod. Résiduel (379) réparti en
   Train (331), RER (28), Bus (13), Téléphérique (5), Funiculaire (2) — cas marginaux (lignes
-  fermées/spéciales), non traités. Voir `documentation/commande.md`.
+  fermées/spéciales), non traités à ce stade. Voir `documentation/commande.md`.
+- Téléphérique (Câble A - Créteil, 5 stations) et Funiculaire de Montmartre (2 stations) — **fait
+  (2026-08-21)** : topologie construite (`extraire_troncons_telepherique_funiculaire.php`, 5
+  troncons, même commande générique que le bus). Mais **bug plus profond découvert et corrigé au
+  passage** : `Ligne::getModeFiltre()`/`TrajetFinder` ne reconnaissaient que Métro/Tramway/RER/Bus,
+  donc ces 2 modes étaient invisibles au calculateur de trajet quel que soit le filtre coché (une
+  arête de mode `null` n'est jamais incluse dans `TrajetFinder::construireGraphe()` dès qu'un
+  filtre non-vide est actif — et le filtre par défaut au chargement de la page EST non-vide, les 5
+  cases cochées). Ajout de `telepherique`/`funiculaire` comme modes reconnus partout où le filtre
+  existe (entité, service, 3 Repository, 4 controleurs, 2 templates). Vérifié : Câble A utilisable
+  et choisi par Dijkstra quand il est le plus rapide (La Végétale→Valenton, 4 min direct) ;
+  Funiculaire correctement concurrencé par une alternative bus plus rapide sur le seul trajet testé
+  (comportement voulu, pas un bug). Isolées : Téléphérique et Funiculaire à 0 des deux côtés.
+- RER D (28 Desserte isolées) — **investigué (2026-08-21), pas encore corrigé** : ce n'est PAS un
+  manque d'extraction GTFS (`troncons_rer.csv` contient déjà les arêtes de la branche
+  Melun/Corbeil-Essonnes/Malesherbes). C'est une instance du problème "Stations dupliquées"
+  ci-dessus : ces gares existent en base sous une Station SANS `codeExterne` (utilisée par le RER
+  D) distincte de leur jumelle AVEC `codeExterne` (utilisée par bus/Transilien R au même endroit),
+  sans Correspondance entre les deux — le rattachement par `Station.codeExterne` utilisé par
+  `ConstruireTopologieBusAutresOperateursCommand::trouverDesserte()` ne peut donc pas fonctionner
+  ici sans traitement spécifique. Piste à explorer : relier ces paires précises via une
+  Correspondance (comme fait pour bus↔métro/RER, voir plus haut), sans la fusion complète des ~486
+  paires (toujours jugée trop invasive).
 
 ## Lignes Transilien V/P/R — fait (2026-08-17)
 
