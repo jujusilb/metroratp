@@ -222,22 +222,61 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
      pour cet affichage spécifique (au risque de perdre des arêtes réelles), soit un vrai ordre de
      référence par ligne (ex: à partir des horaires GTFS complets, hors périmètre de ce qui est
      commité dans le dépôt).
+- Fiche Gestionnaire (signalé le 2026-08-22) : la page `gestionnaire/show` n'affiche pas la liste
+  des `Ligne` dont il est référent. Pas de souci de donnée : la relation existe déjà côté modèle
+  (`Gestionnaire::getLignes()`, OneToMany `mappedBy: 'gestionnaire'`, voir `src/Entity/Gestionnaire.php`)
+  — juste un ajout de template, sur le modèle de la table Dessertes de la fiche Station.
+- Ligne 3139 introuvable (signalé le 2026-08-22 ; réseau "Pays Briard", exploitant Keolis Portes et
+  Val de Brie, AO Île-de-France Mobilités). Vérifié : la ligne existe bien dans
+  `documentation/IDFM-gtfs/csv/referentiel-des-lignes.csv` (ID_Line `C01058`, statut `active`), mais
+  est absente de `documentation/scripts/donnees-extraites/reseau_complet.csv` — la vraie source de
+  `app:importer-reseau-complet`, générée par `extraire_reseau_complet.py`, qui ne retient que les
+  route_id effectivement vus dans `trips.txt` du flux GTFS complet IDFM. D'autres lignes du même
+  réseau/exploitant (ex. 3103, Keolis Portes et Val de Brie) sont bien présentes — ce n'est donc pas
+  tout le réseau "Pays Briard" qui manque, juste cette ligne précise. Cause exacte non confirmée :
+  soit aucun trip programmé pour cette ligne dans l'instantané GTFS utilisé (service scolaire/
+  saisonnier ?), soit un autre écart référentiel/GTFS. Les fichiers GTFS bruts (`trips.txt`/
+  `stop_times.txt`/`routes.txt`) ne sont plus présents en local (volumineux, jamais commités) —
+  vérification définitive nécessiterait de retélécharger le flux GTFS complet IDFM et de
+  régénérer `reseau_complet.csv`.
 - Lisibilité des badges de ligne — **fait (2026-08-20)** : remplacé par la classe `.pastille-ligne`
   (`assets/styles/app.scss`), un carré de couleur (`--ligne-couleur`) suivi du nom de la ligne en
   texte noir sur fond blanc, jamais de texte dans le carré. Anciennes classes `.ligne-badge`/
   `.ligne-badge-sm` supprimées, 19 templates convertis (30 emplacements). Voir
   `documentation/commande.md`.
-- Tracés de bus vs vol d'oiseau (signalé le 2026-08-17, capture d'écran `/trajet` à l'appui) :
-  `assets/js/trajet-carte.js` essaie déjà d'extraire, pour chaque tronçon affiché, la portion du
-  vrai tracé GPS de la `Ligne` (`Ligne::trace`, importé par `app:importer-traces-lignes` depuis
-  `traces-des-lignes-de-transport-en-commun-idfm.csv`, couvre tous les modes dont le bus) entre
-  les deux arrêts, avec repli sur une ligne droite si aucune composante du tracé n'est jugée assez
-  proche des deux points. Ce repli se déclenche visiblement pour au moins une ligne de bus (trait
-  bleu rectiligne traversant plusieurs pâtés de maisons au lieu de suivre les rues). À vérifier :
-  le tracé de cette ligne est-il manquant/mal rattaché en base, ou est-ce l'heuristique de
-  proximité (la plus proche à la fois de A et B) qui échoue sur ce cas précis ? S'assurer que
-  chaque tronçon de bus est bien synchronisé avec son vrai tracé GPS, pas juste une approximation
-  point à point.
+- Tracés de bus vs vol d'oiseau (signalé le 2026-08-17, capture d'écran `/trajet` à l'appui) —
+  **investigué le 2026-08-22**, script de scan PHP réimplémentant l'heuristique de
+  `assets/js/trajet-carte.js` (`projeterSurSegment`/`projeterSurLigne`/score, seuil `150m`) sur les
+  62038 tronçons de bus ayant les coordonnées des 2 côtés. Verdict : 61540 ont une `Ligne.trace` ;
+  61102 passent l'heuristique, **438 échouent** (0,7%), en deux populations bien distinctes :
+  1. **280 cas "proches" (150-1000m, dont 232 entre 150-200m)** : vraisemblablement juste la marge
+     normale du seuil de 150m (imprécision GPS, virage serré) — impact visuel probablement mineur,
+     pas creusé plus loin (resserrer/assouplir le seuil resterait à faire si jugé utile après
+     vérification visuelle d'un échantillon).
+  2. **158 cas "loin" (1000m à 25km)** — concentrés sur **seulement 4 Ligne** (pas 158 lignes
+     différentes), toutes identifiées précisément :
+     - `Soir Domont` (#2731, réseau Vallée de Montmorency, 88 troncons) et `TàD Eaubonne Domont`
+       (#2711, même réseau, 36 troncons) : `TransportSubmode = demandAndResponseBus` dans
+       `referentiel-des-lignes.csv` — ce sont des services de **Transport à la Demande**, sans
+       itinéraire fixe réel. Le tracé GPS fourni par IDFM pour ces lignes ne correspond qu'à un
+       parcours théorique/partiel, pas aux arrêts réellement desservis (bbox du tracé et bbox des
+       stations totalement disjointes, ~15-25km d'écart) — **pas un bug**, comportement attendu vu
+       la nature du service.
+     - `Remplacement Transilien H` (#2538, réseau Transilien/SNCF, 22 troncons) : `Type =
+       REPLACEMENT_LINE_TYPE` — un service de bus de substitution (remplace le train, ex. travaux),
+       sans itinéraire routier fixe unique non plus par nature. Même conclusion : pas un vrai bug de
+       données à corriger.
+     - `1412 (ex 95-03B)` (#1696, réseau Val Parisis, `expressBus`, 12 troncons) : **seule vraie
+       ligne de bus régulière du lot, et seul cas confirmé de données réellement incomplètes** — son
+       `Ligne.trace` (2 composantes, 162 points) ne couvre qu'une partie de la zone desservie par ses
+       30 Station (bbox du tracé plus étroite que celle des stations). Volume marginal (12/62038,
+       0,02%) : pas de correctif de code identifié (les données GPS manquantes ne peuvent pas être
+       reconstruites sans nouvelle source), et le repli ligne droite reste la seule option sur ces
+       12 troncons précis en l'état des données IDFM disponibles.
+  En résumé : le signalement initial pointait un phénomène réel, mais qui touche un nombre de
+  lignes très restreint (4 sur ~1400 lignes de bus), dont 3 s'expliquent par la nature même du
+  service (TAD/remplacement) plutôt que par un bug — pas de changement de code effectué à ce
+  stade.
 - Quais décalés (ex: Liège sur la ligne 13) — **fait (2026-08-21)** : ajout de
   `TronconDesserte::dureeReelleSecondes` (nullable, uniquement significatif côté "Départ"),
   `Troncon::dureeReelleSecondes` restant le repli symétrique (`TrajetFinder::construireGraphe()`

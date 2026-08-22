@@ -1035,4 +1035,18 @@ Demande utilisateur (message coupé "...tu mets un bouton carte qui ouvre un mod
 | `npx encore dev`, `npx jest` (51 tests), `php bin/console lint:twig` | Tout passe. |
 | Vérification navigateur locale (`/station/21`, compte de test) : carte absente par défaut (`display: none`), clic sur "Carte" → modal plein écran, carte Leaflet initialisée (1248×625), 6 marqueurs de sortie, aucune erreur console | Conforme. |
 
+## Session du 2026-08-22 (suite) — Investigation tracés de bus vs vol d'oiseau, + 2 notes TODO
+
+Demande utilisateur : "Tracés de bus vs vol d'oiseau : un cas signalé le 17/08 jamais vérifié. GO !", puis en cours de route, ajout TODO de 2 sujets (liste des Ligne d'un Gestionnaire absente de sa fiche ; ligne 3139 "Pays Briard" introuvable).
+
+| Commande | Objectif |
+|---|---|
+| Script PHP de scan (scratchpad), réimplémentation de `projeterSurSegment`/`projeterSurLigne`/score de `assets/js/trajet-carte.js` (seuil 150m identique) | Scanner systématiquement les 62038 tronçons de bus avec coordonnées des 2 côtés plutôt que de deviner depuis une seule capture d'écran. |
+| 1er passage : 438 échecs sur 61540 tronçons avec `Ligne.trace` (0,7%) | Distribution très bimodale : 280 cas 150-1000m (dont 232 à 150-200m, marge probable du seuil), 158 cas 1000m-25km — décision de creuser d'abord le cluster "loin", plus suspect. |
+| Regroupement des 158 échecs "loin" par `ligne_id` | Concentrés sur **seulement 4 Ligne** (pas 158 lignes distinctes) : Soir Domont #2731 (88), TàD Eaubonne Domont #2711 (36), Remplacement Transilien H #2538 (22), 1412 ex-95-03B #1696 (12). |
+| Comparaison bbox `Ligne.trace` vs bbox des Station desservies, pour ces 4 Ligne | Soir Domont et TàD Eaubonne Domont : bbox totalement disjointes (~15-25km d'écart). Remplacement Transilien H et 1412 ex-95-03B : bbox chevauchantes (trace globalement bien rattaché mais incomplet). |
+| Vérification dans `referentiel-des-lignes.csv` (`TransportSubmode`/`Type`) | Soir Domont et TàD Eaubonne Domont : `demandAndResponseBus` (Transport à la Demande, pas d'itinéraire fixe réel — pas un bug). Remplacement Transilien H : `REPLACEMENT_LINE_TYPE` (service de substitution bus, pas d'itinéraire fixe unique non plus). 1412 ex-95-03B : `expressBus` (vraie ligne régulière, réseau Val Parisis) — **seul vrai cas de données incomplètes** du lot (12/62038 tronçons, 0,02%), trace à seulement 2 composantes/162 points ne couvrant pas toute la zone de ses 30 Station. |
+| Conclusion, `documentation/TODO.md` mis à jour (entrée existante du 2026-08-17 complétée) | Pas de correctif de code : 3 des 4 lignes n'ont structurellement pas de tracé fixe (comportement attendu), la 4e a un volume trop marginal et des données GPS manquantes non reconstructibles depuis le dépôt. Les 280 cas "proches" pas creusés plus loin (impact visuel jugé mineur). |
+| `documentation/TODO.md` (2 nouvelles notes, hors sujet tracés) | Fiche Gestionnaire : relation `Gestionnaire::getLignes()` déjà présente côté modèle, juste un ajout de template à faire. Ligne 3139 "Pays Briard" : présente et `active` dans `referentiel-des-lignes.csv` (`C01058`) mais absente de `reseau_complet.csv` (généré par `extraire_reseau_complet.py`, qui ne retient que les route_id vus dans `trips.txt` du GTFS complet) — cause exacte non confirmée plus loin (fichiers GTFS bruts plus présents en local, il faudrait retélécharger le flux complet pour trancher). |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
