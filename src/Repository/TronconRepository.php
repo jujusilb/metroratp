@@ -199,6 +199,29 @@ class TronconRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * Meme forme que findAllWithDetails() mais SANS la chaine missions/direction/desserteTerminus
+     * (inutile pour app:importer-durees-troncon, qui ne lit que depart/arrivee/station via
+     * Troncon::getSensCirculation()) : sur le reseau actuel (~32000 troncons, apres la
+     * construction bus/RER/Transilien de cette session), la jointure complete produisait un
+     * resultat trop volumineux pour l'hebergement mutuel de production ("MySQL server has gone
+     * away" a l'hydratation, alors que la meme commande passait en local avec plus de memoire).
+     *
+     * @return Troncon[]
+     */
+    public function findAllPourImportDurees(): array
+    {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.tronconDessertes', 'td')->addSelect('td')
+            ->leftJoin('td.desserte', 'd')->addSelect('d')
+            ->leftJoin('d.station', 'station')->addSelect('station')
+            ->leftJoin('td.typeDesserte', 'typeDesserte')->addSelect('typeDesserte')
+            ->orderBy('t.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 //    /**
 //     * @return Troncon[] Returns an array of Troncon objects
 //     */

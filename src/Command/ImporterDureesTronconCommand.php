@@ -100,7 +100,7 @@ class ImporterDureesTronconCommand extends Command
         fclose($fh);
         $io->writeln(sprintf('Paires de durees chargees depuis le CSV : %d', array_sum(array_map('count', $durees))));
 
-        $troncons = $this->tronconRepository->findAllWithDetails();
+        $troncons = $this->tronconRepository->findAllPourImportDurees();
         $matches = 0;
         $sansCorrespondance = [];
         $sensAsymetriques = 0;
