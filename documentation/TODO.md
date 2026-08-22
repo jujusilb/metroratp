@@ -277,6 +277,22 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   lignes très restreint (4 sur ~1400 lignes de bus), dont 3 s'expliquent par la nature même du
   service (TAD/remplacement) plutôt que par un bug — pas de changement de code effectué à ce
   stade.
+- ZdC absents de `zdc_coordonnees.csv` / `reseau_complet.csv` (signalé le 2026-08-22, arrêt "Les
+  Tournelles" cherché sur Google Maps par l'utilisateur, semblant situé à "Hautefeuille") — vérifié :
+  "Hautefeuille" n'est pas la rue parisienne du même nom mais une petite commune de Seine-et-Marne
+  (code postal 77224) ; l'arrêt existe bien dans le référentiel officiel IDFM
+  (`documentation/IDFM-gtfs/csv/zones-d-arrets.csv`, ZdC `67756`, réseau 512 "Brie et 2 Morin"), mais
+  est **absent des deux fichiers qu'on utilise réellement** : `zdc_coordonnees.csv` (nos coordonnées
+  ZdC) et `reseau_complet.csv` (notre import topologie/desserte) — donc absent de la table
+  `station`. Ampleur mesurée : `zones-d-arrets.csv` référence **18003 ZdC** au total, contre
+  seulement **13753 dans `zdc_coordonnees.csv`** — un écart de **~4250 ZdC (23,6%)** jamais importés
+  chez nous, vraisemblablement concentré sur les petits réseaux ruraux/périphériques (2e rencontre du
+  jour avec ce type de réseau, après la ligne 3139 "Pays Briard" ci-dessus — écho probable du même
+  phénomène : les réseaux exploités par de petits opérateurs en zone peu dense semblent
+  systématiquement sous-représentés dans les fichiers qu'on a extraits). Pas de correctif ici :
+  nécessiterait de reconstruire `zdc_coordonnees.csv`/`reseau_complet.csv` à partir d'une source plus
+  complète (le référentiel `zones-d-arrets.csv` lui-même a des coordonnées en Lambert-93, colonnes
+  6/7, à reprojeter — pas fait dans cette session).
 - Quais décalés (ex: Liège sur la ligne 13) — **fait (2026-08-21)** : ajout de
   `TronconDesserte::dureeReelleSecondes` (nullable, uniquement significatif côté "Départ"),
   `Troncon::dureeReelleSecondes` restant le repli symétrique (`TrajetFinder::construireGraphe()`
@@ -359,6 +375,18 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   filtrant sur Train seul (25,3 min, 8 étapes) ; avec tous les modes cochés, un bus plus rapide de
   1,3 min est choisi à la place (comportement Dijkstra correct, pas un bug). Desserte isolées
   toutes lignes : 344 → 92 (Train résiduel : TER/V/CDG VAL/ORLYVAL, hors périmètre Transilien).
+
+- Normaliser le champ `ville` (varchar libre) en table `Ville` (signalé le 2026-08-22) — demande
+  utilisateur : créer une entité `Ville` (id, label, frontières géographiques), pour pouvoir afficher
+  sur la carte les limites d'une commune ou la colorier entièrement. **5 entités concernées**
+  (`ville` en varchar, vérifié via un grep sur les entités) : `Station`, `Defibrillateur`,
+  `EquipementArret`, `PointDeVente`, `Utilisateur` — à faire migrer vers une relation `ManyToOne`
+  vers `Ville` (grosse tâche de normalisation, pas juste l'ajout d'une table). Pour les frontières
+  GPS : l'État français publie les contours administratifs des communes en open data (ex. IGN
+  ADMIN EXPRESS, ou l'API officielle `geo.api.gouv.fr` qui fournit le contour GeoJSON de chaque
+  commune par son code INSEE) — **piste non vérifiée/téléchargée à ce stade**, à confirmer avant de
+  s'engager (format exact, licence, couverture Île-de-France complète, poids du fichier si commité
+  au dépôt comme les autres CSV).
 
 ## Lignes Transilien V/P/R — fait (2026-08-17)
 
