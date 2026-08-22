@@ -147,15 +147,26 @@ créées ; 74 labels ambigus et 80 sans jumelle laissés de côté, même discip
 cette session). Restaure le changement de mode bus↔lourd sans fusionner les Station. Vérifié en
 conditions réelles : Kremlin-Bicêtre (bus 131) → métro 7 → métro 14 → RER A → RER E → bus 207.
 
-Vraie correction : fusionner ces ~486 paires de `Station` dupliquées (réassigner toutes les FK —
-`Desserte`, `TronconDesserte`, `Direction`, `Correspondance`, `Sortie` — de l'originale vers la
-nouvelle avant de supprimer l'originale, ou l'inverse). Opération delicate et invasive (touche
-quasiment toutes les entités), volontairement **pas faite dans cette session** : reperée via
-`documentation/scripts/backfill_code_externe_stations_originales.py` (génère
-`documentation/scripts/donnees-extraites/backfill_code_externe.sql`, qui liste aussi les vraies
-paires en doublon dans sa sortie console). 37 stations sans doublon ont été reliées à leur ZdC au
-passage (aucun risque, `code_externe` libre) ; 10 restent ambiguës (nom trop générique, plusieurs
-ZdC candidats) et 16 sans correspondance ZdC trouvée — à revoir manuellement.
+**Vraie correction — fait pour 371/534 paires (2026-08-21/22)** : `app:fusionner-stations-dupliquees`
+(nouvelle commande) fusionne les paires **non ambiguës** (même label exact ET coordonnées à moins
+de 300m — vérifié sans aucun cas ambigu ni aucun conflit de valeur sur ces 371 paires) : la
+Station "originale" (réellement visitée) devient canonique, récupère les colonnes qui lui
+manquaient (`code_externe`, `ville`, `zone_tarifaire`, `plan_id`...), les 9 tables qui référencent
+`Station` par FK directe (`desserte`, `sortie`, `equipement_arret`, `position_rame`,
+`defibrillateur`, `fontaine_eau`, `point_de_vente`, `sanisette_publique`, `sanitaire`) sont
+repointées vers elle, puis la jumelle ZdC est supprimée. Vérifié : aucune Desserte sur la même
+Ligne des deux côtés (donc aucun doublon (station,ligne) après fusion, `Correspondance`/`Direction`/
+`TronconDesserte` n'ont pas besoin d'être touchées, elles référencent `Desserte` dont l'id ne
+change pas). Résultat concret sur "Nation"/"La Défense" : Sorties, Points de vente, Sanitaires,
+Défibrillateurs — jusque-là invisibles sur la page réellement consultée — apparaissent enfin.
+Sauvegarde complète (`mysqldump`) des tables concernées prise avant exécution, en local et en
+prod. **163 paires volontairement non fusionnées** (le simple rapprochement par label seul est
+dangereux : 83 stations "originale" ont plusieurs homonymes par label — ex: "Victor Hugo", 35
+candidats, un nom de rue commun sans rapport avec la même station physique) : 82 sans aucun nom
+correspondant, 81 sans coordonnées pour vérifier (dont "Châtelet" originale — 2 homonymes réels,
+Paris et Montereau-Fault-Yonne) — laissées en l'état plutôt que devinées, à revoir manuellement si
+besoin. Repérage initial via `documentation/scripts/backfill_code_externe_stations_originales.py`
+(2026-08-09/20).
 
 ## Autres pistes notées en cours de route
 

@@ -965,4 +965,21 @@ Demande utilisateur : enchaîner sur une autre tâche du backlog une fois la cli
 | Vérification SQL + Browser tool (compte de test) : Place de Clichy ↔ Saint-Lazare, ligne 13 | Identique au local : 2,6 min aller / 2,2 min retour, aucune erreur console. |
 | Tâche #11 (tracker, local + prod, recherche par nom) | Marquée ACHEVÉE avec le détail complet (asymétrie découverte, fix de requête inclus, limite résiduelle bus/RER D/Transilien). |
 
+## Session du 2026-08-22 — Fusion des Stations dupliquées (tâche #10)
+
+Demande utilisateur : "GO !" pour continuer. Seule tâche actionnable restante (#2 bloquée par absence de donnée) : la fusion des ~486 Stations dupliquées, plusieurs fois volontairement différée pour son caractère invasif.
+
+| Commande | Objectif |
+|---|---|
+| Confirmation avant action (`AskUserQuestion`) | Étant donné le caractère irréversible (suppression de lignes, contrairement au reste de la session qui n'ajoutait que des données), présentation du plan et du chiffre exact avant toute exécution. Réponse : fusionner les paires sûres. |
+| Analyse SQL (label exact + distance haversine ≤ 300m) | 799 correspondances brutes par label seul (bruitées : 83 stations "originale" ont plusieurs homonymes, ex "Victor Hugo" 35 candidats). Après filtre de distance : **371 candidats uniques, 0 ambigu, 0 sans candidat** — signal net. Comparaison champ par champ (ville, zone_tarifaire, plan_id, pole_echange_id, accessibilite_pmr...) sur ces 371 paires : **0 conflit de valeur**, uniquement des trous à combler côté "originale". Vérifié aussi : aucune des 371 paires n'a de Desserte sur la même Ligne des deux côtés (pas de risque de doublon (station,ligne) après fusion). |
+| `src/Command/FusionnerStationsDupliqueesCommand.php` (nouvelle, `app:fusionner-stations-dupliquees`) | Recalcule les paires à chaque exécution (jamais de liste figée, idempotente). Repère les 9 tables à FK directe vers Station (`desserte`, `sortie`, `equipement_arret`, `position_rame`, `defibrillateur`, `fontaine_eau`, `point_de_vente`, `sanisette_publique`, `sanitaire`, confirmé exhaustif via `information_schema.columns`). |
+| `mysqldump` (local, tables concernées) | Sauvegarde avant tout essai réel (8,6 Mo). |
+| 1er essai réel : échec | `SQLSTATE[23000]... Duplicate entry '71517' for key 'UNIQ_...'` sur "La Défense" — `station.code_externe` a une contrainte d'unicité ; copier sa valeur AVANT de supprimer la ligne ZdC crée un doublon transitoire (MySQL ne diffère pas cette vérification, même en transaction). Rollback automatique confirmé propre (aucune donnée touchée). |
+| Correction : réordonnancement (COALESCE des autres champs → repointage des 9 FK → suppression de la ligne ZdC → *puis seulement* écriture de `code_externe` sur l'originale, valeur portée dans le tableau des paires plutôt que relue via jointure) | Réexécution : **371 paires fusionnées**, 0 échec. |
+| Vérifications : réexécution en `--dry-run` (0 paire restante, confirme l'idempotence), `php bin/phpunit` (134 tests), `npx jest` (51 tests), requête d'absence d'orphelins sur les 9 tables (0 partout) | Tout passe. |
+| Vérification navigateur (compte de test) : `/station/21` (Nation), `/station/1` (La Défense) | Sorties, Points de vente, Sanitaires, Défibrillateurs — jusque-là invisibles sur la page réellement consultée (rattachés à la jumelle ZdC jamais visitée) — apparaissent enfin. `/trajet` Nation→La Défense (RER A, 12,5 min) fonctionne toujours. `/station/15` (Châtelet, originale sans coordonnées) intact et non fusionné, comme prévu (2 homonymes réels : Paris et Montereau-Fault-Yonne). |
+| `documentation/TODO.md` | Section "Stations dupliquées" mise à jour : 371/534 fusionnées, 163 volontairement laissées de côté (détail des raisons). |
+| `mysqldump` en prod (SSH, hors du dossier app) + copie locale via `scp` | Sauvegarde avant exécution en prod, même discipline qu'en local. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
