@@ -179,6 +179,30 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
 
 ## Autres pistes notées en cours de route
 
+- Page `/ligne/{id}` (signalé le 2026-08-22) — deux soucis distincts sur la liste des stations
+  (`templates/ligne/show.html.twig`, macro `renderSegment`, alimentée par `Ligne::getParcoursSegments()`) :
+  1. **Affichage** : les pastilles de correspondance et le nom de la station sont sur la même
+     ligne (`d-flex align-items-center gap-2`), ex. "1, 2, 3, 4, 12, 23, 42 Hôtel de Ville" — à
+     séparer visuellement (correspondances au-dessus, nom de la station en dessous, ou toute autre
+     mise en page plus lisible qu'une seule ligne dense quand une station a beaucoup de
+     correspondances).
+  2. **Ordre des stations pas toujours le cheminement réel** : `getParcoursSegments()` part d'un
+     terminus (Desserte de degré 1) et suit `Troncon` en profondeur, gérant les embranchements
+     (arbre) mais pas les vrais graphes à cycles (maillage). Vérifié concrètement sur `/ligne/22`
+     (RER D) : après Juvisy, l'algorithme rentre dans la branche Malesherbes (Boigneville,
+     Maisse...) avant de revenir sur la boucle Évry/Corbeil/Grigny puis de rejoindre "Viry-Châtillon"
+     une 2e fois ("rejoint la ligne principale") — l'ordre affiché ne correspond pas au vrai
+     cheminement physique dans cette zone. Cause directe : le maillage RER D (voir plus haut,
+     "Lignes à embranchements complexes") a été construit cette session avec `Troncon`/
+     `TronconDesserte` seuls, sans `Direction`/`Mission` (`ConstruireMaillageRerDCommand`) — or
+     `getParcoursSegments()` ne s'appuie que sur `Troncon` (ni Direction ni Mission), donc il
+     hérite du problème dès qu'un graphe n'est plus un arbre. Plusieurs lignes Transilien
+     construites la même session (H, J, L, N, R — voir plus haut) ont le même type d'excédent
+     d'arêtes par rapport à un arbre pur et sont probablement affectées aussi, à vérifier au cas
+     par cas. Pas de correctif simple identifié : nécessiterait soit de détecter/couper les cycles
+     pour cet affichage spécifique (au risque de perdre des arêtes réelles), soit un vrai ordre de
+     référence par ligne (ex: à partir des horaires GTFS complets, hors périmètre de ce qui est
+     commité dans le dépôt).
 - Lisibilité des badges de ligne — **fait (2026-08-20)** : remplacé par la classe `.pastille-ligne`
   (`assets/styles/app.scss`), un carré de couleur (`--ligne-couleur`) suivi du nom de la ligne en
   texte noir sur fond blanc, jamais de texte dans le carré. Anciennes classes `.ligne-badge`/
