@@ -179,6 +179,25 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
 
 ## Autres pistes notées en cours de route
 
+- `Station.codeExterne` périmé (repéré le 2026-08-22 via un signalement utilisateur sur "Hôtel de
+  Ville", 0 Sortie/accessibilité/coordonnées affichées) — **fait** : même symptôme que
+  `Ligne.codeExterne` incohérent (2026-08-17), sur `Station` cette fois. 14 Station (des noms très
+  courants : Concorde, Villiers, Hôtel de Ville, Saint-Augustin, Rue du Bac...) avaient un
+  `code_externe` absent du GTFS actuel — invisibles à `app:fusionner-stations-dupliquees` (qui ne
+  cherche que `code_externe IS NULL`), donc jamais fusionnées avec leur vraie jumelle ZdC-liée qui
+  porte les vraies données. Nouvelle commande `app:corriger-code-externe-perime` : désambiguïsation
+  par proximité au voisin `Troncon` déjà positionné (ces 14 Station n'ont elles-mêmes aucune
+  coordonnée pour se départager directement entre homonymes) — marge nette à chaque fois (moins de
+  700m pour 13/14, contre 3 à 27 km pour le 2e candidat le plus proche). 14/14 corrigées.
+- "Conseils de position dans la rame" (`PositionRame`) — **déplacé (2026-08-22)**, sur demande
+  utilisateur : n'a de sens qu'en connaissant la destination réelle ("pour rejoindre X, se placer
+  Y"), retiré de la fiche Station (où il s'affichait hors de tout contexte) et affiché à la place
+  dans le calculateur de trajet (`/trajet`, vue "Détaillé"), à la fin de chaque tronçon emprunté —
+  c'est justement là qu'on sait déjà s'il faut changer de ligne ou si c'est l'arrivée.
+  `PositionRameRepository::trouverParStationEtLigne()` (nouvelle), affichage filtré par Ligne
+  precise. Note : le dataset source contient parfois plusieurs lignes identiques pour une même
+  destination (déjà visible auparavant sur la fiche Station) — non dédupliqué, hors périmètre de
+  cette demande.
 - Page `/ligne/{id}` (signalé le 2026-08-22) — deux soucis distincts sur la liste des stations
   (`templates/ligne/show.html.twig`, macro `renderSegment`, alimentée par `Ligne::getParcoursSegments()`) :
   1. **Affichage** : les pastilles de correspondance et le nom de la station sont sur la même

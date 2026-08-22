@@ -157,6 +157,13 @@
                                             {% for desserte in segment.dessertes %}
                                                 <a href="{{ path('app_station_show', {'id': desserte.station.id}) }}" class="link-body-emphasis">{{ desserte.station.label }}</a>{% if not loop.last %} <span aria-hidden="true">→</span> {% endif %}
                                             {% endfor %}
+                                            {% if segment.positionsRame|default([])|length > 0 %}
+                                                <div class="small text-muted mt-1">
+                                                    {% for conseil in segment.positionsRame %}
+                                                        <div>🚃 Pour rejoindre <strong>{{ conseil.destination }}</strong> : se placer {{ conseil.labelPosition }} ({{ conseil.position }}/{{ conseil.positionMax }}){% if conseil.equipement %} — {{ conseil.equipement }}{% endif %}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
                                         </span>
                                         <span class="text-muted text-nowrap ms-2">{{ segment.duree|round(1) }} min</span>
                                     </li>

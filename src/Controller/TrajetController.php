@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Desserte;
 use App\Entity\Station;
 use App\Repository\DesserteRepository;
+use App\Repository\PositionRameRepository;
 use App\Repository\StationRepository;
 use App\Service\Trajet\Etape;
 use App\Service\TrajetFinder;
@@ -21,7 +22,7 @@ final class TrajetController extends AbstractController
     private const MODES_DISPONIBLES = ['metro', 'tram', 'rer', 'bus_ratp', 'bus_tiers', 'telepherique', 'funiculaire', 'train'];
 
     #[Route(name: 'app_trajet_index', methods: ['GET'])]
-    public function index(Request $request, StationRepository $stationRepository, TrajetFinder $trajetFinder): Response
+    public function index(Request $request, StationRepository $stationRepository, TrajetFinder $trajetFinder, PositionRameRepository $positionRameRepository): Response
     {
         // Au premier chargement (aucune case n'a encore ete soumise), tout est coche par
         // defaut : comportement historique, non restreint.
@@ -66,7 +67,7 @@ final class TrajetController extends AbstractController
             }
         }
 
-        $segments = null !== $resultat ? $this->construireSegmentsPourAffichage($resultat->etapes) : [];
+        $segments = null !== $resultat ? $this->construireSegmentsPourAffichage($resultat->etapes, $positionRameRepository) : [];
 
         return $this->render('trajet/index.html.twig', [
             'stationOrigine' => $stationOrigine,
@@ -153,17 +154,36 @@ final class TrajetController extends AbstractController
      * seul segment affichant la chaine complete des stations traversees, plutot qu'une ligne
      * par troncon individuel. Les correspondances restent des segments a part.
      *
+     * Chaque troncon porte aussi les conseils de positionnement dans la rame (PositionRame) pour
+     * la Ligne empruntee, a la Station ou ce troncon se termine - utile ici (on sait deja, dans un
+     * trajet calcule, s'il faut changer de ligne ou si c'est l'arrivee), contrairement a la fiche
+     * Station seule ou l'info est affichee hors de tout contexte de destination.
+     *
      * @param Etape[] $etapes
-     * @return list<array{type: string, dessertes?: Desserte[], depart?: Desserte, arrivee?: Desserte, duree: float}>
+     * @return list<array{type: string, dessertes?: Desserte[], depart?: Desserte, arrivee?: Desserte, duree: float, positionsRame?: array}>
      */
-    private function construireSegmentsPourAffichage(array $etapes): array
+    private function construireSegmentsPourAffichage(array $etapes, PositionRameRepository $positionRameRepository): array
     {
         $segments = [];
         $tronconCourant = null;
 
+        $terminerTroncon = function () use (&$tronconCourant, $positionRameRepository): void {
+            if (null === $tronconCourant) {
+                return;
+            }
+            /** @var Desserte $derniere */
+            $derniere = end($tronconCourant['dessertes']);
+            $ligne = $derniere->getLigne();
+            $station = $derniere->getStation();
+            if (null !== $ligne && null !== $station) {
+                $tronconCourant['positionsRame'] = $positionRameRepository->trouverParStationEtLigne($station->getId(), $ligne->getId());
+            }
+        };
+
         foreach ($etapes as $etape) {
             if (Etape::TYPE_CORRESPONDANCE === $etape->type) {
                 if (null !== $tronconCourant) {
+                    $terminerTroncon();
                     $segments[] = $tronconCourant;
                     $tronconCourant = null;
                 }
@@ -191,6 +211,7 @@ final class TrajetController extends AbstractController
         }
 
         if (null !== $tronconCourant) {
+            $terminerTroncon();
             $segments[] = $tronconCourant;
         }
 

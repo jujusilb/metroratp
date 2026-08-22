@@ -17,20 +17,22 @@ class PositionRameRepository extends ServiceEntityRepository
     }
 
     /**
-     * Pour la page d'une Station : tous les conseils de positionnement qui s'y appliquent,
-     * groupes implicitement par Ligne a l'affichage (evite le N+1 sur ligne/acces).
+     * Pour le calculateur de trajet : conseils de positionnement a l'arrivee d'un troncon (avant
+     * de changer de ligne ou d'arriver a destination), pour CETTE Ligne precise - plus utile ici,
+     * en contexte d'un trajet reel, que sur la fiche Station seule (ou "pour rejoindre" n'a pas de
+     * sens sans savoir vers ou l'on va).
      *
      * @return PositionRame[]
      */
-    public function trouverParStation(int $stationId): array
+    public function trouverParStationEtLigne(int $stationId, int $ligneId): array
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.station = :stationId')
+            ->andWhere('p.ligne = :ligneId')
             ->setParameter('stationId', $stationId)
-            ->leftJoin('p.ligne', 'ligne')->addSelect('ligne')
+            ->setParameter('ligneId', $ligneId)
             ->leftJoin('p.acces', 'acces')->addSelect('acces')
-            ->orderBy('ligne.label', 'ASC')
-            ->addOrderBy('p.destination', 'ASC')
+            ->orderBy('p.destination', 'ASC')
             ->getQuery()
             ->getResult()
         ;

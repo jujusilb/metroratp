@@ -1000,5 +1000,26 @@ Demande utilisateur : "Importer emplacement-des-gares-idf-data-generalisee.csv ?
 | Fusion réelle, vérifications (dry-run→0, `php bin/phpunit` 134 tests, `npx jest` 51 tests, absence d'orphelins sur les 9 tables) | Tout passe. |
 | Vérification navigateur locale : `/station/546` (Roissy-en-Brie, une des 63 nouvelles fusions) | Sorties et accessibilité désormais visibles, comme pour le premier lot. |
 | `documentation/TODO.md` | Section "Stations dupliquées" complétée : total cumulé 434/534. |
+| Déploiement (clone de secours), `mysqldump` en prod (nouvelle sauvegarde) + copie locale | Même discipline que les rounds précédents. |
+| `app:importer-coordonnees-geographiques` puis `app:fusionner-stations-dupliquees` en prod | 88 Stations positionnées (contre 81 en local), 65 fusions supplémentaires (contre 63) — écarts normaux. Total cumulé en prod : 412/534. |
+| Vérifications (dry-run→0, absence d'orphelins, Browser tool sur `/station/544` Roissy-en-Brie) | Identique au local, aucune erreur console. |
+| Tâche #10 (tracker, local + prod) | Étape complémentaire ajoutée, statut ACHEVÉE conservé. |
+
+## Session du 2026-08-22 (suite) — TODO page `/ligne`, puis bug Station.codeExterne périmé
+
+Demande utilisateur : noter dans TODO.md 2 soucis d'affichage sur `/ligne/{id}` (pastilles+nom sur la même ligne, ordre des stations pas toujours le vrai cheminement sur les lignes en maillage — voir `documentation/TODO.md` pour le détail technique déjà vérifié sur RER D), puis discussion sur une possible réorganisation "vers Paris/dans Paris/vers X" (répondu, en attente du retour utilisateur), puis signalement d'un vrai bug sur la fiche "Hôtel de Ville" (aucune Sortie/Sanitaire/etc., malgré la fusion des Stations dupliquées).
+
+| Commande | Objectif |
+|---|---|
+| Investigation "Hôtel de Ville" (35 homonymes en base !) | La vraie Station parisienne (id 16, lignes 1+11) a un `code_externe` (59762) **absent du GTFS actuel** (confirmé : `grep` sur `stops.txt`, aucune trace). Sa vraie jumelle ZdC-liée (id 20770, Paris 4e) a bien 10 lignes de bus et 8 Sorties, mais n'a jamais été fusionnée : `app:fusionner-stations-dupliquees` ne cherche que les Station à `code_externe IS NULL`, pas périmé. |
+| Mesure de l'ampleur : comparaison de toutes les Station à `code_externe` contre `zdc_coordonnees.csv` | Seulement **14 Station perimées** sur ~13710 avec codeExterne (Concorde, Villiers, Colonel Fabien, Saint-Augustin, Rue du Bac, Port Royal, Pyrénées, Commerce, Chemin Vert, Anatole France, Hoche, Les Sablons, Saint-Denis) — même symptôme que `Ligne.codeExterne` trouvé le 2026-08-17, mais sur Station. |
+| Vérification de la désambiguïsation par voisin `Troncon` (ces 14 Station n'ont elles-mêmes aucune coordonnée pour se départager entre homonymes directement) | Chaque Station a un voisin déjà positionné ; le candidat homonyme le plus proche de ce voisin est net à chaque fois (moins de 700m pour 13/14, 3.5km pour la dernière, contre 3 à 27km pour le 2e plus proche candidat) — vérifié avant d'écrire du code. |
+| `src/Command/CorrigerCodeExterneStationsPerimeCommand.php` (nouvelle, `app:corriger-code-externe-perime`) | Même mécanique de fusion que `app:fusionner-stations-dupliquees` (COALESCE, repointage des 9 tables, suppression de la jumelle), sauf `code_externe` **forcé** (pas juste complété, la valeur existante est fausse pas absente) — écrit en dernier, même ordre imposé par la contrainte d'unicité que la commande sœur. |
+| `mysqldump` (sauvegarde), exécution réelle, vérifications (dry-run→0, absence d'orphelins sur les 9 tables, `php bin/phpunit` 134 tests, `npx jest` 51 tests) | 14/14 corrigées. Tout passe. |
+| Vérification navigateur locale : `/station/16` | "Hôtel de Ville (Paris 4e)", zone tarifaire, 10 lignes de bus, 8 Sorties réelles — enfin visibles. |
+| Retour utilisateur (même message) : "Conseils de position dans la rame" ne doit pas s'afficher sur la fiche Station (n'a de sens qu'avec une destination connue), mais dans le calculateur de trajet | Investigation du modèle `PositionRame` (Ligne+Station+destination texte libre). |
+| `PositionRameRepository::trouverParStationEtLigne()` (nouvelle) + `TrajetController::construireSegmentsPourAffichage()` (étendue) | Chaque tronçon du trajet porte désormais ses conseils de positionnement (Ligne+Station d'arrivée du tronçon) — on sait déjà, dans un trajet calculé, s'il faut changer de ligne ou si c'est l'arrivée, contrairement à la fiche Station seule. |
+| `templates/trajet/index.html.twig` (vue Détaillée, affichage des conseils) + `templates/station/show.html.twig`/`StationController::show()` (section retirée) + `PositionRameRepository::trouverParStation()` (supprimée, plus utilisée) | Nettoyage complet du code mort. |
+| `php bin/phpunit`, `npx jest`, vérification navigateur (Bastille → Nation, ligne 1) | Conseils affichés correctement en fin de tronçon ("Pour rejoindre Nation : se placer Milieu (3/6)..."), identiques aux valeurs vues auparavant sur la fiche Station. Confirmé disparu de `/station/21`. |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

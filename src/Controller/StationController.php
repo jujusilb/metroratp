@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Station;
 use App\Form\StationType;
-use App\Repository\PositionRameRepository;
 use App\Repository\StationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -47,11 +46,10 @@ final class StationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_station_show', methods: ['GET'])]
-    public function show(Station $station, PositionRameRepository $positionRameRepository): Response
+    public function show(Station $station): Response
     {
         return $this->render('station/show.html.twig', [
             'station' => $station,
-            'positionsRame' => $positionRameRepository->trouverParStation($station->getId()),
             'carteAccesJson' => json_encode($this->construireCarteAcces($station), JSON_THROW_ON_ERROR),
         ]);
     }
