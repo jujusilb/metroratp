@@ -160,13 +160,22 @@ Ligne des deux côtés (donc aucun doublon (station,ligne) après fusion, `Corre
 change pas). Résultat concret sur "Nation"/"La Défense" : Sorties, Points de vente, Sanitaires,
 Défibrillateurs — jusque-là invisibles sur la page réellement consultée — apparaissent enfin.
 Sauvegarde complète (`mysqldump`) des tables concernées prise avant exécution, en local et en
-prod. **163 paires volontairement non fusionnées** (le simple rapprochement par label seul est
-dangereux : 83 stations "originale" ont plusieurs homonymes par label — ex: "Victor Hugo", 35
-candidats, un nom de rue commun sans rapport avec la même station physique) : 82 sans aucun nom
-correspondant, 81 sans coordonnées pour vérifier (dont "Châtelet" originale — 2 homonymes réels,
-Paris et Montereau-Fault-Yonne) — laissées en l'état plutôt que devinées, à revoir manuellement si
-besoin. Repérage initial via `documentation/scripts/backfill_code_externe_stations_originales.py`
-(2026-08-09/20).
+prod. **163 paires volontairement non fusionnées** dans un premier temps (le simple rapprochement
+par label seul est dangereux : 83 stations "originale" ont plusieurs homonymes par label — ex:
+"Victor Hugo", 35 candidats, un nom de rue commun sans rapport avec la même station physique) : 82
+sans aucun nom correspondant, 81 sans coordonnées pour vérifier. Repérage initial via
+`documentation/scripts/backfill_code_externe_stations_originales.py` (2026-08-09/20).
+
+**Complément (2026-08-22)** : sur une suggestion utilisateur d'importer
+`emplacement-des-gares-idf-data-generalisee.csv` (référentiel officiel IDFM des gares
+train/RER/métro/tramway, commité dans `documentation/scripts/donnees-extraites/`), ajout d'une
+3e passe à `app:importer-coordonnees-geographiques` (repli par `nom_ZdC` quand aucune jumelle
+n'est déjà positionnée dans notre propre base) : **81 Stations supplémentaires positionnées**
+(2 ambiguës exclues : "Saint-Fargeau", "Pont de Rungis Aéroport d'Orly" — homonymes réels). Ces
+nouvelles coordonnées ont mécaniquement débloqué **63 fusions de Station dupliquées
+supplémentaires** en relançant `app:fusionner-stations-dupliquees` (total cumulé : 434/534).
+"Châtelet" (originale, id 15) reste un cas exclu car génuinement ambigu (2 homonymes réels : Paris
+et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellement si besoin.
 
 ## Autres pistes notées en cours de route
 

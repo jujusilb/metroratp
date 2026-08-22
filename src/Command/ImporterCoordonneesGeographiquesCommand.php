@@ -36,11 +36,22 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * mais lieu different, ex: "Saint-Paul" existe aussi comme un arret de bus rural sans rapport) -
  * EXCLUSIONS_CONNUES corrige les cas averes ; a completer si un nouveau cas est repere (verifier
  * une Station "originale" suspecte via ses voisins de Troncon, qui restent fiables).
+ *
+ * Troisieme passe (2026-08-22) : les Stations "originales" toujours sans coordonnees apres les 2
+ * passes precedentes (aucune jumelle deja positionnee dans notre propre base sous le meme label)
+ * sont recherchees dans emplacement-des-gares-idf-data-generalisee.csv (referentiel officiel IDFM
+ * des gares train/RER/metro/tramway, ~999 lignes, colonne nom_ZdC) - meme discipline (match
+ * unique par nom, sinon laisse de cote). Repere en creusant les 163 paires de Station dupliquees
+ * volontairement non fusionnees par app:fusionner-stations-dupliquees (81 d'entre elles manquaient
+ * justement de coordonnees pour verifier la fusion) : 72 des 163 ont une correspondance unique
+ * dans ce fichier (2 ambigues : Saint-Fargeau, Pont de Rungis Aeroport d'Orly - plusieurs gares
+ * homonymes reelles, exclues comme d'habitude).
  */
-#[AsCommand(name: 'app:importer-coordonnees-geographiques', description: 'Importe les coordonnees GPS reelles des Stations depuis stops.txt (GTFS IDFM)')]
+#[AsCommand(name: 'app:importer-coordonnees-geographiques', description: 'Importe les coordonnees GPS reelles des Stations depuis stops.txt (GTFS IDFM), avec repli par nom puis par emplacement-des-gares-idf-data-generalisee.csv')]
 class ImporterCoordonneesGeographiquesCommand extends Command
 {
     private const ZDC_COORDONNEES_CSV = 'documentation/scripts/donnees-extraites/zdc_coordonnees.csv';
+    private const EMPLACEMENT_GARES_CSV = 'documentation/scripts/donnees-extraites/emplacement-des-gares-idf-data-generalisee.csv';
     private const TAILLE_LOT = 1000;
 
     /**
@@ -64,6 +75,23 @@ class ImporterCoordonneesGeographiquesCommand extends Command
         $fichier = fopen($chemin, 'r');
         $header = fgetcsv($fichier);
         while (false !== ($ligne = fgetcsv($fichier))) {
+            yield array_combine($header, $ligne);
+        }
+        fclose($fichier);
+    }
+
+    /**
+     * Meme principe que lireCsv(), pour emplacement-des-gares-idf-data-generalisee.csv (export
+     * IDFM en point-virgule, avec BOM).
+     *
+     * @return \Generator<int, array<string, string>>
+     */
+    private function lireCsvPointVirgule(string $chemin): \Generator
+    {
+        $fichier = fopen($chemin, 'r');
+        $header = fgetcsv($fichier, separator: ';');
+        $header[0] = preg_replace('/^\x{FEFF}+/u', '', $header[0]);
+        while (false !== ($ligne = fgetcsv($fichier, separator: ';'))) {
             yield array_combine($header, $ligne);
         }
         fclose($fichier);
@@ -133,6 +161,38 @@ class ImporterCoordonneesGeographiquesCommand extends Command
             $nbMajParNom,
             $nbAmbigues,
             $nbIntrouvables - $nbAmbigues,
+        ));
+
+        $io->section('Repli par emplacement-des-gares-idf-data-generalisee.csv (dernier recours)...');
+        $coordsParNomGare = [];
+        foreach ($this->lireCsvPointVirgule(self::EMPLACEMENT_GARES_CSV) as $ligne) {
+            [$lat, $lon] = array_map('trim', explode(',', $ligne['Geo Point']));
+            $coordsParNomGare[$ligne['nom_ZdC']][] = [(float) $lat, (float) $lon];
+        }
+
+        $nbMajParGare = 0;
+        $nbAmbiguesGare = 0;
+        $nbIntrouvablesGare = 0;
+        foreach ($connexion->executeQuery('SELECT id, label FROM station WHERE latitude IS NULL')->iterateAssociative() as $row) {
+            $candidats = $coordsParNomGare[$row['label']] ?? [];
+            $distincts = array_unique(array_map(static fn (array $c): string => implode(',', $c), $candidats));
+            if (1 !== \count($distincts)) {
+                if (\count($distincts) > 1) {
+                    ++$nbAmbiguesGare;
+                }
+                ++$nbIntrouvablesGare;
+                continue;
+            }
+            [$lat, $lon] = $candidats[0];
+            $connexion->executeStatement('UPDATE station SET latitude = ?, longitude = ? WHERE id = ?', [$lat, $lon, (int) $row['id']]);
+            ++$nbMajParGare;
+        }
+
+        $io->success(sprintf(
+            '%d Stations supplementaires positionnees via emplacement-des-gares (%d ambigues, %d sans correspondance).',
+            $nbMajParGare,
+            $nbAmbiguesGare,
+            $nbIntrouvablesGare - $nbAmbiguesGare,
         ));
 
         return Command::SUCCESS;

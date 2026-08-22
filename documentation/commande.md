@@ -981,5 +981,24 @@ Demande utilisateur : "GO !" pour continuer. Seule tâche actionnable restante (
 | Vérification navigateur (compte de test) : `/station/21` (Nation), `/station/1` (La Défense) | Sorties, Points de vente, Sanitaires, Défibrillateurs — jusque-là invisibles sur la page réellement consultée (rattachés à la jumelle ZdC jamais visitée) — apparaissent enfin. `/trajet` Nation→La Défense (RER A, 12,5 min) fonctionne toujours. `/station/15` (Châtelet, originale sans coordonnées) intact et non fusionné, comme prévu (2 homonymes réels : Paris et Montereau-Fault-Yonne). |
 | `documentation/TODO.md` | Section "Stations dupliquées" mise à jour : 371/534 fusionnées, 163 volontairement laissées de côté (détail des raisons). |
 | `mysqldump` en prod (SSH, hors du dossier app) + copie locale via `scp` | Sauvegarde avant exécution en prod, même discipline qu'en local. |
+| Déploiement (clone de secours), `--dry-run` en prod | 347 paires (contre 371 en local — écart normal, bases divergentes). |
+| Fusion réelle en prod, vérifications (dry-run→0, absence d'orphelins sur les 9 tables, Browser tool sur `/station/21`/`/station/1`, `/trajet` Nation→La Défense) | Identique au local, aucune erreur console. |
+| Tâche #10 (tracker, local + prod, recherche par nom) | Marquée ACHEVÉE. |
+
+## Session du 2026-08-22 (suite) — Import de emplacement-des-gares-idf-data-generalisee.csv
+
+Demande utilisateur : "Importer emplacement-des-gares-idf-data-generalisee.csv ?"
+
+| Commande | Objectif |
+|---|---|
+| Inspection du fichier (déjà présent dans `documentation/IDFM-gtfs/csv/`, jamais utilisé) | Référentiel officiel IDFM (999 lignes, gares train/RER/métro/tramway) : `id_ref_ZdC`/`nom_ZdC`, `Geo Point` (lat,lon direct), modes. |
+| Croisement avec la base : 988/991 ZdC déjà en base ET déjà positionnés (0 apport) ; mais **74 des 163 Station "originale" encore sans coordonnées** (résiduel de la fusion précédente) ont un `nom_ZdC` correspondant | Valeur réelle identifiée : compléter les coordonnées manquantes plutôt que réimporter des données déjà là. |
+| Vérification de l'ambiguïté du rapprochement par nom | 72 correspondances uniques, 2 ambiguës ("Saint-Fargeau", "Pont de Rungis Aéroport d'Orly" — homonymes réels), même discipline que partout ailleurs. |
+| `cp` du fichier vers `documentation/scripts/donnees-extraites/` | `documentation/IDFM-gtfs/` est gitignore (règle retrouvée dans le clone de secours, absente du `.gitignore` de la copie Desktop — encore un signe de dérive locale déjà documentée) ; fichier assez petit (275 Ko) pour être commité tel quel, même précédent que `schema_gares-gf.csv`. |
+| `ImporterCoordonneesGeographiquesCommand` (étendue, 3e passe) | Repli par `nom_ZdC` de ce fichier pour les Stations toujours sans coordonnées après les 2 passes existantes. Exécution : **81 Stations positionnées** (2 ambiguës, 91 sans correspondance) — plus que les 74 estimés (le pool réel incluait d'autres Stations sans coordonnées non liées à la fusion précédente). |
+| `php bin/console app:fusionner-stations-dupliquees --dry-run` (relance) | Les nouvelles coordonnées débloquent **63 paires supplémentaires**, mécaniquement. |
+| Fusion réelle, vérifications (dry-run→0, `php bin/phpunit` 134 tests, `npx jest` 51 tests, absence d'orphelins sur les 9 tables) | Tout passe. |
+| Vérification navigateur locale : `/station/546` (Roissy-en-Brie, une des 63 nouvelles fusions) | Sorties et accessibilité désormais visibles, comme pour le premier lot. |
+| `documentation/TODO.md` | Section "Stations dupliquées" complétée : total cumulé 434/534. |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
