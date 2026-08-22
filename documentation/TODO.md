@@ -381,12 +381,14 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   sur la carte les limites d'une commune ou la colorier entièrement. **5 entités concernées**
   (`ville` en varchar, vérifié via un grep sur les entités) : `Station`, `Defibrillateur`,
   `EquipementArret`, `PointDeVente`, `Utilisateur` — à faire migrer vers une relation `ManyToOne`
-  vers `Ville` (grosse tâche de normalisation, pas juste l'ajout d'une table). Pour les frontières
-  GPS : l'État français publie les contours administratifs des communes en open data (ex. IGN
-  ADMIN EXPRESS, ou l'API officielle `geo.api.gouv.fr` qui fournit le contour GeoJSON de chaque
-  commune par son code INSEE) — **piste non vérifiée/téléchargée à ce stade**, à confirmer avant de
-  s'engager (format exact, licence, couverture Île-de-France complète, poids du fichier si commité
-  au dépôt comme les autres CSV).
+  vers `Ville` (grosse tâche de normalisation, pas juste l'ajout d'une table). Frontières GPS :
+  **récupérées (2026-08-22)** depuis l'API officielle `geo.api.gouv.fr` (contour GeoJSON par
+  commune), périmètre Île-de-France seulement (choix explicite de l'utilisateur plutôt que la
+  France entière) — `documentation/geo-communes/communes-{75,77,78,91,92,93,94,95}.geojson`,
+  **1266 communes, ~6,1 Mo**. Donnée brute uniquement à ce stade : pas encore d'entité `Ville`, de
+  migration, ni d'import — reste à faire (mapping des `ville` varchar existants vers le bon code
+  INSEE, gestion des noms ambigus/variantes d'écriture, choix du format de stockage du polygone en
+  base).
 
 ## Lignes Transilien V/P/R — fait (2026-08-17)
 
