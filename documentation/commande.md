@@ -958,5 +958,11 @@ Demande utilisateur : enchaîner sur une autre tâche du backlog une fois la cli
 | `php bin/phpunit` (134 tests) | Tout passe. |
 | Vérification SQL puis navigateur locale : Place de Clichy ↔ Saint-Lazare (ligne 13, via Liège), mode métro seul | **2,6 min aller (64+89s) vs 2,2 min retour (65+69s)** — l'asymétrie du quai décalé de Liège est maintenant bien reflétée par le calculateur. |
 | `documentation/TODO.md` | Section "quais décalés" marquée faite, avec la limite résiduelle documentée : seul le CSV historique métro/RER a cette précision directionnelle : les topologies bus/RER D/Transilien construites cette session fusionnent déjà les deux sens à l'extraction (`sort($paire)`), pas encore réextraites avec la directionnalité conservée. |
+| Déploiement (clone de secours), import en prod (SSH, `memory_limit=4096M`) | **Échec** : `SQLSTATE[HY000]: General error: 2006 MySQL server has gone away` à l'hydratation — la jointure complète `findAllWithDetails()` (missions/direction/desserteTerminus, jamais lue par cette commande) est trop volumineuse pour l'hébergement mutuel une fois le réseau à ~32000 troncons. |
+| `TronconRepository::findAllPourImportDurees()` (nouvelle méthode, sans la chaîne de jointures Mission/Direction) | `ImporterDureesTronconCommand` bascule dessus. En local : passe même à 2048M (contre 4096M requis avant, avec la requête complète). |
+| `php bin/phpunit` (134 tests) | Tout passe. |
+| Déploiement (2e commit), réimport en prod (SSH, `memory_limit=2048M`, timeout 200s) | Réussi : 794/32224 troncons (quasi identique au local, écart de 1 sans incidence), 1569 sens précis. |
+| Vérification SQL + Browser tool (compte de test) : Place de Clichy ↔ Saint-Lazare, ligne 13 | Identique au local : 2,6 min aller / 2,2 min retour, aucune erreur console. |
+| Tâche #11 (tracker, local + prod, recherche par nom) | Marquée ACHEVÉE avec le détail complet (asymétrie découverte, fix de requête inclus, limite résiduelle bus/RER D/Transilien). |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
