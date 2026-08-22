@@ -72,9 +72,20 @@ auChargement(() => {
         });
     }
 
+    // Meme principe que carte-modal ci-dessus : la carte des sorties ne se construit qu'a la
+    // premiere ouverture de son modal (auparavant affichee en permanence dans la page, "prend
+    // trop de place" - meme retour que celui deja recu sur la carte du trajet).
     const carteAccesContainer = document.getElementById('carte-acces');
-    if (carteAccesContainer) {
-        initCarteAcces(document.getElementById('carte-acces-map'), JSON.parse(carteAccesContainer.dataset.donnees));
+    const carteAccesModal = document.getElementById('carte-acces-modal');
+    if (carteAccesContainer && carteAccesModal) {
+        let carteAcces = null;
+        carteAccesModal.addEventListener('shown.bs.modal', () => {
+            if (!carteAcces) {
+                carteAcces = initCarteAcces(document.getElementById('carte-acces-map'), JSON.parse(carteAccesContainer.dataset.donnees));
+            } else {
+                carteAcces.invalidateSize();
+            }
+        });
     }
 
     // Meme principe que carte-modal ci-dessus : la carte du reseau ne se construit qu'a la

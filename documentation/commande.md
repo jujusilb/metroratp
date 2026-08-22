@@ -1021,5 +1021,18 @@ Demande utilisateur : noter dans TODO.md 2 soucis d'affichage sur `/ligne/{id}` 
 | `PositionRameRepository::trouverParStationEtLigne()` (nouvelle) + `TrajetController::construireSegmentsPourAffichage()` (étendue) | Chaque tronçon du trajet porte désormais ses conseils de positionnement (Ligne+Station d'arrivée du tronçon) — on sait déjà, dans un trajet calculé, s'il faut changer de ligne ou si c'est l'arrivée, contrairement à la fiche Station seule. |
 | `templates/trajet/index.html.twig` (vue Détaillée, affichage des conseils) + `templates/station/show.html.twig`/`StationController::show()` (section retirée) + `PositionRameRepository::trouverParStation()` (supprimée, plus utilisée) | Nettoyage complet du code mort. |
 | `php bin/phpunit`, `npx jest`, vérification navigateur (Bastille → Nation, ligne 1) | Conseils affichés correctement en fin de tronçon ("Pour rejoindre Nation : se placer Milieu (3/6)..."), identiques aux valeurs vues auparavant sur la fiche Station. Confirmé disparu de `/station/21`. |
+| Déploiement (clone de secours), `mysqldump` en prod + copie locale, `app:corriger-code-externe-perime` (dry-run puis réel) | 14/14 en prod aussi (mêmes stations, 2 ids différents des 2 dernières lignes — bases divergentes, sans incidence). Vérifications identiques au local (absence d'orphelins, Browser tool sur `/station/16` et le trajet Bastille→Nation) : tout passe. |
+
+## Session du 2026-08-22 (suite) — Carte des sorties déplacée dans un modal
+
+Demande utilisateur (message coupé "...tu mets un bouton carte qui ouvre un modal avec la carte en...") : même traitement que la carte du trajet, déjà déplacée en modal plein écran sur retour "la carte prend trop de place".
+
+| Commande | Objectif |
+|---|---|
+| Lecture de `assets/js/carte-acces.js` (fonction pure `initCarteAcces(container, donnees)`) et du pattern déjà établi (`carte-modal`/`carte-reseau-modal` dans `assets/app.js`) | Même mécanique directement réutilisable : lazy-init au premier `shown.bs.modal`, `invalidateSize()` aux réouvertures suivantes. |
+| `templates/station/show.html.twig` (bouton "Carte" à côté du titre "Sorties", carte déplacée dans un `modal-fullscreen`, identique en structure au modal `/trajet`) | La carte (400px fixe, toujours affichée) disparaît du flux normal de la page. |
+| `assets/app.js` (bloc d'init étendu, même structure que les 2 précédents) | |
+| `npx encore dev`, `npx jest` (51 tests), `php bin/console lint:twig` | Tout passe. |
+| Vérification navigateur locale (`/station/21`, compte de test) : carte absente par défaut (`display: none`), clic sur "Carte" → modal plein écran, carte Leaflet initialisée (1248×625), 6 marqueurs de sortie, aucune erreur console | Conforme. |
 
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
