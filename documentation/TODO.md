@@ -376,19 +376,34 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   1,3 min est choisi à la place (comportement Dijkstra correct, pas un bug). Desserte isolées
   toutes lignes : 344 → 92 (Train résiduel : TER/V/CDG VAL/ORLYVAL, hors périmètre Transilien).
 
-- Normaliser le champ `ville` (varchar libre) en table `Ville` (signalé le 2026-08-22) — demande
-  utilisateur : créer une entité `Ville` (id, label, frontières géographiques), pour pouvoir afficher
-  sur la carte les limites d'une commune ou la colorier entièrement. **5 entités concernées**
-  (`ville` en varchar, vérifié via un grep sur les entités) : `Station`, `Defibrillateur`,
-  `EquipementArret`, `PointDeVente`, `Utilisateur` — à faire migrer vers une relation `ManyToOne`
-  vers `Ville` (grosse tâche de normalisation, pas juste l'ajout d'une table). Frontières GPS :
-  **récupérées (2026-08-22)** depuis l'API officielle `geo.api.gouv.fr` (contour GeoJSON par
-  commune), périmètre Île-de-France seulement (choix explicite de l'utilisateur plutôt que la
-  France entière) — `documentation/geo-communes/communes-{75,77,78,91,92,93,94,95}.geojson`,
-  **1266 communes, ~6,1 Mo**. Donnée brute uniquement à ce stade : pas encore d'entité `Ville`, de
-  migration, ni d'import — reste à faire (mapping des `ville` varchar existants vers le bon code
-  INSEE, gestion des noms ambigus/variantes d'écriture, choix du format de stockage du polygone en
-  base).
+- Normaliser le champ `ville` (varchar libre) en table `Ville` (signalé le 2026-08-22) — **Station
+  fait (2026-08-23)** : demande utilisateur de créer une entité `Ville` (id, label, frontières
+  géographiques) et une clé étrangère depuis `Station`, pour pouvoir afficher sur la carte les
+  limites d'une commune ou la colorier entièrement. Frontières GPS récupérées le 2026-08-22 depuis
+  l'API officielle `geo.api.gouv.fr` (contour GeoJSON par commune), périmètre Île-de-France
+  seulement (choix explicite de l'utilisateur) — `documentation/geo-communes/communes-
+  {75,77,78,91,92,93,94,95}.geojson`, 1266 communes, ~6,1 Mo.
+  Entité `Ville` créée (`label`, `codeInsee` unique, `frontiere` en JSON — même convention que
+  `Ligne::trace`) + `Station::villeRef` (`ManyToOne`, nullable) — **choix délibéré : additif, pas
+  un remplacement** du champ `ville` (varchar) existant, qui reste utilisé tel quel par
+  `TrajetController`, `templates/station/show.html.twig` et `ImporterPlansSecteurCommand`
+  (déduction du département depuis le texte brut) : les casser n'était pas demandé, et `villeRef`
+  apporte une capacité nouvelle (frontière réelle) plutôt que de remplacer une donnée déjà utilisée
+  ailleurs. Nouvelle commande `app:importer-villes` (upsert des `Ville` par `codeInsee`, puis
+  rattachement de chaque `Station` par correspondance de nom depuis son `ville` texte libre) : 4
+  corrections manuelles pour des communes renommées/fusionnées depuis l'ancien import (Saint-Ouen →
+  Saint-Ouen-sur-Seine, Chesnay-Rocquencourt → Le Chesnay-Rocquencourt, Herblay → Herblay-sur-Seine,
+  Evry-Courcouronnes → Évry-Courcouronnes), et désambiguïsation par test point-dans-polygone (pas
+  une simple distance) pour les 4 noms de commune réellement homonymes (Blandy, Marolles-en-Brie,
+  Mondreville, Saint-Martin-des-Champs, 12 Station concernées) plutôt qu'un choix arbitraire.
+  Résultat identique local/prod : **1266 Ville, 13529 Station rattachées, 144 sans correspondance**
+  (commune hors Île-de-France — Chartres, Sens, Château-Thierry... — absente par choix de
+  périmètre, pas un bug), **0 homonyme non tranché**.
+  **Reste à faire** (hors périmètre de cette demande, qui portait sur Station) : les 4 autres
+  entités avec un champ `ville` en varchar (`Defibrillateur`, `EquipementArret`, `PointDeVente`,
+  `Utilisateur`) n'ont pas de `villeRef` — à ajouter si besoin, même mécanique directement
+  réutilisable. Aucune UI n'exploite encore `Station::villeRef` (pas d'affichage de frontière sur la
+  carte à ce stade) — donnée backend seulement.
 
 ## Lignes Transilien V/P/R — fait (2026-08-17)
 
