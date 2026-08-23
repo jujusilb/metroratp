@@ -27,6 +27,16 @@ class Station
     private ?string $ville = null;
 
     /**
+     * Commune reelle (referentiel geo.api.gouv.fr, voir Ville), rattachee par correspondance de
+     * nom depuis le champ ville ci-dessus (voir app:importer-villes) - donne acces a la frontiere
+     * geographique reelle pour l'affichage carte, contrairement a ville qui reste du texte libre.
+     * Reste null si aucune correspondance fiable (ex: commune hors Ile-de-France, perimetre des
+     * donnees de frontiere - voir documentation/TODO.md).
+     */
+    #[ORM\ManyToOne(inversedBy: 'stations')]
+    private ?Ville $villeRef = null;
+
+    /**
      * Identifiant "zone de correspondance" IDFM (ZdCId, referentiel-arret-tc-idf). Permet de
      * relier une station a un lieu reel precis meme quand son nom seul est ambigu (ex: de
      * nombreuses communes ont un arret de bus "Mairie" ou "Eglise" qui ne sont pas le meme
@@ -192,6 +202,18 @@ class Station
     public function setVille(?string $ville): static
     {
         $this->ville = $ville;
+
+        return $this;
+    }
+
+    public function getVilleRef(): ?Ville
+    {
+        return $this->villeRef;
+    }
+
+    public function setVilleRef(?Ville $villeRef): static
+    {
+        $this->villeRef = $villeRef;
 
         return $this;
     }
