@@ -222,10 +222,11 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
      pour cet affichage spécifique (au risque de perdre des arêtes réelles), soit un vrai ordre de
      référence par ligne (ex: à partir des horaires GTFS complets, hors périmètre de ce qui est
      commité dans le dépôt).
-- Fiche Gestionnaire (signalé le 2026-08-22) : la page `gestionnaire/show` n'affiche pas la liste
-  des `Ligne` dont il est référent. Pas de souci de donnée : la relation existe déjà côté modèle
-  (`Gestionnaire::getLignes()`, OneToMany `mappedBy: 'gestionnaire'`, voir `src/Entity/Gestionnaire.php`)
-  — juste un ajout de template, sur le modèle de la table Dessertes de la fiche Station.
+- Fiche Gestionnaire (signalé le 2026-08-22) — **note initiale erronée, corrigée le 2026-08-23** :
+  en relisant `templates/gestionnaire/show.html.twig` avant de construire la fiche Ville (besoin du
+  même patron), la liste des `Ligne` gérées ("Lignes gérées", `ul.list-group`) **existait déjà** au
+  moment du signalement — mauvaise vérification initiale (conclusion tirée de l'entité seule,
+  sans relire le template). Rien à faire ici.
 - Ligne 3139 introuvable (signalé le 2026-08-22 ; réseau "Pays Briard", exploitant Keolis Portes et
   Val de Brie, AO Île-de-France Mobilités). Vérifié : la ligne existe bien dans
   `documentation/IDFM-gtfs/csv/referentiel-des-lignes.csv` (ID_Line `C01058`, statut `active`), mais
@@ -404,8 +405,23 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   **Reste à faire** (hors périmètre de cette demande, qui portait sur Station) : les 4 autres
   entités avec un champ `ville` en varchar (`Defibrillateur`, `EquipementArret`, `PointDeVente`,
   `Utilisateur`) n'ont pas de `villeRef` — à ajouter si besoin, même mécanique directement
-  réutilisable. Aucune UI n'exploite encore `Station::villeRef` (pas d'affichage de frontière sur la
-  carte à ce stade) — donnée backend seulement.
+  réutilisable.
+  **UI ajoutée (2026-08-23)** : page `/ville` (liste, 1266 communes) et `/ville/{id}` (fiche —
+  Stations rattachées + Lignes concernées, classées en 3 catégories via
+  `VilleRepository::trouverLignesConcernees()` : **entièrement dans la ville** (toutes les Desserte
+  de la Ligne y sont), **un bout hors de la ville** (au moins une extrémité de la Ligne — Desserte
+  ne touchant qu'un seul Troncon distinct, terminus de ligne/branche — y est, mais pas toutes ses
+  Desserte), **traversée simple** (des Desserte y sont mais aucune n'est une extrémité — la ligne
+  entre et sort sans qu'aucun bout n'y soit). Vérifié concrètement sur Paris (878 Station, 39/160/50
+  Ligne dans les 3 catégories) et sur le cas limite Ligne 1 métro : les deux termini (La Défense,
+  Château de Vincennes) semblaient a priori hors Paris, mais "Château de Vincennes" est en réalité
+  rattachée à "Paris 12e" dans la donnée source elle-même (`Station.ville`, jamais modifiée) — la
+  ligne est donc correctement classée "un bout hors" et pas "traversée", confirmant la justesse de
+  la classification plutôt qu'un bug.
+  Page `/ligne` (index) complétée symétriquement : liste des Villes concernées affichée sous chaque
+  Ligne (`LigneRepository::trouverVillesParLigne()`, une seule requête groupée pour la page entière,
+  pas de N+1). Toujours aucun affichage de frontière GPS sur une carte à ce stade (donnée
+  `Ville::frontiere` disponible mais pas encore exploitée visuellement).
 
 ## Lignes Transilien V/P/R — fait (2026-08-17)
 

@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Villes{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Villes</h1>
+
+        <p class="text-muted small">{{ villes.getTotalItemCount }} ville{{ villes.getTotalItemCount > 1 ? 's' : '' }}</p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>{{ knp_pagination_sortable(villes, 'Label', 'v.label') }}</th>
+                    <th>Code INSEE</th>
+                    <th>Codes postaux</th>
+                    <th>Stations</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for ville in villes %}
+                <tr>
+                    <td>{{ ville.label }}</td>
+                    <td>{{ ville.codeInsee }}</td>
+                    <td>{{ ville.codesPostaux ? ville.codesPostaux|join(', ') : '—' }}</td>
+                    <td>{{ ville.stations|length }}</td>
+                    <td>
+                        <a href="{{ path('app_ville_show', {'id': ville.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-center mb-3">
+            {{ knp_pagination_render(villes) }}
+        </div>
+    </div>
+{% endblock %}

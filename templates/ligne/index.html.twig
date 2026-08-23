@@ -54,6 +54,18 @@
                         {% endif %}
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="6" class="pt-0 pb-2 border-top-0">
+                        <small class="text-muted">
+                            Villes :
+                            {% if villesParLigne[ligne.id] is defined and villesParLigne[ligne.id]|length > 0 %}
+                                {{ villesParLigne[ligne.id]|join(', ') }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </small>
+                    </td>
+                </tr>
             {% else %}
                 <tr>
                     <td colspan="6">Aucun enregistrement trouvé</td>

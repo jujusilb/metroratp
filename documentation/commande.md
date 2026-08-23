@@ -1082,4 +1082,21 @@ Demande utilisateur : "as tu ajouter les code postaux? je ne veux aucune station
 | Déploiement (clone de secours), `mysqldump` de la table `ville` en prod (6,2 Mo) + copie locale | Sauvegarde avant réimport, même discipline. |
 | `app:importer-villes` en prod, vérification SQL directe | Résultat identique local/prod : 13529/144/0 inchangé, Paris avec ses 21 codes postaux. |
 
+## Session du 2026-08-23 (suite) — Pages Ville (liste/fiche) + Villes concernées sous chaque Ligne
+
+Demande utilisateur : "je veux la liste des ville et dans 'affichage' voir la liste des station et des lignes qui sont concernées (qui ne font que la traversée.... qui ont un bout en dehors.... qui sont completement dedans)", puis "et dans 'ligne index' la liste des ville concerné en dessous de chaque lignes".
+
+| Commande | Objectif |
+|---|---|
+| Conception de la classification à 3 catégories (traversée / un bout en dehors / entièrement dedans) | Basée sur `Desserte::getNombreTronconsDistincts()` (déjà existante, `<= 1` = extrémité de ligne/branche) plutôt qu'une reconstruction complète de l'ordre réel de la ligne (méthode fragile déjà documentée pour les lignes en maillage, voir "Page /ligne/{id}" plus haut) : toutes les Desserte dans la Ville → entièrement dedans ; au moins une extrémité dans la Ville mais pas toutes les Desserte → un bout hors ; des Desserte dans la Ville mais aucune extrémité → traversée. |
+| `VilleRepository::trouverLignesConcernees()` (nouvelle, 2 requêtes SQL groupées) + `LigneRepository::trouverVillesParLigne()` (nouvelle, 1 requête groupée pour toute une page paginée, pas de N+1) | |
+| `VilleController` (nouveau, index + show seulement — pas de new/edit/delete : Ville est entièrement peuplée par `app:importer-villes`, un formulaire manuel n'aurait pas de sens pour ses champs JSON) + `templates/ville/index.html.twig` + `templates/ville/show.html.twig` | |
+| `LigneController::index()` + `templates/ligne/index.html.twig` (ligne "Villes : ..." sous chaque Ligne) | |
+| `templates/menu/menu.html.twig` (lien "Villes" ajouté au dropdown Réseau) | |
+| Découverte en cours de route : `templates/gestionnaire/show.html.twig` affichait déjà la liste des Ligne gérées ("Lignes gérées") | Note TODO du 2026-08-22 ("template manquant") corrigée : conclusion erronée tirée de l'entité seule sans relire le template au moment du signalement initial. |
+| `tests/Controller/VilleControllerTest.php` (nouveau, testIndex + testShow) + `tests/Controller/LigneControllerTest.php` (nouveau testIndexAvecVilleConcernee) + `DatabaseTestCase::resetDatabase()` (Ville ajoutée à la liste, après Station) | Piège rencontré : `$station->setVilleRef($ville)` seul ne suffit pas dans un test (met à jour le côté propriétaire mais pas la Collection en mémoire du côté inverse déjà chargé) — corrigé via `$ville->addStation($station)`. 2e piège : une Ligne de test sans `TypeTransport` est invisible sur l'index (le filtre par défaut ne coche que des modes réels, aucune condition ne matche `typeTransport IS NULL`). |
+| `php bin/phpunit` (137, +3), `npx jest` (51) | Tout passe. |
+| Vérification navigateur (compte de test), login via formulaire réel (curl échoue : le token CSRF est un placeholder `"csrf-token"` remplacé par du JS côté client avant soumission, invérifiable sans exécuter de JS) | `/ligne` : villes affichées sous chaque ligne. `/ville` : 1266 villes listées. `/ville/1` (Paris) : 878 Station, 39 Ligne entièrement dedans / 160 un bout hors / 50 traversée. Cas vérifié en détail : Ligne 1 métro classée "un bout hors" et non "traversée" bien que ses 2 termini semblent hors Paris à première vue — confirmé correct, "Château de Vincennes" est en réalité rattachée à "Paris 12e" dans la donnée source (`Station.ville`, jamais modifiée par ce travail). |
+| Compte de test supprimé après vérification | Discipline habituelle. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

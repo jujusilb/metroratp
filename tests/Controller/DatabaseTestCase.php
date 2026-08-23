@@ -23,6 +23,7 @@ use App\Entity\TypeMateriel;
 use App\Entity\TypeTransport;
 use App\Entity\TypeTroncon;
 use App\Entity\Utilisateur;
+use App\Entity\Ville;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -56,6 +57,7 @@ abstract class DatabaseTestCase extends WebTestCase
             Service::class,
             TypeDesserte::class,
             Station::class,
+            Ville::class,
             Ligne::class,
             TypeTransport::class,
             Gestionnaire::class,

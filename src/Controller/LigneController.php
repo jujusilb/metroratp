@@ -41,6 +41,8 @@ final class LigneController extends AbstractController
             50,
         );
 
+        $ligneIds = array_map(static fn (Ligne $ligne): int => $ligne->getId(), iterator_to_array($lignes));
+
         return $this->render('ligne/index.html.twig', [
             'lignes' => $lignes,
             'modesSelectionnes' => $modesSelectionnes,
@@ -48,6 +50,7 @@ final class LigneController extends AbstractController
             'gestionnaires' => $gestionnaireRepository->findBy([], ['label' => 'ASC']),
             'gestionnairesSelectionnes' => $gestionnairesSelectionnes,
             'avecTroncons' => $avecTronconsBrut,
+            'villesParLigne' => $ligneRepository->trouverVillesParLigne($ligneIds),
         ]);
     }
 

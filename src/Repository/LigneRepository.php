@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Ligne;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -103,6 +104,40 @@ class LigneRepository extends ServiceEntityRepository
         // Aucun mode coche : cul-de-sac garanti (meme logique que TrajetController), pas la
         // table entiere par defaut.
         $qb->andWhere([] !== $conditions ? implode(' OR ', $conditions) : '1 = 0');
+    }
+
+    /**
+     * Villes distinctes concernees par chaque Ligne (label seul, tries alphabetiquement) - une
+     * seule requete groupee pour toutes les lignes demandees plutot qu'un aller-retour par ligne
+     * affichee (evite le N+1 sur l'index /ligne).
+     *
+     * @param int[] $ligneIds
+     *
+     * @return array<int, string[]> ligneId => labels de Ville
+     */
+    public function trouverVillesParLigne(array $ligneIds): array
+    {
+        if ([] === $ligneIds) {
+            return [];
+        }
+
+        $rows = $this->getEntityManager()->getConnection()->executeQuery(
+            'SELECT DISTINCT d.ligne_id, v.label
+             FROM desserte d
+             JOIN station s ON s.id = d.station_id
+             JOIN ville v ON v.id = s.ville_ref_id
+             WHERE d.ligne_id IN (:ligneIds)
+             ORDER BY v.label ASC',
+            ['ligneIds' => $ligneIds],
+            ['ligneIds' => ArrayParameterType::INTEGER],
+        )->fetchAllAssociative();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[(int) $row['ligne_id']][] = $row['label'];
+        }
+
+        return $result;
     }
 
 //    /**
