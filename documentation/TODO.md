@@ -261,12 +261,16 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   `app:importer-reseau-complet`, générée par `extraire_reseau_complet.py`, qui ne retient que les
   route_id effectivement vus dans `trips.txt` du flux GTFS complet IDFM. D'autres lignes du même
   réseau/exploitant (ex. 3103, Keolis Portes et Val de Brie) sont bien présentes — ce n'est donc pas
-  tout le réseau "Pays Briard" qui manque, juste cette ligne précise. Cause exacte non confirmée :
-  soit aucun trip programmé pour cette ligne dans l'instantané GTFS utilisé (service scolaire/
-  saisonnier ?), soit un autre écart référentiel/GTFS. Les fichiers GTFS bruts (`trips.txt`/
-  `stop_times.txt`/`routes.txt`) ne sont plus présents en local (volumineux, jamais commités) —
-  vérification définitive nécessiterait de retélécharger le flux GTFS complet IDFM et de
-  régénérer `reseau_complet.csv`.
+  tout le réseau "Pays Briard" qui manque, juste cette ligne précise. **Cause confirmée
+  (2026-08-23)** : les fichiers GTFS bruts sont en fait bien présents en local
+  (`documentation/IDFM-gtfs/csv/` — erreur de vérification précédente, seul le dossier parent
+  avait été inspecté, pas ce sous-dossier) ; vérifié directement dans `routes.txt`/`trips.txt` du
+  flux GTFS actuel : **aucune entrée du tout pour `C01058`**, ni dans les routes ni dans les trips.
+  La ligne n'a donc purement et simplement aucun service programmé dans l'instantané GTFS courant,
+  bien que listée `active` dans le référentiel administratif — écart entre les deux sources,
+  probablement une ligne suspendue/à service très restreint (scolaire ?) non répercutée dans le
+  référentiel. Rien à corriger côté import (le comportement actuel, ne pas importer une ligne sans
+  aucun trip réel, est correct).
 - Lisibilité des badges de ligne — **fait (2026-08-20)** : remplacé par la classe `.pastille-ligne`
   (`assets/styles/app.scss`), un carré de couleur (`--ligne-couleur`) suivi du nom de la ligne en
   texte noir sur fond blanc, jamais de texte dans le carré. Anciennes classes `.ligne-badge`/
