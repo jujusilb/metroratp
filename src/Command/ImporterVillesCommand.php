@@ -94,6 +94,7 @@ class ImporterVillesCommand extends Command
                 }
                 $ville->setLabel($label);
                 $ville->setFrontiere($feature['geometry']);
+                $ville->setCodesPostaux($feature['properties']['codesPostaux'] ?? null);
                 $villesParLabel[$label][] = $ville;
                 ++$nbTotal;
             }

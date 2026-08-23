@@ -40,6 +40,15 @@ class Ville
     private ?array $frontiere = null;
 
     /**
+     * Codes postaux de la commune (une commune peut en avoir plusieurs - jusqu'a 21 pour Paris,
+     * un par arrondissement). Depuis geo.api.gouv.fr (champ codesPostaux).
+     *
+     * @var string[]|null
+     */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $codesPostaux = null;
+
+    /**
      * @var Collection<int, Station>
      */
     #[ORM\OneToMany(targetEntity: Station::class, mappedBy: 'villeRef')]
@@ -87,6 +96,24 @@ class Ville
     public function setFrontiere(?array $frontiere): static
     {
         $this->frontiere = $frontiere;
+
+        return $this;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getCodesPostaux(): ?array
+    {
+        return $this->codesPostaux;
+    }
+
+    /**
+     * @param string[]|null $codesPostaux
+     */
+    public function setCodesPostaux(?array $codesPostaux): static
+    {
+        $this->codesPostaux = $codesPostaux;
 
         return $this;
     }
