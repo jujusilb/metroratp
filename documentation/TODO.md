@@ -218,13 +218,36 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   je sais que j'ai une correspondance pour le RER A à Opéra/Auber, je sais qu'à Villejuif je monte à
   l'avant parce que c'est à Opéra que je descends et qu'à Opéra c'est à l'avant — pourquoi me le
   dire à chaque station pour chaque direction ?" — la bonne info est **une seule ligne par
-  correspondance/segment embarqué** : "à cette Station, sur cette Ligne, pour descendre à [la
-  vraie prochaine Station de correspondance ou d'arrivée de CE trajet], se placer [position]".
-  Pas encore corrigé : nécessiterait (a) filtrer par la Station de sortie réelle du tronçon (déjà
-  connue par `construireSegmentsPourAffichage()`, pas juste la Ligne) plutôt que par Ligne seule, et
-  (b) dédupliquer les entrées restantes (par ex. sur le triplet position/positionMax/labelPosition,
-  en ignorant les variations d'équipement, ou en n'affichant qu'un équipement par position la plus
-  fréquente).
+  correspondance/segment embarqué**.
+
+  **Fait (2026-08-23)**. Piste initiale (filtrer par la Station de sortie réelle du tronçon)
+  abandonnée après un vrai retour utilisateur qui a change la comprehension du probleme : les 2
+  valeurs "contradictoires" (Avant/Arrière) observées pour une même destination n'étaient pas du
+  bruit mais **le sens de circulation** — un train a 2 sens, la position utile s'inverse selon le
+  sens (exemple donné : la salle des pas perdus de Gare de l'Est est à l'arrière du train si on en
+  part, à l'avant si on y arrive). Vérifié dans le GTFS complet (`documentation/IDFM-gtfs/csv/` —
+  déjà présent en local, pas de téléchargement nécessaire malgré une estimation initiale erronée de
+  ~1,3 Go) : un `stop_point` (quai précis, `from_id` du CSV source) correspond bien à un seul sens
+  (`direction_id`/`trip_headsign` GTFS constants pour tous les trips qui le desservent).
+
+  Solution : `documentation/scripts/extraire_conseils_position.php` réécrit pour résoudre, par
+  `from_id`, un trip représentatif (via `stop_times.txt`, 2 passages sur le fichier ~11,8M lignes)
+  puis son `direction_id`/`trip_headsign` (`trips.txt`) et surtout la ZdC du **prochain arrêt réel
+  dans ce sens précis** (`zdcSuivant`) — c'est ce dernier qui permet de départager le bon sens sans
+  reconstruire l'ordre global de la Ligne (fragile sur les lignes en maillage). `PositionRame` gagne
+  `directionId`/`terminusReel`/`prochaineStation` (`ManyToOne` vers `Station`, migration
+  `Version20260823140000.php`). `PositionRameRepository::trouverPourEmbarquement(station, ligne,
+  prochaineStation)` (remplace `trouverParStationEtLigne()`) : filtre directement par la Station
+  suivante réellement empruntée, retourne au plus 1 résultat (ou `null` si le sens ne peut pas être
+  confirmé — rien afficher plutôt qu'un conseil pour le mauvais sens).
+  `TrajetController::construireSegmentsPourAffichage()` : le conseil est désormais rattaché à la
+  Station de **départ** (embarquement) du tronçon, pas à son arrivée — actionnable avant de monter,
+  et un seul conseil pour tout le tronçon (le sens ne change pas en cours de route), déterminé par
+  la toute première Station suivante du tronçon calculé (`dessertes[1]`).
+  Vérifié en local (compte de test, trajet réel Villejuif Léo Lagrange → Les Mousquetaires) : le
+  tronçon Ligne 14 (5 stations, montrait plus de 100 lignes de conseils avant le fix) n'affiche
+  plus qu'une seule ligne "🚃 Montez Milieu (5/8) — Escalator". `php bin/phpunit` (137), `npx jest`
+  (51) : tout passe.
 - Page `/ligne/{id}` (signalé le 2026-08-22) — deux soucis distincts sur la liste des stations
   (`templates/ligne/show.html.twig`, macro `renderSegment`, alimentée par `Ligne::getParcoursSegments()`) :
   1. **Affichage** : les pastilles de correspondance et le nom de la station sont sur la même

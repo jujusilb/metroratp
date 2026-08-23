@@ -1109,4 +1109,21 @@ Demande utilisateur : "AJOUTE A TODO / il ya un probleme avec les position...", 
 | Lecture de `PositionRameRepository::trouverParStationEtLigne()` | Confirmé root cause à 2 niveaux : aucun filtre sur la destination/direction réellement empruntée par le trajet (retourne toutes les destinations connues pour ce couple Station+Ligne), et aucune déduplication des entrées quasi-identiques du dataset source. |
 | `documentation/TODO.md` (entrée "Conseils de position dans la rame" du 2026-08-22 complétée, note initiale trop optimiste corrigée) | Diagnostic détaillé + reformulation du besoin réel (une ligne par correspondance/segment, filtrée par la vraie Station de sortie du tronçon) + piste de correctif (pas implémenté à ce stade). |
 
+## Session du 2026-08-23 (suite) — Sens de circulation pour les conseils de position dans la rame
+
+Demande utilisateur : "ben evidemment !" (feu vert), suite au retour clé "c'est le sens de circulation, pas du bruit" (exemple Gare de l'Est : salle des pas perdus a l'arriere en partant, a l'avant en arrivant).
+
+| Commande | Objectif |
+|---|---|
+| Verification directe stop_times.txt/trips.txt pour un stop_point precis (IDFM:463060, Chatelet ligne 7) | Confirme : tous les trips desservant ce quai partagent le meme direction_id/trip_headsign - un quai = un sens. |
+| `documentation/scripts/extraire_conseils_position.php` reecrit | 2 passages sur stop_times.txt (~11,8M lignes, quelques minutes) : 1er passage trouve un trip representatif par from_id (952 distincts, 796 resolus), 2e passage recupere la sequence complete de ces trips (46 distincts) pour en deduire la ZdC du prochain arret reel dans ce sens. Sortie enrichie de 3 colonnes : directionId, terminusReel, zdcSuivant. |
+| `src/Entity/PositionRame.php` (+directionId, terminusReel, prochaineStation ManyToOne Station) + migration `Version20260823140000.php` | Appliquee sur metroratp ET metroratp_test. |
+| `src/Command/ConstruirePositionsRameCommand.php` (lit les 3 nouvelles colonnes, resout prochaineStation via le meme `trouverIdCanoniqueParZdc()` deja utilise pour Station/Ligne) | Reexecute : 4671 PositionRame creees (0 sans sens resolu). |
+| `src/Repository/PositionRameRepository.php` (`trouverPourEmbarquement(station, ligne, prochaineStation)` remplace `trouverParStationEtLigne()`) | Retourne au plus 1 resultat, filtre directement par la Station suivante reellement empruntee - plus besoin de matcher sur le texte destination (verifie : toutes les destinations d'un meme sens partagent la meme position, ex. Opera/Auber/Theatre National de l'Opera toutes "Arriere 5/5" en direction Villejuif). |
+| `src/Controller/TrajetController.php::construireSegmentsPourAffichage()` (conseil rattache a la Station de DEPART du troncon, pas l'arrivee ; determine par `dessertes[1]`) | Un seul conseil par troncon entier, actionnable avant l'embarquement. |
+| `templates/trajet/index.html.twig` (affichage simplifie, une seule ligne "🚃 Montez ... (X/Y)") | |
+| `php bin/phpunit` (137), `npx jest` (51) | Tout passe. |
+| Verification navigateur (compte de test, trajet reel Villejuif Leo Lagrange -> Les Mousquetaires) | Troncon Ligne 14 (5 stations, montrait 113+ lignes de conseils avant le fix) : plus qu'une seule ligne "Montez Milieu (5/8) — Escalator". Aucune erreur console. |
+| `documentation/TODO.md` (entree "Conseils de position dans la rame" marquee **fait**) | |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

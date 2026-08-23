@@ -56,6 +56,35 @@ class PositionRame
     #[ORM\Column(length: 30, nullable: true)]
     private ?string $equipement = null;
 
+    /**
+     * Sens de circulation GTFS (direction_id, 0 ou 1) du quai precis (from_id) dont ce conseil est
+     * issu - un quai precis correspond a un seul sens (verifie : tous les trips qui le desservent
+     * partagent le meme direction_id). Permet de departager les 2 conseils opposes qu'une meme
+     * Station+Ligne peut porter (Avant dans un sens, Arriere dans l'autre - voir
+     * documentation/TODO.md, "Conseils de position dans la rame"). Null si le sens n'a pas pu etre
+     * resolu (quai sans trip trouve dans l'instantane GTFS).
+     */
+    #[ORM\Column(nullable: true)]
+    private ?int $directionId = null;
+
+    /**
+     * Terminus reel (trip_headsign GTFS) de ce sens de circulation - texte informatif seulement,
+     * pas utilise pour le filtrage (voir prochaineStation).
+     */
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $terminusReel = null;
+
+    /**
+     * La toute proche Station reelle suivante, DANS CE SENS PRECIS de circulation (calculee depuis
+     * la sequence GTFS complete du trip representatif). Sert a determiner, pour un troncon de
+     * trajet calcule, si ce conseil correspond bien au sens reellement emprunte : le troncon va
+     * bien de Station vers prochaineStation ? Plus fiable qu'une reconstruction de l'ordre complet
+     * de la Ligne (fragile sur les lignes en maillage). Null si Station est un terminus reel dans
+     * ce sens (rien apres).
+     */
+    #[ORM\ManyToOne]
+    private ?Station $prochaineStation = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -153,6 +182,42 @@ class PositionRame
     public function setEquipement(?string $equipement): static
     {
         $this->equipement = $equipement;
+
+        return $this;
+    }
+
+    public function getDirectionId(): ?int
+    {
+        return $this->directionId;
+    }
+
+    public function setDirectionId(?int $directionId): static
+    {
+        $this->directionId = $directionId;
+
+        return $this;
+    }
+
+    public function getTerminusReel(): ?string
+    {
+        return $this->terminusReel;
+    }
+
+    public function setTerminusReel(?string $terminusReel): static
+    {
+        $this->terminusReel = $terminusReel;
+
+        return $this;
+    }
+
+    public function getProchaineStation(): ?Station
+    {
+        return $this->prochaineStation;
+    }
+
+    public function setProchaineStation(?Station $prochaineStation): static
+    {
+        $this->prochaineStation = $prochaineStation;
 
         return $this;
     }

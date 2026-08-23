@@ -110,6 +110,15 @@ class ConstruirePositionsRameCommand extends Command
             $positionRame->setPosition((int) $ligne['position']);
             $positionRame->setPositionMax((int) $ligne['positionMax']);
             $positionRame->setEquipement('' !== $ligne['equipement'] ? $ligne['equipement'] : null);
+            $positionRame->setDirectionId('' !== $ligne['directionId'] ? (int) $ligne['directionId'] : null);
+            $positionRame->setTerminusReel('' !== $ligne['terminusReel'] ? $ligne['terminusReel'] : null);
+
+            if ('' !== $ligne['zdcSuivant']) {
+                $prochaineStationId = $stationIdParZdc[$ligne['zdcSuivant']] ?? null;
+                if (null !== $prochaineStationId) {
+                    $positionRame->setProchaineStation($this->entityManager->getReference(Station::class, $prochaineStationId));
+                }
+            }
 
             if ('' !== $ligne['accId']) {
                 $accesId = $accesIdParCode[$ligne['accId']] ?? null;

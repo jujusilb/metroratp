@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Desserte;
+use App\Entity\PositionRame;
 use App\Entity\Station;
 use App\Repository\DesserteRepository;
 use App\Repository\PositionRameRepository;
@@ -154,13 +155,16 @@ final class TrajetController extends AbstractController
      * seul segment affichant la chaine complete des stations traversees, plutot qu'une ligne
      * par troncon individuel. Les correspondances restent des segments a part.
      *
-     * Chaque troncon porte aussi les conseils de positionnement dans la rame (PositionRame) pour
-     * la Ligne empruntee, a la Station ou ce troncon se termine - utile ici (on sait deja, dans un
-     * trajet calcule, s'il faut changer de ligne ou si c'est l'arrivee), contrairement a la fiche
-     * Station seule ou l'info est affichee hors de tout contexte de destination.
+     * Chaque troncon porte aussi LE conseil de positionnement dans la rame (PositionRame) pour la
+     * Ligne empruntee, a la Station ou ce troncon COMMENCE (l'embarquement) - c'est la qu'il est
+     * actionnable, avant meme de monter dans la rame. Filtre par le sens de circulation reellement
+     * emprunte (identifie par la 2e Desserte du troncon, premiere station reelle suivante) : sans
+     * ce filtre, les 2 sens opposes d'une meme Station+Ligne se melangeaient (voir
+     * documentation/TODO.md). Le sens est constant sur tout le troncon (un train ne rebrousse pas
+     * chemin en cours de route), donc un seul conseil suffit pour l'ensemble du troncon.
      *
      * @param Etape[] $etapes
-     * @return list<array{type: string, dessertes?: Desserte[], depart?: Desserte, arrivee?: Desserte, duree: float, positionsRame?: array}>
+     * @return list<array{type: string, dessertes?: Desserte[], depart?: Desserte, arrivee?: Desserte, duree: float, positionRame?: ?PositionRame}>
      */
     private function construireSegmentsPourAffichage(array $etapes, PositionRameRepository $positionRameRepository): array
     {
@@ -171,12 +175,14 @@ final class TrajetController extends AbstractController
             if (null === $tronconCourant) {
                 return;
             }
-            /** @var Desserte $derniere */
-            $derniere = end($tronconCourant['dessertes']);
-            $ligne = $derniere->getLigne();
-            $station = $derniere->getStation();
-            if (null !== $ligne && null !== $station) {
-                $tronconCourant['positionsRame'] = $positionRameRepository->trouverParStationEtLigne($station->getId(), $ligne->getId());
+            $dessertes = $tronconCourant['dessertes'];
+            $premiere = $dessertes[0];
+            $suivante = $dessertes[1] ?? null;
+            $ligne = $premiere->getLigne();
+            $station = $premiere->getStation();
+            $prochaineStation = $suivante?->getStation();
+            if (null !== $ligne && null !== $station && null !== $prochaineStation) {
+                $tronconCourant['positionRame'] = $positionRameRepository->trouverPourEmbarquement($station->getId(), $ligne->getId(), $prochaineStation->getId());
             }
         };
 

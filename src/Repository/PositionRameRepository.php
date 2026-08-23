@@ -17,24 +17,33 @@ class PositionRameRepository extends ServiceEntityRepository
     }
 
     /**
-     * Pour le calculateur de trajet : conseils de positionnement a l'arrivee d'un troncon (avant
-     * de changer de ligne ou d'arriver a destination), pour CETTE Ligne precise - plus utile ici,
-     * en contexte d'un trajet reel, que sur la fiche Station seule (ou "pour rejoindre" n'a pas de
-     * sens sans savoir vers ou l'on va).
+     * Pour le calculateur de trajet : LE conseil de positionnement a l'embarquement d'un troncon
+     * (une Ligne, une Station de depart), filtre par le sens de circulation reellement emprunte -
+     * identifie par la toute prochaine Station reelle du troncon calcule (prochaineStation),
+     * plutot que par la Ligne seule (voir documentation/TODO.md, "Conseils de position dans la
+     * rame" : sans ce filtre, les 2 sens opposes d'une meme Station+Ligne se melangeaient).
      *
-     * @return PositionRame[]
+     * Deduplique par (labelPosition, position, positionMax) : le dataset source contient souvent
+     * plusieurs lignes quasi-identiques pour un meme sens (une par sortie/destination visee) qui
+     * partagent la meme position une fois le bon sens isole - on ne garde que la premiere.
+     *
+     * Retourne null si aucun conseil ne correspond a ce sens precis (mieux ne rien afficher
+     * qu'un conseil pour le mauvais sens).
      */
-    public function trouverParStationEtLigne(int $stationId, int $ligneId): array
+    public function trouverPourEmbarquement(int $stationId, int $ligneId, int $prochaineStationId): ?PositionRame
     {
-        return $this->createQueryBuilder('p')
+        $resultats = $this->createQueryBuilder('p')
             ->andWhere('p.station = :stationId')
             ->andWhere('p.ligne = :ligneId')
+            ->andWhere('p.prochaineStation = :prochaineStationId')
             ->setParameter('stationId', $stationId)
             ->setParameter('ligneId', $ligneId)
-            ->leftJoin('p.acces', 'acces')->addSelect('acces')
-            ->orderBy('p.destination', 'ASC')
+            ->setParameter('prochaineStationId', $prochaineStationId)
+            ->setMaxResults(1)
             ->getQuery()
             ->getResult()
         ;
+
+        return $resultats[0] ?? null;
     }
 }
