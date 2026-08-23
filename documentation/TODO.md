@@ -384,7 +384,9 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   seulement (choix explicite de l'utilisateur) — `documentation/geo-communes/communes-
   {75,77,78,91,92,93,94,95}.geojson`, 1266 communes, ~6,1 Mo.
   Entité `Ville` créée (`label`, `codeInsee` unique, `frontiere` en JSON — même convention que
-  `Ligne::trace`) + `Station::villeRef` (`ManyToOne`, nullable) — **choix délibéré : additif, pas
+  `Ligne::trace`, `codesPostaux` en JSON ajouté le 2026-08-23 après avoir été oublié au premier
+  passage bien que présent dans le GeoJSON depuis le départ) + `Station::villeRef` (`ManyToOne`,
+  nullable) — **choix délibéré : additif, pas
   un remplacement** du champ `ville` (varchar) existant, qui reste utilisé tel quel par
   `TrajetController`, `templates/station/show.html.twig` et `ImporterPlansSecteurCommand`
   (déduction du département depuis le texte brut) : les casser n'était pas demandé, et `villeRef`

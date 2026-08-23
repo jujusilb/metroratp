@@ -1068,4 +1068,18 @@ Demande utilisateur : "donc j'aimerais une table pour les ville et une clé etra
 | `app:importer-villes` en prod, vérification SQL directe (`COUNT(*)` sur `ville`/`station.ville_ref_id`) | Résultat identique local/prod : **1266 Ville, 13529 Station rattachées, 144 sans correspondance** (hors Île-de-France, attendu), **0 homonyme non tranché**. Pas de test navigateur : aucune UI n'exploite encore `villeRef` (donnée backend seulement à ce stade). |
 | `documentation/TODO.md` | Entrée mise à jour : Station fait, reste à faire pour les 4 autres entités (`Defibrillateur`/`EquipementArret`/`PointDeVente`/`Utilisateur`) et l'affichage carte, non demandés à ce stade. |
 
+## Session du 2026-08-23 (suite) — Ville.codesPostaux oublié, confirmation aucune Station supprimée
+
+Demande utilisateur : "as tu ajouter les code postaux? je ne veux aucune station absente... pour les station hors ile de france, tu met juste le nom de la ville en string... mais tu ne supprime aucune station".
+
+| Commande | Objectif |
+|---|---|
+| Vérification : `COUNT(*)` sur `station` avant/après tout le travail Ville | 13796 dans les deux cas — aucune Station supprimée. Les 267 sans `villeRef` (dont les 144 hors Île-de-France) gardent leur `ville` texte libre intact (ex. "Chartres", "Auneau-Bleury-Saint-Symphorien"), jamais touché par `app:importer-villes`. |
+| Vérification des GeoJSON déjà téléchargés | Les codes postaux étaient bien présents depuis le départ (champ `codesPostaux` demandé dans l'URL `geo.api.gouv.fr`, 1266/1266 communes, jusqu'à 21 pour Paris) mais jamais persistés dans l'entité `Ville` — oubli signalé par l'utilisateur, pas un manque de donnée source. |
+| `src/Entity/Ville.php` (`codesPostaux`, JSON nullable) + migration `Version20260823100000.php` (`ALTER TABLE ville ADD codes_postaux JSON DEFAULT NULL`, SQL obtenu via `doctrine:schema:update --dump-sql`) | DDL appliqué sur `metroratp` ET `metroratp_test` (voir mémoire ajoutée la veille sur cette 2e base). |
+| `ImporterVillesCommand` (persiste desormais `codesPostaux`), réexécution locale | Réimport idempotent : 1266 Ville mises à jour, 13529 Station toujours rattachées (inchangé), Paris confirme ses 21 codes postaux (75001-75020 + 75116). |
+| `php bin/phpunit` (134), `npx jest` (51) | Tout passe. |
+| Déploiement (clone de secours), `mysqldump` de la table `ville` en prod (6,2 Mo) + copie locale | Sauvegarde avant réimport, même discipline. |
+| `app:importer-villes` en prod, vérification SQL directe | Résultat identique local/prod : 13529/144/0 inchangé, Paris avec ses 21 codes postaux. |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
