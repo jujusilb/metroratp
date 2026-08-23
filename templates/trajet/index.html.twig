@@ -158,7 +158,7 @@
                                                 <a href="{{ path('app_station_show', {'id': desserte.station.id}) }}" class="link-body-emphasis">{{ desserte.station.label }}</a>{% if not loop.last %} <span aria-hidden="true">→</span> {% endif %}
                                             {% endfor %}
                                             {% if segment.positionRame is defined and segment.positionRame is not null %}
-                                                <div class="small text-muted mt-1">
+                                                <div class="mt-1 p-2 rounded bg-info-subtle text-info-emphasis border border-info-subtle">
                                                     🚃 Montez {{ segment.positionRame.labelPosition }} ({{ segment.positionRame.position }}/{{ segment.positionRame.positionMax }}){% if segment.positionRame.equipement %} — {{ segment.positionRame.equipement }}{% endif %}
                                                 </div>
                                             {% endif %}
