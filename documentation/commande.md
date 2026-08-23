@@ -1099,4 +1099,14 @@ Demande utilisateur : "je veux la liste des ville et dans 'affichage' voir la li
 | Vérification navigateur (compte de test), login via formulaire réel (curl échoue : le token CSRF est un placeholder `"csrf-token"` remplacé par du JS côté client avant soumission, invérifiable sans exécuter de JS) | `/ligne` : villes affichées sous chaque ligne. `/ville` : 1266 villes listées. `/ville/1` (Paris) : 878 Station, 39 Ligne entièrement dedans / 160 un bout hors / 50 traversée. Cas vérifié en détail : Ligne 1 métro classée "un bout hors" et non "traversée" bien que ses 2 termini semblent hors Paris à première vue — confirmé correct, "Château de Vincennes" est en réalité rattachée à "Paris 12e" dans la donnée source (`Station.ville`, jamais modifiée par ce travail). |
 | Compte de test supprimé après vérification | Discipline habituelle. |
 
+## Session du 2026-08-23 (suite) — Bug conseils de position dans la rame (trop d'entrées)
+
+Demande utilisateur : "AJOUTE A TODO / il ya un probleme avec les position...", avec un exemple concret de trajet réel montrant des dizaines de conseils "Pour rejoindre..." pour un seul tronçon, puis reformulation du besoin réel (une seule recommandation par correspondance, filtrée sur la vraie direction de sortie).
+
+| Commande | Objectif |
+|---|---|
+| Requête SQL directe sur `position_rame` pour la Station "Maison Blanche" | Confirmé : 113 lignes toutes lignes confondues pour cette seule Station, dont 35 quasi-identiques pour le seul couple (Ligne 14, destination "av. d'Italie") — ne différant que par des détails d'équipement/position triviaux. |
+| Lecture de `PositionRameRepository::trouverParStationEtLigne()` | Confirmé root cause à 2 niveaux : aucun filtre sur la destination/direction réellement empruntée par le trajet (retourne toutes les destinations connues pour ce couple Station+Ligne), et aucune déduplication des entrées quasi-identiques du dataset source. |
+| `documentation/TODO.md` (entrée "Conseils de position dans la rame" du 2026-08-22 complétée, note initiale trop optimiste corrigée) | Diagnostic détaillé + reformulation du besoin réel (une ligne par correspondance/segment, filtrée par la vraie Station de sortie du tronçon) + piste de correctif (pas implémenté à ce stade). |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

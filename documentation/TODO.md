@@ -195,9 +195,36 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   dans le calculateur de trajet (`/trajet`, vue "Détaillé"), à la fin de chaque tronçon emprunté —
   c'est justement là qu'on sait déjà s'il faut changer de ligne ou si c'est l'arrivée.
   `PositionRameRepository::trouverParStationEtLigne()` (nouvelle), affichage filtré par Ligne
-  precise. Note : le dataset source contient parfois plusieurs lignes identiques pour une même
-  destination (déjà visible auparavant sur la fiche Station) — non dédupliqué, hors périmètre de
-  cette demande.
+  precise. Note du 2026-08-22, **très sous-estimée** : "le dataset source contient parfois
+  plusieurs lignes identiques pour une même destination" — en réalité, **bien plus grave**,
+  signalé concrètement le 2026-08-23 par l'utilisateur sur un trajet réel (Villejuif Léo Lagrange
+  → Opéra/Auber via RER A, correspondance ligne 14→7) : le tronçon ligne 14 affichait **des dizaines
+  de conseils "Pour rejoindre..."** au lieu d'un seul. Vérifié précisément : `station_id` de "Maison
+  Blanche" seule a **113 lignes `PositionRame`** toutes lignes confondues, dont **35 quasi-identiques**
+  pour le seul couple (Ligne 14, destination "av. d'Italie") — ne différant que par des détails
+  d'équipement/position triviaux (Escalier/Escalator/Ascenseur, Avant/Milieu/Arrière à des index
+  différents). Cause racine à deux niveaux, tous deux dans
+  `PositionRameRepository::trouverParStationEtLigne()` :
+  1. **Aucun filtre sur la direction réelle** : la méthode retourne TOUTES les `PositionRame` du
+     couple (Station, Ligne), quelle que soit leur `destination` — hors le tronçon affiché n'a
+     qu'UNE seule direction de circulation pertinente (celle vers laquelle le trajet calculé
+     continue réellement). Résultat : plusieurs destinations sans rapport avec le trajet en cours
+     s'affichent toutes en vrac (ex. "av. d'Italie", "Maison Blanche", "r. Bourgon", "r. de la
+     Vistule", "r. du Tage", "r. Tagore" toutes mélangées pour la même Station+Ligne).
+  2. **Aucune déduplication** : même en se limitant à LA bonne destination, le dataset source
+     contient des dizaines d'entrées quasi-identiques (cf. les 35 pour "av. d'Italie") jamais
+     réduites à une seule recommandation.
+  Reformulation du besoin réel par l'utilisateur (ex. concret) : "je monte à Villejuif Léo Lagrange,
+  je sais que j'ai une correspondance pour le RER A à Opéra/Auber, je sais qu'à Villejuif je monte à
+  l'avant parce que c'est à Opéra que je descends et qu'à Opéra c'est à l'avant — pourquoi me le
+  dire à chaque station pour chaque direction ?" — la bonne info est **une seule ligne par
+  correspondance/segment embarqué** : "à cette Station, sur cette Ligne, pour descendre à [la
+  vraie prochaine Station de correspondance ou d'arrivée de CE trajet], se placer [position]".
+  Pas encore corrigé : nécessiterait (a) filtrer par la Station de sortie réelle du tronçon (déjà
+  connue par `construireSegmentsPourAffichage()`, pas juste la Ligne) plutôt que par Ligne seule, et
+  (b) dédupliquer les entrées restantes (par ex. sur le triplet position/positionMax/labelPosition,
+  en ignorant les variations d'équipement, ou en n'affichant qu'un équipement par position la plus
+  fréquente).
 - Page `/ligne/{id}` (signalé le 2026-08-22) — deux soucis distincts sur la liste des stations
   (`templates/ligne/show.html.twig`, macro `renderSegment`, alimentée par `Ligne::getParcoursSegments()`) :
   1. **Affichage** : les pastilles de correspondance et le nom de la station sont sur la même
