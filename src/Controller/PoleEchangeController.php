@@ -18,10 +18,16 @@ final class PoleEchangeController extends AbstractController
     #[Route(name: 'app_pole_echange_index', methods: ['GET'])]
     public function index(Request $request, PoleEchangeRepository $poleEchangeRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $poleEchangeRepository->createQueryBuilder('p')->orderBy('p.label', 'ASC');
+        $poleEchangeRepository->appliquerFiltreAlphabetEtRecherche($qb, 'p.label', $lettre, $recherche);
 
         return $this->render('pole_echange/index.html.twig', [
             'pole_echanges' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

@@ -21,10 +21,16 @@ final class VilleController extends AbstractController
     #[Route(name: 'app_ville_index', methods: ['GET'])]
     public function index(Request $request, VilleRepository $villeRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $villeRepository->createQueryBuilder('v')->orderBy('v.label', 'ASC');
+        $villeRepository->appliquerFiltreAlphabetEtRecherche($qb, 'v.label', $lettre, $recherche);
 
         return $this->render('ville/index.html.twig', [
             'villes' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

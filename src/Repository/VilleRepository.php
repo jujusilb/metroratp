@@ -13,6 +13,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class VilleRepository extends ServiceEntityRepository
 {
+    use FiltreAlphabetTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Ville::class);

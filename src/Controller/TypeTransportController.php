@@ -18,10 +18,16 @@ final class TypeTransportController extends AbstractController
     #[Route(name: 'app_type_transport_index', methods: ['GET'])]
     public function index(Request $request, TypeTransportRepository $typeTransportRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $typeTransportRepository->createQueryBuilder('t')->orderBy('t.label', 'ASC');
+        $typeTransportRepository->appliquerFiltreAlphabetEtRecherche($qb, 't.label', $lettre, $recherche);
 
         return $this->render('type_transport/index.html.twig', [
             'type_transports' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

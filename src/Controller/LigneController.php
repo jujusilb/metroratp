@@ -34,9 +34,10 @@ final class LigneController extends AbstractController
         // n'affiche le select "Tronçons construits" que si cette variable est definie (meme null).
         $avecTronconsBrut = $request->query->get('avecTroncons');
         $avecTroncons = '' === $avecTronconsBrut || null === $avecTronconsBrut ? null : '1' === $avecTronconsBrut;
+        $lettre = $request->query->get('lettre');
 
         $lignes = $paginator->paginate(
-            $ligneRepository->creerRequeteFiltree($modesSelectionnes, $recherche, $gestionnairesSelectionnes, $avecTroncons),
+            $ligneRepository->creerRequeteFiltree($modesSelectionnes, $recherche, $gestionnairesSelectionnes, $avecTroncons, $lettre),
             $request->query->getInt('page', 1),
             50,
         );
@@ -50,6 +51,7 @@ final class LigneController extends AbstractController
             'gestionnaires' => $gestionnaireRepository->findBy([], ['label' => 'ASC']),
             'gestionnairesSelectionnes' => $gestionnairesSelectionnes,
             'avecTroncons' => $avecTronconsBrut,
+            'lettre' => $lettre,
             'villesParLigne' => $ligneRepository->trouverVillesParLigne($ligneIds),
         ]);
     }

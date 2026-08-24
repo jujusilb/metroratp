@@ -5,6 +5,13 @@
 {% block body %}
     <div class="container py-4">
         <h1 class="mb-4">Toilettes</h1>
+
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_sanisette_publique_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'une adresse',
+        }) }}
         {{ include('tools/_onglets.html.twig', {onglets: [
             {label: 'Réseau RATP', route: 'app_sanitaire_index', actif: false},
             {label: 'Voie publique', route: 'app_sanisette_publique_index', actif: true},

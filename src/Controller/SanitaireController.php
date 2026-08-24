@@ -18,13 +18,19 @@ final class SanitaireController extends AbstractController
     #[Route(name: 'app_sanitaire_index', methods: ['GET'])]
     public function index(Request $request, SanitaireRepository $sanitaireRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $sanitaireRepository->createQueryBuilder('s')
             ->leftJoin('s.station', 'station')->addSelect('station')
             ->orderBy('s.label', 'ASC')
         ;
+        $sanitaireRepository->appliquerFiltreAlphabetEtRecherche($qb, 's.label', $lettre, $recherche);
 
         return $this->render('sanitaire/index.html.twig', [
             'sanitaires' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

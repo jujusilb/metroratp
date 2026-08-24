@@ -18,10 +18,16 @@ final class StatutTacheController extends AbstractController
     #[Route(name: 'app_statut_tache_index', methods: ['GET'])]
     public function index(Request $request, StatutTacheRepository $statutTacheRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $statutTacheRepository->createQueryBuilder('s')->orderBy('s.label', 'ASC');
+        $statutTacheRepository->appliquerFiltreAlphabetEtRecherche($qb, 's.label', $lettre, $recherche);
 
         return $this->render('statut_tache/index.html.twig', [
             'statut_taches' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

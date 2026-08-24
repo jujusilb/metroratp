@@ -12,6 +12,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class StationRepository extends ServiceEntityRepository
 {
+    use FiltreAlphabetTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Station::class);

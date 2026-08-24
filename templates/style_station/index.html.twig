@@ -5,6 +5,13 @@
 {% block body %}
     <div class="container py-4">
         <h1 class="mb-4">Styles</h1>
+
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_style_station_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'un style',
+        }) }}
         {{ include('tools/_onglets.html.twig', {onglets: [
             {label: 'Station', route: 'app_style_station_index', actif: true},
             {label: 'Accès', route: 'app_style_acces_index', actif: false},

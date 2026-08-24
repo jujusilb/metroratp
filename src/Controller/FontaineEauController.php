@@ -18,14 +18,20 @@ final class FontaineEauController extends AbstractController
     #[Route(name: 'app_fontaine_eau_index', methods: ['GET'])]
     public function index(Request $request, FontaineEauRepository $fontaineEauRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $fontaineEauRepository->createQueryBuilder('f')
             ->leftJoin('f.station', 'station')->addSelect('station')
             ->leftJoin('f.acces', 'acces')->addSelect('acces')
             ->orderBy('f.label', 'ASC')
         ;
+        $fontaineEauRepository->appliquerFiltreAlphabetEtRecherche($qb, 'f.label', $lettre, $recherche);
 
         return $this->render('fontaine_eau/index.html.twig', [
             'fontaines_eau' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

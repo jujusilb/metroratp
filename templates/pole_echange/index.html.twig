@@ -5,6 +5,13 @@
 {% block body %}
     <div class="container py-4">
         <h1 class="mb-4">Pôles d'échange</h1>
+
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_pole_echange_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'un pôle d\'échange',
+        }) }}
         <p class="text-muted">Grands hubs multimodaux identifiés par IDFM (gares, aéroports), regroupant chacun plusieurs stations du réseau.</p>
 
         <table class="table align-middle">

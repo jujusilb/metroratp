@@ -18,13 +18,19 @@ final class EquipementArretController extends AbstractController
     #[Route(name: 'app_equipement_arret_index', methods: ['GET'])]
     public function index(Request $request, EquipementArretRepository $equipementArretRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $equipementArretRepository->createQueryBuilder('e')
             ->leftJoin('e.station', 'station')->addSelect('station')
             ->orderBy('e.nom', 'ASC')
         ;
+        $equipementArretRepository->appliquerFiltreAlphabetEtRecherche($qb, 'e.nom', $lettre, $recherche);
 
         return $this->render('equipement_arret/index.html.twig', [
             'equipementArrets' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

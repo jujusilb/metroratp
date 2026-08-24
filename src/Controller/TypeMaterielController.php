@@ -18,10 +18,16 @@ final class TypeMaterielController extends AbstractController
     #[Route(name: 'app_type_materiel_index', methods: ['GET'])]
     public function index(Request $request, TypeMaterielRepository $typeMaterielRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $typeMaterielRepository->createQueryBuilder('t')->orderBy('t.label', 'ASC');
+        $typeMaterielRepository->appliquerFiltreAlphabetEtRecherche($qb, 't.label', $lettre, $recherche);
 
         return $this->render('type_materiel/index.html.twig', [
             'type_materiels' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

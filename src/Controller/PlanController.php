@@ -18,10 +18,16 @@ final class PlanController extends AbstractController
     #[Route(name: 'app_plan_index', methods: ['GET'])]
     public function index(Request $request, PlanRepository $planRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $planRepository->createQueryBuilder('p')->orderBy('p.secteur', 'ASC');
+        $planRepository->appliquerFiltreAlphabetEtRecherche($qb, 'p.secteur', $lettre, $recherche);
 
         return $this->render('plan/index.html.twig', [
             'plans' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

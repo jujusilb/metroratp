@@ -19,11 +19,13 @@ final class AccesController extends AbstractController
     public function index(Request $request, AccesRepository $accesRepository, PaginatorInterface $paginator): Response
     {
         $recherche = $request->query->get('q');
-        $qb = $accesRepository->creerRequeteFiltree($recherche);
+        $lettre = $request->query->get('lettre');
+        $qb = $accesRepository->creerRequeteFiltree($recherche, $lettre);
 
         return $this->render('acces/index.html.twig', [
             'acces' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
             'recherche' => $recherche,
+            'lettre' => $lettre,
         ]);
     }
 

@@ -5,6 +5,13 @@
 {% block body %}
     <div class="container py-4">
         <h1 class="mb-4">Fontaines à eau</h1>
+
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_fontaine_eau_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'une fontaine',
+        }) }}
         <p class="text-muted">Fontaines à eau en station (réseau RATP).</p>
 
         <table class="table align-middle">

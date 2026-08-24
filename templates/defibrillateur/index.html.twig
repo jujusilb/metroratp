@@ -5,6 +5,13 @@
 {% block body %}
     <div class="container py-4">
         <h1 class="mb-4">Défibrillateurs</h1>
+
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_defibrillateur_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'une localisation',
+        }) }}
         <p class="text-muted">Défibrillateurs automatisés externes en station (réseau RATP).</p>
 
         <table class="table align-middle">

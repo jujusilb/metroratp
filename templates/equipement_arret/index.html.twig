@@ -5,6 +5,13 @@
 {% block body %}
     <div class="container py-4">
         <h1 class="mb-4">Équipements des arrêts</h1>
+
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_equipement_arret_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'un équipement',
+        }) }}
         <p class="text-muted">
             Équipements relevés sur OpenStreetMap pour chaque arrêt physique (fauteuil roulant,
             banc, abri, bande tactile...) — dataset IDFM « écarts arrêts référentiel/OpenStreetMap ».

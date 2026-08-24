@@ -18,10 +18,16 @@ final class GestionnaireController extends AbstractController
     #[Route(name: 'app_gestionnaire_index', methods: ['GET'])]
     public function index(Request $request, GestionnaireRepository $gestionnaireRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $gestionnaireRepository->createQueryBuilder('g')->orderBy('g.label', 'ASC');
+        $gestionnaireRepository->appliquerFiltreAlphabetEtRecherche($qb, 'g.label', $lettre, $recherche);
 
         return $this->render('gestionnaire/index.html.twig', [
             'gestionnaires' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

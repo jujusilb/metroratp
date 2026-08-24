@@ -38,7 +38,7 @@ class LigneRepository extends ServiceEntityRepository
      *                                 construits, false = seulement celles qui n'en ont aucun,
      *                                 null = pas de filtre
      */
-    public function creerRequeteFiltree(array $modes, ?string $recherche, array $gestionnaireIds = [], ?bool $avecTroncons = null): QueryBuilder
+    public function creerRequeteFiltree(array $modes, ?string $recherche, array $gestionnaireIds = [], ?bool $avecTroncons = null, ?string $lettre = null): QueryBuilder
     {
         $qb = $this->createQueryBuilder('l')
             ->leftJoin('l.typeTransport', 'tt')->addSelect('tt')
@@ -51,6 +51,12 @@ class LigneRepository extends ServiceEntityRepository
         if (null !== $recherche && '' !== trim($recherche)) {
             $qb->andWhere('l.label LIKE :recherche OR g.label LIKE :recherche')
                 ->setParameter('recherche', '%'.trim($recherche).'%')
+            ;
+        }
+
+        if (null !== $lettre && '' !== $lettre) {
+            $qb->andWhere('l.label LIKE :lettre')
+                ->setParameter('lettre', $lettre.'%')
             ;
         }
 

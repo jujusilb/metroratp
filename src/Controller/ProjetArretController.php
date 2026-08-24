@@ -18,10 +18,16 @@ final class ProjetArretController extends AbstractController
     #[Route(name: 'app_projet_arret_index', methods: ['GET'])]
     public function index(Request $request, ProjetArretRepository $projetArretRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $projetArretRepository->createQueryBuilder('p')->orderBy('p.nomProjet', 'ASC');
+        $projetArretRepository->appliquerFiltreAlphabetEtRecherche($qb, 'p.nomProjet', $lettre, $recherche);
 
         return $this->render('projet_arret/index.html.twig', [
             'projets_arret' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

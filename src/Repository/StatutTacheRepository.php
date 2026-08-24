@@ -11,6 +11,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class StatutTacheRepository extends ServiceEntityRepository
 {
+    use FiltreAlphabetTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, StatutTache::class);

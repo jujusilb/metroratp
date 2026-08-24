@@ -476,17 +476,31 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   Ligne (`LigneRepository::trouverVillesParLigne()`, une seule requête groupée pour la page entière,
   pas de N+1). Toujours aucun affichage de frontière GPS sur une carte à ce stade (donnée
   `Ville::frontiere` disponible mais pas encore exploitée visuellement).
-- Filtre alphabétique + recherche texte sur tous les index paginés (signalé le 2026-08-23) — demande
-  utilisateur : sur chaque page d'index qui a une pagination, ajouter une barre de lettres (A-Z,
-  cliquer sur "C" ne montre que les entrées commençant par C) et un champ de recherche texte, pas
-  seulement sur `/ville` mais sur **toutes** les pages concernées. **34 controllers** utilisent
-  `PaginatorInterface` (vérifié via grep) — chantier large. **Mécanisme réutilisable construit**
-  (`src/Repository/FiltreAlphabetTrait.php` + `templates/tools/filtre_alphabet.html.twig`), **pas
-  encore appliqué à un seul controller** (interrompu par la demande PointInteret ci-dessous) —
-  reste à faire : l'appliquer aux ~20 controllers "simples" (un seul champ texte pertinent), adapter
-  les ~4 qui ont déjà un filtre de recherche existant (Ligne, Troncon, Desserte, Acces), documenter
-  les ~10 restants sans champ texte pertinent (dates, relations, ordre numérique) comme non
-  applicables.
+- Filtre alphabétique + recherche texte sur tous les index paginés (signalé le 2026-08-23) —
+  **fait (2026-08-24)**, sur demande utilisateur : sur chaque page d'index avec pagination, une
+  barre de lettres (A-Z, cliquer sur "C" ne montre que les entrées commençant par C) et un champ de
+  recherche texte. **34 controllers** utilisent `PaginatorInterface` (vérifié via grep), traités
+  ainsi :
+  - **21 avec un seul champ texte pertinent** (Ville, Station, StyleAcces, Utilisateur,
+    PoleEchange, Plan, SanisettePublique, Sanitaire, PointDeVente, FontaineEau, Defibrillateur,
+    Service, Gestionnaire, TypeTroncon, TypeTransport, TypeMateriel, StyleStation, StatutTache,
+    ProjetArret, EquipementArret) : mécanisme réutilisable
+    (`src/Repository/FiltreAlphabetTrait.php` + `templates/tools/filtre_alphabet.html.twig`),
+    appliqué de façon mécanique (filtre par `LIKE 'lettre%'`/`LIKE '%recherche%'` sur le champ déjà
+    utilisé pour le tri, sans changer l'ordre existant).
+  - **2 avec un filtre de recherche déjà existant** (Ligne via `tools/filtre_liste.html.twig`,
+    Accès via son propre formulaire) : paramètre `lettre` ajouté directement à leur
+    `creerRequeteFiltree()` existante, barre de lettres seule affichée (option
+    `masquerRecherche: true` du partial, pour ne pas dupliquer le champ de recherche déjà présent).
+  - **11 non applicables**, documentés ici plutôt que forcés : `Troncon` et `Desserte` (recherche
+    texte déjà existante mais triés par id/relation, pas de champ label propre pertinent pour une
+    lettre), `PlanRegion` (tri par ordre numérique), `MaterielLigne`/`PositionRame` (relations
+    Ligne+Station/Materiel, pas de label propre), `Materiel`/`PeriodeOuverture`/`Sortie`/`Correspondance`
+    (`creerRequeteAvecDetails()`, pas de champ texte simple), `Etape`/`Tache` (triés par date),
+    `DocumentLigne` (trie par `ligne.label` — pourrait bénéficier d'un filtre sur ce champ si
+    besoin un jour, non fait par manque de cas d'usage clair).
+  Vérifié en navigateur : `/gestionnaire?lettre=K` (12 "Keolis..."), `/ligne?lettre=A` (RER A,
+  AUDONIE, AS...). `php bin/phpunit` (137), `npx jest` (51) : tout passe.
 - "À voir à proximité" (`PointInteret`) — **fait (2026-08-23)**, sur idée utilisateur (section façon
   Wikipédia listant les lieux remarquables proches d'une station). Source : le champ `to_name` de
   `positionnement-dans-la-rame.csv` (déjà exploité pour les conseils de position, voir plus haut)

@@ -18,10 +18,16 @@ final class TypeTronconController extends AbstractController
     #[Route(name: 'app_type_troncon_index', methods: ['GET'])]
     public function index(Request $request, TypeTronconRepository $typeTronconRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $typeTronconRepository->createQueryBuilder('t')->orderBy('t.label', 'ASC');
+        $typeTronconRepository->appliquerFiltreAlphabetEtRecherche($qb, 't.label', $lettre, $recherche);
 
         return $this->render('type_troncon/index.html.twig', [
             'type_troncons' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

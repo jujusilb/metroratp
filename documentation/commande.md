@@ -1143,4 +1143,17 @@ Demande utilisateur : reprise de l'idée "Destination" abandonnée plus tôt (po
 | Vérification navigateur (compte de test) : `/station/69` (Gambetta) | "À voir à proximité" affiche "Père-Lachaise" et "Hôpital Tenon" - cohérent géographiquement. Aucune erreur console. |
 | Serveur symfony local instable pendant la vérification (`preview_start` a signalé un serveur déjà démarré puis sorti immédiatement, port 8000 finalement injoignable) | Contourné avec un serveur PHP intégré ponctuel (`php -S 127.0.0.1:8000 -t public`) pour cette vérification uniquement. |
 
+## Session du 2026-08-24 — Filtre alphabétique + recherche sur tous les index paginés
+
+Demande utilisateur (reprise après l'interruption PointInteret) : "oui" pour continuer le chantier laissé en cours.
+
+| Commande | Objectif |
+|---|---|
+| Application du mécanisme déjà construit (`FiltreAlphabetTrait` + `filtre_alphabet.html.twig`) à 21 controllers "simples" (un `use FiltreAlphabetTrait;` par repository, un paramètre `lettre` lu et appliqué par controller, un include dans le template) | Ville, Station, StyleAcces, Utilisateur, PoleEchange, Plan, SanisettePublique, Sanitaire, PointDeVente, FontaineEau, Defibrillateur, Service, Gestionnaire, TypeTroncon, TypeTransport, TypeMateriel, StyleStation, StatutTache, ProjetArret, EquipementArret. |
+| Adaptation de 2 controllers avec un filtre de recherche déjà existant (Ligne, Accès) | Paramètre `lettre` ajouté directement à leur `creerRequeteFiltree()` ; `filtre_alphabet.html.twig` étendu avec une option `masquerRecherche` pour éviter un doublon de champ de recherche sur ces pages. |
+| Investigation de Troncon/Desserte (recherche texte déjà existante) | Triés par `id`/relation (pas par un label propre), donc pas de tri alphabétique pertinent — exclus du filtre alphabet (recherche texte existante conservée telle quelle), documentés dans TODO.md avec les 9 autres cas non applicables (relations, dates, ordre numérique). |
+| `php bin/phpunit` (137), `npx jest` (51), `lint:twig` sur tous les templates touchés | Tout passe. |
+| Vérification navigateur (compte de test) : `/gestionnaire?lettre=K` (12 "Keolis..."), `/ligne?lettre=A` (RER A, AUDONIE, AS...) | Conforme, pas de champ de recherche dupliqué sur `/ligne`. |
+| `documentation/TODO.md` (entrée complétée, **fait**) | |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

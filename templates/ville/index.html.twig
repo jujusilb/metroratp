@@ -6,6 +6,13 @@
     <div class="container py-4">
         <h1 class="mb-4">Villes</h1>
 
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_ville_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'une ville',
+        }) }}
+
         <p class="text-muted small">{{ villes.getTotalItemCount }} ville{{ villes.getTotalItemCount > 1 ? 's' : '' }}</p>
 
         <table class="table align-middle">

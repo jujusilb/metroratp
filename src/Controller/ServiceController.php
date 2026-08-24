@@ -18,10 +18,16 @@ final class ServiceController extends AbstractController
     #[Route(name: 'app_service_index', methods: ['GET'])]
     public function index(Request $request, ServiceRepository $serviceRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $serviceRepository->createQueryBuilder('s')->orderBy('s.label', 'ASC');
+        $serviceRepository->appliquerFiltreAlphabetEtRecherche($qb, 's.label', $lettre, $recherche);
 
         return $this->render('service/index.html.twig', [
             'services' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

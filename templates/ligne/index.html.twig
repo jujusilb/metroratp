@@ -17,6 +17,12 @@
             'avecTroncons': avecTroncons,
         }) }}
 
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_ligne_index',
+            'lettreSelectionnee': lettre,
+            'masquerRecherche': true,
+        }) }}
+
         <p class="text-muted small">{{ lignes.getTotalItemCount }} ligne{{ lignes.getTotalItemCount > 1 ? 's' : '' }}</p>
 
         <table class="table align-middle">

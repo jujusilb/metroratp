@@ -11,6 +11,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class SanitaireRepository extends ServiceEntityRepository
 {
+    use FiltreAlphabetTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Sanitaire::class);

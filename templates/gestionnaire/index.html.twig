@@ -6,6 +6,13 @@
     <div class="container py-4">
         <h1 class="mb-4">Gestionnaires</h1>
 
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_gestionnaire_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'un gestionnaire',
+        }) }}
+
         <table class="table align-middle">
             <thead>
                 <tr>

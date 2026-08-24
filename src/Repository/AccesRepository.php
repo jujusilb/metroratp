@@ -25,7 +25,7 @@ class AccesRepository extends ServiceEntityRepository
      * multiplierait les lignes SQL renvoyees — faussant le compte total de KnpPaginatorBundle
      * (meme piege que documente dans DesserteRepository::creerRequeteFiltree()).
      */
-    public function creerRequeteFiltree(?string $recherche): QueryBuilder
+    public function creerRequeteFiltree(?string $recherche, ?string $lettre = null): QueryBuilder
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.styleAcces', 'styleAcces')->addSelect('styleAcces')
@@ -39,6 +39,12 @@ class AccesRepository extends ServiceEntityRepository
                 'WHERE sortie.acces = a AND station.label LIKE :recherche'.
                 ')'
             )->setParameter('recherche', '%'.trim($recherche).'%')
+            ;
+        }
+
+        if (null !== $lettre && '' !== $lettre) {
+            $qb->andWhere('a.label LIKE :lettre')
+                ->setParameter('lettre', $lettre.'%')
             ;
         }
 

@@ -18,10 +18,16 @@ final class StyleStationController extends AbstractController
     #[Route(name: 'app_style_station_index', methods: ['GET'])]
     public function index(Request $request, StyleStationRepository $styleStationRepository, PaginatorInterface $paginator): Response
     {
+        $lettre = $request->query->get('lettre');
+        $recherche = $request->query->get('q');
+
         $qb = $styleStationRepository->createQueryBuilder('s')->orderBy('s.label', 'ASC');
+        $styleStationRepository->appliquerFiltreAlphabetEtRecherche($qb, 's.label', $lettre, $recherche);
 
         return $this->render('style_station/index.html.twig', [
             'style_stations' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
+            'lettre' => $lettre,
+            'recherche' => $recherche,
         ]);
     }
 

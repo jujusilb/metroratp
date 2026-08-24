@@ -5,6 +5,13 @@
 {% block body %}
     <div class="container py-4">
         <h1 class="mb-4">Projets d'arrêts et de pôles</h1>
+
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_projet_arret_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'un projet',
+        }) }}
         <p class="text-muted">Arrêts et pôles multimodaux en projet ou en construction — le futur du réseau.</p>
 
         <table class="table align-middle">
