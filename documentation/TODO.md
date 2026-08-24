@@ -22,6 +22,20 @@ Saint-Michel, Quatre-Septembre, Colonel Fabien, Villiers, Chardon-Lagache, Louvr
 Palais Royal—Musée du Louvre, Réaumur—Sébastopol, Barbès—Rochechouart — 10 stations). Découverte
 au passage : la station de métro "Wagram" (ligne 3, existe réellement) est totalement absente de
 la base, ni comme Station complète ni comme Desserte — vraie lacune, pas liée à cette tâche.
+**Fait (2026-08-24)** : le constat était partiellement faux — la Station "Wagram" (code_externe
+`71423`, Paris 17e) existait bien, avec 2 Desserte bus (lignes 31/93), mais aucune Desserte pour
+la Ligne 3 : un Troncon reliait directement Malesherbes↔Pereire chez nous (court-circuit sautant
+Wagram), alors que le GTFS actuel confirme Wagram entre les deux (position 19/24 dans l'ordre réel
+des arrêts). Cause probable : un second Station homonyme existe (Maisons-Laffitte, code_externe
+différent) — le rattachement par simple label a sans doute été évité par prudence lors d'un import
+passé, sans jamais être repris pour cette Station précise (identifiable sans ambiguïté par son
+`code_externe`). `app:corriger-troncon-wagram` (nouvelle commande, idempotente) : Desserte créée,
+Troncon direct remplacé par Malesherbes↔Wagram↔Pereire (2 Troncon), les 2 `Mission` existantes sur
+l'ancien Troncon repointées vers les nouveaux `TronconDesserte` correspondants + 2 `Mission`
+supplémentaires créées pour Wagram (sans quoi la suppression de l'ancien Troncon échouait sur une
+contrainte de clé étrangère `Mission→TronconDesserte`). Vérifié en navigateur : le trajet
+Villiers→Pereire passe désormais par "Villiers → Malesherbes → Wagram → Pereire" (3 étapes, avant
+2), avec un conseil de position affiché.
 
 **Escalator/ascenseur : fait (2026-08-20)**, en reprenant l'investigation ci-dessus qui avait
 conclu à tort à une impasse. Le vrai problème n'était pas l'absence de données OSM, mais le tag
@@ -465,10 +479,20 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   Résultat identique local/prod : **1266 Ville, 13529 Station rattachées, 144 sans correspondance**
   (commune hors Île-de-France — Chartres, Sens, Château-Thierry... — absente par choix de
   périmètre, pas un bug), **0 homonyme non tranché**.
-  **Reste à faire** (hors périmètre de cette demande, qui portait sur Station) : les 4 autres
-  entités avec un champ `ville` en varchar (`Defibrillateur`, `EquipementArret`, `PointDeVente`,
-  `Utilisateur`) n'ont pas de `villeRef` — à ajouter si besoin, même mécanique directement
-  réutilisable.
+  **Étendu aux 4 autres entités (2026-08-24)** : `Defibrillateur`, `EquipementArret`,
+  `PointDeVente`, `Utilisateur` ont désormais aussi `villeRef` (migration `Version20260824100000.php`).
+  `app:importer-villes` refactorisée (logique de rattachement extraite en une méthode générique
+  `rattacherEntites()`, réutilisée pour les 5 entités plutôt que dupliquée). Désambiguïsation des
+  homonymes par position : ces 4 entités ont leurs propres `latitude`/`longitude` (pas besoin de
+  passer par une Station liée), sauf `Utilisateur` (aucune coordonnée disponible — les cas
+  homonymes ambigus y restent simplement non tranchés).
+  **Bug trouvé et corrigé avant tout déploiement** : le taux de rattachement de `PointDeVente`
+  était anormalement bas (24/2032, 1,2%) — cause : son champ `ville` est stocké **tout en
+  majuscules** ("CRÉTEIL") contrairement aux autres entités et au référentiel geo.api.gouv.fr
+  ("Créteil"), et la comparaison était sensible à la casse. Corrigé en normalisant la comparaison
+  (`mb_strtoupper`) plutôt que la donnée source (laissée intacte). Résultat après correction :
+  PointDeVente 2030/2032 (99,9%), Defibrillateur 406/448 (90,6%), EquipementArret 40423/40511
+  (99,8%), Utilisateur 0/0 (table vide en dev).
   **UI ajoutée (2026-08-23)** : page `/ville` (liste, 1266 communes) et `/ville/{id}` (fiche —
   Stations rattachées + Lignes concernées, classées en 3 catégories via
   `VilleRepository::trouverLignesConcernees()` : **entièrement dans la ville** (toutes les Desserte

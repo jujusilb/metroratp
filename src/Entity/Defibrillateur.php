@@ -32,6 +32,13 @@ class Defibrillateur
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $ville = null;
 
+    /**
+     * Commune reelle (referentiel geo.api.gouv.fr, voir Ville), rattachee par correspondance de
+     * nom depuis le champ ville ci-dessus - voir app:importer-villes.
+     */
+    #[ORM\ManyToOne]
+    private ?Ville $villeRef = null;
+
     #[ORM\Column(length: 30, nullable: true)]
     private ?string $acces = null;
 
@@ -97,6 +104,18 @@ class Defibrillateur
     public function setVille(?string $ville): static
     {
         $this->ville = $ville;
+
+        return $this;
+    }
+
+    public function getVilleRef(): ?Ville
+    {
+        return $this->villeRef;
+    }
+
+    public function setVilleRef(?Ville $villeRef): static
+    {
+        $this->villeRef = $villeRef;
 
         return $this;
     }

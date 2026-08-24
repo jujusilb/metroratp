@@ -1172,4 +1172,20 @@ Demande utilisateur : "le 2. les arret absents" puis "pourquoi ? il faut essayer
 | Vérification concrète : Station "Les Tournelles" (code_externe 67756) | #28458, ville "Hautefeuille", coordonnées cohérentes (48.778, 2.954, Seine-et-Marne) — la station à l'origine de toute cette investigation le 2026-08-22 existe enfin en base. |
 | `documentation/TODO.md` (entrée corrigée et complétée, **fait**) | |
 
+## Session du 2026-08-24 (suite) — Ville sur 4 entités de plus + correction du trou Wagram (ligne 3)
+
+Demande utilisateur : "Table Ville faite seulement pour Station — pas encore pour Defibrillateur, EquipementArret, PointDeVente, Utilisateur. Station 'Wagram' (ligne 3) — découverte en passant, totalement absente de la base (ni Station ni Desserte)."
+
+| Commande | Objectif |
+|---|---|
+| `villeRef` ajouté sur `Defibrillateur`/`EquipementArret`/`PointDeVente`/`Utilisateur` + migration `Version20260824100000.php` (appliquée sur `metroratp` et `metroratp_test`) | Ces 4 entités ont leurs propres `latitude`/`longitude` (sauf Utilisateur) : pas besoin de passer par une Station liée pour la désambiguïsation des homonymes. |
+| `ImporterVillesCommand` refactorisée : logique de rattachement extraite en `rattacherEntites()` (générique, closures pour lire/écrire le champ ville/villeRef et les coordonnées) | Réutilisée pour les 5 entités plutôt que dupliquée 5 fois. |
+| Bug détecté à l'exécution : `PointDeVente` seulement 24/2032 rattachés (1,2%) | Cause : `PointDeVente::ville` stocké tout en majuscules ("CRÉTEIL") contrairement au référentiel geo.api.gouv.fr ("Créteil") — comparaison sensible à la casse. Corrigé par normalisation (`mb_strtoupper`) de la comparaison uniquement, donnée source intacte. Après correction : PointDeVente 2030/2032, Defibrillateur 406/448, EquipementArret 40423/40511. |
+| `php bin/phpunit` (137), `npx jest` (51) | Tout passe. |
+| Investigation Wagram : recherche dans le GTFS réel (`stops.txt`/`trips.txt` de la Ligne 3, route `C01373`) | Confirmé : Wagram est une vraie station de la Ligne 3, position 19/24 entre Malesherbes et Péreire Levallois. Vérifié en base : la Station "Wagram" (id 54, code_externe 71423) existe déjà (avec 2 Desserte bus), contrairement à la note initiale ; c'est la Desserte Ligne 3 qui manquait. Un Troncon reliait directement Malesherbes↔Pereire chez nous (court-circuit). Cause probable identifiée : un second Station homonyme "Wagram" existe à Maisons-Laffitte — rattachement par label évité par prudence lors d'un import passé, jamais repris pour cette Station précise. |
+| `src/Command/CorrigerTronconWagramCommand.php` (nouvelle, idempotente) | 1er essai : échec sur une contrainte de clé étrangère `Mission→TronconDesserte` (2 Mission existantes référençaient l'ancien Troncon direct). Corrigé : les 2 Mission repointées vers les nouveaux TronconDesserte correspondants (même numero/service/direction), + 2 Mission supplémentaires créées pour les 2 occurrences "Départ" de Wagram (direction opposée à chaque fois, cohérent avec le sens de circulation). Sauvegarde locale (`mysqldump`) des tables station/desserte/troncon/troncon_desserte avant exécution. |
+| `php bin/phpunit` (137), `npx jest` (51) après correction | Tout passe. |
+| Vérification navigateur (compte de test) : trajet Villiers→Pereire | "Villiers → Malesherbes → Wagram → Pereire" (3 étapes, contre 2 avant), conseil de position affiché. Aucune erreur console. |
+| `documentation/TODO.md` (2 entrées complétées, **fait**) | |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

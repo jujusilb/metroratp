@@ -2,8 +2,17 @@
 
 namespace App\Command;
 
+use App\Entity\Defibrillateur;
+use App\Entity\EquipementArret;
+use App\Entity\PointDeVente;
+use App\Entity\Station;
+use App\Entity\Utilisateur;
 use App\Entity\Ville;
+use App\Repository\DefibrillateurRepository;
+use App\Repository\EquipementArretRepository;
+use App\Repository\PointDeVenteRepository;
 use App\Repository\StationRepository;
+use App\Repository\UtilisateurRepository;
 use App\Repository\VilleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -15,9 +24,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * Importe les Ville (communes d'Ile-de-France, referentiel officiel geo.api.gouv.fr - voir
  * documentation/geo-communes/, 8 departements 75/77/78/91/92/93/94/95, 1266 communes), puis
- * rattache Station::villeRef par correspondance de nom depuis Station::ville (texte libre,
- * inchange - voir app:importer-communes-stations). Idempotent : upsert des Ville par
- * codeInsee, recalcule le rattachement Station a chaque execution.
+ * rattache villeRef sur les 5 entites qui ont un champ ville en texte libre (inchange) : Station,
+ * Defibrillateur, EquipementArret, PointDeVente, Utilisateur. Idempotent : upsert des Ville par
+ * codeInsee, recalcule chaque rattachement a chaque execution.
  *
  * Paris (arrondissements) : "Paris 1er".."Paris 20e" et "Paris" pointent tous vers la seule
  * commune "Paris" (75056) - un seul contour dans ce referentiel, les arrondissements ne sont
@@ -39,7 +48,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * point-dans-polygone (isDansFrontiere()) grace aux coordonnees de la Station, plutot qu'un
  * rattachement par nom seul qui choisirait arbitrairement l'une des deux.
  */
-#[AsCommand(name: 'app:importer-villes', description: "Importe les Ville (communes IDF, geo.api.gouv.fr) et rattache Station::villeRef")]
+#[AsCommand(name: 'app:importer-villes', description: 'Importe les Ville (communes IDF, geo.api.gouv.fr) et rattache villeRef sur Station/Defibrillateur/EquipementArret/PointDeVente/Utilisateur')]
 class ImporterVillesCommand extends Command
 {
     private const GEOJSON_FICHIERS = [
@@ -64,6 +73,10 @@ class ImporterVillesCommand extends Command
         private readonly EntityManagerInterface $entityManager,
         private readonly VilleRepository $villeRepository,
         private readonly StationRepository $stationRepository,
+        private readonly DefibrillateurRepository $defibrillateurRepository,
+        private readonly EquipementArretRepository $equipementArretRepository,
+        private readonly PointDeVenteRepository $pointDeVenteRepository,
+        private readonly UtilisateurRepository $utilisateurRepository,
     ) {
         parent::__construct();
     }
@@ -95,32 +108,142 @@ class ImporterVillesCommand extends Command
                 $ville->setLabel($label);
                 $ville->setFrontiere($feature['geometry']);
                 $ville->setCodesPostaux($feature['properties']['codesPostaux'] ?? null);
-                $villesParLabel[$label][] = $ville;
+                $villesParLabel[self::normaliserCle($label)][] = $ville;
                 ++$nbTotal;
             }
         }
         $this->entityManager->flush();
         $io->writeln(sprintf('%d Ville creees, %d mises a jour (%d au total).', $nbCrees, $nbMisAJour, $nbTotal));
 
+        $paris = $villesParLabel[self::normaliserCle('Paris')][0] ?? null;
+
         $io->section('Rattachement de Station::villeRef');
-        $paris = $villesParLabel['Paris'][0] ?? null;
+        $resultat = $this->rattacherEntites(
+            $this->stationRepository->findAll(),
+            $villesParLabel,
+            $paris,
+            static fn (Station $s): ?string => $s->getVille(),
+            static fn (Station $s, ?Ville $v) => $s->setVilleRef($v),
+            static fn (Station $s): ?float => $s->getLatitude(),
+            static fn (Station $s): ?float => $s->getLongitude(),
+        );
+        $this->rapporterResultat($io, 'Station', $resultat);
+
+        $io->section('Rattachement de Defibrillateur::villeRef');
+        $resultat = $this->rattacherEntites(
+            $this->defibrillateurRepository->findAll(),
+            $villesParLabel,
+            $paris,
+            static fn (Defibrillateur $d): ?string => $d->getVille(),
+            static fn (Defibrillateur $d, ?Ville $v) => $d->setVilleRef($v),
+            static fn (Defibrillateur $d): ?float => $d->getLatitude(),
+            static fn (Defibrillateur $d): ?float => $d->getLongitude(),
+        );
+        $this->rapporterResultat($io, 'Defibrillateur', $resultat);
+
+        $io->section('Rattachement de EquipementArret::villeRef');
+        $resultat = $this->rattacherEntites(
+            $this->equipementArretRepository->findAll(),
+            $villesParLabel,
+            $paris,
+            static fn (EquipementArret $e): ?string => $e->getVille(),
+            static fn (EquipementArret $e, ?Ville $v) => $e->setVilleRef($v),
+            static fn (EquipementArret $e): ?float => $e->getLatitude(),
+            static fn (EquipementArret $e): ?float => $e->getLongitude(),
+        );
+        $this->rapporterResultat($io, 'EquipementArret', $resultat);
+
+        $io->section('Rattachement de PointDeVente::villeRef');
+        $resultat = $this->rattacherEntites(
+            $this->pointDeVenteRepository->findAll(),
+            $villesParLabel,
+            $paris,
+            static fn (PointDeVente $p): ?string => $p->getVille(),
+            static fn (PointDeVente $p, ?Ville $v) => $p->setVilleRef($v),
+            static fn (PointDeVente $p): ?float => $p->getLatitude(),
+            static fn (PointDeVente $p): ?float => $p->getLongitude(),
+        );
+        $this->rapporterResultat($io, 'PointDeVente', $resultat);
+
+        $io->section('Rattachement de Utilisateur::villeRef');
+        // Pas de coordonnees GPS sur Utilisateur (profil, pas un lieu) : les 4 homonymes reels
+        // (Blandy, Marolles-en-Brie, Mondreville, Saint-Martin-des-Champs) restent non tranches
+        // si un Utilisateur y habite - cas tres marginal, laisse tel quel plutot que de deviner.
+        $resultat = $this->rattacherEntites(
+            $this->utilisateurRepository->findAll(),
+            $villesParLabel,
+            $paris,
+            static fn (Utilisateur $u): ?string => $u->getVille(),
+            static fn (Utilisateur $u, ?Ville $v) => $u->setVilleRef($v),
+            static fn (Utilisateur $u): ?float => null,
+            static fn (Utilisateur $u): ?float => null,
+        );
+        $this->rapporterResultat($io, 'Utilisateur', $resultat);
+
+        return Command::SUCCESS;
+    }
+
+    /**
+     * @param array{rattachees: int, sansCorrespondance: int, ambigues: int} $resultat
+     */
+    private function rapporterResultat(SymfonyStyle $io, string $nomEntite, array $resultat): void
+    {
+        $io->success(sprintf(
+            '%d %s rattachee(s) a leur Ville. %d sans correspondance (commune hors Ile-de-France ou perimetre des donnees de frontiere, voir documentation/TODO.md). %d homonymes non tranches.',
+            $resultat['rattachees'],
+            $nomEntite,
+            $resultat['sansCorrespondance'],
+            $resultat['ambigues'],
+        ));
+    }
+
+    /**
+     * Logique de rattachement partagee entre Station et les 4 autres entites avec un champ ville
+     * (Defibrillateur, EquipementArret, PointDeVente, Utilisateur) : meme correspondance de nom,
+     * memes corrections manuelles, meme desambiguisation des homonymes par position quand
+     * possible (getLatitude/getLongitude renvoient null pour Utilisateur, qui n'a pas de
+     * coordonnees - ces cas restent alors non tranches plutot que de deviner).
+     *
+     * @template T of object
+     *
+     * @param iterable<T>         $entites
+     * @param array<string, Ville[]> $villesParLabel
+     * @param callable(T): ?string    $getVille
+     * @param callable(T, ?Ville): void $setVilleRef
+     * @param callable(T): ?float     $getLatitude
+     * @param callable(T): ?float     $getLongitude
+     *
+     * @return array{rattachees: int, sansCorrespondance: int, ambigues: int}
+     */
+    private function rattacherEntites(
+        iterable $entites,
+        array $villesParLabel,
+        ?Ville $paris,
+        callable $getVille,
+        callable $setVilleRef,
+        callable $getLatitude,
+        callable $getLongitude,
+    ): array {
         $nbRattachees = 0;
         $nbSansCorrespondance = 0;
         $nbAmbigues = 0;
         $compteur = 0;
-        foreach ($this->stationRepository->findAll() as $station) {
-            $ville = $station->getVille();
+
+        foreach ($entites as $entite) {
+            $ville = $getVille($entite);
             if (null === $ville || '' === $ville) {
                 continue;
             }
 
+            $villeCle = self::normaliserCle($ville);
             $candidats = null;
-            if ('Paris' === $ville || 1 === preg_match('/^Paris \d/', $ville)) {
+            if (1 === preg_match('/^PARIS(\s+\d.*)?$/u', $villeCle)) {
                 $candidats = null !== $paris ? [$paris] : null;
-            } elseif (isset($villesParLabel[$ville])) {
-                $candidats = $villesParLabel[$ville];
-            } elseif (isset(self::CORRECTIONS_MANUELLES[$ville], $villesParLabel[self::CORRECTIONS_MANUELLES[$ville]])) {
-                $candidats = $villesParLabel[self::CORRECTIONS_MANUELLES[$ville]];
+            } elseif (isset($villesParLabel[$villeCle])) {
+                $candidats = $villesParLabel[$villeCle];
+            } elseif (isset(self::CORRECTIONS_MANUELLES[$ville])) {
+                $cleCorrigee = self::normaliserCle(self::CORRECTIONS_MANUELLES[$ville]);
+                $candidats = $villesParLabel[$cleCorrigee] ?? null;
             }
 
             if (null === $candidats) {
@@ -130,14 +253,14 @@ class ImporterVillesCommand extends Command
 
             $cible = $candidats[0];
             if (count($candidats) > 1) {
-                $cible = $this->desambiguiserParPosition($candidats, $station->getLatitude(), $station->getLongitude());
+                $cible = $this->desambiguiserParPosition($candidats, $getLatitude($entite), $getLongitude($entite));
                 if (null === $cible) {
                     ++$nbAmbigues;
                     continue;
                 }
             }
 
-            $station->setVilleRef($cible);
+            $setVilleRef($entite, $cible);
             ++$nbRattachees;
 
             if (0 === (++$compteur % 3000)) {
@@ -146,14 +269,19 @@ class ImporterVillesCommand extends Command
         }
         $this->entityManager->flush();
 
-        $io->success(sprintf(
-            '%d Station rattachees a leur Ville. %d sans correspondance (commune hors Ile-de-France ou perimetre des donnees de frontiere, voir documentation/TODO.md). %d homonymes non tranches (pas de coordonnees ou point hors des deux polygones).',
-            $nbRattachees,
-            $nbSansCorrespondance,
-            $nbAmbigues,
-        ));
+        return ['rattachees' => $nbRattachees, 'sansCorrespondance' => $nbSansCorrespondance, 'ambigues' => $nbAmbigues];
+    }
 
-        return Command::SUCCESS;
+    /**
+     * Normalise une chaine pour la comparaison de noms de commune (insensible a la casse) : la
+     * source geo.api.gouv.fr est en casse normale ("Créteil"), mais certaines de nos donnees
+     * stockent le nom de ville tout en majuscules (ex: PointDeVente::ville, "CRÉTEIL") - sans
+     * cette normalisation, ces entites ne trouvaient jamais de correspondance (0,2% de taux de
+     * rattachement au lieu de 30%+ attendu, decouvert le 2026-08-24).
+     */
+    private static function normaliserCle(string $s): string
+    {
+        return mb_strtoupper(trim($s), 'UTF-8');
     }
 
     /**
