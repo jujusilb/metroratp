@@ -1156,4 +1156,20 @@ Demande utilisateur (reprise après l'interruption PointInteret) : "oui" pour co
 | Vérification navigateur (compte de test) : `/gestionnaire?lettre=K` (12 "Keolis..."), `/ligne?lettre=A` (RER A, AUDONIE, AS...) | Conforme, pas de champ de recherche dupliqué sur `/ligne`. |
 | `documentation/TODO.md` (entrée complétée, **fait**) | |
 
+## Session du 2026-08-24 (suite) — Récupération des 1789 ZdC manquantes via Lambert-93
+
+Demande utilisateur : "le 2. les arret absents" puis "pourquoi ? il faut essayer de les récupérer non ? peut être on peut essayer en passant par le lambert 93".
+
+| Commande | Objectif |
+|---|---|
+| Recomptage précis des ZdC distinctes dans `zones-d-arrets.csv` (colonne `ZdCId`, pas le nombre de lignes) | Correction d'une erreur du 2026-08-22 : 15539 ZdC distinctes (pas 18003, qui comptait les ZdA/arrêts physiques), écart réel de 1789 (11,5%), pas 4250 (23,6%). |
+| Vérification directe avec les fichiers GTFS bruts (`stops.txt`, disponibles en local) | Les 1789 ZdC manquantes sont totalement absentes du GTFS actuel (aucune sous quelque `location_type` que ce soit) — confirme que ce n'est pas un bug d'extraction, juste des arrêts sans service programmé actuellement. |
+| `documentation/scripts/extraire_zdc_manquants_lambert93.php` (nouveau) : conversion Lambert-93 (EPSG:2154) → WGS84, formule officielle IGN (Lambert conforme conique, ellipsoïde GRS80) | **Auto-validation intégrée au script** : reprojette 30 ZdC déjà connus des deux façons et compare contre leurs vraies coordonnées GTFS avant de continuer — écart moyen 8m, max 66m (le script s'arrête si l'écart dépasse 200m). 1789 ZdC manquantes reprojetées avec succès (100%, aucune sans coordonnée Lambert-93 exploitable). |
+| `src/Command/ImporterZdcManquantsCommand.php` (`app:importer-zdc-manquants`, nouvelle, idempotente) | Vérifié au préalable : 0 des 1789 ZdC n'a déjà de Station en base. 1789 Station créées (label, ville texte libre, coordonnées, code_externe), sans Desserte/Ligne (pas de service actif à rattacher). |
+| `app:importer-villes` (relancée) | 1755 des 1789 nouvelles Station rattachées à leur Ville. |
+| `app:fusionner-stations-dupliquees --dry-run` | 0 paire — aucun doublon créé par ce nouvel import. |
+| `php bin/phpunit` (137), `npx jest` (51) | Tout passe. |
+| Vérification concrète : Station "Les Tournelles" (code_externe 67756) | #28458, ville "Hautefeuille", coordonnées cohérentes (48.778, 2.954, Seine-et-Marne) — la station à l'origine de toute cette investigation le 2026-08-22 existe enfin en base. |
+| `documentation/TODO.md` (entrée corrigée et complétée, **fait**) | |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

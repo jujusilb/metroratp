@@ -332,22 +332,31 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   lignes très restreint (4 sur ~1400 lignes de bus), dont 3 s'expliquent par la nature même du
   service (TAD/remplacement) plutôt que par un bug — pas de changement de code effectué à ce
   stade.
-- ZdC absents de `zdc_coordonnees.csv` / `reseau_complet.csv` (signalé le 2026-08-22, arrêt "Les
-  Tournelles" cherché sur Google Maps par l'utilisateur, semblant situé à "Hautefeuille") — vérifié :
+- ZdC absents de `zdc_coordonnees.csv` (signalé le 2026-08-22, arrêt "Les Tournelles" cherché sur
+  Google Maps par l'utilisateur, semblant situé à "Hautefeuille") — **fait (2026-08-24)**.
   "Hautefeuille" n'est pas la rue parisienne du même nom mais une petite commune de Seine-et-Marne
-  (code postal 77224) ; l'arrêt existe bien dans le référentiel officiel IDFM
-  (`documentation/IDFM-gtfs/csv/zones-d-arrets.csv`, ZdC `67756`, réseau 512 "Brie et 2 Morin"), mais
-  est **absent des deux fichiers qu'on utilise réellement** : `zdc_coordonnees.csv` (nos coordonnées
-  ZdC) et `reseau_complet.csv` (notre import topologie/desserte) — donc absent de la table
-  `station`. Ampleur mesurée : `zones-d-arrets.csv` référence **18003 ZdC** au total, contre
-  seulement **13753 dans `zdc_coordonnees.csv`** — un écart de **~4250 ZdC (23,6%)** jamais importés
-  chez nous, vraisemblablement concentré sur les petits réseaux ruraux/périphériques (2e rencontre du
-  jour avec ce type de réseau, après la ligne 3139 "Pays Briard" ci-dessus — écho probable du même
-  phénomène : les réseaux exploités par de petits opérateurs en zone peu dense semblent
-  systématiquement sous-représentés dans les fichiers qu'on a extraits). Pas de correctif ici :
-  nécessiterait de reconstruire `zdc_coordonnees.csv`/`reseau_complet.csv` à partir d'une source plus
-  complète (le référentiel `zones-d-arrets.csv` lui-même a des coordonnées en Lambert-93, colonnes
-  6/7, à reprojeter — pas fait dans cette session).
+  (77224) ; l'arrêt existe dans le référentiel officiel IDFM (`zones-d-arrets.csv`, ZdC `67756`).
+  **Ampleur corrigée** (la mesure du 2026-08-22 comptait à tort les lignes brutes du référentiel —
+  des ZdA, arrêts physiques — au lieu des ZdC distinctes) : `zones-d-arrets.csv` référence
+  **15539 ZdC distinctes** (colonne `ZdCId`, pas le nombre de lignes), contre 13752 déjà connues —
+  un écart réel de **1789 ZdC (11,5%)**, pas 4250/23,6% comme annoncé initialement.
+  Cause confirmée avec les fichiers GTFS bruts (disponibles en local, `documentation/IDFM-gtfs/csv/`) :
+  ces 1789 ZdC sont **totalement absentes du flux GTFS actuel** (`stops.txt`) — vérifié
+  précisément, aucune n'apparaît même sous un autre `location_type` — donc pas un bug
+  d'extraction : elles n'ont simplement plus de service programmé dans l'instantané GTFS actuel,
+  tout en restant de vrais arrêts référencés officiellement.
+  Récupérées via `documentation/scripts/extraire_zdc_manquants_lambert93.php` : `zones-d-arrets.csv`
+  donne leurs coordonnées en Lambert-93 (EPSG:2154, colonnes `ZdAXEpsg2154`/`ZdAYEpsg2154`) —
+  reprojetées vers WGS84 via la formule officielle IGN (Lambert conforme conique, ellipsoïde
+  GRS80), **validée contre 30 ZdC déjà connus des deux façons avant tout import** (écart moyen 8m,
+  max 66m — cohérent avec un simple décalage ZdA/ZdC, pas une erreur de formule).
+  `app:importer-zdc-manquants` (nouvelle commande, idempotente) : **1789 Station créées** (label,
+  ville, coordonnées, `code_externe`), sans Desserte/Ligne rattachée (pas de service actif à
+  rattacher) — apparaissent sur `/ville` et la carte, pas dans le calculateur de trajet. Vérifié
+  aucun doublon créé (`app:fusionner-stations-dupliquees --dry-run` → 0 paire). `app:importer-villes`
+  relancée : 1755 des 1789 nouvelles Station rattachées à leur Ville (le reste hors Île-de-France ou
+  sans correspondance de nom, même limite que d'habitude). "Les Tournelles" vérifiée concrètement :
+  Station #28458, ville "Hautefeuille", coordonnées correctes.
 - Quais décalés (ex: Liège sur la ligne 13) — **fait (2026-08-21)** : ajout de
   `TronconDesserte::dureeReelleSecondes` (nullable, uniquement significatif côté "Départ"),
   `Troncon::dureeReelleSecondes` restant le repli symétrique (`TrajetFinder::construireGraphe()`
