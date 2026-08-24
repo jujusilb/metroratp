@@ -1,0 +1,31 @@
+{#
+    Barre de filtre alphabetique (A-Z) + recherche texte, reutilisable sur tout index pagine.
+    Parametres attendus :
+    - route : nom de la route courante (genere les liens de lettre)
+    - lettreSelectionnee : lettre actuellement filtree (ou null)
+    - recherche : texte de recherche actuel (ou null)
+    - libelleRecherche : placeholder du champ de recherche (optionnel)
+#}
+<div class="mb-3">
+    <div class="btn-group flex-wrap mb-2" role="group" aria-label="Filtrer par lettre">
+        <a href="{{ path(route, app.request.query.all|merge({'lettre': null, 'page': null})) }}" class="btn btn-sm {{ lettreSelectionnee is empty ? 'btn-secondary' : 'btn-outline-secondary' }}">Tous</a>
+        {% for lettre in range('A', 'Z') %}
+            <a href="{{ path(route, app.request.query.all|merge({'lettre': lettre, 'page': null})) }}" class="btn btn-sm {{ lettreSelectionnee == lettre ? 'btn-secondary' : 'btn-outline-secondary' }}">{{ lettre }}</a>
+        {% endfor %}
+    </div>
+    <form method="get" class="d-flex" style="max-width: 300px;">
+        {% for cle, valeur in app.request.query.all %}
+            {% if cle not in ['q', 'page'] %}
+                {% if valeur is iterable %}
+                    {% for v in valeur %}
+                        <input type="hidden" name="{{ cle }}[]" value="{{ v }}">
+                    {% endfor %}
+                {% else %}
+                    <input type="hidden" name="{{ cle }}" value="{{ valeur }}">
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        <input type="text" name="q" class="form-control form-control-sm" value="{{ recherche }}" placeholder="{{ libelleRecherche|default('Rechercher...') }}">
+        <button type="submit" class="btn btn-sm btn-primary ms-2">Rechercher</button>
+    </form>
+</div>

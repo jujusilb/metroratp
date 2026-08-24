@@ -476,6 +476,40 @@ et Montereau-Fault-Yonne), pas un manque de coordonnées — à revoir manuellem
   Ligne (`LigneRepository::trouverVillesParLigne()`, une seule requête groupée pour la page entière,
   pas de N+1). Toujours aucun affichage de frontière GPS sur une carte à ce stade (donnée
   `Ville::frontiere` disponible mais pas encore exploitée visuellement).
+- Filtre alphabétique + recherche texte sur tous les index paginés (signalé le 2026-08-23) — demande
+  utilisateur : sur chaque page d'index qui a une pagination, ajouter une barre de lettres (A-Z,
+  cliquer sur "C" ne montre que les entrées commençant par C) et un champ de recherche texte, pas
+  seulement sur `/ville` mais sur **toutes** les pages concernées. **34 controllers** utilisent
+  `PaginatorInterface` (vérifié via grep) — chantier large. **Mécanisme réutilisable construit**
+  (`src/Repository/FiltreAlphabetTrait.php` + `templates/tools/filtre_alphabet.html.twig`), **pas
+  encore appliqué à un seul controller** (interrompu par la demande PointInteret ci-dessous) —
+  reste à faire : l'appliquer aux ~20 controllers "simples" (un seul champ texte pertinent), adapter
+  les ~4 qui ont déjà un filtre de recherche existant (Ligne, Troncon, Desserte, Acces), documenter
+  les ~10 restants sans champ texte pertinent (dates, relations, ordre numérique) comme non
+  applicables.
+- "À voir à proximité" (`PointInteret`) — **fait (2026-08-23)**, sur idée utilisateur (section façon
+  Wikipédia listant les lieux remarquables proches d'une station). Source : le champ `to_name` de
+  `positionnement-dans-la-rame.csv` (déjà exploité pour les conseils de position, voir plus haut)
+  contient parfois le nom d'un vrai lieu plutôt qu'une simple adresse de rue quand la sortie y mène
+  directement (ex. "Hôpital Kremlin Bicêtre", vérifié différent du `Acces.label` déjà connu pour ce
+  même accès) — donnée gratuite, déjà présente, jamais exploitée jusque-là.
+  `documentation/scripts/extraire_points_interet.php` (nouveau) : filtre par expression régulière +
+  denylist explicite (adresses de rue/avenue/place, génériques "Gare routière"/"Centre Commercial"
+  sans nom propre) sur les 1018 `to_name` distincts de type `access_point` — **87 paires (ZdC, lieu)
+  retenues**, committées dans `documentation/scripts/donnees-extraites/points_interet.csv`.
+  `PointInteret` (nouvelle entité, `label` unique + `stations` ManyToMany — un même lieu peut être
+  proche de plusieurs Station, ex. Forum des Halles) + `app:importer-points-interet` (nouvelle
+  commande) : **85 PointInteret créés, 87 rattachements Station**. Affiché sur la fiche Station
+  (`/station/{id}`, section "À voir à proximité"). Vérifié sur `/station/69` (Gambetta) :
+  "Père-Lachaise" et "Hôpital Tenon" — cohérent géographiquement.
+  Piste explorée puis écartée : `point_de_vente` (commerces tabac-presse) — source différente, déjà
+  bien structurée mais hors périmètre sémantique (pas des lieux remarquables).
+  Idée séparée traitée au passage (clarification "fait au mieux") : `StationRepository::rechercherParLabel()`
+  matche désormais aussi par nom de `Ville` (`Station::villeRef`) en complément du label de Station,
+  toujours priorisé après un vrai match direct — permet de taper un nom de commune dans le
+  calculateur de trajet et retrouver ses Station même si aucune ne porte ce nom exact (vérifié :
+  "Andrezel" → "Salle des Fêtes", son unique arrêt ; pas de régression sur les recherches
+  existantes).
 
 ## Lignes Transilien V/P/R — fait (2026-08-17)
 

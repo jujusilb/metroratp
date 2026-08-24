@@ -23,16 +23,23 @@ class StationRepository extends ServiceEntityRepository
      * (contrairement a une recherche par Desserte, qui donnerait une ligne par ligne desservant
      * la station).
      *
+     * Matche aussi par nom de Ville (Station::villeRef), en complement du label de Station -
+     * permet de taper un nom de commune (ex: "Coulommiers") et retrouver ses Station meme si
+     * aucune ne porte exactement ce nom. Toujours priorise apres un vrai match de label (voir
+     * ordre des criteres ci-dessous) : sinon une grande ville comme Paris noierait le resultat de
+     * centaines de stations sans rapport direct avec la recherche tapee.
+     *
      * Le tri par pertinence se fait en SQL, sur tout le jeu de resultats (pas apres une limite
      * intermediaire arbitraire) : un premier essai limitait a une fenetre triee alphabetiquement
      * avant de re-trier en PHP, ce qui pouvait carrement exclure la station "Chatelet" du lot vu
      * le nombre d'arrets generiques "Chateau ..." qui la precedent alphabetiquement. Criteres,
      * dans l'ordre :
-     *  1. position du match (prefixe d'abord, via LOCATE) ;
-     *  2. desservie par un mode lourd (Metro/RER/Tramway) avant un simple arret de bus : sans ce
+     *  1. match sur le label de la Station elle-meme avant un simple match par nom de Ville ;
+     *  2. position du match (prefixe d'abord, via LOCATE) ;
+     *  3. desservie par un mode lourd (Metro/RER/Tramway) avant un simple arret de bus : sans ce
      *     critere, les ~42 arrets de bus nommes litteralement "Chateau" (un par commune, donc
      *     tous plus courts que "Chatelet") noient les vraies stations de metro homonymes ;
-     *  3. label le plus court (le plus proche d'une correspondance exacte) : "Nation" < "Nations"
+     *  4. label le plus court (le plus proche d'une correspondance exacte) : "Nation" < "Nations"
      *     < "National ..." < "Assemblee Nationale".
      * Necessite du SQL natif (sous-requete EXISTS dans l'ORDER BY, hors grammaire DQL) ; les
      * entites sont ensuite rechargees via l'ORM en respectant cet ordre (results ORM = cache
@@ -48,9 +55,11 @@ class StationRepository extends ServiceEntityRepository
             <<<'SQL'
                 SELECT s.id
                 FROM station s
-                WHERE s.label LIKE :rechercheLike
+                LEFT JOIN ville v ON v.id = s.ville_ref_id
+                WHERE s.label LIKE :rechercheLike OR v.label LIKE :rechercheLike
                 ORDER BY
-                    LOCATE(:recherche, s.label) ASC,
+                    (s.label LIKE :rechercheLike) DESC,
+                    CASE WHEN s.label LIKE :rechercheLike THEN LOCATE(:recherche, s.label) ELSE 999 END ASC,
                     (EXISTS (
                         SELECT 1 FROM desserte d
                         INNER JOIN ligne l ON l.id = d.ligne_id

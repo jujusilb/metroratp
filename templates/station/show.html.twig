@@ -159,6 +159,17 @@
             <p class="text-muted">Aucun point de vente connu à proximité.</p>
         {% endif %}
 
+        <h2 class="h5 mt-4">À voir à proximité</h2>
+        {% if station.pointsInteret|length > 0 %}
+            <ul>
+                {% for point_interet in station.pointsInteret %}
+                    <li>{{ point_interet.label }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucun lieu remarquable connu à proximité.</p>
+        {% endif %}
+
         <h2 class="h5 mt-4">Sanitaires à proximité</h2>
         {% if station.sanitaires|length > 0 %}
             <ul>

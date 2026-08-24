@@ -166,6 +166,16 @@ class Station
     #[ORM\OneToMany(targetEntity: SanisettePublique::class, mappedBy: 'station')]
     private Collection $sanisettesPubliques;
 
+    /**
+     * Lieux remarquables a proximite (voir PointInteret) - un meme lieu peut etre partage par
+     * plusieurs Station proches (ex: Forum des Halles pres de Chatelet/Chatelet-Les Halles/Les
+     * Halles).
+     *
+     * @var Collection<int, PointInteret>
+     */
+    #[ORM\ManyToMany(targetEntity: PointInteret::class, mappedBy: 'stations')]
+    private Collection $pointsInteret;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -173,6 +183,7 @@ class Station
         $this->pointsDeVente = new ArrayCollection();
         $this->sanitaires = new ArrayCollection();
         $this->defibrillateurs = new ArrayCollection();
+        $this->pointsInteret = new ArrayCollection();
         $this->fontainesEau = new ArrayCollection();
         $this->sanisettesPubliques = new ArrayCollection();
     }
@@ -541,5 +552,13 @@ class Station
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, PointInteret>
+     */
+    public function getPointsInteret(): Collection
+    {
+        return $this->pointsInteret;
     }
 }
