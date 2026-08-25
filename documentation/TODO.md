@@ -650,7 +650,7 @@ vraie ligne lors du réimport.
 Note découverte au passage, hors périmètre de cette tâche : les lignes de métro 15 et 18 (déjà
 dans `referentiel-des-lignes.csv`/GTFS actuel) ne sont pas encore importées dans la base.
 
-## Desserte.styleStation souvent NULL (signalé 2026-08-24) — Nord-Sud fait, CMP en pause
+## Desserte.styleStation souvent NULL (signalé 2026-08-24) — Nord-Sud fait, CMP fait (2026-08-25)
 
 `StyleStation` a 7 valeurs en base (mouton [en réalité "Mouton-Duvernet", style ~1968-1974 à 2
 tons non biseautés], motte [style Andreu-Motte 1975-1984], renouveau du métro, CMP, Nord Sud,
