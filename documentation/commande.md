@@ -1240,4 +1240,20 @@ Suite de la tâche précédente. Demande utilisateur, en réponse au constat que
 | `php bin/phpunit` (137), `npx jest` (51) | Tout passe. |
 | `documentation/TODO.md` (section consolidée avec l'entrée initiale du 2026-08-22), `Tache` #61 (ACHEVEE) | |
 
+## Session du 2026-08-25 (suite) — Table Automatisation (structure + CRUD)
+
+Reprise du TODO ("regarde dans le todo pour continuer"), sur la demande utilisateur du début de session : table `Automatisation` (id, label) + table de liaison `AutomatisationLigne` (ligne_id, automatisation_id, dateDeMiseEnPlace).
+
+| Commande | Objectif |
+|---|---|
+| `src/Entity/Automatisation.php`, `AutomatisationLigne.php` (calquées sur `Materiel`/`MaterielLigne`) + collection inverse `Ligne::automatisationLignes` | Une Ligne peut atteindre plusieurs paliers d'automatisation au fil du temps. |
+| `AutomatisationRepository` (avec `FiltreAlphabetTrait`), `AutomatisationLigneRepository`, `AutomatisationType`, `AutomatisationLigneType`, `AutomatisationController`, `AutomatisationLigneController`, 12 templates (`automatisation/*`, `automatisation_ligne/*`) | CRUD complet, même patron que Matériel/Matériel-Ligne. Menu "Exploitation" étendu avec les 2 nouvelles entrées. |
+| Migration `Version20260825203834` (appliquée sur `metroratp` et `metroratp_test`) | `CREATE TABLE automatisation`, `automatisation_ligne` + FK. 3 valeurs de base insérées ("porte de rame", "porte palière", "total"). |
+| Bug de routing trouvé en testant : `AutomatisationLigneControllerTest::testIndex` échouait (404) | Cause : `/automatisation/{id}` (show/edit/delete) capturait `/automatisation/ligne` (id="ligne") avant que la bonne route ne soit essayée — Symfony matche dans l'ordre de déclaration. Corrigé avec `requirements: ['id' => '\d+']` sur les 3 routes, comme `MaterielController` le fait déjà pour le même piège (`/materiel/{id}` vs `/materiel/ligne`) — copié depuis `StyleStationController` qui n'a pas ce problème (pas de sous-route), d'où l'oubli initial. |
+| `tests/Controller/AutomatisationControllerTest.php`, `AutomatisationLigneControllerTest.php` (nouveaux, même patron que `StyleStationControllerTest`/`MaterielLigneControllerTest`) + `DatabaseTestCase` étendue (`AutomatisationLigne` ajoutée avant `Ligne` dans l'ordre de nettoyage, `Automatisation` ajoutée avec les autres tables de référence) | 147 tests au total (+10). |
+| `php bin/phpunit` (147), `npx jest` (51), vérification navigateur (compte de test) : création réelle d'une `AutomatisationLigne` (Ligne 1, "porte palière", 2011-04-01), cycle complet create→index→delete | Tout passe. |
+| `documentation/TODO.md` (section mise à jour), `Tache` #59 (ACHEVEE) | |
+
+Reste à faire (hors périmètre de cette session) : peuplement des dates réelles d'automatisation par ligne — nécessiterait une recherche historique dédiée, même niveau de rigueur que la recherche CMP/Nord-Sud (voir plus haut).
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

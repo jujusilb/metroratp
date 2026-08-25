@@ -64,11 +64,18 @@ class Ligne
     #[ORM\OneToMany(targetEntity: DocumentLigne::class, mappedBy: 'ligne')]
     private Collection $documents;
 
+    /**
+     * @var Collection<int, AutomatisationLigne>
+     */
+    #[ORM\OneToMany(targetEntity: AutomatisationLigne::class, mappedBy: 'ligne')]
+    private Collection $automatisationLignes;
+
     public function __construct()
     {
         $this->dessertes = new ArrayCollection();
         $this->materielLignes = new ArrayCollection();
         $this->documents = new ArrayCollection();
+        $this->automatisationLignes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -223,6 +230,35 @@ class Ligne
             // set the owning side to null (unless already changed)
             if ($materielLigne->getLigne() === $this) {
                 $materielLigne->setLigne(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AutomatisationLigne>
+     */
+    public function getAutomatisationLignes(): Collection
+    {
+        return $this->automatisationLignes;
+    }
+
+    public function addAutomatisationLigne(AutomatisationLigne $automatisationLigne): static
+    {
+        if (!$this->automatisationLignes->contains($automatisationLigne)) {
+            $this->automatisationLignes->add($automatisationLigne);
+            $automatisationLigne->setLigne($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAutomatisationLigne(AutomatisationLigne $automatisationLigne): static
+    {
+        if ($this->automatisationLignes->removeElement($automatisationLigne)) {
+            if ($automatisationLigne->getLigne() === $this) {
+                $automatisationLigne->setLigne(null);
             }
         }
 

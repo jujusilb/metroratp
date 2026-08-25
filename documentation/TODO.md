@@ -4,21 +4,34 @@ Historique complet (tâches achevées, avec leur contexte technique détaillé) 
 (base de données, réservé `ROLE_ADMIN`) le 2026-08-16 — voir `documentation/commande.md` pour le
 détail de cette migration. Ce fichier ne garde désormais que ce qui reste réellement à faire.
 
-## Table Automatisation (demandé 2026-08-25)
+## Table Automatisation — structure et CRUD faits (2026-08-25), peuplement des dates à faire
 
 Idée utilisateur : table `Automatisation` (`id`, `label`) avec valeurs "porte de rame", "porte
 palière", "total" (probablement des paliers progressifs : conduite automatisée avec portes de
 rame seulement, puis ajout de portes palières en station, puis automatisation totale/sans
 conducteur). Table de liaison `ligne_id, automatisation_id, dateDeMiseEnPlace` — une Ligne peut donc
 avoir plusieurs lignes de liaison au fil du temps (une par palier franchi), chacune avec sa date.
-Pas encore implémenté. Pistes utiles trouvées en passant lors d'une autre recherche (styleStation) :
-dates d'automatisation par ligne mentionnées sur Wikipédia article par article (ex. Ligne 1 :
-portes palières installées avril 2011 ; Ligne 4 : automatisation 2017-2023, portes palières
-posées progressivement station par station de 2016 à 2021 ; Ligne 14 : automatisée dès l'origine
-1998). Nécessitera de vérifier si la "date de mise en place" doit être au niveau Ligne (une seule
-date par palier, ex. fin de l'automatisation totale) ou par Station (les portes palières sont
-posées station par station sur plusieurs années, pas toutes le même jour) — à clarifier avant
-implémentation.
+
+**Fait** : entités `Automatisation`/`AutomatisationLigne` (calquées sur `Materiel`/`MaterielLigne`,
+CRUD complet, migration `Version20260825203834`), 3 valeurs de base créées ("porte de rame", "porte
+palière", "total"), menu "Exploitation" étendu. Bug de routing trouvé et corrigé au passage : les
+routes `/automatisation/{id}` (show/edit/delete) capturaient aussi `/automatisation/ligne` (id="ligne")
+avant que Symfony n'atteigne la bonne route — corrigé avec `requirements: ['id' => '\d+']`, comme
+`MaterielController` le fait déjà pour `/materiel/{id}` vs `/materiel/ligne` (piège identique, à
+surveiller pour toute future paire Entité/EntitéLigne du même genre). Vérifié : `php bin/phpunit`
+(147, +10 nouveaux tests), `npx jest` (51), navigateur (création d'une AutomatisationLigne réelle
+Ligne 1 / porte palière / 2011-04-01, cycle complet create→show→delete).
+
+**Pas fait** : peuplement des dates réelles. Nécessiterait une recherche historique ligne par ligne
+(même niveau de rigueur que la recherche CMP/Nord-Sud ci-dessous) — pistes entrevues en passant lors
+de cette recherche, non vérifiées en détail : Ligne 1 (portes palières installées avril 2011, au
+moins pour certaines stations — pas confirmé que ce soit la date de fin de déploiement réseau
+entier) ; Ligne 4 (automatisation totale 2017-2023, portes palières posées station par station de
+2016 à 2021) ; Ligne 14 (automatisée dès l'origine, 1998). Question ouverte non tranchée : la "date
+de mise en place" à ce niveau (Ligne) est nécessairement une date "représentative" (ex. fin de
+déploiement réseau) puisque les portes palières sont en réalité posées station par station sur
+plusieurs années — acceptable pour l'usage envisagé, mais à garder en tête si quelqu'un veut plus de
+précision plus tard (nécessiterait alors un niveau Station, hors du schéma demandé ici).
 
 ## Style physique des Accès — Guimard fait (2026-08-17), escalator/ascenseur fait (2026-08-20), mât toujours sans source
 

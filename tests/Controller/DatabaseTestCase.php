@@ -3,6 +3,8 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Acces;
+use App\Entity\Automatisation;
+use App\Entity\AutomatisationLigne;
 use App\Entity\Correspondance;
 use App\Entity\Desserte;
 use App\Entity\Direction;
@@ -46,6 +48,7 @@ abstract class DatabaseTestCase extends WebTestCase
             Mission::class,
             TronconDesserte::class,
             MaterielLigne::class,
+            AutomatisationLigne::class,
             Sortie::class,
             PeriodeOuverture::class,
             Correspondance::class,
@@ -64,6 +67,7 @@ abstract class DatabaseTestCase extends WebTestCase
             StyleStation::class,
             TypeMateriel::class,
             TypeTroncon::class,
+            Automatisation::class,
         ];
 
         foreach ($entityClasses as $entityClass) {
