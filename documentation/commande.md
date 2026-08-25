@@ -1256,4 +1256,15 @@ Reprise du TODO ("regarde dans le todo pour continuer"), sur la demande utilisat
 
 Reste à faire (hors périmètre de cette session) : peuplement des dates réelles d'automatisation par ligne — nécessiterait une recherche historique dédiée, même niveau de rigueur que la recherche CMP/Nord-Sud (voir plus haut).
 
+## Session du 2026-08-25 (suite) — Peuplement des dates AutomatisationLigne
+
+Reprise du TODO ("continu la prochaine"), pour finir le point laissé ouvert à la fin de la tâche précédente.
+
+| Commande | Objectif |
+|---|---|
+| Recherche via les articles Wikipédia dédiés "Automatisation de la ligne 1/4/13 du métro de Paris" (wikitext brut) | Bien plus fiable que les indices vagues entrevus en passant lors de la recherche styleStation. |
+| 6 `AutomatisationLigne` créées, uniquement pour les paliers achevés réseau entier | Ligne 1 : porte palière avril 2011, total 22 décembre 2012. Ligne 4 : porte palière mars 2021, total 15 décembre 2023. Ligne 14 : porte palière et total 15 octobre 1998 (automatique dès l'origine). Volontairement aucune valeur "porte de rame" (aucune source ne documente cette étape comme un jalon distinct daté séparément). |
+| Ligne 13 vérifiée mais volontairement laissée de côté | Automatisation seulement votée (7 décembre 2022), calendrier prévisionnel 2027 (MF 19 conduite manuelle) puis 2032-2035 (conduite automatique) selon les sources. Les portes palières déjà présentes sur environ la moitié de la ligne (2008-2012) sont un dispositif antérieur sans rapport avec ce projet ; le renforcement des quais pour la future automatisation ne fait que commencer (2025-2026, très incomplet). Aucune ligne créée. |
+| `documentation/TODO.md` (section complétée), `Tache` (ACHEVEE) | |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

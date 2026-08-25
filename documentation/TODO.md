@@ -4,7 +4,7 @@ Historique complet (tâches achevées, avec leur contexte technique détaillé) 
 (base de données, réservé `ROLE_ADMIN`) le 2026-08-16 — voir `documentation/commande.md` pour le
 détail de cette migration. Ce fichier ne garde désormais que ce qui reste réellement à faire.
 
-## Table Automatisation — structure et CRUD faits (2026-08-25), peuplement des dates à faire
+## Table Automatisation — fait (2026-08-25)
 
 Idée utilisateur : table `Automatisation` (`id`, `label`) avec valeurs "porte de rame", "porte
 palière", "total" (probablement des paliers progressifs : conduite automatisée avec portes de
@@ -22,16 +22,44 @@ surveiller pour toute future paire Entité/EntitéLigne du même genre). Vérifi
 (147, +10 nouveaux tests), `npx jest` (51), navigateur (création d'une AutomatisationLigne réelle
 Ligne 1 / porte palière / 2011-04-01, cycle complet create→show→delete).
 
-**Pas fait** : peuplement des dates réelles. Nécessiterait une recherche historique ligne par ligne
-(même niveau de rigueur que la recherche CMP/Nord-Sud ci-dessous) — pistes entrevues en passant lors
-de cette recherche, non vérifiées en détail : Ligne 1 (portes palières installées avril 2011, au
-moins pour certaines stations — pas confirmé que ce soit la date de fin de déploiement réseau
-entier) ; Ligne 4 (automatisation totale 2017-2023, portes palières posées station par station de
-2016 à 2021) ; Ligne 14 (automatisée dès l'origine, 1998). Question ouverte non tranchée : la "date
-de mise en place" à ce niveau (Ligne) est nécessairement une date "représentative" (ex. fin de
-déploiement réseau) puisque les portes palières sont en réalité posées station par station sur
-plusieurs années — acceptable pour l'usage envisagé, mais à garder en tête si quelqu'un veut plus de
-précision plus tard (nécessiterait alors un niveau Station, hors du schéma demandé ici).
+**Peuplement des dates réelles — fait (2026-08-25).** Recherche menée via les articles Wikipédia
+dédiés ("Automatisation de la ligne 1/4/13 du métro de Paris", wikitext brut) plutôt qu'à partir des
+pistes vagues entrevues en passant lors de la recherche styleStation. 6 lignes créées, seulement pour
+les paliers réellement **achevés réseau entier** (pas de date engagée quand le déploiement est encore
+en cours station par station) :
+- **Ligne 1** : porte palière → **avril 2011** ("les vingt-cinq stations sont équipées de portes
+  palières", dernières posées à Bastille) ; total → **22 décembre 2012** ("exploitation pendant
+  toute la semaine avec des navettes automatiques").
+- **Ligne 4** : porte palière → **mars 2021** ("fin de l'installation des portes palières", 100 %
+  de la ligne équipée) ; total → **15 décembre 2023** ("retrait des dernières rames à conduite
+  manuelle").
+- **Ligne 14** : porte palière et total → **15 octobre 1998** (première ligne entièrement
+  automatique dès l'origine, avec portes palières d'origine — pas de palier progressif à
+  distinguer). Note : l'article Wikipédia se contredit lui-même sur le jour exact (14 ou 15
+  octobre 1998) ; 15 retenu car c'est la date reprise par l'infobox et les sources externes
+  (dont l'archive INA).
+- Volontairement **pas** de valeur "porte de rame" pour ces 3 lignes : aucune des sources ne
+  documente cette étape comme un jalon distinct et daté séparément (probablement simultané à la
+  livraison du matériel roulant, pas un événement propre).
+- **Ligne 13 vérifiée mais volontairement laissée de côté** : automatisation seulement **votée**
+  (7 décembre 2022, attribuée à Siemens Mobility en août 2025), calendrier prévisionnel 2027
+  (MF 19 en conduite manuelle) puis 2032-2035 (conduite automatique) selon les sources — encore un
+  projet, pas un fait accompli. Les quelques portes palières déjà présentes sur environ la moitié
+  de la ligne (2008-2012) sont un dispositif antérieur et sans rapport avec ce projet
+  d'automatisation (posées bien avant le vote de 2022) ; le renforcement des quais en vue de la
+  future automatisation ne fait que commencer (2025-2026, station par station, très incomplet).
+  Aucune ligne créée pour la ligne 13 : ni "porte palière" (le dispositif existant n'est pas celui
+  du projet d'automatisation, et de toute façon incomplet), ni a fortiori "total".
+- Autres lignes (2, 3, 5-13 hors ce qui précède, 15, 16, 18) : pas de projet d'automatisation
+  identifié à ce jour, rien à créer.
+
+Question restée ouverte, sans impact pratique ici : la "date de mise en place" au niveau Ligne est
+nécessairement une date "représentative" (fin de déploiement réseau) puisque les portes palières
+sont en réalité posées station par station sur plusieurs mois/années — c'est bien pour ça que la
+ligne 13, encore mi-chemin, n'a reçu aucune date : le schéma actuel (une seule date par Ligne) ne
+sait représenter qu'un jalon *achevé*, pas une progression partielle. À garder en tête si quelqu'un
+veut suivre l'avancement précis d'un déploiement en cours (nécessiterait alors un niveau Station,
+hors du schéma demandé ici).
 
 ## Style physique des Accès — Guimard fait (2026-08-17), escalator/ascenseur fait (2026-08-20), mât toujours sans source
 
