@@ -37,6 +37,17 @@ class Troncon
     private ?TypeTroncon $typeTroncon = null;
 
     /**
+     * Etiquette manuelle, posee uniquement sur le Troncon qui referme un vrai maillage (plusieurs
+     * itineraires physiques distincts entre deux memes points, ex. RER D entre
+     * Villeneuve-Saint-Georges et Juvisy/Viry-Châtillon) - decrit la voie alternative empruntee,
+     * affichee dans le badge "rejoint" de Ligne::getParcoursSegments() a la place du texte
+     * generique. Null partout ailleurs (embranchements simples en arbre, qui n'ont besoin
+     * d'aucune explication).
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $varianteMaillage = null;
+
+    /**
      * @var Collection<int, TronconDesserte>
      */
     #[ORM\OneToMany(targetEntity: TronconDesserte::class, mappedBy: 'troncon')]
@@ -84,6 +95,18 @@ class Troncon
     public function setTypeTroncon(?TypeTroncon $typeTroncon): static
     {
         $this->typeTroncon = $typeTroncon;
+
+        return $this;
+    }
+
+    public function getVarianteMaillage(): ?string
+    {
+        return $this->varianteMaillage;
+    }
+
+    public function setVarianteMaillage(?string $varianteMaillage): static
+    {
+        $this->varianteMaillage = $varianteMaillage;
 
         return $this;
     }

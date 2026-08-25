@@ -307,7 +307,7 @@ class Ligne
      * le segment de la seconde branche s'arrete sur cette station avec rejoint=true plutot
      * que de re-afficher la suite commune une deuxieme fois.
      *
-     * @return array<int, array{stations: array<int, array{label: string, rejoint: bool, correspondances: array}>, branches: array}>
+     * @return array<int, array{stations: array<int, array{label: string, rejoint: bool, varianteMaillage: ?string, correspondances: array}>, branches: array}>
      */
     public function getParcoursSegments(): array
     {
@@ -336,6 +336,7 @@ class Ligne
                         'label' => $current->getStation()?->getLabel() ?? '?',
                         'stationId' => $current->getStation()?->getId(),
                         'rejoint' => true,
+                        'varianteMaillage' => $arrivingFrom?->getVarianteMaillage(),
                         'correspondances' => $this->getCorrespondances($current),
                     ];
 
@@ -365,9 +366,19 @@ class Ligne
                 $branches = [];
                 foreach ($nextTroncons as $troncon) {
                     $next = $troncon->getDesserteForRole('Arrivée', $current);
-                    if (null !== $next) {
-                        $branches[] = $buildSegment($next, $troncon);
+                    if (null === $next) {
+                        continue;
                     }
+                    $branche = $buildSegment($next, $troncon);
+                    // Une branche qui rejoint la ligne des son tout premier arret n'apporte
+                    // aucune information : c'est un pur artefact de l'exploration d'un maillage
+                    // (cycle reel dans le graphe, ex. RER D) par un chemin different de celui
+                    // qui a deja parcouru et affiche ce meme point de jonction. L'ignorer plutot
+                    // que d'afficher un encart vide et confus.
+                    if (1 === count($branche['stations']) && true === $branche['stations'][0]['rejoint']) {
+                        continue;
+                    }
+                    $branches[] = $branche;
                 }
 
                 return ['stations' => $stations, 'branches' => $branches];
@@ -383,8 +394,11 @@ class Ligne
     }
 
     /**
-     * Les autres lignes qui desservent la meme station que cette desserte
-     * (correspondances), triees par label.
+     * Les autres lignes qui desservent la meme station que cette desserte (correspondances),
+     * triees par label. Limite aux lignes "structurantes" (Metro/RER/Tramway/Train/Telepherique/
+     * Funiculaire) : le Bus est exclu, sous peine de noyer l'affichage d'un simple parcours de
+     * ligne sous des dizaines de lignes de bus/Noctilien a chaque grand pole (ex. La Defense, 26
+     * correspondances bus). Le detail complet, bus compris, reste consultable sur la fiche Station.
      *
      * @return array<int, array{label: string, couleur: ?string}>
      */
@@ -398,7 +412,7 @@ class Ligne
         $correspondances = [];
         foreach ($station->getDessertes() as $autreDesserte) {
             $autreLigne = $autreDesserte->getLigne();
-            if (null !== $autreLigne && $autreLigne !== $this) {
+            if (null !== $autreLigne && $autreLigne !== $this && 'Bus' !== $autreLigne->getTypeTransport()?->getLabel()) {
                 $correspondances[$autreLigne->getId()] = [
                     'label' => $autreLigne->getLabel(),
                     'couleur' => $autreLigne->getCouleur(),

@@ -1188,4 +1188,56 @@ Demande utilisateur : "Table Ville faite seulement pour Station — pas encore p
 | Vérification navigateur (compte de test) : trajet Villiers→Pereire | "Villiers → Malesherbes → Wagram → Pereire" (3 étapes, contre 2 avant), conseil de position affiché. Aucune erreur console. |
 | `documentation/TODO.md` (2 entrées complétées, **fait**) | |
 
+## Session du 2026-08-24 (suite) — Desserte.styleStation : Nord-Sud vérifié, CMP mis en pause
+
+Demande utilisateur : "dans style station, il y a genre CMP, nord sud, motte, mouton duvernet... toutes les stations au style nord sud, elles sont identifiables, cmp aussi... j'aimerais que tu remplisse ça... dans desserte il y a style_station_id, souvent en null... occupe t'en."
+
+| Commande | Objectif |
+|---|---|
+| Recherche via wikitext brut (`curl .../w/index.php?action=raw`) des articles Wikipédia "Ligne 12", "Ligne 13", "Aménagement des stations du métro de Paris" (piste suggérée par l'utilisateur : passer par Wikipédia/Wikidata) | Établir précisément le périmètre historique réel de la compagnie Nord-Sud : Ligne A (1910-1916) = Ligne 12 entière ; Ligne B (1911-1912) = branche nord seulement de l'actuelle Ligne 13 (la branche sud vient de l'ancienne Ligne 14 CMP 1937, fusionnée en 1976 — jamais Nord-Sud). |
+| Comparaison avec l'état actuel de `desserte.style_station_id` sur Ligne 12/13 | Les 20 Desserte déjà taguées "Nord Sud" couvrent exactement ce périmètre. Sur les 6 NULL de Ligne 12 : 3 hors périmètre (stations 2010s-2020s), 1 (Assemblée Nationale) authentiquement Nord-Sud à l'origine mais quai entièrement transformé depuis (décor d'art contemporain rotatif depuis 1990) — laissée NULL. |
+| Correction apportée : Desserte id 337 (Porte de Versailles, Ligne 12) | Page Wikipédia explicite : quais Nord-Sud d'origine mêlés au style Andreu-Motte, exactement le même cas documenté que Pasteur (même ligne) et Porte de Clichy (Ligne 13), déjà tagués "motte" en base pour ce trio — tagué "motte" par cohérence. Ligne 13 : les 6 NULL restantes sont toutes des extensions 1973-2008, hors périmètre. |
+| Essai Wikidata SPARQL (suggestion utilisateur) | Résultat trop bruité/générique (styles architecturaux toutes villes confondues, pas de propriété fiable "construit par Nord-Sud/CMP" isolable) — le wikitext des articles Wikipédia en clair s'est avéré plus fiable pour ce niveau de détail historique précis. |
+| CMP : mis en pause | Contrairement à Nord-Sud (2 lignes, dates nettes), CMP a construit 11 lignes — la faïence blanche y était le standard par défaut, pas une exception. Les 5 Desserte déjà taguées "CMP" reposent chacune sur un fait très spécifique (ex. Victor Hugo : plaques de nom en style CMP "entre-deux-guerres", décrites par Wikipédia comme "cas unique et anachronique" sur cette ligne). Étendre fiablement demanderait de vérifier individuellement ~300 Desserte encore NULL sur les lignes 1-11, sans liste de référence exhaustive trouvée (contrairement à Nord-Sud) — risque réel de deviner des faits historiques. Laissé en attente d'une décision utilisateur sur l'ampleur à investir. |
+| `documentation/TODO.md` (entrée détaillée), `Tache` #58 (SUSPENDUE — partie Nord-Sud faite, CMP en pause) | |
+
+## Session du 2026-08-25 — CMP : recherche complète sur les 11 lignes restantes
+
+Suite de la tâche précédente, sur confirmation explicite de l'utilisateur ("recherche complète ligne par ligne") malgré un rendement annoncé très faible.
+
+| Commande | Objectif |
+|---|---|
+| Vérification individuelle (wikitext brut Wikipédia par station, `curl -A "<user-agent>" .../action=raw`) des 96 Desserte Métro encore NULL sur les lignes 1,2,3,3bis,4,5,6,7,7bis,8,9,10,11 | Ligne 4 exclue en bloc sans vérification individuelle : automatisation complète 2017-2023, chaque quai nécessairement retouché à cette occasion (confirmé sur 6/19 stations avant d'appliquer la règle). |
+| Critère de décision (calé sur les 5 CMP déjà en base) | Exclu si un siège de marque (Motte, Akiko, Ouï-dire...) ou un programme de rénovation nommé est mentionné pour ce quai précis. Retenu seulement si (a) Wikipédia la regroupe explicitement avec des stations déjà CMP en base ("une des N seules du réseau à..."), ou (b) aucun programme/siège de marque mentionné, mobilier générique (bancs en lattes de bois). |
+| Résultat : 3 Desserte qualifiées sur 96 | *Europe* (L3, id 58, critère b) ; *Porte des Lilas* (L3bis, id 397, critère a — confirmée explicitement par Wikipédia comme le 3e des 3 seules stations du réseau à associer ce modèle de rampe à la décoration CMP, avec Porte d'Ivry et Porte de Vanves, déjà CMP en base) ; *Bercy* (L6, id 148, critère b). |
+| Piste tentée sur suggestion utilisateur : requête SPARQL Wikidata | Résultat trop générique/bruité (styles architecturaux toutes villes confondues, pas de propriété isolable pour "construit par CMP/Nord-Sud") — abandonnée au profit du wikitext Wikipédia en clair, plus fiable à ce niveau de détail. |
+| `documentation/TODO.md` (section CMP complétée), `Tache` #58 (ACHEVEE) | |
+
+## Session du 2026-08-25 (suite) — Page /ligne/{id} : pastilles collées au nom
+
+Demande utilisateur : "Page /ligne/{id} — deux soucis d'affichage : pastilles de correspondance collées au nom de la station, et l'ordre des stations pas toujours le vrai cheminement physique sur les lignes en maillage (RER D vérifié concrètement)."
+
+| Commande | Objectif |
+|---|---|
+| Compte de test créé (`test_verif_ui`), inspection réelle de `/ligne/1` dans le navigateur | Cause trouvée : `Ligne::getCorrespondances()` incluait toutes les Ligne (bus/Noctilien compris) desservant la même Station — 26 correspondances à "La Défense", écrasant le nom de la station faute de retour à la ligne sur le conteneur flex. |
+| `Ligne::getCorrespondances()` : exclusion des Ligne de type "Bus" | Le détail complet (bus compris) reste sur la fiche Station (table "Dessertes"), rien n'est perdu. "La Défense" passe de 26 à 5 correspondances. |
+| `templates/ligne/show.html.twig` : `flex-wrap` ajouté au conteneur de chaque station du parcours | Les pastilles passent à la ligne suivante plutôt que d'écraser le nom, si jamais elles ne tiennent pas. Ordre gardé tel que demandé initialement : correspondances puis nom. |
+| Vérification navigateur (compte de test) sur `/ligne/1` | Châtelet affiche "4 7 11 14 Châtelet" proprement, plus aucun débordement. |
+| `php bin/phpunit` (137), `npx jest` (51) | Tout passe. |
+| `documentation/TODO.md` (entrée détaillée, volet "pastilles" fait, volet "ordre en maillage/RER D" laissé à faire), `Tache` #61 (ACHEVEE, pastilles) + #62 (A_FAIRE, maillage) | |
+
+## Session du 2026-08-25 (suite) — Page /ligne/{id} : ordre des stations en maillage (RER D)
+
+Suite de la tâche précédente. Demande utilisateur, en réponse au constat que l'approche "par Mission" ne fonctionne pas (données trop clairsemées à l'embranchement de Villeneuve-Saint-Georges) : "Annoter les 2 voies à la main".
+
+| Commande | Objectif |
+|---|---|
+| Script ponctuel de détection de cycle (Union-Find sur le graphe Troncon) | Localise précisément le maillage réel de la RER D : 59 Desserte, 60 Troncon (2 arêtes de plus qu'un arbre = 2 vrais cycles), entre *Villeneuve-Saint-Georges* et *Juvisy*/*Viry-Châtillon* (2 itinéraires physiques réels distincts, pas une erreur de données — confirmé par la tâche #51 d'une session antérieure qui avait déjà importé ces troncons pour le routing). Même type de cycle retrouvé sur ~30 autres lignes (bus pour l'essentiel, boucles de terminus déjà bien gérées). |
+| Dump brut de `Ligne::getParcoursSegments()` (script ponctuel, kernel Symfony bootstrappé) | Révèle un vrai bug au-delà du simple manque d'étiquette : des branches "fantômes" ne contenant qu'un seul arrêt déjà visité (`rejoint` dès le premier élément) — artefact de l'exploration du même cycle par un chemin différent de celui déjà parcouru (2 occurrences trouvées : "Grigny Centre" et "Montgeron - Crosne" seuls). |
+| `Ligne::getParcoursSegments()` corrigée | Les branches à zéro apport sont maintenant ignorées silencieusement plutôt qu'affichées comme un encart vide et confus. |
+| `Troncon.varianteMaillage` (nouveau champ nullable, migration `Version20260825201506`, appliquée sur `metroratp` et `metroratp_test`) | Étiquette manuelle demandée par l'utilisateur, posée uniquement sur le Troncon qui referme un vrai maillage — affichée dans le badge "rejoint" à la place du texte générique. Posée sur les 2 jonctions réelles de la RER D : "Voie via Le Bras de Fer / Évry-Courcouronnes" (troncon 31903) et "Voie via Melun / Combs-la-Ville" (troncon 31898). |
+| Vérification navigateur (compte de test) sur `/ligne/22` (RER D) et `/ligne/8` (Ligne 7, embranchement classique) | RER D : chaque station apparaît exactement une fois, les 2 jonctions réelles affichent leur badge descriptif, plus aucune branche fantôme. Ligne 7 : aucune régression sur un embranchement en arbre normal. |
+| `php bin/phpunit` (137), `npx jest` (51) | Tout passe. |
+| `documentation/TODO.md` (section consolidée avec l'entrée initiale du 2026-08-22), `Tache` #61 (ACHEVEE) | |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*
