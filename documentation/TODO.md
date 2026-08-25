@@ -4,62 +4,65 @@ Historique complet (tâches achevées, avec leur contexte technique détaillé) 
 (base de données, réservé `ROLE_ADMIN`) le 2026-08-16 — voir `documentation/commande.md` pour le
 détail de cette migration. Ce fichier ne garde désormais que ce qui reste réellement à faire.
 
-## Table Automatisation — fait (2026-08-25)
+## Automatisation (conduite automatique + portes palières) — fait (2026-08-25)
 
-Idée utilisateur : table `Automatisation` (`id`, `label`) avec valeurs "porte de rame", "porte
-palière", "total" (probablement des paliers progressifs : conduite automatisée avec portes de
-rame seulement, puis ajout de portes palières en station, puis automatisation totale/sans
-conducteur). Table de liaison `ligne_id, automatisation_id, dateDeMiseEnPlace` — une Ligne peut donc
-avoir plusieurs lignes de liaison au fil du temps (une par palier franchi), chacune avec sa date.
+Idée utilisateur initiale : table `Automatisation` (id, label : "porte de rame"/"porte
+palière"/"total") + table de liaison Ligne. **Repensé en cours de route** suite à une remarque
+utilisateur ("il en manque non ? sur la 13 il y a plein de palière il me semble") : la conduite
+automatique ("total") est bien une propriété de toute la ligne (matériel roulant + signalisation,
+tout ou rien), mais les portes palières s'installent quai par quai et un déploiement peut rester
+partiel pendant des années (confirmé concrètement sur la Ligne 13, cf. plus bas) — une seule table
+liée à `Ligne` ne pouvait pas représenter ça sans mentir sur les stations non équipées.
 
-**Fait** : entités `Automatisation`/`AutomatisationLigne` (calquées sur `Materiel`/`MaterielLigne`,
-CRUD complet, migration `Version20260825203834`), 3 valeurs de base créées ("porte de rame", "porte
-palière", "total"), menu "Exploitation" étendu. Bug de routing trouvé et corrigé au passage : les
-routes `/automatisation/{id}` (show/edit/delete) capturaient aussi `/automatisation/ligne` (id="ligne")
-avant que Symfony n'atteigne la bonne route — corrigé avec `requirements: ['id' => '\d+']`, comme
-`MaterielController` le fait déjà pour `/materiel/{id}` vs `/materiel/ligne` (piège identique, à
-surveiller pour toute future paire Entité/EntitéLigne du même genre). Vérifié : `php bin/phpunit`
-(147, +10 nouveaux tests), `npx jest` (51), navigateur (création d'une AutomatisationLigne réelle
-Ligne 1 / porte palière / 2011-04-01, cycle complet create→show→delete).
+**Design final** (2 champs simples plutôt que 2 tables, sur suggestion utilisateur) :
+- **`Ligne.dateAutomatisationTotale`** (nullable) : date à laquelle la ligne est devenue
+  entièrement automatique (sans conducteur), réseau entier. Remplace la table `Automatisation`
+  d'origine (supprimée, migration `Version20260825221456`).
+- **`Desserte.datePortePaliere`** (nullable) : date d'installation des portes palières sur ce quai
+  précis, pour cette ligne précise — même principe que `Desserte.styleStation` (champ nullable,
+  jamais renseigné pour le bus, `estAccessible`, `climatisation`...), pas de nouvelle table de
+  liaison, `Desserte` est déjà la jonction Station×Ligne.
+- "Porte de rame" abandonné : jamais trouvé de date distincte documentée pour cette étape dans les
+  recherches ci-dessous (probablement simultanée à la livraison du matériel roulant, pas un
+  événement propre).
 
-**Peuplement des dates réelles — fait (2026-08-25).** Recherche menée via les articles Wikipédia
-dédiés ("Automatisation de la ligne 1/4/13 du métro de Paris", wikitext brut) plutôt qu'à partir des
-pistes vagues entrevues en passant lors de la recherche styleStation. 6 lignes créées, seulement pour
-les paliers réellement **achevés réseau entier** (pas de date engagée quand le déploiement est encore
-en cours station par station) :
-- **Ligne 1** : porte palière → **avril 2011** ("les vingt-cinq stations sont équipées de portes
-  palières", dernières posées à Bastille) ; total → **22 décembre 2012** ("exploitation pendant
-  toute la semaine avec des navettes automatiques").
-- **Ligne 4** : porte palière → **mars 2021** ("fin de l'installation des portes palières", 100 %
-  de la ligne équipée) ; total → **15 décembre 2023** ("retrait des dernières rames à conduite
-  manuelle").
-- **Ligne 14** : porte palière et total → **15 octobre 1998** (première ligne entièrement
-  automatique dès l'origine, avec portes palières d'origine — pas de palier progressif à
-  distinguer). Note : l'article Wikipédia se contredit lui-même sur le jour exact (14 ou 15
-  octobre 1998) ; 15 retenu car c'est la date reprise par l'infobox et les sources externes
-  (dont l'archive INA).
-- Volontairement **pas** de valeur "porte de rame" pour ces 3 lignes : aucune des sources ne
-  documente cette étape comme un jalon distinct et daté séparément (probablement simultané à la
-  livraison du matériel roulant, pas un événement propre).
-- **Ligne 13 vérifiée mais volontairement laissée de côté** : automatisation seulement **votée**
-  (7 décembre 2022, attribuée à Siemens Mobility en août 2025), calendrier prévisionnel 2027
-  (MF 19 en conduite manuelle) puis 2032-2035 (conduite automatique) selon les sources — encore un
-  projet, pas un fait accompli. Les quelques portes palières déjà présentes sur environ la moitié
-  de la ligne (2008-2012) sont un dispositif antérieur et sans rapport avec ce projet
-  d'automatisation (posées bien avant le vote de 2022) ; le renforcement des quais en vue de la
-  future automatisation ne fait que commencer (2025-2026, station par station, très incomplet).
-  Aucune ligne créée pour la ligne 13 : ni "porte palière" (le dispositif existant n'est pas celui
-  du projet d'automatisation, et de toute façon incomplet), ni a fortiori "total".
-- Autres lignes (2, 3, 5-13 hors ce qui précède, 15, 16, 18) : pas de projet d'automatisation
-  identifié à ce jour, rien à créer.
+Recherche menée via les articles Wikipédia dédiés ("Automatisation de la ligne 1/4/13 du métro de
+Paris", wikitext brut, tableaux "Installation des portes palières par station" quand disponibles) :
 
-Question restée ouverte, sans impact pratique ici : la "date de mise en place" au niveau Ligne est
-nécessairement une date "représentative" (fin de déploiement réseau) puisque les portes palières
-sont en réalité posées station par station sur plusieurs mois/années — c'est bien pour ça que la
-ligne 13, encore mi-chemin, n'a reçu aucune date : le schéma actuel (une seule date par Ligne) ne
-sait représenter qu'un jalon *achevé*, pas une progression partielle. À garder en tête si quelqu'un
-veut suivre l'avancement précis d'un déploiement en cours (nécessiterait alors un niveau Station,
-hors du schéma demandé ici).
+- **Ligne 1** : `dateAutomatisationTotale` = **22/12/2012** ("exploitation pendant toute la semaine
+  avec des navettes automatiques"). `datePortePaliere` peuplé pour ses **25 Desserte**, une date
+  précise par station (tableau complet trouvé) : de Bérault (mars 2009, première équipée) à
+  Bastille/Nation/Charles de Gaulle-Étoile (avril 2011, dernières).
+- **Ligne 4** : `dateAutomatisationTotale` = **15/12/2023** ("retrait des dernières rames à
+  conduite manuelle"). `datePortePaliere` peuplé pour ses **29 Desserte** : 27 stations historiques
+  avec un tableau complet (Mouton-Duvernet juin 2018, première, à Porte d'Orléans février 2021,
+  dernière — dates en granularité mois, 1er jour du mois retenu par convention quand la source
+  donne une plage, ex. "Août - octobre 2020" → 2020-08-01) + Barbara et Bagneux - Lucie Aubrac
+  (13/01/2022, stations neuves de l'extension sud, équipées dès l'ouverture).
+- **Ligne 14** : `dateAutomatisationTotale` et `datePortePaliere` (ses **21 Desserte**) = **toutes
+  15/10/1998** (première ligne entièrement automatique dès l'origine, portes palières d'origine).
+  Note : l'article Wikipédia se contredit sur le jour exact (14 ou 15) ; 15 retenu (infobox +
+  sources externes, dont l'archive INA).
+- **Ligne 13 — exactement le cas qui a motivé la refonte** : `dateAutomatisationTotale` **non
+  renseignée** (automatisation seulement votée le 7 décembre 2022, attribuée à Siemens Mobility en
+  août 2025, calendrier prévisionnel 2027 puis 2032-2035 selon les sources — un projet, pas un
+  fait accompli). En revanche `datePortePaliere` **peuplé pour 13 de ses 32 Desserte** (dispositif
+  antérieur et sans rapport avec ce projet d'automatisation, posé entre 2008 et 2012, granularité
+  année seule → 1er janvier retenu par convention) : Châtillon-Montrouge (2008), Miromesnil (2010),
+  Invalides/Champs-Élysées-Clemenceau/Saint-Lazare/Liège/Saint-Denis-Porte de Paris/Basilique de
+  Saint-Denis (2011), Place de Clichy/Varenne/Saint-François-Xavier/Duroc/Montparnasse-Bienvenüe
+  (2012). Les 19 autres Desserte restent `NULL` — exactement la réalité du terrain, chose que
+  l'ancien schéma (1 date par Ligne) ne pouvait pas représenter.
+- Autres lignes de métro/RER : pas de projet d'automatisation identifié à ce jour, rien à créer.
+
+Affiché : badge "Automatique depuis [date]" sur `/ligne/{id}` si `dateAutomatisationTotale` est
+renseignée ; colonne "Porte palière" (mois/année) dans le tableau des Dessertes de `/station/{id}`.
+Volontairement pas d'ajout aux formulaires d'édition manuelle (`LigneType`/`DesserteType`) — même
+convention que `climatisation`/`estAccessible`/`equipementArret`, déjà exclus de ces formulaires :
+ce sont des données de recherche/import, pas des champs à saisir à la main station par station.
+
+Vérifié : `php bin/phpunit` (137), `npx jest` (51), navigateur (badge Ligne 1, colonne porte
+palière sur la fiche Bérault).
 
 ## Style physique des Accès — Guimard fait (2026-08-17), escalator/ascenseur fait (2026-08-20), mât toujours sans source
 

@@ -1267,4 +1267,20 @@ Reprise du TODO ("continu la prochaine"), pour finir le point laissé ouvert à 
 | Ligne 13 vérifiée mais volontairement laissée de côté | Automatisation seulement votée (7 décembre 2022), calendrier prévisionnel 2027 (MF 19 conduite manuelle) puis 2032-2035 (conduite automatique) selon les sources. Les portes palières déjà présentes sur environ la moitié de la ligne (2008-2012) sont un dispositif antérieur sans rapport avec ce projet ; le renforcement des quais pour la future automatisation ne fait que commencer (2025-2026, très incomplet). Aucune ligne créée. |
 | `documentation/TODO.md` (section complétée), `Tache` (ACHEVEE) | |
 
+## Session du 2026-08-25 (suite) — Automatisation repensée : 2 champs plutôt que 2 tables
+
+Remarque utilisateur après la session précédente : "il en manque non ? sur la 13 il y a plein de palière il me semble" — puis, en creusant : "si c'est palière c'est que PAR PRINCIPE ça concerne que les dessertes ! par contre si c'est le train qui a pas de conducteur, c'est toute la ligne".
+
+| Commande | Objectif |
+|---|---|
+| Suppression de `Automatisation`/`AutomatisationLigne` (entités, repositories, forms, controllers, 12 templates, 2 fichiers de tests, entrée de menu) | Le design initial (1 date par Ligne) ne pouvait pas représenter un déploiement partiel de portes palières sans mentir. |
+| `Ligne.dateAutomatisationTotale` (nullable) + `Desserte.datePortePaliere` (nullable, même principe que `Desserte.styleStation`) | Migration `Version20260825221456` (DROP des 2 anciennes tables, ADD des 2 nouvelles colonnes), appliquée sur `metroratp` et `metroratp_test`. `DatabaseTestCase` nettoyée des références obsolètes. |
+| Recherche via les tableaux Wikipédia "Installation des portes palières par station" (Ligne 1, Ligne 4) en plus des articles déjà utilisés | Bien plus précis que la recherche précédente : dates individuelles par station, pas juste la date de fin de déploiement réseau. |
+| Peuplement `dateAutomatisationTotale` | Ligne 1 (22/12/2012), Ligne 4 (15/12/2023), Ligne 14 (15/10/1998). Ligne 13 volontairement laissée `NULL` (automatisation seulement votée, pas réalisée). |
+| Peuplement `datePortePaliere` (107 Desserte au total) | Ligne 1 : 25/25 (Bérault mars 2009 → Bastille/Nation/Charles de Gaulle-Étoile avril 2011). Ligne 4 : 29/29 (Mouton-Duvernet juin 2018 → Porte d'Orléans février 2021, + Barbara/Bagneux-Lucie Aubrac janvier 2022 pour l'extension sud). Ligne 14 : 21/21 (15/10/1998, dès l'origine). **Ligne 13 : 13/32 seulement** (Châtillon-Montrouge 2008 → Montparnasse-Bienvenüe/Varenne/Saint-François-Xavier/Duroc/Place de Clichy 2012, dispositif antérieur sans rapport avec l'automatisation votée en 2022) — exactement le cas qui a motivé la refonte, désormais représentable fidèlement. |
+| "Porte de rame" abandonné | Jamais trouvé de date distincte documentée pour cette étape dans les 4 lignes recherchées. |
+| Affichage ajouté : badge "Automatique depuis [date]" sur `/ligne/{id}`, colonne "Porte palière" dans le tableau des Dessertes de `/station/{id}` | Volontairement pas dans les formulaires d'édition manuelle (même convention que `climatisation`/`estAccessible`, déjà exclus). |
+| `php bin/phpunit` (137, retour au compte d'avant la suppression des 10 tests Automatisation), `npx jest` (51), vérification navigateur (badge Ligne 1, colonne porte palière sur la fiche Bérault) | Tout passe. |
+| `documentation/TODO.md` (section réécrite), `Tache` #59 et #62 mises à jour | |
+
 *(Entrées suivantes ajoutées au fil des prochaines commandes/sessions.)*

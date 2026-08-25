@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\LigneRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LigneRepository::class)]
@@ -65,17 +66,21 @@ class Ligne
     private Collection $documents;
 
     /**
-     * @var Collection<int, AutomatisationLigne>
+     * Date a laquelle la Ligne est devenue entierement automatique (conduite sans conducteur,
+     * "GoA4") sur la totalite de son parcours - une propriete de la ligne entiere (materiel
+     * roulant + signalisation), contrairement aux portes palieres qui s'installent quai par quai
+     * (voir Desserte::datePortePaliere). Concerne tres peu de Ligne (1, 4, 14 a ce jour) : null
+     * partout ailleurs, y compris pour une ligne dont l'automatisation est seulement en projet
+     * (ex. Ligne 13, votee en 2022 mais pas encore realisee).
      */
-    #[ORM\OneToMany(targetEntity: AutomatisationLigne::class, mappedBy: 'ligne')]
-    private Collection $automatisationLignes;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $dateAutomatisationTotale = null;
 
     public function __construct()
     {
         $this->dessertes = new ArrayCollection();
         $this->materielLignes = new ArrayCollection();
         $this->documents = new ArrayCollection();
-        $this->automatisationLignes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -236,31 +241,14 @@ class Ligne
         return $this;
     }
 
-    /**
-     * @return Collection<int, AutomatisationLigne>
-     */
-    public function getAutomatisationLignes(): Collection
+    public function getDateAutomatisationTotale(): ?\DateTime
     {
-        return $this->automatisationLignes;
+        return $this->dateAutomatisationTotale;
     }
 
-    public function addAutomatisationLigne(AutomatisationLigne $automatisationLigne): static
+    public function setDateAutomatisationTotale(?\DateTime $dateAutomatisationTotale): static
     {
-        if (!$this->automatisationLignes->contains($automatisationLigne)) {
-            $this->automatisationLignes->add($automatisationLigne);
-            $automatisationLigne->setLigne($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAutomatisationLigne(AutomatisationLigne $automatisationLigne): static
-    {
-        if ($this->automatisationLignes->removeElement($automatisationLigne)) {
-            if ($automatisationLigne->getLigne() === $this) {
-                $automatisationLigne->setLigne(null);
-            }
-        }
+        $this->dateAutomatisationTotale = $dateAutomatisationTotale;
 
         return $this;
     }

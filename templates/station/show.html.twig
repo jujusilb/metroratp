@@ -45,6 +45,7 @@
                             <th>Type</th>
                             <th>Date d'ouverture</th>
                             <th>Style de station</th>
+                            <th>Porte palière</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,6 +61,7 @@
                                 <td>{{ desserte.ligne and desserte.ligne.typeTransport ? desserte.ligne.typeTransport.label : '—' }}</td>
                                 <td>{{ desserte.premiereOuverture ? desserte.premiereOuverture|date('d/m/Y') : '—' }}</td>
                                 <td>{{ desserte.styleStation ? desserte.styleStation.label : '—' }}</td>
+                                <td>{{ desserte.datePortePaliere ? desserte.datePortePaliere|date('m/Y') : '—' }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

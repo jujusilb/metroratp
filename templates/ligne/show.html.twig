@@ -46,6 +46,7 @@
             {{ ligne.nombreStations }} station{{ ligne.nombreStations > 1 ? 's' : '' }}
             {% if ligne.typeTransport %} · {{ ligne.typeTransport.label }}{% endif %}
             {% if ligne.gestionnaire %} · {{ ligne.gestionnaire.label }}{% endif %}
+            {% if ligne.dateAutomatisationTotale %} · <span class="badge text-bg-success">Automatique depuis {{ ligne.dateAutomatisationTotale|date('d/m/Y') }}</span>{% endif %}
         </p>
 
         <div class="parcours" style="--ligne-couleur: {{ ligne.couleur|default('#6c757d') }};">

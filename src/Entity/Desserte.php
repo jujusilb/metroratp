@@ -61,6 +61,18 @@ class Desserte
     private ?string $climatisation = null;
 
     /**
+     * Date d'installation des portes palieres sur ce quai precis, pour cette Ligne precise -
+     * contrairement a Ligne::dateAutomatisationTotale (conduite sans conducteur, propriete de
+     * toute la ligne), les portes palieres s'installent quai par quai et un deploiement peut
+     * rester partiel pendant des annees (ex. Ligne 13 : 13 stations sur 32 equipees entre 2008 et
+     * 2012, sans rapport avec son projet d'automatisation vote en 2022, encore non realise). Null
+     * = pas de porte paliere installee (ou non documente) - jamais renseigne pour les Desserte
+     * bus/tram, meme principe que StyleStation ci-dessus.
+     */
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $datePortePaliere = null;
+
+    /**
      * Mobilier physique de l'arret (banc, abri, poubelle...) releve sur OpenStreetMap - voir
      * EquipementArret. Reference plutot que duplique : quand un meme arret physique dessert
      * plusieurs lignes (cas frequent en bus - un seul poteau/banc pour plusieurs lignes), leurs
@@ -120,6 +132,9 @@ class Desserte
 
     public function getClimatisation(): ?string { return $this->climatisation; }
     public function setClimatisation(?string $climatisation): static { $this->climatisation = $climatisation; return $this; }
+
+    public function getDatePortePaliere(): ?\DateTime { return $this->datePortePaliere; }
+    public function setDatePortePaliere(?\DateTime $datePortePaliere): static { $this->datePortePaliere = $datePortePaliere; return $this; }
 
     public function getEquipementArret(): ?EquipementArret { return $this->equipementArret; }
     public function setEquipementArret(?EquipementArret $equipementArret): static { $this->equipementArret = $equipementArret; return $this; }
