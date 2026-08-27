@@ -16,7 +16,15 @@
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">{{ sanitaire.label }}{% if sanitaire.ligneLabel %} <small class="text-muted fs-5">(Ligne {{ sanitaire.ligneLabel }})</small>{% endif %}</h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">{{ sanitaire.label }}{% if sanitaire.ligneLabel %} <small class="text-muted fs-5">(Ligne {{ sanitaire.ligneLabel }})</small>{% endif %}</h1>
+            {% if is_granted('ROLE_ADMIN') %}
+                <div class="d-flex gap-2">
+                    <a href="{{ path('app_sanitaire_edit', {'id': sanitaire.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                    {{ include('sanitaire/_delete_form.html.twig') }}
+                </div>
+            {% endif %}
+        </div>
 
         <table class="table">
             <tbody>
@@ -73,13 +81,6 @@
             </tbody>
         </table>
 
-        <div class="d-flex gap-2">
-            <a href="{{ path('app_sanitaire_index') }}" class="btn btn-secondary">Retour à la liste</a>
-            {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('app_sanitaire_edit', {'id': sanitaire.id}) }}" class="btn btn-warning">Modifier</a>
-            {% endif %}
-        </div>
-
-        {{ include('sanitaire/_delete_form.html.twig') }}
+        <a href="{{ path('app_sanitaire_index') }}" class="btn btn-secondary">Retour à la liste</a>
     </div>
 {% endblock %}

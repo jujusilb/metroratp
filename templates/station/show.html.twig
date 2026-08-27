@@ -4,7 +4,26 @@
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">{{ station.label }}{% if station.ville %} <small class="text-muted fs-5">({{ station.ville }})</small>{% endif %}</h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">{{ station.label }}{% if station.ville %} <small class="text-muted fs-5">({{ station.ville }})</small>{% endif %}</h1>
+            {% if is_granted('ROLE_ADMIN') %}
+                <div class="d-flex gap-2">
+                    <a href="{{ path('app_station_edit', {'id': station.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                    {{ include('station/_delete_form.html.twig') }}
+                </div>
+            {% endif %}
+        </div>
+
+        {% if not station.estActive %}
+            <div class="alert alert-secondary">
+                <strong>Station inactive.</strong> Raison{{ station.raisons|length > 1 ? 's' : '' }} :
+                <ul class="mb-0">
+                    {% for raison in station.raisons %}
+                        <li><a href="{{ path('app_raison_show', {'id': raison.id}) }}">{{ raison.label }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
         <p>
             <strong>Plan de secteur :</strong>
@@ -231,13 +250,6 @@
             <p class="text-muted">Aucune sanisette publique connue à proximité.</p>
         {% endif %}
 
-        <div class="mt-4 d-flex gap-2">
-            <a href="{{ path('app_station_index') }}" class="btn btn-secondary">Retour à la liste</a>
-            {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('app_station_edit', {'id': station.id}) }}" class="btn btn-warning">Modifier</a>
-            {% endif %}
-        </div>
-
-        {{ include('station/_delete_form.html.twig') }}
+        <a href="{{ path('app_station_index') }}" class="btn btn-secondary mt-4">Retour à la liste</a>
     </div>
 {% endblock %}

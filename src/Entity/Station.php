@@ -176,6 +176,14 @@ class Station
     #[ORM\ManyToMany(targetEntity: PointInteret::class, mappedBy: 'stations')]
     private Collection $pointsInteret;
 
+    /**
+     * Raisons pour lesquelles cette Station est consideree inactive - vide = active. Voir Raison.
+     *
+     * @var Collection<int, Raison>
+     */
+    #[ORM\ManyToMany(targetEntity: Raison::class, mappedBy: 'stations')]
+    private Collection $raisons;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -184,6 +192,7 @@ class Station
         $this->sanitaires = new ArrayCollection();
         $this->defibrillateurs = new ArrayCollection();
         $this->pointsInteret = new ArrayCollection();
+        $this->raisons = new ArrayCollection();
         $this->fontainesEau = new ArrayCollection();
         $this->sanisettesPubliques = new ArrayCollection();
     }
@@ -560,5 +569,21 @@ class Station
     public function getPointsInteret(): Collection
     {
         return $this->pointsInteret;
+    }
+
+    /**
+     * @return Collection<int, Raison>
+     */
+    public function getRaisons(): Collection
+    {
+        return $this->raisons;
+    }
+
+    /**
+     * Vide = active. Voir Raison.
+     */
+    public function estActive(): bool
+    {
+        return $this->raisons->isEmpty();
     }
 }

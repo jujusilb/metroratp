@@ -4,7 +4,15 @@
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">{{ fontaine_eau.label }}{% if fontaine_eau.ligneLabel %} <small class="text-muted fs-5">(Ligne {{ fontaine_eau.ligneLabel }})</small>{% endif %}</h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">{{ fontaine_eau.label }}{% if fontaine_eau.ligneLabel %} <small class="text-muted fs-5">(Ligne {{ fontaine_eau.ligneLabel }})</small>{% endif %}</h1>
+            {% if is_granted('ROLE_ADMIN') %}
+                <div class="d-flex gap-2">
+                    <a href="{{ path('app_fontaine_eau_edit', {'id': fontaine_eau.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                    {{ include('fontaine_eau/_delete_form.html.twig') }}
+                </div>
+            {% endif %}
+        </div>
 
         <table class="table">
             <tbody>
@@ -44,13 +52,6 @@
             </tbody>
         </table>
 
-        <div class="d-flex gap-2">
-            <a href="{{ path('app_fontaine_eau_index') }}" class="btn btn-secondary">Retour à la liste</a>
-            {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('app_fontaine_eau_edit', {'id': fontaine_eau.id}) }}" class="btn btn-warning">Modifier</a>
-            {% endif %}
-        </div>
-
-        {{ include('fontaine_eau/_delete_form.html.twig') }}
+        <a href="{{ path('app_fontaine_eau_index') }}" class="btn btn-secondary">Retour à la liste</a>
     </div>
 {% endblock %}

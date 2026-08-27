@@ -12,6 +12,7 @@ use App\Entity\Materiel;
 use App\Entity\MaterielLigne;
 use App\Entity\Mission;
 use App\Entity\PeriodeOuverture;
+use App\Entity\Raison;
 use App\Entity\Service;
 use App\Entity\Sortie;
 use App\Entity\Station;
@@ -44,6 +45,7 @@ abstract class DatabaseTestCase extends WebTestCase
     {
         $entityClasses = [
             Utilisateur::class,
+            Raison::class,
             Mission::class,
             TronconDesserte::class,
             MaterielLigne::class,

@@ -4,14 +4,20 @@
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">
-            {{ utilisateur.username }}
-            {% if 'ROLE_SUPERADMIN' in utilisateur.roles %}
-                <span class="badge text-bg-dark align-middle">Super-administrateur</span>
-            {% elseif 'ROLE_ADMIN' in utilisateur.roles %}
-                <span class="badge text-bg-danger align-middle">Administrateur</span>
-            {% endif %}
-        </h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">
+                {{ utilisateur.username }}
+                {% if 'ROLE_SUPERADMIN' in utilisateur.roles %}
+                    <span class="badge text-bg-dark align-middle">Super-administrateur</span>
+                {% elseif 'ROLE_ADMIN' in utilisateur.roles %}
+                    <span class="badge text-bg-danger align-middle">Administrateur</span>
+                {% endif %}
+            </h1>
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_utilisateur_edit', {'id': utilisateur.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                {{ include('utilisateur/_delete_form.html.twig') }}
+            </div>
+        </div>
 
         <table class="table w-auto">
             <tbody>
@@ -46,11 +52,6 @@
             </tbody>
         </table>
 
-        <div class="mt-4 d-flex gap-2">
-            <a href="{{ path('app_utilisateur_index') }}" class="btn btn-secondary">Retour à la liste</a>
-            <a href="{{ path('app_utilisateur_edit', {'id': utilisateur.id}) }}" class="btn btn-warning">Modifier</a>
-        </div>
-
-        {{ include('utilisateur/_delete_form.html.twig') }}
+        <a href="{{ path('app_utilisateur_index') }}" class="btn btn-secondary mt-4">Retour à la liste</a>
     </div>
 {% endblock %}
