@@ -18,7 +18,12 @@ framework:
             messenger.bus.default: []
 
         routing:
-            Symfony\Component\Mailer\Messenger\SendEmailMessage: async
+            # SendEmailMessage volontairement PAS routee vers "async" : aucun worker
+            # messenger:consume ne tourne sur ce deploiement (hebergement mutualise Hostinger,
+            # pas de process daemon/cron dedie) - un email route "async" resterait indefiniment
+            # dans messenger_messages sans jamais partir. Envoi synchrone (comportement par
+            # defaut sans routing explicite), acceptable vu le faible volume (email d'inscription
+            # uniquement).
             Symfony\Component\Notifier\Message\ChatMessage: async
             Symfony\Component\Notifier\Message\SmsMessage: async
 

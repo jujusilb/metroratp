@@ -64,24 +64,58 @@ ce sont des données de recherche/import, pas des champs à saisir à la main st
 Vérifié : `php bin/phpunit` (137), `npx jest` (51), navigateur (badge Ligne 1, colonne porte
 palière sur la fiche Bérault).
 
-## Style physique des Accès — Guimard fait (2026-08-17), escalator/ascenseur fait (2026-08-20), mât toujours sans source
+## Style physique des Accès — fait (2026-08-26), catalogue complet via wikitexte station par station
 
 Voir `documentation/commande.md` pour le détail. `StyleAcces` créée (même schéma que
 `StyleStation`) avec CRUD complet, `Acces.styleAcces` ajouté.
 
-**Édicule Guimard** : le constat Wikidata initial était juste (confirmé : un seul accès individuel
-avec `P84`=Guimard + `P31`=entrée), mais une bien meilleure source existe — un annuaire
-patrimonial listant les 88 édicules Guimard classés/inscrits monuments historiques à Paris
-(6 stations à édicule complet protégées dès 1965 : Cité, Porte Dauphine, Abbesses, Pigalle,
-Ternes, Tuileries ; le reste par décret collectif de 1978). **22 Acces tagués avec certitude**
-(sur 64 stations candidates) : le reste a soit plusieurs Acces sans détail suffisant dans la
-source pour savoir lequel est le vrai édicule (ex. Châtelet 11 accès, Bastille 9, République 12 —
-y compris des stations emblématiques comme Porte Dauphine ou Abbesses côté "plusieurs accès"),
-soit carrément aucun Acces enregistré (lacune de données préexistante sur Saint-Lazare,
-Saint-Michel, Quatre-Septembre, Colonel Fabien, Villiers, Chardon-Lagache, Louvre—Rivoli,
-Palais Royal—Musée du Louvre, Réaumur—Sébastopol, Barbès—Rochechouart — 10 stations). Découverte
-au passage : la station de métro "Wagram" (ligne 3, existe réellement) est totalement absente de
-la base, ni comme Station complète ni comme Desserte — vraie lacune, pas liée à cette tâche.
+**Refonte complète (2026-08-26)**, suite à une remarque utilisateur ("regarde sur chaque article
+Wikipedia de station, ils décrivent les accès, c'est une mine d'or") : plutôt que de partir d'une
+source générale (article "Aménagement des stations du métro de Paris") ou de Wikidata (testé deux
+fois, toujours insuffisant — résultats bruités/génériques, aucune propriété de style d'accès
+exploitable), on a téléchargé le wikitexte brut des **321 articles Wikipedia de station de métro**
+individuels (section "Accès" propre à chaque station, bien plus précise et sourcée que le résumé
+général) et on les a dépouillés systématiquement (4 agents en parallèle + 2 lots de rattrapage,
+avec un dictionnaire strict de 10 styles, citation source obligatoire, aucune déduction/devinette
+autorisée). Bug de récupération découvert et corrigé en cours de route : le tiret cadratin "—"
+utilisé dans nos libellés de Station ne correspond pas aux titres Wikipedia (tiret simple "-"),
+et une détection d'échec trop permissive (seuil de taille) laissait passer des pages d'erreur
+Wikimedia (1929 octets) comme si elles étaient du contenu valide — 57 stations concernées,
+re-téléchargées après correction.
+
+**10 styles créés**, avec exemples types :
+- **Édicule Guimard** (déjà existant) : passé de 22 à **71 Acces tagués** (source affinée par
+  article individuel plutôt que l'annuaire général).
+- **Entourage Dervaux** (nouveau) : le style le plus répandu, 1930s, fer forgé — **294 Acces**,
+  de très loin la catégorie majoritaire (cohérent avec la source : "généralisé sur le réseau").
+- **Entourage Nord-Sud** (nouveau) : balustrade fer forgé + céramique, ex-compagnie Nord-Sud
+  (avant fusion CMP 1930), encore en place aujourd'hui — 25 Acces (Rennes, Solférino, Rue du Bac,
+  Porte de Versailles, Brochant, etc.).
+- **Totem Val d'Osne** (nouveau) : candélabres CMP années 1920, rares survivants — 22 Acces
+  (Saint-Paul, Saint-Germain-des-Prés, Iéna, Le Peletier, Saint-Michel, Saint-Sulpice…).
+- **Accès en pied d'immeuble** (nouveau) : entrée littéralement au rez-de-chaussée d'un immeuble
+  existant, cas rares et documentés comme tels — 15 Acces (Sentier, Miromesnil, Pernety, Barbara,
+  Pont Cardinet, Louise Michel…). Exclut Robespierre (source précise : édicule Art déco, pas
+  immeuble — corrige un classement trop rapide de la source générale).
+- **Édicule en ciment** (nouveau) : petit pavillon autonome (escalier+ascenseur à station
+  profonde, ou "Art déco" aligné au bâti) — 14 Acces (Pelleport, Saint-Fargeau, Porte des Lilas,
+  Place Monge, Saint-Jacques, Vaneau, Volontaires, Robespierre, Boulogne–Jean Jaurès, Place des
+  Fêtes).
+- **Mât atypique** (nouveau) : signalétique explicitement décrite comme unique/rare — 3 Acces
+  (Sentier, Bourse, Miromesnil, Lamarck-Caulaincourt).
+- **Entourage classique (pierre de taille)**, **Totem Météor**, **Totem Marc Aurel 2030** : créés
+  mais **non peuplés** — aucune mention explicite trouvée dans les 321 articles dépouillés (pas
+  cherché en profondeur côté Ligne 14/stations très récentes ; à reprendre si besoin).
+
+**Total : 444 Acces tagués sur 2513** (17,7 %), tous sourcés par citation directe d'un article de
+station. Le reste (majorité) n'a simplement aucune mention de style dans sa section Accès — pas
+une lacune de recherche, juste rien de notable documenté (accès moderne standard sans
+particularité). Quelques cas laissés volontairement non tranchés (données dupliquées en base sans
+moyen de départager, ex. Pigalle 2 Acces génériques pour 3 trémies décrites ; ou lacune de données
+préexistante, ex. Saint-Paul/Louise Michel sans aucune Sortie enregistrée).
+
+Découverte au passage (non liée à cette tâche) : la station de métro "Wagram" (ligne 3, existe
+réellement) est totalement absente de la base, ni comme Station complète ni comme Desserte.
 **Fait (2026-08-24)** : le constat était partiellement faux — la Station "Wagram" (code_externe
 `71423`, Paris 17e) existait bien, avec 2 Desserte bus (lignes 31/93), mais aucune Desserte pour
 la Ligne 3 : un Troncon reliait directement Malesherbes↔Pereire chez nous (court-circuit sautant
@@ -108,8 +142,9 @@ plus loin, même discipline que le tagging Guimard) : 227 Acces avec escalier m�
 ascenseur (`Acces.aEscalierMecanique`/`aAscenseur`, voir `app:importer-escaliers-ascenseurs-osm`).
 Voir `documentation/commande.md` pour le détail.
 
-**Mât** : toujours aucune piste concrète (ce serait une valeur par défaut déduite, pas une donnée
-sourcée) — contrairement à escalator/ascenseur, aucun tag OSM standard équivalent identifié.
+**Mât : fait (2026-08-26)**, voir refonte complète ci-dessus — chaque style de mât/candélabre
+(Dervaux, Val d'Osne, Nord-Sud, atypique) est désormais sourcé individuellement par citation de
+l'article Wikipedia de la station concernée, pas une valeur par défaut déduite.
 
 ## Pistes de données IDFM non encore exploitées
 
@@ -785,3 +820,44 @@ Vérifié dans le navigateur (compte de test) sur `/ligne/22` (RER D) : chaque s
 exactement une fois, les 2 jonctions réelles affichent leur badge descriptif, plus aucune branche
 fantôme. Vérifié aussi sur `/ligne/8` (Ligne 7, embranchement classique Maison Blanche) : aucune
 régression. `php bin/phpunit` (137) et `npx jest` (51) : tout passe.
+
+## Vérification d'email à l'inscription — fait (2026-08-26)
+
+`symfonycasts/verify-email-bundle` installé (composant standard Symfony, lien signe+expirable via
+HMAC, aucun token stocke en base). `Utilisateur.isVerified` (bool, false par defaut, migration
+`Version20260826190439`). `src/Service/EmailVerifier.php` (genere/envoie le lien a l'inscription,
+valide le clic) + `src/Controller/VerificationEmailController.php` (route `/verifier/email`,
+publique - voir plus bas). `InscriptionController` envoie l'email juste apres la creation du
+compte, mais **connecte quand meme l'utilisateur immediatement** (comportement volontairement non
+bloquant : le compte est utilisable tout de suite, la verification confirme juste l'adresse plutot
+que de retenir l'acces le temps du clic - aucun controle d'acces ne conditionne quoi que ce soit a
+`isVerified` a ce stade, champ pose mais pas encore exploite ailleurs).
+
+**2 bugs trouves et corriges en cours de route** (tous deux auraient rendu la fonctionnalite
+silencieusement cassee sans etre detectes par une simple lecture du code) :
+- `VerifyEmailHelper::generateSignature()` prend un 4e argument `$extraParams` pour injecter l'id
+  utilisateur dans l'URL generee (oublie au premier jet) - sans lui, l'URL n'a aucun moyen de
+  retrouver quel `Utilisateur` valider une fois le lien clique.
+- Route `/verifier/email` initialement non ajoutee a `access_control` (`security.yaml`) : le
+  garde-fou generique `{ path: ^/, roles: ROLE_USER }` bloquait la page AVANT meme d'atteindre le
+  controleur - un utilisateur qui clique le lien depuis son email (session non connectee, ex. sur
+  un autre appareil) atterrissait sur /login sans jamais etre verifie. Ajoutee en `PUBLIC_ACCESS`.
+
+**Decouverte plus large en testant (pas un bug de cette fonctionnalite mais une lacune
+d'infrastructure qui l'aurait rendue inoperante en prod)** : tous les emails (`SendEmailMessage`)
+etaient routes vers le transport Messenger "async" (`config/packages/messenger.yaml`), stocke dans
+`messenger_messages` en attendant qu'un worker `messenger:consume` les traite - **aucun worker de ce
+type ne tourne sur ce deploiement** (hebergement mutualise Hostinger, pas de process daemon/cron
+dedie confirme absent de `.github/workflows/`). Un email route "async" y serait reste indefiniment
+en attente, jamais envoye. Corrige : routing "async" retire pour `SendEmailMessage` (reste pour
+Notifier, non utilise actuellement) - envoi desormais synchrone, dans la requete, acceptable vu le
+faible volume (inscription uniquement).
+
+**Verifie** : prod a deja un vrai DSN SMTP configure (`.env.local`, Hostinger,
+`no-reply@julien-silberstein.fr`) malgre `MAILER_DSN=null://null` dans `.env` (ecrase en prod) -
+adresse d'expediteur du code alignee sur cette boite reelle (pas `@metroratp.julien-silberstein.fr`,
+inexistante). `php bin/phpunit` (141, +4 nouveaux tests dont un qui inspecte le corps HTML de
+l'email envoye via `MailerAssertionsTrait`), `npx jest` (51). Vérifié en navigateur : inscription
+réelle -> flash "Compte créé !..." (alerte Bootstrap verte dismissible - nouveau, `base.html.twig`
+n'affichait jusque-là AUCUN flash message, ajouté au passage) -> lien signé généré -> clic -> compte
+marqué vérifié en base.

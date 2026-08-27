@@ -45,11 +45,28 @@ final class InscriptionControllerTest extends DatabaseTestCase
         $utilisateur = $this->utilisateurRepository->findOneBy(['username' => 'nouveau']);
         self::assertNotNull($utilisateur);
         self::assertSame(['ROLE_USER'], $utilisateur->getRoles());
+        self::assertFalse($utilisateur->isVerified());
 
         // Deja connecte automatiquement apres inscription : une page reservee aux connectes
-        // doit etre accessible sans nouveau login.
+        // doit etre accessible sans nouveau login, meme si l'email n'est pas encore verifie.
         $this->client->request('GET', '/mon-profil');
         self::assertResponseStatusCodeSame(200);
+    }
+
+    public function testInscriptionEnvoieUnEmailDeConfirmationAvecUnLienValide(): void
+    {
+        $this->client->request('GET', '/inscription');
+
+        $this->client->submitForm('Créer mon compte', [
+            'utilisateur[username]' => 'nouveau',
+            'utilisateur[email]' => 'nouveau@example.test',
+            'utilisateur[plainPassword]' => 'mot-de-passe-solide',
+        ]);
+
+        self::assertEmailCount(1);
+        $email = self::getMailerMessage(0);
+        self::assertEmailAddressContains($email, 'To', 'nouveau@example.test');
+        self::assertEmailHtmlBodyContains($email, 'Confirmer mon adresse email');
     }
 
     public function testInscriptionRefuseUnMotDePasseTropCourt(): void

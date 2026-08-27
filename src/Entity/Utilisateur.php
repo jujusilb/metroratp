@@ -37,6 +37,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
+    /**
+     * Email confirme via le lien recu a l'inscription (voir InscriptionController/EmailVerifier).
+     * Faux par defaut : un compte cree via l'inscription publique n'est verifie qu'apres clic.
+     */
+    #[ORM\Column]
+    private bool $isVerified = false;
+
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $prenom = null;
 
@@ -128,6 +135,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }
