@@ -32,6 +32,15 @@ class Desserte
     private ?StyleStation $styleStation = null;
 
     /**
+     * Style de la signalisation du nom de station sur le quai (ex: police Parisine sur plaque
+     * emaillee, nom incorpore dans la ceramique murale style CMP entre-deux-guerres...) - sur
+     * Desserte (pas Station), meme principe que StyleStation ci-dessus : une station a plusieurs
+     * lignes peut avoir des quais renoves a des epoques differentes avec un lettrage different.
+     */
+    #[ORM\ManyToOne(inversedBy: 'dessertes')]
+    private ?StyleEcriture $styleEcriture = null;
+
+    /**
      * Accessibilite/signaletique officielles IDFM par couple (Station, Ligne) - dataset
      * "sdap-arrets-associes" (route_id -> Ligne::codeExterne, stop_id -> ArRId -> relations.csv ->
      * ZdCId -> Station::codeExterne). Sur Desserte (pas Station) : depend du materiel roulant/du
@@ -120,6 +129,9 @@ class Desserte
 
     public function getStyleStation(): ?StyleStation { return $this->styleStation; }
     public function setStyleStation(?StyleStation $styleStation): static { $this->styleStation = $styleStation; return $this; }
+
+    public function getStyleEcriture(): ?StyleEcriture { return $this->styleEcriture; }
+    public function setStyleEcriture(?StyleEcriture $styleEcriture): static { $this->styleEcriture = $styleEcriture; return $this; }
 
     public function isEstAccessible(): ?bool { return $this->estAccessible; }
     public function setEstAccessible(?bool $estAccessible): static { $this->estAccessible = $estAccessible; return $this; }

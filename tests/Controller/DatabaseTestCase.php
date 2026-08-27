@@ -15,6 +15,7 @@ use App\Entity\PeriodeOuverture;
 use App\Entity\Service;
 use App\Entity\Sortie;
 use App\Entity\Station;
+use App\Entity\StyleEcriture;
 use App\Entity\StyleStation;
 use App\Entity\Troncon;
 use App\Entity\TronconDesserte;
@@ -62,6 +63,7 @@ abstract class DatabaseTestCase extends WebTestCase
             TypeTransport::class,
             Gestionnaire::class,
             StyleStation::class,
+            StyleEcriture::class,
             TypeMateriel::class,
             TypeTroncon::class,
         ];
