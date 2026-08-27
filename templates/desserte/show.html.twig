@@ -63,6 +63,18 @@
                     </td>
                 </tr>
                 <tr>
+                    <th>Style d'écriture</th>
+                    <td>
+                        {% if desserte.styleEcriture %}
+                            <a href="{{ path('app_style_ecriture_show', {'id': desserte.styleEcriture.id}) }}" class="link-body-emphasis">
+                                {{ desserte.styleEcriture.label }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
                     <th>Statut</th>
                     <td>
                         {% if desserte.ouverte %}

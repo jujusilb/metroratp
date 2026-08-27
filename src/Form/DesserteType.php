@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Desserte;
 use App\Entity\Ligne;
 use App\Entity\Station;
+use App\Entity\StyleEcriture;
 use App\Entity\StyleStation;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -26,6 +27,11 @@ class DesserteType extends AbstractType
             ])
             ->add('styleStation', EntityType::class, [
                 'class' => StyleStation::class,
+                'choice_label' => 'label',
+                'required' => false,
+            ])
+            ->add('styleEcriture', EntityType::class, [
+                'class' => StyleEcriture::class,
                 'choice_label' => 'label',
                 'required' => false,
             ])
