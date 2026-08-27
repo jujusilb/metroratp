@@ -1,1 +1,0 @@
-py documentation/importer_base_complete.py --mysql-bin "C:\xampp\mysql\bin\mysql.exe"
