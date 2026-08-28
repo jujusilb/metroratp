@@ -22,7 +22,6 @@ class BreadcrumbExtension extends AbstractExtension
     private const ENTITES = [
         // Réseau
         'ligne' => ['Réseau', 'app_ligne_index', 'Lignes'],
-        'type_transport' => ['Réseau', 'app_type_transport_index', 'Types de transport'],
         'station' => ['Réseau', 'app_station_index', 'Stations'],
         'pole_echange' => ['Réseau', 'app_pole_echange_index', "Pôles d'échange"],
         'desserte' => ['Réseau', 'app_desserte_index', 'Dessertes'],
@@ -62,6 +61,7 @@ class BreadcrumbExtension extends AbstractExtension
         'service' => ['Exploitation', 'app_service_index', 'Services'],
         'gestionnaire' => ['Exploitation', 'app_gestionnaire_index', 'Gestionnaires'],
         'raison' => ['Exploitation', 'app_raison_index', "Raisons d'inactivité"],
+        'type_transport' => ['Exploitation', 'app_type_transport_index', 'Types de transport'],
         'projet_arret' => ['Exploitation', 'app_projet_arret_index', "Projets d'arrêts"],
 
         // Suivi projet
