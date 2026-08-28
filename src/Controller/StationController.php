@@ -20,14 +20,35 @@ final class StationController extends AbstractController
     {
         $lettre = $request->query->get('lettre');
         $recherche = $request->query->get('q');
+        // "actif"/"inactif" absents de l'URL = etat par defaut = les deux selectionnes (aucun
+        // filtre) ; seule une valeur explicite '0' desactive un des deux boutons-bascule.
+        $actifSelectionne = '0' !== $request->query->get('actif');
+        $inactifSelectionne = '0' !== $request->query->get('inactif');
+        if (!$actifSelectionne && !$inactifSelectionne) {
+            // Les deux boutons ne peuvent pas etre desactives ensemble (voir le gabarit, qui
+            // desactive deja le dernier bouton restant) - filet de securite si l'URL est modifiee
+            // a la main : on retombe sur l'etat par defaut plutot que d'afficher une liste vide.
+            $actifSelectionne = true;
+            $inactifSelectionne = true;
+        }
 
         $qb = $stationRepository->createQueryBuilder('s')->orderBy('s.label', 'ASC');
         $stationRepository->appliquerFiltreAlphabetEtRecherche($qb, 's.label', $lettre, $recherche);
+
+        if ($actifSelectionne && !$inactifSelectionne) {
+            $qb->leftJoin('s.raisons', 'r')->andWhere('r.id IS NULL');
+        } elseif ($inactifSelectionne && !$actifSelectionne) {
+            // distinct() : une Station peut etre liee a plusieurs Raison, l'INNER JOIN dupliquerait
+            // sinon la ligne (et donc le compte de pagination) pour chacune.
+            $qb->innerJoin('s.raisons', 'r')->distinct();
+        }
 
         return $this->render('station/index.html.twig', [
             'stations' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
             'lettre' => $lettre,
             'recherche' => $recherche,
+            'actifSelectionne' => $actifSelectionne,
+            'inactifSelectionne' => $inactifSelectionne,
         ]);
     }
 

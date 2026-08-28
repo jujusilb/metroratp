@@ -1,0 +1,23 @@
+{% if app.user %}
+    <nav aria-label="fil d'Ariane" class="bg-light border-bottom">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2 py-2">
+            <ol class="breadcrumb mb-0">
+                {% for item in breadcrumb_items() %}
+                    <li class="breadcrumb-item{{ loop.last ? ' active' : '' }}"{% if loop.last %} aria-current="page"{% endif %}>
+                        {% if item.route and not loop.last %}
+                            <a href="{{ path(item.route) }}" class="link-body-emphasis">{{ item.label }}</a>
+                        {% else %}
+                            {{ item.label ?? titre_page }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ol>
+            {% set retour = page_precedente() %}
+            {% if retour %}
+                <a href="{{ retour }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+{% endif %}
