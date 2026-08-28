@@ -123,6 +123,35 @@ final class LigneControllerTest extends DatabaseTestCase
         self::assertSame('14', $fixture[0]->getLabel());
     }
 
+    public function testEditAjouteUnHoraire(): void
+    {
+        $fixture = new Ligne();
+        $fixture->setLabel('1');
+        $this->manager->persist($fixture);
+        $this->manager->flush();
+
+        $crawler = $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
+        $token = $crawler->filter('input[name="ligne[_token]"]')->attr('value');
+
+        $this->client->request('POST', sprintf('%s%s/edit', $this->path, $fixture->getId()), [
+            'ligne' => [
+                'label' => $fixture->getLabel(),
+                'horaireLignes' => [
+                    0 => ['typeJour' => 'Semaine', 'premierDepart' => '05:30', 'dernierDepart' => '01:15'],
+                ],
+                '_token' => $token,
+            ],
+        ]);
+
+        self::assertResponseRedirects('/ligne');
+
+        $this->manager->clear();
+        $updated = $this->manager->getRepository(Ligne::class)->find($fixture->getId());
+
+        self::assertCount(1, $updated->getHoraireLignes());
+        self::assertSame('Semaine', $updated->getHoraireLignes()->first()->getTypeJour());
+    }
+
     public function testRemove(): void
     {
         $fixture = new Ligne();

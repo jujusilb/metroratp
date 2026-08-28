@@ -10,6 +10,7 @@ use App\Entity\DepotLigne;
 use App\Entity\Desserte;
 use App\Entity\Direction;
 use App\Entity\Gestionnaire;
+use App\Entity\HoraireLigne;
 use App\Entity\Ligne;
 use App\Entity\Materiel;
 use App\Entity\MaterielDepot;
@@ -53,6 +54,7 @@ abstract class DatabaseTestCase extends WebTestCase
             TronconDesserte::class,
             MaterielLigne::class,
             MaterielDepot::class,
+            HoraireLigne::class,
             DepotLigne::class,
             DepotGestionnaire::class,
             PeriodeOuverture::class,

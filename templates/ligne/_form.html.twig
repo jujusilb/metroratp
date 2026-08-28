@@ -1,7 +1,11 @@
+{% import 'tools/_collection_datee.html.twig' as collections %}
+
 {{ form_start(form) }}
     {{ form_errors(form) }}
     {{ form_row(form.label) }}
     {{ form_row(form.couleur) }}
+
+    {{ collections.collection_datee(form.horaireLignes, 'Horaires de service', 'ligne_horaireLignes') }}
 
     <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
 {{ form_end(form) }}

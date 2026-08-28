@@ -76,6 +76,15 @@ class Ligne
     private Collection $depotLignes;
 
     /**
+     * Plages horaires de service (voir HoraireLigne) - editees directement ici, meme principe
+     * que materielLignes (pas de page CRUD dediee).
+     *
+     * @var Collection<int, HoraireLigne>
+     */
+    #[ORM\OneToMany(targetEntity: HoraireLigne::class, mappedBy: 'ligne', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $horaireLignes;
+
+    /**
      * Date a laquelle la Ligne est devenue entierement automatique (conduite sans conducteur,
      * "GoA4") sur la totalite de son parcours - une propriete de la ligne entiere (materiel
      * roulant + signalisation), contrairement aux portes palieres qui s'installent quai par quai
@@ -92,6 +101,7 @@ class Ligne
         $this->materielLignes = new ArrayCollection();
         $this->documents = new ArrayCollection();
         $this->depotLignes = new ArrayCollection();
+        $this->horaireLignes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -299,6 +309,35 @@ class Ligne
     public function getDepotLignes(): Collection
     {
         return $this->depotLignes;
+    }
+
+    /**
+     * @return Collection<int, HoraireLigne>
+     */
+    public function getHoraireLignes(): Collection
+    {
+        return $this->horaireLignes;
+    }
+
+    public function addHoraireLigne(HoraireLigne $horaireLigne): static
+    {
+        if (!$this->horaireLignes->contains($horaireLigne)) {
+            $this->horaireLignes->add($horaireLigne);
+            $horaireLigne->setLigne($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHoraireLigne(HoraireLigne $horaireLigne): static
+    {
+        if ($this->horaireLignes->removeElement($horaireLigne)) {
+            if ($horaireLigne->getLigne() === $this) {
+                $horaireLigne->setLigne(null);
+            }
+        }
+
+        return $this;
     }
 
     public function getNombreStations(): int

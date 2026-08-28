@@ -4,6 +4,7 @@ namespace App\Tests\Service;
 
 use App\Entity\Correspondance;
 use App\Entity\Desserte;
+use App\Entity\HoraireLigne;
 use App\Entity\Ligne;
 use App\Entity\Station;
 use App\Entity\Troncon;
@@ -174,5 +175,85 @@ final class TrajetFinderTest extends DatabaseTestCase
         $etapeCorrespondance = $resultat->etapes[1];
         self::assertSame(Etape::TYPE_CORRESPONDANCE, $etapeCorrespondance->type);
         self::assertSame(3.7, $etapeCorrespondance->dureeMinutes);
+    }
+
+    private function createHoraireLigne(Ligne $ligne, string $typeJour, string $premierDepart, string $dernierDepart): void
+    {
+        $horaire = new HoraireLigne();
+        $horaire->setLigne($ligne);
+        $horaire->setTypeJour($typeJour);
+        $horaire->setPremierDepart(new \DateTime($premierDepart));
+        $horaire->setDernierDepart(new \DateTime($dernierDepart));
+        $this->manager->persist($horaire);
+    }
+
+    public function testLigneFermeeAuMomentDemandeEstExclue(): void
+    {
+        $ligne = $this->createLigne('1');
+        $a = $this->createDesserte($ligne, $this->createStation('A'));
+        $b = $this->createDesserte($ligne, $this->createStation('B'));
+        $this->linkTroncon($a, $b);
+        // Seule plage connue pour "Semaine" : 22h-23h, tres loin du moment demande (14h).
+        $this->createHoraireLigne($ligne, 'Semaine', '22:00', '23:00');
+
+        $this->manager->flush();
+        $this->manager->clear();
+
+        $mercrediMidi = new \DateTimeImmutable('next wednesday 14:00');
+        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getStation()->getId(), $b->getStation()->getId(), moment: $mercrediMidi);
+
+        self::assertNull($resultat, 'La ligne est fermee a 14h (plage 22h-23h uniquement) : aucun trajet ne doit etre trouve.');
+    }
+
+    public function testLigneOuverteAuMomentDemandeEstUtilisee(): void
+    {
+        $ligne = $this->createLigne('1');
+        $a = $this->createDesserte($ligne, $this->createStation('A'));
+        $b = $this->createDesserte($ligne, $this->createStation('B'));
+        $this->linkTroncon($a, $b);
+        $this->createHoraireLigne($ligne, 'Semaine', '05:00', '23:59');
+
+        $this->manager->flush();
+        $this->manager->clear();
+
+        $mercrediMidi = new \DateTimeImmutable('next wednesday 14:00');
+        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getStation()->getId(), $b->getStation()->getId(), moment: $mercrediMidi);
+
+        self::assertNotNull($resultat);
+        self::assertCount(1, $resultat->etapes);
+    }
+
+    public function testPlageHoraireQuiFranchitMinuitEstBienCirculaire(): void
+    {
+        $ligne = $this->createLigne('1');
+        $a = $this->createDesserte($ligne, $this->createStation('A'));
+        $b = $this->createDesserte($ligne, $this->createStation('B'));
+        $this->linkTroncon($a, $b);
+        // Plage 22h -> 02h (franchit minuit) : 23h30 doit etre considere "en service".
+        $this->createHoraireLigne($ligne, 'Semaine', '22:00', '02:00');
+
+        $this->manager->flush();
+        $this->manager->clear();
+
+        $mercrediSoir = new \DateTimeImmutable('next wednesday 23:30');
+        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getStation()->getId(), $b->getStation()->getId(), moment: $mercrediSoir);
+
+        self::assertNotNull($resultat, "23h30 tombe dans la plage 22h->02h (franchit minuit) : un trajet doit etre trouve.");
+    }
+
+    public function testSansMomentAucunFiltreHoraireNestApplique(): void
+    {
+        $ligne = $this->createLigne('1');
+        $a = $this->createDesserte($ligne, $this->createStation('A'));
+        $b = $this->createDesserte($ligne, $this->createStation('B'));
+        $this->linkTroncon($a, $b);
+        $this->createHoraireLigne($ligne, 'Semaine', '22:00', '23:00');
+
+        $this->manager->flush();
+        $this->manager->clear();
+
+        $resultat = $this->trajetFinder->trouverPlusCourtChemin($a->getStation()->getId(), $b->getStation()->getId());
+
+        self::assertNotNull($resultat, 'Sans $moment fourni (comportement historique), aucune ligne ne doit etre exclue par horaire.');
     }
 }

@@ -35,6 +35,13 @@ use Doctrine\ORM\EntityManagerInterface;
  * "Allowed memory size exhausted" pur et simple. Seules les quelques dizaines de Desserte
  * effectivement utilisees dans le chemin TROUVE sont rechargees via l'ORM a la fin (pattern
  * "requete legere + recharge par ids" deja utilise ailleurs dans le projet pour la pagination).
+ *
+ * Un $moment optionnel (voir trouverPlusCourtChemin()) exclut du graphe les troncons dont la
+ * Ligne est fermee a cet instant (HoraireLigne) : sans ca, rien n'empechait par exemple de
+ * proposer un Noctilien en pleine journee (remarque utilisateur). Filtre "instantane" applique une
+ * seule fois a la construction du graphe entier, pas un vrai routage horaire dependant du temps
+ * (l'heure d'arrivee a chaque noeud ne recalcule pas les lignes disponibles plus loin dans le
+ * trajet) : approximation assumee sur un trajet tres long a cheval sur un changement de service.
  */
 class TrajetFinder
 {
@@ -67,6 +74,11 @@ class TrajetFinder
      *                                       normalement, donc le trajet peut tres bien continuer
      *                                       en metro apres etre entre par le RER.
      * @param ?string   $modeEntreeDestination Meme principe, pour le point d'arrivee.
+     * @param ?\DateTimeImmutable $moment Moment du depart : une Ligne fermee a cet instant (voir
+     *                                    HoraireLigne/estEnService()) est exclue du graphe - evite
+     *                                    par exemple de proposer un Noctilien en pleine journee.
+     *                                    Null = aucun filtre horaire (comportement historique,
+     *                                    utilise par les tests qui ne s'interessent pas a ca).
      */
     public function trouverPlusCourtChemin(
         int $stationOrigineId,
@@ -74,6 +86,7 @@ class TrajetFinder
         ?array $modesAutorises = null,
         ?string $modeEntreeOrigine = null,
         ?string $modeEntreeDestination = null,
+        ?\DateTimeImmutable $moment = null,
     ): ?ResultatTrajet {
         $dessertesOrigine = $this->dessertesIdsPourStation($stationOrigineId, $modesAutorises, $modeEntreeOrigine);
         $dessertesDestination = $this->dessertesIdsPourStation($stationDestinationId, $modesAutorises, $modeEntreeDestination);
@@ -87,7 +100,7 @@ class TrajetFinder
             return new ResultatTrajet([], 0.0);
         }
 
-        [$adjacence, $tronconIdParArc] = $this->construireGraphe($modesAutorises);
+        [$adjacence, $tronconIdParArc] = $this->construireGraphe($modesAutorises, $moment);
 
         $destinationRecherchee = array_flip($dessertesDestination);
         $distances = [];
@@ -195,6 +208,50 @@ class TrajetFinder
     }
 
     /**
+     * Type de jour au sens HoraireLigne (decoupage classique RATP), a partir du jour de semaine
+     * ISO-8601 (1=lundi ... 7=dimanche). Les jours feries suivent le regime DimancheFerie mais ne
+     * sont pas detectes ici (limite assumee, voir extraire_horaires_lignes.php).
+     */
+    private function typeJourPour(\DateTimeImmutable $moment): string
+    {
+        return match ((int) $moment->format('N')) {
+            7 => 'DimancheFerie',
+            6 => 'Samedi',
+            default => 'Semaine',
+        };
+    }
+
+    /**
+     * Vraie si $minuteMoment (minutes depuis minuit, 0-1439) tombe dans la plage
+     * [$premierDepart, $dernierDepart] (colonnes TIME au format "HH:MM:SS"). Un dernier < premier
+     * signale une plage qui franchit minuit (ex: 04:41 -> 02:16, voir HoraireLigne) : la plage est
+     * alors traitee comme un intervalle circulaire. Pas d'horaire connu (l'un des deux NULL) :
+     * aucune restriction (fail open), pour ne pas casser une Ligne non couverte par l'import GTFS.
+     */
+    private function estEnService(?string $premierDepart, ?string $dernierDepart, int $minuteMoment): bool
+    {
+        if (null === $premierDepart || null === $dernierDepart) {
+            return true;
+        }
+
+        $premier = $this->minutesDepuisMinuit($premierDepart);
+        $dernier = $this->minutesDepuisMinuit($dernierDepart);
+
+        if ($premier <= $dernier) {
+            return $minuteMoment >= $premier && $minuteMoment <= $dernier;
+        }
+
+        return $minuteMoment >= $premier || $minuteMoment <= $dernier;
+    }
+
+    private function minutesDepuisMinuit(string $heureTime): int
+    {
+        [$h, $m] = array_map('intval', explode(':', $heureTime));
+
+        return $h * 60 + $m;
+    }
+
+    /**
      * Construit le graphe complet (tous les Troncon/Correspondance du reseau, pas seulement ceux
      * du chemin trouve) en SQL brut : ids et poids seulement, aucune entite ORM chargee. Voir le
      * docblock de la classe.
@@ -203,8 +260,15 @@ class TrajetFinder
      *
      * @return array{0: array<int, array<int, float>>, 1: array<int, array<int, int>>}
      */
-    private function construireGraphe(?array $modesAutorises): array
+    private function construireGraphe(?array $modesAutorises, ?\DateTimeImmutable $moment): array
     {
+        // typeJour impossible ('') quand $moment est null : la jointure horaire_ligne ne
+        // matchera jamais, hl.premier_depart/dernier_depart resteront NULL pour tout le monde,
+        // et estEnService() les traite alors comme "pas de restriction connue" - inutile de
+        // brancher la requete SQL elle-meme selon que $moment est fourni ou non.
+        $typeJour = null !== $moment ? $this->typeJourPour($moment) : '';
+        $minuteMoment = null !== $moment ? ((int) $moment->format('H')) * 60 + (int) $moment->format('i') : 0;
+
         /** @var array<int, array<int, float>> $adjacence */
         $adjacence = [];
         /** @var array<int, array<int, int>> $tronconIdParArc */
@@ -226,7 +290,8 @@ class TrajetFinder
                 SELECT tda.desserte_id AS depart_id, tdb.desserte_id AS arrivee_id,
                        t.id AS troncon_id,
                        COALESCE(tda.duree_reelle_secondes, t.duree_reelle_secondes) AS duree_reelle_secondes,
-                       tt.label AS type_transport, g.label AS gestionnaire
+                       tt.label AS type_transport, g.label AS gestionnaire,
+                       hl.premier_depart, hl.dernier_depart
                 FROM troncon_desserte tda
                 JOIN type_desserte ttypeA ON ttypeA.id = tda.type_desserte_id AND ttypeA.label = 'Départ'
                 JOIN troncon_desserte tdb ON tdb.troncon_id = tda.troncon_id AND tdb.desserte_id != tda.desserte_id
@@ -236,10 +301,15 @@ class TrajetFinder
                 JOIN ligne l ON l.id = d.ligne_id
                 LEFT JOIN type_transport tt ON tt.id = l.type_transport_id
                 LEFT JOIN gestionnaire g ON g.id = l.gestionnaire_id
-                SQL
+                LEFT JOIN horaire_ligne hl ON hl.ligne_id = l.id AND hl.type_jour = :typeJour
+                SQL,
+            ['typeJour' => $typeJour],
         )->iterateAssociative() as $row) {
             $mode = $this->modeFiltre($row['type_transport'], $row['gestionnaire']);
             if (!$modeAutorise($mode)) {
+                continue;
+            }
+            if (null !== $moment && !$this->estEnService($row['premier_depart'], $row['dernier_depart'], $minuteMoment)) {
                 continue;
             }
 

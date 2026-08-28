@@ -57,6 +57,29 @@
             {% if ligne.dateAutomatisationTotale %} · <span class="badge text-bg-success">Automatique depuis {{ ligne.dateAutomatisationTotale|date('d/m/Y') }}</span>{% endif %}
         </p>
 
+        {% if ligne.horaireLignes|length > 0 %}
+            <h2 class="h5 mt-4">Horaires de circulation</h2>
+            <p class="text-muted small">Premier/dernier départ observés dans le GTFS Île-de-France Mobilités — une estimation, pas une donnée officielle RATP.</p>
+            <table class="table table-sm w-auto">
+                <thead>
+                    <tr>
+                        <th>Type de jour</th>
+                        <th>Premier départ</th>
+                        <th>Dernier départ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for horaire in ligne.horaireLignes %}
+                        <tr>
+                            <td>{{ horaire.typeJour }}</td>
+                            <td>{{ horaire.premierDepart ? horaire.premierDepart|date('H:i') : '—' }}</td>
+                            <td>{{ horaire.dernierDepart ? horaire.dernierDepart|date('H:i') : '—' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
         <div class="parcours" style="--ligne-couleur: {{ ligne.couleur|default('#6c757d') }};">
             {% set segments = ligne.parcoursSegments %}
             {% if segments|length > 0 %}

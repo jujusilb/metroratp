@@ -13,7 +13,9 @@
             Les temps de correspondance restent des <strong>estimations</strong> (temps de marche connu sinon 3 min
             par défaut, plus 2 min d'attente moyenne du prochain train) — ce ne sont pas des données officielles RATP.
             La carte utilise les coordonnées géographiques réelles (fond de carte OpenStreetMap), tous modes
-            confondus (métro, RER, tram, bus) sur toute l'Île-de-France.
+            confondus (métro, RER, tram, bus) sur toute l'Île-de-France. Les lignes fermées au moment de départ
+            choisi (ex : Noctilien en pleine journée) sont exclues — horaires eux aussi estimés depuis le GTFS,
+            sans distinction des jours fériés.
         </p>
 
         {% set modeLabels = {'metro': 'Métro', 'tram': 'Tram', 'rer': 'RER', 'bus_ratp': 'Bus RATP', 'bus_tiers': 'Bus tiers', 'telepherique': 'Téléphérique', 'funiculaire': 'Funiculaire', 'train': 'Transilien'} %}
@@ -48,6 +50,10 @@
                 <input type="hidden" name="destination" id="destination" value="{{ stationDestination ? stationDestination.id : '' }}">
                 <input type="hidden" name="destinationMode" id="destination-mode" value="{{ destinationMode ?? '' }}">
                 <div id="destination-suggestions" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
+            </div>
+            <div class="col-12 col-md-3">
+                <label for="moment" class="form-label">Départ à</label>
+                <input type="datetime-local" name="moment" id="moment" class="form-control" value="{{ moment|date('Y-m-d\\TH:i') }}">
             </div>
             <div class="col-12 col-md-2 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary w-100">Calculer</button>

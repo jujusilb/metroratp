@@ -38,6 +38,7 @@ auChargement(() => {
         ['depot_depotLignes', 'Ajouter une ligne'],
         ['depot_materielDepots', 'Ajouter un matériel'],
         ['materiel_materielLignes', 'Ajouter une ligne'],
+        ['ligne_horaireLignes', 'Ajouter une plage horaire'],
     ].forEach(([id, addButtonLabel]) => {
         const conteneur = document.getElementById(id);
         if (conteneur) {

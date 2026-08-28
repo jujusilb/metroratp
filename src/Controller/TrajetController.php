@@ -44,6 +44,16 @@ final class TrajetController extends AbstractController
         $origineMode = $this->modeValide($request->query->get('origineMode'));
         $destinationMode = $this->modeValide($request->query->get('destinationMode'));
 
+        // Moment du depart (format natif de <input type="datetime-local">) : sert a exclure une
+        // Ligne fermee a cet instant (Noctilien en pleine journee, etc. - voir HoraireLigne).
+        // Defaut "maintenant" si absent/invalide, pour que le champ affiche une valeur exploitable
+        // des le premier chargement de la page.
+        $momentBrut = $request->query->get('moment');
+        $moment = null !== $momentBrut ? \DateTimeImmutable::createFromFormat('Y-m-d\TH:i', $momentBrut) : false;
+        if (false === $moment) {
+            $moment = new \DateTimeImmutable();
+        }
+
         $resultat = null;
         $carte = null;
         $erreur = null;
@@ -55,6 +65,7 @@ final class TrajetController extends AbstractController
                 $modesSelectionnes,
                 $origineMode,
                 $destinationMode,
+                $moment,
             );
 
             if (null === $resultat) {
@@ -75,6 +86,7 @@ final class TrajetController extends AbstractController
             'stationDestination' => $stationDestination,
             'origineMode' => $origineMode,
             'destinationMode' => $destinationMode,
+            'moment' => $moment,
             'modesSelectionnes' => $modesSelectionnes,
             'resultat' => $resultat,
             'segments' => $segments,
