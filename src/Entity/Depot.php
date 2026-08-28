@@ -31,21 +31,25 @@ class Depot
     private ?Ville $ville = null;
 
     /**
+     * cascade/orphanRemoval : editee via un CollectionType imbrique sur DepotType (pas de page CRUD
+     * dediee), Doctrine doit donc persister les lignes ajoutees et supprimer reellement celles
+     * retirees du formulaire plutot que de simplement detacher leur cle etrangere.
+     *
      * @var Collection<int, DepotLigne>
      */
-    #[ORM\OneToMany(targetEntity: DepotLigne::class, mappedBy: 'depot')]
+    #[ORM\OneToMany(targetEntity: DepotLigne::class, mappedBy: 'depot', cascade: ['persist'], orphanRemoval: true)]
     private Collection $depotLignes;
 
     /**
      * @var Collection<int, MaterielDepot>
      */
-    #[ORM\OneToMany(targetEntity: MaterielDepot::class, mappedBy: 'depot')]
+    #[ORM\OneToMany(targetEntity: MaterielDepot::class, mappedBy: 'depot', cascade: ['persist'], orphanRemoval: true)]
     private Collection $materielDepots;
 
     /**
      * @var Collection<int, DepotGestionnaire>
      */
-    #[ORM\OneToMany(targetEntity: DepotGestionnaire::class, mappedBy: 'depot')]
+    #[ORM\OneToMany(targetEntity: DepotGestionnaire::class, mappedBy: 'depot', cascade: ['persist'], orphanRemoval: true)]
     private Collection $depotGestionnaires;
 
     public function __construct()

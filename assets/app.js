@@ -9,6 +9,7 @@ import { initTrajetCarte } from './js/trajet-carte';
 import { initTrajetAutocomplete } from './js/trajet-autocomplete';
 import { initCarteReseau } from './js/carte-reseau';
 import { initCarteAcces } from './js/carte-acces';
+import { initCollectionWidget } from './js/collection-widget';
 
 function auChargement(fn) {
     // Garde-fou standard : si 'DOMContentLoaded' a deja ete emis avant que ce script ne
@@ -28,6 +29,21 @@ auChargement(() => {
             removeLabel: 'Retirer',
         });
     }
+
+    // Formulaires imbriques (relations datees Materiel<->Ligne/Depot, Depot<->Ligne/Gestionnaire) :
+    // remplacent les anciennes pages CRUD dediees (voir TODO.md, simplification des tables de
+    // jointure). Chaque conteneur n'existe que sur la page ou son champ correspondant est present.
+    [
+        ['depot_depotGestionnaires', 'Ajouter un gestionnaire'],
+        ['depot_depotLignes', 'Ajouter une ligne'],
+        ['depot_materielDepots', 'Ajouter un matériel'],
+        ['materiel_materielLignes', 'Ajouter une ligne'],
+    ].forEach(([id, addButtonLabel]) => {
+        const conteneur = document.getElementById(id);
+        if (conteneur) {
+            initCollectionWidget(conteneur, { addButtonLabel });
+        }
+    });
 
     const trajetForm = document.querySelector('form[data-recherche-station-url]');
     if (trajetForm) {

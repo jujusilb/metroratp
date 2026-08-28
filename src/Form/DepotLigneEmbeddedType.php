@@ -2,38 +2,35 @@
 
 namespace App\Form;
 
+use App\Entity\DepotLigne;
 use App\Entity\Ligne;
-use App\Entity\Materiel;
-use App\Entity\MaterielLigne;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class MaterielLigneType extends AbstractType
+/**
+ * Version "imbriquee" de DepotLigneType, sans le champ depot (implicite) - utilisee dans le
+ * CollectionType de DepotType, pas de page CRUD separee (voir TODO.md).
+ */
+class DepotLigneEmbeddedType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('arrivee')
-            ->add('fin')
-            ->add('effectif', null, ['required' => false])
-            ->add('effectifDate', null, ['required' => false])
-            ->add('materiel', EntityType::class, [
-                'class' => Materiel::class,
-                'choice_label' => 'id',
-            ])
             ->add('ligne', EntityType::class, [
                 'class' => Ligne::class,
-                'choice_label' => 'id',
+                'choice_label' => 'label',
             ])
+            ->add('arrivee', null, ['required' => false])
+            ->add('fin', null, ['required' => false])
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => MaterielLigne::class,
+            'data_class' => DepotLigne::class,
         ]);
     }
 }

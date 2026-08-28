@@ -6,6 +6,7 @@ use App\Entity\Materiel;
 use App\Entity\TypeMateriel;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -21,6 +22,15 @@ class MaterielType extends AbstractType
             ->add('typeMateriel', EntityType::class, [
                 'class' => TypeMateriel::class,
                 'choice_label' => 'id',
+            ])
+            // Remplace l'ancienne page CRUD dediee MaterielLigne : editee directement ici, chaque
+            // ligne portant ses propres dates (voir TODO.md, simplification des tables de jointure).
+            ->add('materielLignes', CollectionType::class, [
+                'entry_type' => MaterielLigneEmbeddedType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'label' => false,
             ])
         ;
     }

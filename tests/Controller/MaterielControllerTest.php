@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Ligne;
 use App\Entity\Materiel;
 use App\Entity\TypeMateriel;
 use Doctrine\ORM\EntityManagerInterface;
@@ -101,6 +102,47 @@ final class MaterielControllerTest extends DatabaseTestCase
         $fixture = $this->materielRepository->findAll();
 
         self::assertSame('Something New', $fixture[0]->getLabel());
+    }
+
+    /**
+     * Le CollectionType imbrique (voir MaterielType) ne rend aucun champ quand la collection est
+     * vide - meme raisonnement que DepotControllerTest::testEditAjouteUnGestionnaireDate().
+     */
+    public function testEditAjouteUneLigneDatee(): void
+    {
+        $ligne = new Ligne();
+        $ligne->setLabel('1');
+        $this->manager->persist($ligne);
+
+        $fixture = new Materiel();
+        $fixture->setLabel('Z 6100');
+        $fixture->setAnneeProduction('1970');
+        $fixture->setTypeMateriel($this->createTypeMateriel());
+        $this->manager->persist($fixture);
+        $this->manager->flush();
+
+        $crawler = $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
+        $token = $crawler->filter('input[name="materiel[_token]"]')->attr('value');
+
+        $this->client->request('POST', sprintf('%s%s/edit', $this->path, $fixture->getId()), [
+            'materiel' => [
+                'label' => $fixture->getLabel(),
+                'anneeProduction' => $fixture->getAnneeProduction(),
+                'typeMateriel' => $fixture->getTypeMateriel()->getId(),
+                'materielLignes' => [
+                    0 => ['ligne' => $ligne->getId(), 'arrivee' => '1970-01-01'],
+                ],
+                '_token' => $token,
+            ],
+        ]);
+
+        self::assertResponseRedirects('/materiel');
+
+        $this->manager->clear();
+        $updated = $this->manager->getRepository(Materiel::class)->find($fixture->getId());
+
+        self::assertCount(1, $updated->getMaterielLignes());
+        self::assertSame('1', $updated->getMaterielLignes()->first()->getLigne()->getLabel());
     }
 
     public function testRemove(): void

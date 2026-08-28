@@ -1,9 +1,0 @@
-{{ form_start(form) }}
-    {{ form_errors(form) }}
-    {{ form_row(form.depot) }}
-    {{ form_row(form.ligne) }}
-    {{ form_row(form.arrivee) }}
-    {{ form_row(form.fin) }}
-
-    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
-{{ form_end(form) }}

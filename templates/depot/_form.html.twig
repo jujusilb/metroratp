@@ -1,8 +1,14 @@
+{% import 'tools/_collection_datee.html.twig' as collections %}
+
 {{ form_start(form) }}
     {{ form_errors(form) }}
     {{ form_row(form.label) }}
     {{ form_row(form.adresse) }}
     {{ form_row(form.ville) }}
+
+    {{ collections.collection_datee(form.depotGestionnaires, 'Gestionnaire', 'depot_depotGestionnaires') }}
+    {{ collections.collection_datee(form.depotLignes, 'Lignes desservies', 'depot_depotLignes') }}
+    {{ collections.collection_datee(form.materielDepots, 'Matériel affecté', 'depot_materielDepots') }}
 
     <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
 {{ form_end(form) }}

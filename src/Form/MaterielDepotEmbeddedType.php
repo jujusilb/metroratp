@@ -2,7 +2,6 @@
 
 namespace App\Form;
 
-use App\Entity\Depot;
 use App\Entity\Materiel;
 use App\Entity\MaterielDepot;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -10,23 +9,22 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class MaterielDepotType extends AbstractType
+/**
+ * Version "imbriquee" de MaterielDepotType, sans le champ depot (implicite) - utilisee dans le
+ * CollectionType de DepotType, pas de page CRUD separee (voir TODO.md).
+ */
+class MaterielDepotEmbeddedType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('arrivee', null, ['required' => false])
-            ->add('fin', null, ['required' => false])
-            ->add('effectif', null, ['required' => false])
-            ->add('effectifDate', null, ['required' => false])
             ->add('materiel', EntityType::class, [
                 'class' => Materiel::class,
                 'choice_label' => 'label',
             ])
-            ->add('depot', EntityType::class, [
-                'class' => Depot::class,
-                'choice_label' => 'label',
-            ])
+            ->add('arrivee', null, ['required' => false])
+            ->add('fin', null, ['required' => false])
+            ->add('effectif', null, ['required' => false])
         ;
     }
 

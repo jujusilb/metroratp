@@ -1,0 +1,25 @@
+{#
+    Rendu generique d'un champ CollectionType imbrique (relation datee arrivee/fin, type
+    MaterielLigne/MaterielDepot/DepotLigne/DepotGestionnaire) : une ligne par entree existante,
+    chacune avec ses propres champs et un bouton "Retirer", plus data-prototype pour l'ajout
+    dynamique en JS (voir assets/js/collection-widget.js). Generique : itere les champs de chaque
+    ligne un par un, quels qu'ils soient - pas besoin d'une variante par relation.
+
+    Parametres :
+    - field : le champ CollectionType du formulaire (ex: form.depotGestionnaires)
+    - titre : titre de section affiche au-dessus (ex: "Gestionnaire")
+    - id_html : id unique pour le conteneur (ex: "depot_depotGestionnaires")
+#}
+{% macro collection_datee(field, titre, id_html) %}
+    <h2 class="h6 mb-2">{{ titre }}</h2>
+    <div id="{{ id_html }}" data-prototype="{{ form_widget(field.vars.prototype)|e('html_attr') }}" class="mb-2">
+        {% for row in field %}
+            <div class="collection-ligne border rounded p-3 mb-2">
+                {% for child in row.children %}
+                    {{ form_row(child) }}
+                {% endfor %}
+                <button type="button" class="btn btn-outline-danger btn-sm" data-role="retirer">Retirer cette ligne</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}

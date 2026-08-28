@@ -60,7 +60,6 @@
                         <th>Ligne</th>
                         <th>Arrivée</th>
                         <th>Fin</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -75,9 +74,6 @@
                         </td>
                         <td>{{ materiel_ligne.arrivee ? materiel_ligne.arrivee|date('Y-m-d') : '' }}</td>
                         <td>{{ materiel_ligne.fin ? materiel_ligne.fin|date('Y-m-d') : '' }}</td>
-                        <td>
-                            <a href="{{ path('app_materiel_ligne_show', {'id': materiel_ligne.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
-                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -95,7 +91,6 @@
                         <th>Dépôt</th>
                         <th>Arrivée</th>
                         <th>Fin</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -110,9 +105,6 @@
                         </td>
                         <td>{{ materiel_depot.arrivee ? materiel_depot.arrivee|date('Y-m-d') : '' }}</td>
                         <td>{{ materiel_depot.fin ? materiel_depot.fin|date('Y-m-d') : '' }}</td>
-                        <td>
-                            <a href="{{ path('app_materiel_depot_show', {'id': materiel_depot.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
-                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

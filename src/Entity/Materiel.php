@@ -40,9 +40,13 @@ class Materiel
     private ?TypeMateriel $typeMateriel = null;
 
     /**
+     * cascade/orphanRemoval : editee via un CollectionType imbrique sur MaterielType (pas de page
+     * CRUD dediee), Doctrine doit donc persister les lignes ajoutees et supprimer reellement celles
+     * retirees du formulaire plutot que de simplement detacher leur cle etrangere.
+     *
      * @var Collection<int, MaterielLigne>
      */
-    #[ORM\OneToMany(targetEntity: MaterielLigne::class, mappedBy: 'materiel')]
+    #[ORM\OneToMany(targetEntity: MaterielLigne::class, mappedBy: 'materiel', cascade: ['persist'], orphanRemoval: true)]
     private Collection $materielLignes;
 
     /**

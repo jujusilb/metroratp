@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Depot;
+use App\Entity\Gestionnaire;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -82,6 +83,46 @@ final class DepotControllerTest extends DatabaseTestCase
         $fixture = $this->depotRepository->findAll();
 
         self::assertSame('Centre bus renommé', $fixture[0]->getLabel());
+    }
+
+    /**
+     * Le CollectionType imbrique (voir DepotType) ne rend aucun champ quand la collection est
+     * vide - on ne peut donc pas passer par submitForm()/selectButton() comme les autres tests
+     * (rien a selectionner). On poste directement les cles de tableau que Symfony attend (celles
+     * que le JS collection-widget.js construit cote navigateur a partir de data-prototype).
+     */
+    public function testEditAjouteUnGestionnaireDate(): void
+    {
+        $gestionnaire = new Gestionnaire();
+        $gestionnaire->setLabel('RATP');
+        $this->manager->persist($gestionnaire);
+
+        $fixture = new Depot();
+        $fixture->setLabel('Centre bus de Testville');
+        $this->manager->persist($fixture);
+        $this->manager->flush();
+
+        $crawler = $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
+        $token = $crawler->filter('input[name="depot[_token]"]')->attr('value');
+
+        $this->client->request('POST', sprintf('%s%s/edit', $this->path, $fixture->getId()), [
+            'depot' => [
+                'label' => $fixture->getLabel(),
+                'depotGestionnaires' => [
+                    0 => ['gestionnaire' => $gestionnaire->getId(), 'arrivee' => '2020-01-01'],
+                ],
+                '_token' => $token,
+            ],
+        ]);
+
+        self::assertResponseRedirects('/depot');
+
+        $this->manager->clear();
+        $updated = $this->manager->getRepository(Depot::class)->find($fixture->getId());
+
+        self::assertCount(1, $updated->getDepotGestionnaires());
+        self::assertSame('RATP', $updated->getDepotGestionnaires()->first()->getGestionnaire()->getLabel());
+        self::assertSame('2020-01-01', $updated->getDepotGestionnaires()->first()->getArrivee()->format('Y-m-d'));
     }
 
     public function testRemove(): void
