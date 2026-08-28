@@ -45,9 +45,16 @@ class Materiel
     #[ORM\OneToMany(targetEntity: MaterielLigne::class, mappedBy: 'materiel')]
     private Collection $materielLignes;
 
+    /**
+     * @var Collection<int, MaterielDepot>
+     */
+    #[ORM\OneToMany(targetEntity: MaterielDepot::class, mappedBy: 'materiel')]
+    private Collection $materielDepots;
+
     public function __construct()
     {
         $this->materielLignes = new ArrayCollection();
+        $this->materielDepots = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,6 +146,35 @@ class Materiel
             // set the owning side to null (unless already changed)
             if ($materielLigne->getMateriel() === $this) {
                 $materielLigne->setMateriel(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MaterielDepot>
+     */
+    public function getMaterielDepots(): Collection
+    {
+        return $this->materielDepots;
+    }
+
+    public function addMaterielDepot(MaterielDepot $materielDepot): static
+    {
+        if (!$this->materielDepots->contains($materielDepot)) {
+            $this->materielDepots->add($materielDepot);
+            $materielDepot->setMateriel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMaterielDepot(MaterielDepot $materielDepot): static
+    {
+        if ($this->materielDepots->removeElement($materielDepot)) {
+            if ($materielDepot->getMateriel() === $this) {
+                $materielDepot->setMateriel(null);
             }
         }
 

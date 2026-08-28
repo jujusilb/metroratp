@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\MaterielDepotRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Affectation d'un Materiel a un Depot (meme schema que MaterielLigne, transpose au depot puisque
+ * le materiel de bus est documente par depot plutot que par ligne precise - voir Depot).
+ */
+#[ORM\Entity(repositoryClass: MaterielDepotRepository::class)]
+class MaterielDepot
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $arrivee = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $fin = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $effectif = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $effectifDate = null;
+
+    #[ORM\ManyToOne(inversedBy: 'materielDepots')]
+    private ?Materiel $materiel = null;
+
+    #[ORM\ManyToOne(inversedBy: 'materielDepots')]
+    private ?Depot $depot = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getArrivee(): ?\DateTime
+    {
+        return $this->arrivee;
+    }
+
+    public function setArrivee(?\DateTime $arrivee): static
+    {
+        $this->arrivee = $arrivee;
+
+        return $this;
+    }
+
+    public function getFin(): ?\DateTime
+    {
+        return $this->fin;
+    }
+
+    public function setFin(?\DateTime $fin): static
+    {
+        $this->fin = $fin;
+
+        return $this;
+    }
+
+    public function getEffectif(): ?int
+    {
+        return $this->effectif;
+    }
+
+    public function setEffectif(?int $effectif): static
+    {
+        $this->effectif = $effectif;
+
+        return $this;
+    }
+
+    public function getEffectifDate(): ?\DateTime
+    {
+        return $this->effectifDate;
+    }
+
+    public function setEffectifDate(?\DateTime $effectifDate): static
+    {
+        $this->effectifDate = $effectifDate;
+
+        return $this;
+    }
+
+    public function getMateriel(): ?Materiel
+    {
+        return $this->materiel;
+    }
+
+    public function setMateriel(?Materiel $materiel): static
+    {
+        $this->materiel = $materiel;
+
+        return $this;
+    }
+
+    public function getDepot(): ?Depot
+    {
+        return $this->depot;
+    }
+
+    public function setDepot(?Depot $depot): static
+    {
+        $this->depot = $depot;
+
+        return $this;
+    }
+}

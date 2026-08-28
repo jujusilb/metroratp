@@ -66,6 +66,15 @@ class Ligne
     private Collection $documents;
 
     /**
+     * Depots (centres bus) desservant cette Ligne - voir Depot, le materiel de bus se deduit par
+     * jointure Ligne -> Depot -> MaterielDepot plutot que d'etre rattache directement a la Ligne.
+     *
+     * @var Collection<int, Depot>
+     */
+    #[ORM\ManyToMany(targetEntity: Depot::class, mappedBy: 'lignes')]
+    private Collection $depots;
+
+    /**
      * Date a laquelle la Ligne est devenue entierement automatique (conduite sans conducteur,
      * "GoA4") sur la totalite de son parcours - une propriete de la ligne entiere (materiel
      * roulant + signalisation), contrairement aux portes palieres qui s'installent quai par quai
@@ -81,6 +90,7 @@ class Ligne
         $this->dessertes = new ArrayCollection();
         $this->materielLignes = new ArrayCollection();
         $this->documents = new ArrayCollection();
+        $this->depots = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -280,6 +290,14 @@ class Ligne
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Depot>
+     */
+    public function getDepots(): Collection
+    {
+        return $this->depots;
     }
 
     public function getNombreStations(): int

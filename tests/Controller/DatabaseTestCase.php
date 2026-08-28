@@ -4,11 +4,13 @@ namespace App\Tests\Controller;
 
 use App\Entity\Acces;
 use App\Entity\Correspondance;
+use App\Entity\Depot;
 use App\Entity\Desserte;
 use App\Entity\Direction;
 use App\Entity\Gestionnaire;
 use App\Entity\Ligne;
 use App\Entity\Materiel;
+use App\Entity\MaterielDepot;
 use App\Entity\MaterielLigne;
 use App\Entity\Mission;
 use App\Entity\PeriodeOuverture;
@@ -49,6 +51,7 @@ abstract class DatabaseTestCase extends WebTestCase
             Mission::class,
             TronconDesserte::class,
             MaterielLigne::class,
+            MaterielDepot::class,
             Sortie::class,
             PeriodeOuverture::class,
             Correspondance::class,
@@ -60,6 +63,7 @@ abstract class DatabaseTestCase extends WebTestCase
             Service::class,
             TypeDesserte::class,
             Station::class,
+            Depot::class,
             Ville::class,
             Ligne::class,
             TypeTransport::class,

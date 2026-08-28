@@ -1,0 +1,9 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.label) }}
+    {{ form_row(form.adresse) }}
+    {{ form_row(form.ville) }}
+    {{ form_row(form.lignes) }}
+
+    <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dépôt{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">{{ depot.label }}</h1>
+            {% if is_granted('ROLE_ADMIN') %}
+                <div class="d-flex gap-2">
+                    <a href="{{ path('app_depot_edit', {'id': depot.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                    {{ include('depot/_delete_form.html.twig') }}
+                </div>
+            {% endif %}
+        </div>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ depot.id }}</td>
+                </tr>
+                <tr>
+                    <th>Adresse</th>
+                    <td>{{ depot.adresse ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Ville</th>
+                    <td>
+                        {% if depot.ville %}
+                            <a href="{{ path('app_ville_show', {'id': depot.ville.id}) }}" class="link-body-emphasis">{{ depot.ville.label }}</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="h5 mt-4 mb-3">Lignes desservies</h2>
+
+        {% if depot.lignes|length > 0 %}
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                {% for ligne in depot.lignes %}
+                    <a href="{{ path('app_ligne_show', {'id': ligne.id}) }}" class="link-body-emphasis text-decoration-none">
+                        <span class="pastille-ligne" style="--ligne-couleur: {{ ligne.couleur|default('#6c757d') }};"></span> {{ ligne.label }}
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">Aucune ligne rattachée à ce dépôt.</p>
+        {% endif %}
+
+        <h2 class="h5 mt-4 mb-3">Matériel affecté</h2>
+
+        {% if depot.materielDepots|length > 0 %}
+            <table class="table align-middle mb-4">
+                <thead>
+                    <tr>
+                        <th>Matériel</th>
+                        <th>Arrivée</th>
+                        <th>Fin</th>
+                        <th>Effectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for materielDepot in depot.materielDepots %}
+                    <tr>
+                        <td>
+                            {% if materielDepot.materiel %}
+                                <a href="{{ path('app_materiel_show', {'id': materielDepot.materiel.id}) }}" class="link-body-emphasis">{{ materielDepot.materiel.label }}</a>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>{{ materielDepot.arrivee ? materielDepot.arrivee|date('Y-m-d') : '' }}</td>
+                        <td>{{ materielDepot.fin ? materielDepot.fin|date('Y-m-d') : '' }}</td>
+                        <td>{{ materielDepot.effectif ?? '' }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">Aucun matériel rattaché à ce dépôt.</p>
+        {% endif %}
+
+        <a href="{{ path('app_depot_index') }}" class="btn btn-secondary">Retour à la liste</a>
+    </div>
+{% endblock %}

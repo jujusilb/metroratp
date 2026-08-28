@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dépôts{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Dépôts</h1>
+
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_depot_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'un dépôt',
+        }) }}
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>{{ knp_pagination_sortable(depots, 'Label', 'd.label') }}</th>
+                    <th>Ville</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for depot in depots %}
+                <tr>
+                    <td>{{ depot.label }}</td>
+                    <td>{{ depot.ville ? depot.ville.label : '—' }}</td>
+                    <td>
+                        <a href="{{ path('app_depot_show', {'id': depot.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_depot_edit', {'id': depot.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(depots) }}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_depot_new') }}" class="btn btn-primary">Créer nouveau dépôt</a>
+        {% endif %}
+    </div>
+{% endblock %}
