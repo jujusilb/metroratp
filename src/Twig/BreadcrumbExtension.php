@@ -23,29 +23,30 @@ class BreadcrumbExtension extends AbstractExtension
         // Réseau
         'ligne' => ['Réseau', 'app_ligne_index', 'Lignes'],
         'type_transport' => ['Réseau', 'app_type_transport_index', 'Types de transport'],
-        'gestionnaire' => ['Réseau', 'app_gestionnaire_index', 'Gestionnaires'],
         'station' => ['Réseau', 'app_station_index', 'Stations'],
-        'raison' => ['Réseau', 'app_raison_index', "Raisons d'inactivité"],
-        'ville' => ['Réseau', 'app_ville_index', 'Villes'],
-        'plan' => ['Réseau', 'app_plan_index', 'Plans de secteur'],
-        'plan_region' => ['Réseau', 'app_plan_region_index', 'Plans régionaux'],
         'pole_echange' => ['Réseau', 'app_pole_echange_index', "Pôles d'échange"],
-        'point_de_vente' => ['Réseau', 'app_point_de_vente_index', 'Points de vente'],
-        'sanitaire' => ['Réseau', 'app_sanitaire_index', 'Toilettes'],
-        'sanisette_publique' => ['Réseau', 'app_sanisette_publique_index', 'Sanisettes publiques'],
-        'defibrillateur' => ['Réseau', 'app_defibrillateur_index', 'Défibrillateurs'],
-        'fontaine_eau' => ['Réseau', 'app_fontaine_eau_index', 'Fontaines à eau'],
-        'equipement_arret' => ['Réseau', 'app_equipement_arret_index', 'Équipements des arrêts'],
-        'projet_arret' => ['Réseau', 'app_projet_arret_index', "Projets d'arrêts"],
         'desserte' => ['Réseau', 'app_desserte_index', 'Dessertes'],
         'periode_ouverture' => ['Réseau', 'app_periode_ouverture_index', "Périodes d'ouverture"],
         'correspondance' => ['Réseau', 'app_correspondance_index', 'Correspondances'],
         'troncon' => ['Réseau', 'app_troncon_index', 'Tronçons'],
         'type_troncon' => ['Réseau', 'app_type_troncon_index', 'Types de tronçon'],
-        'style_station' => ['Réseau', 'app_style_station_index', 'Styles'],
-        'style_acces' => ['Réseau', 'app_style_acces_index', 'Styles'],
-        'style_ecriture' => ['Réseau', 'app_style_ecriture_index', 'Styles'],
         'document_ligne' => ['Réseau', 'app_ligne_index', 'Lignes'],
+
+        // Équipement
+        'sanitaire' => ['Équipement', 'app_sanitaire_index', 'Toilettes'],
+        'sanisette_publique' => ['Équipement', 'app_sanisette_publique_index', 'Sanisettes publiques'],
+        'defibrillateur' => ['Équipement', 'app_defibrillateur_index', 'Défibrillateurs'],
+        'fontaine_eau' => ['Équipement', 'app_fontaine_eau_index', 'Fontaines à eau'],
+        'style_station' => ['Équipement', 'app_style_station_index', 'Styles'],
+        'style_acces' => ['Équipement', 'app_style_acces_index', 'Styles'],
+        'style_ecriture' => ['Équipement', 'app_style_ecriture_index', 'Styles'],
+        'equipement_arret' => ['Équipement', 'app_equipement_arret_index', 'Équipements des arrêts'],
+
+        // Lieux
+        'ville' => ['Lieux', 'app_ville_index', 'Villes'],
+        'plan' => ['Lieux', 'app_plan_index', 'Plans de secteur'],
+        'plan_region' => ['Lieux', 'app_plan_region_index', 'Plans régionaux'],
+        'point_de_vente' => ['Lieux', 'app_point_de_vente_index', 'Points de vente'],
 
         // Accès
         'acces' => ['Accès', 'app_acces_index', 'Accès'],
@@ -59,6 +60,9 @@ class BreadcrumbExtension extends AbstractExtension
         // Exploitation
         'mission' => ['Exploitation', 'app_mission_index', 'Missions'],
         'service' => ['Exploitation', 'app_service_index', 'Services'],
+        'gestionnaire' => ['Exploitation', 'app_gestionnaire_index', 'Gestionnaires'],
+        'raison' => ['Exploitation', 'app_raison_index', "Raisons d'inactivité"],
+        'projet_arret' => ['Exploitation', 'app_projet_arret_index', "Projets d'arrêts"],
 
         // Suivi projet
         'tache' => ['Suivi projet', 'app_tache_index', 'Tâches'],
