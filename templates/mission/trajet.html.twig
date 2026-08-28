@@ -30,7 +30,7 @@
                         </a>
                         <span class="d-flex align-items-center gap-2">
                             {% if mission.numero %}<span class="badge rounded-pill text-bg-light text-muted border">#{{ mission.numero }}</span>{% endif %}
-                            <a href="{{ path('app_mission_show', {'id': mission.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                            <a href="{{ path('app_mission_show', {'id': mission.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
                         </span>
                     </li>
                 {% endfor %}

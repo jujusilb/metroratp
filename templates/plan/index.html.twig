@@ -37,9 +37,9 @@
                     <td>{{ plan.departements ?? '—' }}</td>
                     <td><a href="{{ plan.urlPdf }}" target="_blank" rel="noopener">Voir le PDF</a></td>
                     <td>
-                        <a href="{{ path('app_plan_show', {'id': plan.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_plan_show', {'id': plan.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path('app_plan_edit', {'id': plan.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="{{ path('app_plan_edit', {'id': plan.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
                         {% endif %}
                     </td>
                 </tr>

@@ -28,9 +28,9 @@
                     <td>{{ pole_echange.label }}</td>
                     <td>{{ pole_echange.stations|length }}</td>
                     <td>
-                        <a href="{{ path('app_pole_echange_show', {'id': pole_echange.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_pole_echange_show', {'id': pole_echange.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path('app_pole_echange_edit', {'id': pole_echange.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="{{ path('app_pole_echange_edit', {'id': pole_echange.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
                         {% endif %}
                     </td>
                 </tr>

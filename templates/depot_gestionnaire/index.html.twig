@@ -40,9 +40,9 @@
                     <td>{{ depot_gestionnaire.arrivee ? depot_gestionnaire.arrivee|date('Y-m-d') : '' }}</td>
                     <td>{{ depot_gestionnaire.fin ? depot_gestionnaire.fin|date('Y-m-d') : '' }}</td>
                     <td>
-                        <a href="{{ path('app_depot_gestionnaire_show', {'id': depot_gestionnaire.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_depot_gestionnaire_show', {'id': depot_gestionnaire.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path('app_depot_gestionnaire_edit', {'id': depot_gestionnaire.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="{{ path('app_depot_gestionnaire_edit', {'id': depot_gestionnaire.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
                         {% endif %}
                     </td>
                 </tr>

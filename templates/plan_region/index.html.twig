@@ -28,9 +28,9 @@
                     <td>{{ plan_region.datePublication ?? '—' }}</td>
                     <td><a href="{{ plan_region.urlPdf }}" target="_blank" rel="noopener">Voir le PDF</a></td>
                     <td>
-                        <a href="{{ path('app_plan_region_show', {'id': plan_region.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_plan_region_show', {'id': plan_region.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path('app_plan_region_edit', {'id': plan_region.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="{{ path('app_plan_region_edit', {'id': plan_region.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
                         {% endif %}
                     </td>
                 </tr>

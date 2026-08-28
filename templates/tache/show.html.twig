@@ -64,7 +64,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{{ path('app_etape_show', {'id': etape.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                            <a href="{{ path('app_etape_show', {'id': etape.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
                         </td>
                     </tr>
                 {% endfor %}

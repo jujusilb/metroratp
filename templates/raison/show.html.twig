@@ -48,7 +48,7 @@
                         </td>
                         <td>{{ station.ville ?? '—' }}</td>
                         <td>
-                            <a href="{{ path('app_station_show', {'id': station.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                            <a href="{{ path('app_station_show', {'id': station.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
                         </td>
                     </tr>
                 {% endfor %}

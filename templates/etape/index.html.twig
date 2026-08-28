@@ -36,8 +36,8 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a href="{{ path('app_etape_show', {'id': etape.id}) }}" class="btn btn-info btn-sm">Affichage</a>
-                        <a href="{{ path('app_etape_edit', {'id': etape.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        <a href="{{ path('app_etape_show', {'id': etape.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
+                        <a href="{{ path('app_etape_edit', {'id': etape.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
                     </td>
                 </tr>
             {% else %}

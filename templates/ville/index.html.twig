@@ -33,7 +33,7 @@
                     <td>{{ ville.codesPostaux ? ville.codesPostaux|join(', ') : '—' }}</td>
                     <td>{{ ville.stations|length }}</td>
                     <td>
-                        <a href="{{ path('app_ville_show', {'id': ville.id}) }}" class="btn btn-info btn-sm">Affichage</a>
+                        <a href="{{ path('app_ville_show', {'id': ville.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
                     </td>
                 </tr>
             {% else %}
