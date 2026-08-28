@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Entity\Acces;
-use App\Entity\Sortie;
 use App\Entity\Station;
 use App\Repository\StationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,8 +13,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Remplit Acces (une sortie physique : nom de rue, numero, coordonnees) et Sortie (le lien vers la
- * Station desservie) depuis acces_entrees.csv (extrait d'acces.csv + stops.txt GTFS IDFM - voir
+ * Remplit Acces (une sortie physique : nom de rue, numero, coordonnees) et son rattachement
+ * ManyToMany a la Station desservie (Acces::stations) depuis acces_entrees.csv (extrait d'acces.csv
+ * + stops.txt GTFS IDFM - voir
  * documentation/scripts/extraire_acces_entrees.php ; le feed GTFS complet, ~1,3 Go, n'est jamais
  * commit). Ce fichier derive fusionne deja : le libelle/numero officiels du dataset "acces"
  * (data.iledefrance-mobilites.fr) quand disponibles, sinon stop_name/stop_code du GTFS (~7 acces
@@ -35,17 +35,18 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * incomplete).
  *
  * Rattachement par StationRepository::trouverIdCanoniqueParZdc() (et non directement par
- * codeExterne) : sans ca, les Sortie atterriraient sur la Station ZdC-liee plutot que sur la
+ * codeExterne) : sans ca, les Acces atterriraient sur la Station ZdC-liee plutot que sur la
  * Station "originale" que /station/{id} affiche reellement pour tout le reseau metro/RER/tram
- * historique (voir TODO.md, doublons de Station) - verifie sur Chatelet, ou aucune Sortie
+ * historique (voir TODO.md, doublons de Station) - verifie sur Chatelet, ou aucun Acces
  * n'apparaissait sur la bonne page avant ce correctif.
  *
- * Reconstruction complete a chaque execution (purge Acces/Sortie avant import) : les 1068 lignes
- * precedentes etaient une saisie manuelle partielle, concentree sur des Station "originales" sans
- * codeExterne (le probleme de doublons de Station documente dans TODO.md), donc pas reconciliable
- * proprement avec un import cle par ZdC.
+ * Reconstruction complete a chaque execution (purge Acces avant import, ce qui purge au passage la
+ * table de jointure acces_station via ON DELETE CASCADE) : les 1068 lignes precedentes etaient une
+ * saisie manuelle partielle, concentree sur des Station "originales" sans codeExterne (le probleme
+ * de doublons de Station documente dans TODO.md), donc pas reconciliable proprement avec un import
+ * cle par ZdC.
  */
-#[AsCommand(name: 'app:construire-acces-sorties', description: 'Reconstruit Acces/Sortie depuis acces_entrees.csv pour le rattachement aux Stations')]
+#[AsCommand(name: 'app:construire-acces-sorties', description: 'Reconstruit Acces depuis acces_entrees.csv pour le rattachement aux Stations')]
 class ConstruireAccesSortiesCommand extends Command
 {
     private const ACCES_ENTREES_CSV = 'documentation/scripts/donnees-extraites/acces_entrees.csv';
@@ -80,14 +81,14 @@ class ConstruireAccesSortiesCommand extends Command
         $stationIdParZdc = $this->stationRepository->trouverIdCanoniqueParZdc();
         $io->info(\count($stationIdParZdc).' Stations avec un codeExterne.');
 
-        $io->section('Purge des Acces/Sortie existants...');
+        $io->section('Purge des Acces existants...');
         // position_rame reference acces (FK) : purge d'abord, sinon la purge d'acces echoue.
         // Consequence : app:construire-positions-rame doit etre rejouee juste apres celle-ci.
+        // acces_station (table de jointure ManyToMany) est purgee automatiquement par cascade.
         $connexion->executeStatement('DELETE FROM position_rame');
-        $connexion->executeStatement('DELETE FROM sortie');
         $connexion->executeStatement('DELETE FROM acces');
 
-        $io->section('Lecture de acces_entrees.csv et creation des Acces/Sortie...');
+        $io->section('Lecture de acces_entrees.csv et creation des Acces...');
         $nbCrees = 0;
         $nbEnAttente = 0;
         $nbSansStation = 0;
@@ -110,12 +111,8 @@ class ConstruireAccesSortiesCommand extends Command
             $acces->setLongitude('' !== $ligne['lon'] ? (float) $ligne['lon'] : null);
             $acces->setEstEntree('' !== ($ligne['estEntree'] ?? '') ? 'true' === $ligne['estEntree'] : null);
             $acces->setEstSortie('' !== ($ligne['estSortie'] ?? '') ? 'true' === $ligne['estSortie'] : null);
+            $acces->addStation($this->entityManager->getReference(Station::class, $stationId));
             $this->entityManager->persist($acces);
-
-            $sortie = new Sortie();
-            $sortie->setAcces($acces);
-            $sortie->setStation($this->entityManager->getReference(Station::class, $stationId));
-            $this->entityManager->persist($sortie);
 
             ++$nbCrees;
             if (++$nbEnAttente >= self::TAILLE_LOT) {
@@ -129,7 +126,7 @@ class ConstruireAccesSortiesCommand extends Command
         $io->newLine();
 
         $io->success(sprintf(
-            '%d Acces/Sortie crees sur %d acces (%d ignores : ZdC sans Station en base).',
+            '%d Acces crees sur %d (%d ignores : ZdC sans Station en base).',
             $nbCrees,
             $nbTotal,
             $nbSansStation,

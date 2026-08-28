@@ -108,10 +108,13 @@ class Station
     private ?int $zoneTarifaire = null;
 
     /**
-     * @var Collection<int, Sortie>
+     * Acces rattaches a cette Station - ManyToMany plutot qu'une simple table de jointure "Sortie"
+     * (aucune donnee propre, juste 2 cles etrangeres) : cote inverse, voir Acces::stations.
+     *
+     * @var Collection<int, Acces>
      */
-    #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'station')]
-    private Collection $sorties;
+    #[ORM\ManyToMany(targetEntity: Acces::class, mappedBy: 'stations')]
+    private Collection $acces;
 
     /**
      * @var Collection<int, Desserte>
@@ -186,7 +189,7 @@ class Station
 
     public function __construct()
     {
-        $this->sorties = new ArrayCollection();
+        $this->acces = new ArrayCollection();
         $this->dessertes = new ArrayCollection();
         $this->pointsDeVente = new ArrayCollection();
         $this->sanitaires = new ArrayCollection();
@@ -359,30 +362,27 @@ class Station
     }
 
     /**
-     * @return Collection<int, Sortie>
+     * @return Collection<int, Acces>
      */
-    public function getSorties(): Collection
+    public function getAcces(): Collection
     {
-        return $this->sorties;
+        return $this->acces;
     }
 
-    public function addSorty(Sortie $sorty): static
+    public function addAcce(Acces $acce): static
     {
-        if (!$this->sorties->contains($sorty)) {
-            $this->sorties->add($sorty);
-            $sorty->setStation($this);
+        if (!$this->acces->contains($acce)) {
+            $this->acces->add($acce);
+            $acce->addStation($this);
         }
 
         return $this;
     }
 
-    public function removeSorty(Sortie $sorty): static
+    public function removeAcce(Acces $acce): static
     {
-        if ($this->sorties->removeElement($sorty)) {
-            // set the owning side to null (unless already changed)
-            if ($sorty->getStation() === $this) {
-                $sorty->setStation(null);
-            }
+        if ($this->acces->removeElement($acce)) {
+            $acce->removeStation($this);
         }
 
         return $this;

@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Acces;
 use App\Entity\Plan;
 use App\Entity\PoleEchange;
 use App\Entity\Station;
@@ -27,6 +28,18 @@ class StationType extends AbstractType
                 'choice_label' => 'label',
                 'required' => false,
                 'placeholder' => '-- Aucun --',
+            ])
+            ->add('acces', EntityType::class, [
+                'class' => Acces::class,
+                'label' => 'Accès',
+                'choice_label' => fn (Acces $a): string => $a->getLabel().($a->getNumero() ? ' (n°'.$a->getNumero().')' : ''),
+                'multiple' => true,
+                'required' => false,
+                // Sans ca, Symfony muterait directement la collection getAcces() au lieu d'appeler
+                // addAcce()/removeAcce() - qui seuls repercutent le changement cote proprietaire
+                // (Acces::stations, qui porte la cle etrangere reelle).
+                'by_reference' => false,
+                'help' => "Choisir un accès l'ajoute à la liste ; cliquer sur « Retirer » l'enlève.",
             ])
         ;
     }

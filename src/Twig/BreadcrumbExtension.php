@@ -49,7 +49,6 @@ class BreadcrumbExtension extends AbstractExtension
 
         // Accès
         'acces' => ['Accès', 'app_acces_index', 'Accès'],
-        'sortie' => ['Accès', 'app_sortie_index', 'Sorties'],
         'position_rame' => ['Accès', 'app_position_rame_index', 'Conseils de position'],
 
         // Matériel

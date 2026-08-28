@@ -19,10 +19,13 @@ class Acces
     private string $label;
 
     /**
-     * @var Collection<int, Sortie>
+     * Stations rattachees a cet Acces - ManyToMany plutot qu'une simple table de jointure "Sortie"
+     * (aucune donnee propre, juste 2 cles etrangeres) : cote proprietaire (voir Station::acces).
+     *
+     * @var Collection<int, Station>
      */
-    #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'acces')]
-    private Collection $sorties;
+    #[ORM\ManyToMany(targetEntity: Station::class, inversedBy: 'acces')]
+    private Collection $stations;
 
     #[ORM\Column(length: 4, nullable: true)]
     private ?string $numero = null;
@@ -123,7 +126,7 @@ class Acces
 
     public function __construct()
     {
-        $this->sorties = new ArrayCollection();
+        $this->stations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -144,31 +147,25 @@ class Acces
     }
 
     /**
-     * @return Collection<int, Sortie>
+     * @return Collection<int, Station>
      */
-    public function getSorties(): Collection
+    public function getStations(): Collection
     {
-        return $this->sorties;
+        return $this->stations;
     }
 
-    public function addSorty(Sortie $sorty): static
+    public function addStation(Station $station): static
     {
-        if (!$this->sorties->contains($sorty)) {
-            $this->sorties->add($sorty);
-            $sorty->setAcces($this);
+        if (!$this->stations->contains($station)) {
+            $this->stations->add($station);
         }
 
         return $this;
     }
 
-    public function removeSorty(Sortie $sorty): static
+    public function removeStation(Station $station): static
     {
-        if ($this->sorties->removeElement($sorty)) {
-            // set the owning side to null (unless already changed)
-            if ($sorty->getAcces() === $this) {
-                $sorty->setAcces(null);
-            }
-        }
+        $this->stations->removeElement($station);
 
         return $this;
     }

@@ -20,7 +20,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * Contrairement aux autres datasets d'equipements en station, la colonne "id IDM de l'acces le
  * plus proche" correspond exactement a Acces::codeExterne (verifie avant de coder : 91/91
  * rattaches) : le rattachement a Acces est donc OFFICIEL. La Station est ensuite derivee via les
- * Sortie de cet Acces, pour un affichage direct sur la fiche Station.
+ * Station rattachees a cet Acces (Acces::stations), pour un affichage direct sur la fiche Station.
  */
 #[AsCommand(name: 'app:importer-fontaines-eau', description: 'Importe les FontaineEau et les rattache officiellement via Acces::codeExterne')]
 class ImporterFontainesEauCommand extends Command
@@ -65,16 +65,16 @@ class ImporterFontainesEauCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $connexion = $this->entityManager->getConnection();
 
-        $io->section('Chargement des Acces (codeExterne) et de leur Station via Sortie...');
+        $io->section('Chargement des Acces (codeExterne) et de leur Station...');
         $accesParCode = [];
         foreach ($connexion->executeQuery('SELECT id, code_externe FROM acces WHERE code_externe IS NOT NULL')->iterateAssociative() as $row) {
             $accesParCode[$row['code_externe']] = (int) $row['id'];
         }
         $stationParAcces = [];
-        foreach ($connexion->executeQuery('SELECT acces_id, station_id FROM sortie WHERE acces_id IS NOT NULL AND station_id IS NOT NULL')->iterateAssociative() as $row) {
+        foreach ($connexion->executeQuery('SELECT acces_id, station_id FROM acces_station')->iterateAssociative() as $row) {
             $stationParAcces[(int) $row['acces_id']] ??= (int) $row['station_id'];
         }
-        $io->info(\count($accesParCode).' Acces avec codeExterne, '.\count($stationParAcces).' relies a une Station via Sortie.');
+        $io->info(\count($accesParCode).' Acces avec codeExterne, '.\count($stationParAcces).' relies a une Station.');
 
         $io->section('Purge des FontaineEau existants...');
         $connexion->executeStatement('DELETE FROM fontaine_eau');

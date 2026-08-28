@@ -35,8 +35,8 @@ class AccesRepository extends ServiceEntityRepository
         if (null !== $recherche && '' !== trim($recherche)) {
             $qb->andWhere(
                 'a.label LIKE :recherche OR a.numero LIKE :recherche OR EXISTS ('.
-                'SELECT 1 FROM App\\Entity\\Sortie sortie JOIN sortie.station station '.
-                'WHERE sortie.acces = a AND station.label LIKE :recherche'.
+                'SELECT 1 FROM App\\Entity\\Station station '.
+                'WHERE station MEMBER OF a.stations AND station.label LIKE :recherche'.
                 ')'
             )->setParameter('recherche', '%'.trim($recherche).'%')
             ;

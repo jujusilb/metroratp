@@ -91,9 +91,8 @@ final class StationController extends AbstractController
     private function construireCarteAcces(Station $station): array
     {
         $acces = [];
-        foreach ($station->getSorties() as $sortie) {
-            $unAcces = $sortie->getAcces();
-            if (null === $unAcces || null === $unAcces->getLatitude() || null === $unAcces->getLongitude()) {
+        foreach ($station->getAcces() as $unAcces) {
+            if (null === $unAcces->getLatitude() || null === $unAcces->getLongitude()) {
                 continue;
             }
             $acces[] = [

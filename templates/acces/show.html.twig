@@ -109,18 +109,13 @@
 
         <h2 class="h5 mt-4 mb-3">Stations desservies</h2>
 
-        {% if acce.sorties|length > 0 %}
+        {% if acce.stations|length > 0 %}
             <ul class="list-group mb-4">
-                {% for sortie in acce.sorties %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {% if sortie.station %}
-                            <a href="{{ path('app_station_show', {'id': sortie.station.id}) }}" class="link-body-emphasis">
-                                {{ sortie.station.label }}
-                            </a>
-                        {% else %}
-                            <span class="text-muted">—</span>
-                        {% endif %}
-                        <a href="{{ path('app_sortie_show', {'id': sortie.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
+                {% for station in acce.stations %}
+                    <li class="list-group-item">
+                        <a href="{{ path('app_station_show', {'id': station.id}) }}" class="link-body-emphasis">
+                            {{ station.label }}
+                        </a>
                     </li>
                 {% endfor %}
             </ul>

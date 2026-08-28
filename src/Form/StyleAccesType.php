@@ -25,22 +25,21 @@ class StyleAccesType extends AbstractType
                 // addAcces()/removeAcces() : le cote proprietaire de la relation (Acces::styleAcces,
                 // qui porte la cle etrangere) ne serait alors jamais mis a jour.
                 'by_reference' => false,
-                // Station (via la premiere Sortie) + label/numero de l'Acces, pour distinguer les
-                // accès homonymes de stations différentes (meme logique que StyleStationType).
+                // Station (via la premiere Station rattachee) + label/numero de l'Acces, pour
+                // distinguer les accès homonymes de stations différentes (meme logique que
+                // StyleStationType).
                 'choice_label' => function (Acces $a): string {
-                    $sortie = $a->getSorties()->first();
-                    $station = $sortie ? $sortie->getStation()?->getLabel() : null;
+                    $station = $a->getStations()->first();
 
                     return sprintf(
                         '%s - %s%s',
-                        $station ?? '?',
+                        $station ? $station->getLabel() : '?',
                         $a->getLabel(),
                         $a->getNumero() ? ' (n°'.$a->getNumero().')' : '',
                     );
                 },
                 'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('a')
-                    ->leftJoin('a.sorties', 'sortie')->addSelect('sortie')
-                    ->leftJoin('sortie.station', 'station')->addSelect('station')
+                    ->leftJoin('a.stations', 'station')->addSelect('station')
                     ->orderBy('station.label', 'ASC')
                     ->addOrderBy('a.label', 'ASC'),
                 'help' => "Choisir un accès l'ajoute à la liste ; cliquer sur « Retirer » l'enlève.",

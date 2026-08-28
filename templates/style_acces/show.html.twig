@@ -43,10 +43,10 @@
                 {% for acces in style_acces.acces %}
                     <tr>
                         <td>
-                            {% set sortie = acces.sorties.first %}
-                            {% if sortie and sortie.station %}
-                                <a href="{{ path('app_station_show', {'id': sortie.station.id}) }}" class="link-body-emphasis">
-                                    {{ sortie.station.label }}
+                            {% set station = acces.stations.first %}
+                            {% if station %}
+                                <a href="{{ path('app_station_show', {'id': station.id}) }}" class="link-body-emphasis">
+                                    {{ station.label }}
                                 </a>
                             {% else %}
                                 <span class="text-muted">—</span>

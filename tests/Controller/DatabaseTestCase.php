@@ -18,7 +18,6 @@ use App\Entity\Mission;
 use App\Entity\PeriodeOuverture;
 use App\Entity\Raison;
 use App\Entity\Service;
-use App\Entity\Sortie;
 use App\Entity\Station;
 use App\Entity\StyleEcriture;
 use App\Entity\StyleStation;
@@ -56,7 +55,6 @@ abstract class DatabaseTestCase extends WebTestCase
             MaterielDepot::class,
             DepotLigne::class,
             DepotGestionnaire::class,
-            Sortie::class,
             PeriodeOuverture::class,
             Correspondance::class,
             Direction::class,
