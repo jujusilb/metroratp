@@ -31,10 +31,10 @@ class Depot
     private ?Ville $ville = null;
 
     /**
-     * @var Collection<int, Ligne>
+     * @var Collection<int, DepotLigne>
      */
-    #[ORM\ManyToMany(targetEntity: Ligne::class, inversedBy: 'depots')]
-    private Collection $lignes;
+    #[ORM\OneToMany(targetEntity: DepotLigne::class, mappedBy: 'depot')]
+    private Collection $depotLignes;
 
     /**
      * @var Collection<int, MaterielDepot>
@@ -44,7 +44,7 @@ class Depot
 
     public function __construct()
     {
-        $this->lignes = new ArrayCollection();
+        $this->depotLignes = new ArrayCollection();
         $this->materielDepots = new ArrayCollection();
     }
 
@@ -90,25 +90,30 @@ class Depot
     }
 
     /**
-     * @return Collection<int, Ligne>
+     * @return Collection<int, DepotLigne>
      */
-    public function getLignes(): Collection
+    public function getDepotLignes(): Collection
     {
-        return $this->lignes;
+        return $this->depotLignes;
     }
 
-    public function addLigne(Ligne $ligne): static
+    public function addDepotLigne(DepotLigne $depotLigne): static
     {
-        if (!$this->lignes->contains($ligne)) {
-            $this->lignes->add($ligne);
+        if (!$this->depotLignes->contains($depotLigne)) {
+            $this->depotLignes->add($depotLigne);
+            $depotLigne->setDepot($this);
         }
 
         return $this;
     }
 
-    public function removeLigne(Ligne $ligne): static
+    public function removeDepotLigne(DepotLigne $depotLigne): static
     {
-        $this->lignes->removeElement($ligne);
+        if ($this->depotLignes->removeElement($depotLigne)) {
+            if ($depotLigne->getDepot() === $this) {
+                $depotLigne->setDepot(null);
+            }
+        }
 
         return $this;
     }

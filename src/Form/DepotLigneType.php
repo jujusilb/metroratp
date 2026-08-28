@@ -3,23 +3,27 @@
 namespace App\Form;
 
 use App\Entity\Depot;
-use App\Entity\Ville;
+use App\Entity\DepotLigne;
+use App\Entity\Ligne;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class DepotType extends AbstractType
+class DepotLigneType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('label')
-            ->add('adresse', null, ['required' => false])
-            ->add('ville', EntityType::class, [
-                'class' => Ville::class,
+            ->add('arrivee', null, ['required' => false])
+            ->add('fin', null, ['required' => false])
+            ->add('depot', EntityType::class, [
+                'class' => Depot::class,
                 'choice_label' => 'label',
-                'required' => false,
+            ])
+            ->add('ligne', EntityType::class, [
+                'class' => Ligne::class,
+                'choice_label' => 'label',
             ])
         ;
     }
@@ -27,7 +31,7 @@ class DepotType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Depot::class,
+            'data_class' => DepotLigne::class,
         ]);
     }
 }

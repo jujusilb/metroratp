@@ -3,7 +3,6 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Depot;
-use App\Entity\Ligne;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -83,35 +82,6 @@ final class DepotControllerTest extends DatabaseTestCase
         $fixture = $this->depotRepository->findAll();
 
         self::assertSame('Centre bus renommé', $fixture[0]->getLabel());
-    }
-
-    public function testEditAssigneDesLignes(): void
-    {
-        $ligneA = new Ligne();
-        $ligneA->setLabel('21');
-        $this->manager->persist($ligneA);
-
-        $ligneB = new Ligne();
-        $ligneB->setLabel('27');
-        $this->manager->persist($ligneB);
-
-        $fixture = new Depot();
-        $fixture->setLabel('Centre bus de Testville');
-        $this->manager->persist($fixture);
-        $this->manager->flush();
-
-        $crawler = $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
-
-        $form = $crawler->selectButton('Mettre à jour')->form();
-        $form['depot[lignes]']->setValue([(string) $ligneA->getId(), (string) $ligneB->getId()]);
-        $this->client->submit($form);
-
-        self::assertResponseRedirects('/depot');
-
-        $this->manager->clear();
-        $updatedDepot = $this->manager->getRepository(Depot::class)->find($fixture->getId());
-
-        self::assertCount(2, $updatedDepot->getLignes());
     }
 
     public function testRemove(): void

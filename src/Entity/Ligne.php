@@ -66,13 +66,14 @@ class Ligne
     private Collection $documents;
 
     /**
-     * Depots (centres bus) desservant cette Ligne - voir Depot, le materiel de bus se deduit par
-     * jointure Ligne -> Depot -> MaterielDepot plutot que d'etre rattache directement a la Ligne.
+     * Depots (centres bus) desservant cette Ligne, avec periode - voir Depot/DepotLigne, le
+     * materiel de bus se deduit par jointure Ligne -> Depot -> MaterielDepot plutot que d'etre
+     * rattache directement a la Ligne.
      *
-     * @var Collection<int, Depot>
+     * @var Collection<int, DepotLigne>
      */
-    #[ORM\ManyToMany(targetEntity: Depot::class, mappedBy: 'lignes')]
-    private Collection $depots;
+    #[ORM\OneToMany(targetEntity: DepotLigne::class, mappedBy: 'ligne')]
+    private Collection $depotLignes;
 
     /**
      * Date a laquelle la Ligne est devenue entierement automatique (conduite sans conducteur,
@@ -90,7 +91,7 @@ class Ligne
         $this->dessertes = new ArrayCollection();
         $this->materielLignes = new ArrayCollection();
         $this->documents = new ArrayCollection();
-        $this->depots = new ArrayCollection();
+        $this->depotLignes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -293,11 +294,11 @@ class Ligne
     }
 
     /**
-     * @return Collection<int, Depot>
+     * @return Collection<int, DepotLigne>
      */
-    public function getDepots(): Collection
+    public function getDepotLignes(): Collection
     {
-        return $this->depots;
+        return $this->depotLignes;
     }
 
     public function getNombreStations(): int
