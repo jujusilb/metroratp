@@ -42,12 +42,38 @@ use Doctrine\ORM\EntityManagerInterface;
  * seule fois a la construction du graphe entier, pas un vrai routage horaire dependant du temps
  * (l'heure d'arrivee a chaque noeud ne recalcule pas les lignes disponibles plus loin dans le
  * trajet) : approximation assumee sur un trajet tres long a cheval sur un changement de service.
+ *
+ * trouverPlusieursChemins() propose jusqu'a 3 itineraires (pas seulement le plus rapide) : un
+ * utilisateur reel n'optimise pas toujours le temps pur (confort, habitude, moins de
+ * correspondances). Methode par penalisation d'arcs, pas un vrai k-plus-court-chemin - voir son
+ * docblock et les constantes NB_RESULTATS_MAX/PENALITE_MULTIPLICATEUR/SEUIL_*.
  */
 class TrajetFinder
 {
     private const DUREE_TRONCON_MINUTES = 2.0;
     private const DUREE_CORRESPONDANCE_DEFAUT_MINUTES = 3.0;
     private const DUREE_ATTENTE_CORRESPONDANCE_MINUTES = 2.0;
+
+    /** Nombre maximum d'itineraires renvoyes par trouverPlusieursChemins() (le meilleur inclus). */
+    private const NB_RESULTATS_MAX = 3;
+
+    /** Securite : nombre maximum de tentatives Dijkstra, meme si peu aboutissent a un resultat garde. */
+    private const NB_TENTATIVES_MAX = 6;
+
+    /**
+     * Multiplie le poids des arcs deja empruntes par un resultat garde avant la tentative
+     * suivante, pour que Dijkstra explore naturellement un autre chemin (methode de penalisation -
+     * plus simple qu'un vrai k-plus-court-chemin de type Yen, qui demanderait d'adapter la logique
+     * de deviation a un Dijkstra multi-source/multi-puits). Ne garantit pas LE 2e/3e plus court
+     * chemin exact, juste une alternative raisonnable.
+     */
+    private const PENALITE_MULTIPLICATEUR = 4.0;
+
+    /** Une alternative plus lente que ce ratio par rapport au meilleur trajet est ignoree. */
+    private const SEUIL_DUREE_MAX_RATIO = 1.5;
+
+    /** Deux trajets partageant plus que cette proportion d'arcs communs sont juges trop similaires. */
+    private const SEUIL_SIMILARITE_MAX = 0.8;
 
     public function __construct(
         private readonly DesserteRepository $desserteRepository,
@@ -88,20 +114,94 @@ class TrajetFinder
         ?string $modeEntreeDestination = null,
         ?\DateTimeImmutable $moment = null,
     ): ?ResultatTrajet {
+        $resultats = $this->trouverPlusieursChemins($stationOrigineId, $stationDestinationId, $modesAutorises, $modeEntreeOrigine, $modeEntreeDestination, $moment);
+
+        return $resultats[0] ?? null;
+    }
+
+    /**
+     * Meme principe que trouverPlusCourtChemin(), mais renvoie jusqu'a NB_RESULTATS_MAX
+     * itineraires (le meilleur en premier) au lieu d'un seul - voir le docblock de la classe et
+     * PENALITE_MULTIPLICATEUR/SEUIL_DUREE_MAX_RATIO/SEUIL_SIMILARITE_MAX pour la methode.
+     *
+     * @param ?string[] $modesAutorises
+     *
+     * @return ResultatTrajet[]
+     */
+    public function trouverPlusieursChemins(
+        int $stationOrigineId,
+        int $stationDestinationId,
+        ?array $modesAutorises = null,
+        ?string $modeEntreeOrigine = null,
+        ?string $modeEntreeDestination = null,
+        ?\DateTimeImmutable $moment = null,
+    ): array {
         $dessertesOrigine = $this->dessertesIdsPourStation($stationOrigineId, $modesAutorises, $modeEntreeOrigine);
         $dessertesDestination = $this->dessertesIdsPourStation($stationDestinationId, $modesAutorises, $modeEntreeDestination);
 
         if ([] === $dessertesOrigine || [] === $dessertesDestination) {
-            return null;
+            return [];
         }
 
         // Meme station des deux cotes (au moins une desserte commune) : rien a parcourir.
         if ([] !== array_intersect($dessertesOrigine, $dessertesDestination)) {
-            return new ResultatTrajet([], 0.0);
+            return [new ResultatTrajet([], 0.0)];
         }
 
         [$adjacence, $tronconIdParArc] = $this->construireGraphe($modesAutorises, $moment);
 
+        $resultats = [];
+        $adjacenceCourante = $adjacence;
+        $meilleureDuree = null;
+
+        for ($tentative = 0; $tentative < self::NB_TENTATIVES_MAX && count($resultats) < self::NB_RESULTATS_MAX; ++$tentative) {
+            $trouve = $this->executerDijkstra($adjacenceCourante, $dessertesOrigine, $dessertesDestination);
+            if (null === $trouve) {
+                break;
+            }
+
+            $arcs = $this->arcsDuChemin($trouve['chemin']);
+
+            // Penalise ces arcs pour la tentative suivante, que ce resultat soit garde ou non :
+            // meme rejete (trop similaire/trop lent), il vaut mieux explorer ailleurs ensuite.
+            foreach ($arcs as [$depart, $arriveeArc]) {
+                $adjacenceCourante[$depart][$arriveeArc] *= self::PENALITE_MULTIPLICATEUR;
+            }
+
+            $meilleureDuree ??= $trouve['distance'];
+
+            if ($trouve['distance'] > $meilleureDuree * self::SEUIL_DUREE_MAX_RATIO) {
+                continue;
+            }
+            if ($this->estTropSimilaire($arcs, $resultats)) {
+                continue;
+            }
+
+            $resultats[] = ['chemin' => $trouve['chemin'], 'distance' => $trouve['distance'], 'arcs' => $arcs];
+        }
+
+        return array_map(
+            fn (array $resultat): ResultatTrajet => new ResultatTrajet(
+                $this->construireEtapes($resultat['chemin'], $adjacence, $tronconIdParArc),
+                $resultat['distance'],
+            ),
+            $resultats,
+        );
+    }
+
+    /**
+     * Coeur de l'algorithme de Dijkstra (multi-source/multi-puits, voir docblock de la classe),
+     * extrait pour etre reutilisable sur plusieurs graphes (le graphe complet, puis des versions
+     * de plus en plus "penalisees" pour trouverPlusieursChemins()).
+     *
+     * @param array<int, array<int, float>> $adjacence
+     * @param int[]                         $dessertesOrigine
+     * @param int[]                         $dessertesDestination
+     *
+     * @return ?array{chemin: int[], distance: float}
+     */
+    private function executerDijkstra(array $adjacence, array $dessertesOrigine, array $dessertesDestination): ?array
+    {
         $destinationRecherchee = array_flip($dessertesDestination);
         $distances = [];
         $predecesseurs = [];
@@ -153,11 +253,59 @@ class TrajetFinder
             $noeud = $predecesseurs[$noeud];
             $chemin[] = $noeud;
         }
-        $chemin = array_reverse($chemin);
 
-        $etapes = $this->construireEtapes($chemin, $adjacence, $tronconIdParArc);
+        return ['chemin' => array_reverse($chemin), 'distance' => $distances[$arrivee]];
+    }
 
-        return new ResultatTrajet($etapes, $distances[$arrivee]);
+    /**
+     * @param int[] $chemin
+     *
+     * @return list<array{0: int, 1: int}>
+     */
+    private function arcsDuChemin(array $chemin): array
+    {
+        $arcs = [];
+        for ($i = 0; $i < \count($chemin) - 1; ++$i) {
+            $arcs[] = [$chemin[$i], $chemin[$i + 1]];
+        }
+
+        return $arcs;
+    }
+
+    /**
+     * Vraie si $arcsCandidat partage plus de SEUIL_SIMILARITE_MAX de sa longueur (le plus court
+     * des deux trajets compares) avec un resultat deja garde - evite d'afficher 2 itineraires
+     * quasi identiques (ex: qui ne different que d'un arret).
+     *
+     * @param list<array{0: int, 1: int}>                                        $arcsCandidat
+     * @param list<array{chemin: int[], distance: float, arcs: list<array{0: int, 1: int}>}> $resultatsExistants
+     */
+    private function estTropSimilaire(array $arcsCandidat, array $resultatsExistants): bool
+    {
+        if ([] === $resultatsExistants) {
+            return false;
+        }
+
+        $candidatSet = [];
+        foreach ($arcsCandidat as [$depart, $arriveeArc]) {
+            $candidatSet["$depart-$arriveeArc"] = true;
+        }
+
+        foreach ($resultatsExistants as $resultat) {
+            $communs = 0;
+            foreach ($resultat['arcs'] as [$depart, $arriveeArc]) {
+                if (isset($candidatSet["$depart-$arriveeArc"])) {
+                    ++$communs;
+                }
+            }
+
+            $tailleMin = min(\count($candidatSet), \count($resultat['arcs']));
+            if ($tailleMin > 0 && ($communs / $tailleMin) > self::SEUIL_SIMILARITE_MAX) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

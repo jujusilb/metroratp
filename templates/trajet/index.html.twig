@@ -67,6 +67,23 @@
 
     {% if resultat %}
         <div class="container-fluid px-4">
+            {% if alternatives|length > 1 %}
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    {% for alt in alternatives %}
+                        <a href="{{ path('app_trajet_index', app.request.query.all|merge({'itineraire': loop.index0})) }}"
+                           class="btn btn-sm text-start {{ loop.index0 == indexSelectionne ? 'btn-primary' : 'btn-outline-secondary' }}">
+                            <div class="fw-semibold">Itinéraire {{ loop.index }}</div>
+                            <div class="small d-flex align-items-center flex-wrap gap-1">
+                                <span>{{ alt.duree }} min · {{ alt.correspondances }} corr.</span>
+                                {% for ligne in alt.lignes %}
+                                    <span class="pastille-ligne" style="--ligne-couleur: {{ ligne.couleur }};" title="{{ ligne.label }}"></span>
+                                {% endfor %}
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <div class="d-flex flex-wrap gap-3 mb-3">
                 <span class="badge text-bg-primary fs-6">{{ resultat.dureeMinutesTotale|round(1) }} min</span>
                 <span class="badge text-bg-secondary fs-6">{{ resultat.nombreCorrespondances }} correspondance{{ resultat.nombreCorrespondances > 1 ? 's' : '' }}</span>

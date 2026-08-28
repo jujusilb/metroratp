@@ -256,4 +256,56 @@ final class TrajetFinderTest extends DatabaseTestCase
 
         self::assertNotNull($resultat, 'Sans $moment fourni (comportement historique), aucune ligne ne doit etre exclue par horaire.');
     }
+
+    public function testTrouverPlusieursCheminsProposeDesAlternativesReellementDifferentes(): void
+    {
+        // 2 lignes completement disjointes reliant directement A a B (aucune correspondance
+        // necessaire : l'origine/destination sont des Station, Dijkstra part de toutes leurs
+        // dessertes - voir docblock de TrajetFinder), meme poids par defaut (2 min chacune) mais
+        // des arcs totalement differents : la 2e doit ressortir comme une vraie alternative.
+        $ligne1 = $this->createLigne('1');
+        $ligne2 = $this->createLigne('2');
+        $stationA = $this->createStation('A');
+        $stationB = $this->createStation('B');
+
+        $a1 = $this->createDesserte($ligne1, $stationA);
+        $b1 = $this->createDesserte($ligne1, $stationB);
+        $this->linkTroncon($a1, $b1);
+
+        $a2 = $this->createDesserte($ligne2, $stationA);
+        $b2 = $this->createDesserte($ligne2, $stationB);
+        $this->linkTroncon($a2, $b2);
+
+        $this->manager->flush();
+        $this->manager->clear();
+
+        $resultats = $this->trajetFinder->trouverPlusieursChemins($stationA->getId(), $stationB->getId());
+
+        self::assertCount(2, $resultats);
+        self::assertSame(2.0, $resultats[0]->dureeMinutesTotale);
+        self::assertSame(2.0, $resultats[1]->dureeMinutesTotale);
+
+        $ligneResultat1 = $resultats[0]->etapes[0]->depart->getLigne()->getLabel();
+        $ligneResultat2 = $resultats[1]->etapes[0]->depart->getLigne()->getLabel();
+        self::assertNotSame($ligneResultat1, $ligneResultat2, 'Les 2 itineraires doivent emprunter des lignes differentes.');
+    }
+
+    public function testTrouverPlusieursCheminsIgnoreUneAlternativeTropSimilaire(): void
+    {
+        // A -> B -> C avec un seul chemin possible (aucune ligne parallele) : penaliser les arcs
+        // du 1er resultat ne doit pas faire "retrouver" le meme chemin comme fausse 2e alternative.
+        $ligne = $this->createLigne('1');
+        $a = $this->createDesserte($ligne, $this->createStation('A'));
+        $b = $this->createDesserte($ligne, $this->createStation('B'));
+        $c = $this->createDesserte($ligne, $this->createStation('C'));
+        $this->linkTroncon($a, $b);
+        $this->linkTroncon($b, $c);
+
+        $this->manager->flush();
+        $this->manager->clear();
+
+        $resultats = $this->trajetFinder->trouverPlusieursChemins($a->getStation()->getId(), $c->getStation()->getId());
+
+        self::assertCount(1, $resultats, 'Aucun autre chemin reel n\'existe : une seule alternative doit etre renvoyee.');
+    }
 }

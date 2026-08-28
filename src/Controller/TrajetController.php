@@ -9,6 +9,7 @@ use App\Repository\DesserteRepository;
 use App\Repository\PositionRameRepository;
 use App\Repository\StationRepository;
 use App\Service\Trajet\Etape;
+use App\Service\Trajet\ResultatTrajet;
 use App\Service\TrajetFinder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -54,12 +55,12 @@ final class TrajetController extends AbstractController
             $moment = new \DateTimeImmutable();
         }
 
-        $resultat = null;
+        $resultats = [];
         $carte = null;
         $erreur = null;
 
         if (null !== $stationOrigine && null !== $stationDestination) {
-            $resultat = $trajetFinder->trouverPlusCourtChemin(
+            $resultats = $trajetFinder->trouverPlusieursChemins(
                 $stationOrigine->getId(),
                 $stationDestination->getId(),
                 $modesSelectionnes,
@@ -68,15 +69,25 @@ final class TrajetController extends AbstractController
                 $moment,
             );
 
-            if (null === $resultat) {
+            if ([] === $resultats) {
                 $erreur = 'Aucun trajet trouvé entre ces deux stations.';
-            } else {
-                $carte = [
-                    'trajet' => $this->construireTrajetPourAffichage($resultat->etapes),
-                    'tracesLignes' => $this->construireTracesLignesPourAffichage($resultat->etapes),
-                    'stationsInfo' => $this->construireInfosStationsPourAffichage($resultat->etapes),
-                ];
             }
+        }
+
+        // Itineraire affiche en detail (onglets Simple/Detaille/Carte) : le meilleur par defaut,
+        // ou celui choisi via le selecteur d'alternatives (voir construireApercusAlternatives()).
+        $indexSelectionne = $request->query->getInt('itineraire', 0);
+        if ($indexSelectionne < 0 || $indexSelectionne >= \count($resultats)) {
+            $indexSelectionne = 0;
+        }
+        $resultat = $resultats[$indexSelectionne] ?? null;
+
+        if (null !== $resultat) {
+            $carte = [
+                'trajet' => $this->construireTrajetPourAffichage($resultat->etapes),
+                'tracesLignes' => $this->construireTracesLignesPourAffichage($resultat->etapes),
+                'stationsInfo' => $this->construireInfosStationsPourAffichage($resultat->etapes),
+            ];
         }
 
         $segments = null !== $resultat ? $this->construireSegmentsPourAffichage($resultat->etapes, $positionRameRepository) : [];
@@ -89,6 +100,8 @@ final class TrajetController extends AbstractController
             'moment' => $moment,
             'modesSelectionnes' => $modesSelectionnes,
             'resultat' => $resultat,
+            'alternatives' => $this->construireApercusAlternatives($resultats),
+            'indexSelectionne' => $indexSelectionne,
             'segments' => $segments,
             'resumeSimple' => null !== $resultat ? $this->construireResumeSimple($segments) : null,
             'erreur' => $erreur,
@@ -99,6 +112,50 @@ final class TrajetController extends AbstractController
     private function modeValide(?string $mode): ?string
     {
         return \in_array($mode, self::MODES_DISPONIBLES, true) ? $mode : null;
+    }
+
+    /**
+     * Apercu leger de chaque itineraire renvoye par TrajetFinder::trouverPlusieursChemins(), pour
+     * le selecteur d'alternatives (duree/correspondances/lignes empruntees) - directement a partir
+     * des etapes, sans passer par construireSegmentsPourAffichage() (qui interroge PositionRame
+     * par troncon) : inutile pour un simple apercu, seul l'itineraire reellement affiche en detail
+     * a besoin de cette information.
+     *
+     * @param ResultatTrajet[] $resultats
+     *
+     * @return list<array{duree: float, correspondances: int, lignes: list<array{id: ?int, label: string, couleur: string}>}>
+     */
+    private function construireApercusAlternatives(array $resultats): array
+    {
+        $apercus = [];
+
+        foreach ($resultats as $resultat) {
+            $lignes = [];
+            $derniereLigneId = null;
+            foreach ($resultat->etapes as $etape) {
+                if (Etape::TYPE_TRONCON !== $etape->type) {
+                    continue;
+                }
+                $ligne = $etape->depart->getLigne();
+                if (null === $ligne || $ligne->getId() === $derniereLigneId) {
+                    continue;
+                }
+                $derniereLigneId = $ligne->getId();
+                $lignes[] = [
+                    'id' => $ligne->getId(),
+                    'label' => $ligne->getLabel() ?? '?',
+                    'couleur' => '#' . ltrim($ligne->getCouleur() ?? '6c757d', '#'),
+                ];
+            }
+
+            $apercus[] = [
+                'duree' => round($resultat->dureeMinutesTotale, 1),
+                'correspondances' => $resultat->getNombreCorrespondances(),
+                'lignes' => $lignes,
+            ];
+        }
+
+        return $apercus;
     }
 
     /**
