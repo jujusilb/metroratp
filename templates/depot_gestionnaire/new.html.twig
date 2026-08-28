@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer nouveau dépôt-gestionnaire{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Créer nouveau dépôt-gestionnaire</h1>
+
+        {{ include('depot_gestionnaire/_form.html.twig') }}
+
+        <a href="{{ path('app_depot_gestionnaire_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}

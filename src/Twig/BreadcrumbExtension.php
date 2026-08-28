@@ -57,6 +57,7 @@ class BreadcrumbExtension extends AbstractExtension
         'materiel_ligne' => ['Matériel', 'app_materiel_ligne_index', 'Matériel-Ligne'],
         'depot' => ['Matériel', 'app_depot_index', 'Dépôts'],
         'depot_ligne' => ['Matériel', 'app_depot_ligne_index', 'Dépôt-Ligne'],
+        'depot_gestionnaire' => ['Matériel', 'app_depot_gestionnaire_index', 'Dépôt-Gestionnaire'],
         'materiel_depot' => ['Matériel', 'app_materiel_depot_index', 'Matériel-Dépôt'],
         'type_materiel' => ['Matériel', 'app_type_materiel_index', 'Types de matériel'],
 

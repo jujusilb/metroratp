@@ -5,6 +5,7 @@ namespace App\Tests\Controller;
 use App\Entity\Acces;
 use App\Entity\Correspondance;
 use App\Entity\Depot;
+use App\Entity\DepotGestionnaire;
 use App\Entity\DepotLigne;
 use App\Entity\Desserte;
 use App\Entity\Direction;
@@ -54,6 +55,7 @@ abstract class DatabaseTestCase extends WebTestCase
             MaterielLigne::class,
             MaterielDepot::class,
             DepotLigne::class,
+            DepotGestionnaire::class,
             Sortie::class,
             PeriodeOuverture::class,
             Correspondance::class,

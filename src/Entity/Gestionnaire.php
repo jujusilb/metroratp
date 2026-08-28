@@ -24,9 +24,16 @@ class Gestionnaire
     #[ORM\OneToMany(targetEntity: Ligne::class, mappedBy: 'gestionnaire')]
     private Collection $lignes;
 
+    /**
+     * @var Collection<int, DepotGestionnaire>
+     */
+    #[ORM\OneToMany(targetEntity: DepotGestionnaire::class, mappedBy: 'gestionnaire')]
+    private Collection $depotGestionnaires;
+
     public function __construct()
     {
         $this->lignes = new ArrayCollection();
+        $this->depotGestionnaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -69,6 +76,35 @@ class Gestionnaire
         if ($this->lignes->removeElement($ligne)) {
             if ($ligne->getGestionnaire() === $this) {
                 $ligne->setGestionnaire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DepotGestionnaire>
+     */
+    public function getDepotGestionnaires(): Collection
+    {
+        return $this->depotGestionnaires;
+    }
+
+    public function addDepotGestionnaire(DepotGestionnaire $depotGestionnaire): static
+    {
+        if (!$this->depotGestionnaires->contains($depotGestionnaire)) {
+            $this->depotGestionnaires->add($depotGestionnaire);
+            $depotGestionnaire->setGestionnaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDepotGestionnaire(DepotGestionnaire $depotGestionnaire): static
+    {
+        if ($this->depotGestionnaires->removeElement($depotGestionnaire)) {
+            if ($depotGestionnaire->getGestionnaire() === $this) {
+                $depotGestionnaire->setGestionnaire(null);
             }
         }
 

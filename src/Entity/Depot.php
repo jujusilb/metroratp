@@ -42,10 +42,17 @@ class Depot
     #[ORM\OneToMany(targetEntity: MaterielDepot::class, mappedBy: 'depot')]
     private Collection $materielDepots;
 
+    /**
+     * @var Collection<int, DepotGestionnaire>
+     */
+    #[ORM\OneToMany(targetEntity: DepotGestionnaire::class, mappedBy: 'depot')]
+    private Collection $depotGestionnaires;
+
     public function __construct()
     {
         $this->depotLignes = new ArrayCollection();
         $this->materielDepots = new ArrayCollection();
+        $this->depotGestionnaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -141,6 +148,35 @@ class Depot
         if ($this->materielDepots->removeElement($materielDepot)) {
             if ($materielDepot->getDepot() === $this) {
                 $materielDepot->setDepot(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DepotGestionnaire>
+     */
+    public function getDepotGestionnaires(): Collection
+    {
+        return $this->depotGestionnaires;
+    }
+
+    public function addDepotGestionnaire(DepotGestionnaire $depotGestionnaire): static
+    {
+        if (!$this->depotGestionnaires->contains($depotGestionnaire)) {
+            $this->depotGestionnaires->add($depotGestionnaire);
+            $depotGestionnaire->setDepot($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDepotGestionnaire(DepotGestionnaire $depotGestionnaire): static
+    {
+        if ($this->depotGestionnaires->removeElement($depotGestionnaire)) {
+            if ($depotGestionnaire->getDepot() === $this) {
+                $depotGestionnaire->setDepot(null);
             }
         }
 
