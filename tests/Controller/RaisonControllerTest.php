@@ -2,6 +2,8 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Desserte;
+use App\Entity\Ligne;
 use App\Entity\Raison;
 use App\Entity\Station;
 use Doctrine\ORM\EntityManagerInterface;
@@ -114,6 +116,46 @@ final class RaisonControllerTest extends DatabaseTestCase
 
         self::assertCount(1, $updatedStationA->getRaisons());
         self::assertFalse($updatedStationA->estActive());
+    }
+
+    public function testEditAssigneDesDessertesEtMarqueInactive(): void
+    {
+        $ligne = new Ligne();
+        $ligne->setLabel('5');
+        $this->manager->persist($ligne);
+
+        $station = new Station();
+        $station->setLabel('Arsenal');
+        $this->manager->persist($station);
+
+        $desserte = new Desserte();
+        $desserte->setStation($station);
+        $desserte->setLigne($ligne);
+        $this->manager->persist($desserte);
+
+        $fixture = new Raison();
+        $fixture->setLabel('Fermée pour la guerre');
+        $this->manager->persist($fixture);
+        $this->manager->flush();
+
+        self::assertTrue($desserte->estActive());
+        self::assertTrue($station->estActive(), 'La Station reste active independamment de sa Desserte.');
+
+        $crawler = $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
+
+        $form = $crawler->selectButton('Mettre à jour')->form();
+        $form['raison[dessertes]']->setValue([(string) $desserte->getId()]);
+        $this->client->submit($form);
+
+        self::assertResponseRedirects('/raison');
+
+        $this->manager->clear();
+        $updatedDesserte = $this->manager->getRepository(Desserte::class)->find($desserte->getId());
+        $updatedStation = $this->manager->getRepository(Station::class)->find($station->getId());
+
+        self::assertCount(1, $updatedDesserte->getRaisons());
+        self::assertFalse($updatedDesserte->estActive());
+        self::assertTrue($updatedStation->estActive(), 'La Station ne doit pas devenir inactive par ricochet.');
     }
 
     public function testRemove(): void

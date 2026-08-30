@@ -28,6 +28,17 @@ class Desserte
     #[ORM\ManyToOne(inversedBy: 'dessertes')]
     private ?Ligne $ligne = null;
 
+    /**
+     * Raisons pour lesquelles cette Desserte precise (pas forcement toute la Station) est
+     * consideree inactive - vide = active. Voir Raison. Utilise pour les "stations fantomes"
+     * (ex: un quai de metro jamais mis en service ou ferme sans reouverture) quand la Station
+     * elle-meme reste active par ailleurs (un autre mode y circule toujours).
+     *
+     * @var Collection<int, Raison>
+     */
+    #[ORM\ManyToMany(targetEntity: Raison::class, mappedBy: 'dessertes')]
+    private Collection $raisons;
+
     #[ORM\ManyToOne(inversedBy: 'dessertes')]
     private ?StyleStation $styleStation = null;
 
@@ -117,6 +128,7 @@ class Desserte
         $this->periodesOuverture = new ArrayCollection();
         $this->correspondancesA = new ArrayCollection();
         $this->correspondancesB = new ArrayCollection();
+        $this->raisons = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -212,6 +224,23 @@ class Desserte
         $derniere = $this->getDernierePeriode();
 
         return null === $derniere || null === $derniere->getFermeture();
+    }
+
+    /**
+     * @return Collection<int, Raison>
+     */
+    public function getRaisons(): Collection
+    {
+        return $this->raisons;
+    }
+
+    /**
+     * Vide = active. Voir Raison. Independant de Station::estActive() : une Desserte precise
+     * peut etre inactive alors que sa Station reste active par ailleurs (autre mode/ligne actif).
+     */
+    public function estActive(): bool
+    {
+        return $this->raisons->isEmpty();
     }
 
     /**

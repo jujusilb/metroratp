@@ -77,6 +77,9 @@
                                     {% else %}
                                         <span class="text-muted">—</span>
                                     {% endif %}
+                                    {% if not desserte.estActive %}
+                                        <a href="{{ path('app_desserte_show', {'id': desserte.id}) }}" class="badge text-bg-secondary text-decoration-none">Inactive</a>
+                                    {% endif %}
                                 </td>
                                 <td>{{ desserte.ligne and desserte.ligne.typeTransport ? desserte.ligne.typeTransport.label : '—' }}</td>
                                 <td>{{ desserte.premiereOuverture ? desserte.premiereOuverture|date('d/m/Y') : '—' }}</td>

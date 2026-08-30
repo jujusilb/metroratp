@@ -26,6 +26,17 @@
             {% endif %}
         </div>
 
+        {% if not desserte.estActive %}
+            <div class="alert alert-secondary">
+                <strong>Desserte inactive.</strong> Raison{{ desserte.raisons|length > 1 ? 's' : '' }} :
+                <ul class="mb-0">
+                    {% for raison in desserte.raisons %}
+                        <li><a href="{{ path('app_raison_show', {'id': raison.id}) }}">{{ raison.label }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
         <table class="table">
             <tbody>
                 <tr>
