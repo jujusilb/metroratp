@@ -16,10 +16,15 @@
 
         {% if not station.estActive %}
             <div class="alert alert-secondary">
-                <strong>Station inactive.</strong> Raison{{ station.raisons|length > 1 ? 's' : '' }} :
+                <strong>Station inactive.</strong> Aucune desserte active :
                 <ul class="mb-0">
-                    {% for raison in station.raisons %}
-                        <li><a href="{{ path('app_raison_show', {'id': raison.id}) }}">{{ raison.label }}</a></li>
+                    {% for desserte in station.dessertes %}
+                        <li>
+                            {{ desserte.ligne ? desserte.ligne.label : '(aucune ligne)' }} —
+                            {% for raison in desserte.raisons %}
+                                <a href="{{ path('app_raison_show', {'id': raison.id}) }}">{{ raison.label }}</a>{{ not loop.last ? ', ' : '' }}
+                            {% endfor %}
+                        </li>
                     {% endfor %}
                 </ul>
             </div>

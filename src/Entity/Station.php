@@ -179,14 +179,6 @@ class Station
     #[ORM\ManyToMany(targetEntity: PointInteret::class, mappedBy: 'stations')]
     private Collection $pointsInteret;
 
-    /**
-     * Raisons pour lesquelles cette Station est consideree inactive - vide = active. Voir Raison.
-     *
-     * @var Collection<int, Raison>
-     */
-    #[ORM\ManyToMany(targetEntity: Raison::class, mappedBy: 'stations')]
-    private Collection $raisons;
-
     public function __construct()
     {
         $this->acces = new ArrayCollection();
@@ -195,7 +187,6 @@ class Station
         $this->sanitaires = new ArrayCollection();
         $this->defibrillateurs = new ArrayCollection();
         $this->pointsInteret = new ArrayCollection();
-        $this->raisons = new ArrayCollection();
         $this->fontainesEau = new ArrayCollection();
         $this->sanisettesPubliques = new ArrayCollection();
     }
@@ -572,18 +563,20 @@ class Station
     }
 
     /**
-     * @return Collection<int, Raison>
-     */
-    public function getRaisons(): Collection
-    {
-        return $this->raisons;
-    }
-
-    /**
-     * Vide = active. Voir Raison.
+     * Active si au moins une Desserte existe et qu'au moins une d'entre elles est elle-meme
+     * active (Desserte::estActive(), vide de Raison). Une Station sans aucune Desserte est donc
+     * inactive par construction (rien ne la dessert), sans avoir besoin de sa propre Raison - voir
+     * TODO.md "stations fantomes" pour la remarque utilisateur ayant motive ce calcul plutot qu'un
+     * Station::raisons independant (desormais supprime, migration Version20260829110000).
      */
     public function estActive(): bool
     {
-        return $this->raisons->isEmpty();
+        foreach ($this->dessertes as $desserte) {
+            if ($desserte->estActive()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

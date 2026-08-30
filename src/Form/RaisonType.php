@@ -4,7 +4,6 @@ namespace App\Form;
 
 use App\Entity\Desserte;
 use App\Entity\Raison;
-use App\Entity\Station;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -17,17 +16,13 @@ class RaisonType extends AbstractType
     {
         $builder
             ->add('label')
-            ->add('stations', EntityType::class, [
-                'class' => Station::class,
-                'choice_label' => 'label',
-                'multiple' => true,
-                'required' => false,
-                'by_reference' => false,
-                'help' => "Choisir une station l'ajoute à la liste ; cliquer sur « Retirer » l'enlève.",
-            ])
-            // Une Desserte precise (Station x Ligne) peut etre inactive alors que sa Station
-            // reste active par ailleurs (ex: un arret de bus toujours en service, mais un ancien
-            // quai de metro jamais rouvert - "stations fantomes", voir TODO.md).
+            // L'inactivite se marque au niveau de la Desserte (Station x Ligne), pas de la
+            // Station : une Station peut rester active (ex: un arret de bus toujours en service)
+            // alors qu'une Desserte precise est definitivement morte (ancien quai de metro jamais
+            // rouvert) - voir TODO.md "stations fantomes". Une Station sans AUCUNE Desserte reelle
+            // (aucun service jamais imagine) utilise une Desserte a Ligne nulle comme simple
+            // support de la Raison (LEFT JOIN ci-dessous : sinon ces dessertes-la, precisement
+            // celles qui nous interessent le plus ici, disparaitraient de la liste).
             ->add('dessertes', EntityType::class, [
                 'class' => Desserte::class,
                 'label' => 'Dessertes',
@@ -37,12 +32,20 @@ class RaisonType extends AbstractType
                 'help' => "Choisir une desserte l'ajoute à la liste ; cliquer sur « Retirer » l'enlève.",
                 'choice_label' => fn (Desserte $d): string => sprintf(
                     '%s - %s',
-                    $d->getLigne()?->getLabel() ?? '?',
+                    $d->getLigne()?->getLabel() ?? '(aucune ligne)',
                     $d->getStation()?->getLabel() ?? ('#' . $d->getId()),
                 ),
+                // Limite aux dessertes DEJA taguees (par n'importe quelle Raison) : le reseau
+                // complet fait ~31 800 Desserte, bien trop pour un simple <select multiple> (fait
+                // planter le formulaire par epuisement memoire, verifie en navigateur). Une
+                // nouvelle desserte a taguer se peuple via une commande dediee (voir
+                // app:creer-stations-fantomes/app:migrer-raison-station-vers-desserte), pas en
+                // parcourant tout le reseau ici - ce champ sert a re-affecter/retirer une raison
+                // parmi les cas deja identifies, pas a en decouvrir de nouveaux.
                 'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('d')
                     ->join('d.station', 's')->addSelect('s')
-                    ->join('d.ligne', 'l')->addSelect('l')
+                    ->leftJoin('d.ligne', 'l')->addSelect('l')
+                    ->where('d.raisons IS NOT EMPTY')
                     ->orderBy('s.label', 'ASC')
                     ->addOrderBy('l.label', 'ASC'),
             ])

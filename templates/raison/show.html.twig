@@ -27,37 +27,6 @@
             </tbody>
         </table>
 
-        <h2 class="h5 mt-4 mb-3">Stations concernées</h2>
-
-        {% if raison.stations|length > 0 %}
-            <table class="table align-middle mb-4">
-                <thead>
-                    <tr>
-                        <th>Station</th>
-                        <th>Ville</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for station in raison.stations %}
-                    <tr>
-                        <td>
-                            <a href="{{ path('app_station_show', {'id': station.id}) }}" class="link-body-emphasis">
-                                {{ station.label }}
-                            </a>
-                        </td>
-                        <td>{{ station.ville ?? '—' }}</td>
-                        <td>
-                            <a href="{{ path('app_station_show', {'id': station.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p class="text-muted">Aucune station rattachée à cette raison.</p>
-        {% endif %}
-
         <h2 class="h5 mt-4 mb-3">Dessertes concernées</h2>
 
         {% if raison.dessertes|length > 0 %}
@@ -85,7 +54,7 @@
                             {% if desserte.ligne %}
                                 <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ desserte.ligne.couleur|default('#6c757d') }};"></span> {{ desserte.ligne.label }}</a>
                             {% else %}
-                                <span class="text-muted">—</span>
+                                <span class="text-muted">(aucune ligne)</span>
                             {% endif %}
                         </td>
                         <td>

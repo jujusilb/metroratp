@@ -86,74 +86,60 @@ final class RaisonControllerTest extends DatabaseTestCase
         self::assertSame('Something New', $fixture[0]->getLabel());
     }
 
-    public function testEditAssigneDesStationsEtMarqueInactive(): void
-    {
-        $stationA = new Station();
-        $stationA->setLabel('Fantôme A');
-        $this->manager->persist($stationA);
-
-        $stationB = new Station();
-        $stationB->setLabel('Fantôme B');
-        $this->manager->persist($stationB);
-
-        $fixture = new Raison();
-        $fixture->setLabel('Fermée pour la guerre');
-        $this->manager->persist($fixture);
-        $this->manager->flush();
-
-        self::assertTrue($stationA->estActive());
-
-        $crawler = $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
-
-        $form = $crawler->selectButton('Mettre à jour')->form();
-        $form['raison[stations]']->setValue([(string) $stationA->getId(), (string) $stationB->getId()]);
-        $this->client->submit($form);
-
-        self::assertResponseRedirects('/raison');
-
-        $this->manager->clear();
-        $updatedStationA = $this->manager->getRepository(Station::class)->find($stationA->getId());
-
-        self::assertCount(1, $updatedStationA->getRaisons());
-        self::assertFalse($updatedStationA->estActive());
-    }
-
     public function testEditAssigneDesDessertesEtMarqueInactive(): void
     {
-        $ligne = new Ligne();
-        $ligne->setLabel('5');
-        $this->manager->persist($ligne);
+        $ligneMetro = new Ligne();
+        $ligneMetro->setLabel('5');
+        $this->manager->persist($ligneMetro);
+
+        // 2e Desserte reelle (ex: un bus) sur la meme Station : demontre que la Station reste
+        // active tant qu'AU MOINS UNE de ses Desserte l'est, meme si celle du metro devient morte
+        // (cas reel "stations fantomes" - Martin Nadaud/Porte Molitor/Haxo, voir TODO.md).
+        $ligneBus = new Ligne();
+        $ligneBus->setLabel('61');
+        $this->manager->persist($ligneBus);
 
         $station = new Station();
         $station->setLabel('Arsenal');
         $this->manager->persist($station);
 
-        $desserte = new Desserte();
-        $desserte->setStation($station);
-        $desserte->setLigne($ligne);
-        $this->manager->persist($desserte);
+        $desserteMetro = new Desserte();
+        $desserteMetro->setStation($station);
+        $desserteMetro->setLigne($ligneMetro);
+        $this->manager->persist($desserteMetro);
+
+        $desserteBus = new Desserte();
+        $desserteBus->setStation($station);
+        $desserteBus->setLigne($ligneBus);
+        $this->manager->persist($desserteBus);
+
+        // Le champ raison[dessertes] ne liste que les Desserte DEJA taguees par une Raison
+        // (voir RaisonType : le reseau complet est bien trop volumineux pour un simple
+        // <select multiple>) - on tague donc desserteMetro une premiere fois directement pour
+        // qu'elle apparaisse dans la liste, avant de la reassigner via le formulaire.
+        $raisonInitiale = new Raison();
+        $raisonInitiale->setLabel('Raison initiale');
+        $raisonInitiale->addDesserte($desserteMetro);
+        $this->manager->persist($raisonInitiale);
 
         $fixture = new Raison();
         $fixture->setLabel('Fermée pour la guerre');
         $this->manager->persist($fixture);
         $this->manager->flush();
 
-        self::assertTrue($desserte->estActive());
-        self::assertTrue($station->estActive(), 'La Station reste active independamment de sa Desserte.');
-
         $crawler = $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
 
         $form = $crawler->selectButton('Mettre à jour')->form();
-        $form['raison[dessertes]']->setValue([(string) $desserte->getId()]);
+        $form['raison[dessertes]']->setValue([(string) $desserteMetro->getId()]);
         $this->client->submit($form);
 
         self::assertResponseRedirects('/raison');
 
         $this->manager->clear();
-        $updatedDesserte = $this->manager->getRepository(Desserte::class)->find($desserte->getId());
+        $updatedDesserte = $this->manager->getRepository(Desserte::class)->find($desserteMetro->getId());
         $updatedStation = $this->manager->getRepository(Station::class)->find($station->getId());
 
-        self::assertCount(1, $updatedDesserte->getRaisons());
+        self::assertCount(2, $updatedDesserte->getRaisons(), 'La Raison initiale et la nouvelle doivent toutes deux etre rattachees.');
         self::assertFalse($updatedDesserte->estActive());
         self::assertTrue($updatedStation->estActive(), 'La Station ne doit pas devenir inactive par ricochet.');
     }

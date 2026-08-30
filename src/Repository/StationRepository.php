@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Station;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -187,6 +188,22 @@ class StationRepository extends ServiceEntityRepository
         }
 
         return array_values($parStation);
+    }
+
+    /**
+     * Filtre l'index par statut actif/inactif (voir StationController::index()) : une Station est
+     * active si au moins une de ses Desserte est active (voir Station::estActive()). Ecrit en EXISTS
+     * DQL (pas un simple JOIN sur Station::raisons, qui n'existe plus - voir TODO.md "stations
+     * fantomes") car la condition porte sur les Desserte liees, pas sur la Station elle-meme.
+     */
+    public function appliquerFiltreStatut(QueryBuilder $qb, bool $actifSeulement, bool $inactifSeulement): void
+    {
+        if ($actifSeulement === $inactifSeulement) {
+            return;
+        }
+
+        $existeDesserteActive = 'EXISTS (SELECT 1 FROM App\Entity\Desserte d WHERE d.station = s AND d.raisons IS EMPTY)';
+        $qb->andWhere($actifSeulement ? $existeDesserteActive : "NOT $existeDesserteActive");
     }
 
 //    /**

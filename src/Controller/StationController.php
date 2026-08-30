@@ -34,14 +34,7 @@ final class StationController extends AbstractController
 
         $qb = $stationRepository->createQueryBuilder('s')->orderBy('s.label', 'ASC');
         $stationRepository->appliquerFiltreAlphabetEtRecherche($qb, 's.label', $lettre, $recherche);
-
-        if ($actifSelectionne && !$inactifSelectionne) {
-            $qb->leftJoin('s.raisons', 'r')->andWhere('r.id IS NULL');
-        } elseif ($inactifSelectionne && !$actifSelectionne) {
-            // distinct() : une Station peut etre liee a plusieurs Raison, l'INNER JOIN dupliquerait
-            // sinon la ligne (et donc le compte de pagination) pour chacune.
-            $qb->innerJoin('s.raisons', 'r')->distinct();
-        }
+        $stationRepository->appliquerFiltreStatut($qb, $actifSelectionne, $inactifSelectionne);
 
         return $this->render('station/index.html.twig', [
             'stations' => $paginator->paginate($qb, $request->query->getInt('page', 1), 50),
