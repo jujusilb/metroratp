@@ -97,7 +97,10 @@ class PeuplerDepotLigneGestionnaireCommand extends Command
         ['ligne' => '92', 'depot' => 'Corentin', 'materiels' => ['GX 337 ELEC', 'Urbanway 12 Hybride']],
         ['ligne' => '94', 'depot' => 'Corentin', 'materiels' => ['GX 337 ELEC', 'Urbanway 12 Hybride', 'Bluebus 12 Facelift']],
         ['ligne' => '96', 'depot' => 'Les Lilas', 'materiels' => ['GX 337 ELEC']],
-        ['ligne' => '98', 'depot' => 'Belliard', 'materiels' => ["Lion's City Hybride"]],
+        // "98" est le numero d'ancre Wikipedia (position dans la page), pas le vrai label : cette
+        // ligne s'appelle reellement "PC" (Petite Ceinture, {{ancre|Ligne 98|Ligne PC}} et
+        // ligne_nom = PC dans l'infobox) - c'est bien sous ce label qu'elle existe deja en base.
+        ['ligne' => 'PC', 'depot' => 'Belliard', 'materiels' => ["Lion's City Hybride"]],
         ['ligne' => '102', 'depot' => 'Les Lilas', 'materiels' => ['Urbanway 12', 'Bluebus 12 Facelift']],
         ['ligne' => '109', 'depot' => 'Créteil', 'materiels' => ["Lion's City GNV"]],
         ['ligne' => '115', 'depot' => 'Les Lilas', 'materiels' => ['GX 337 ELEC', 'Bluebus 12 Facelift']],
@@ -118,8 +121,9 @@ class PeuplerDepotLigneGestionnaireCommand extends Command
         ['ligne' => '322', 'depot' => 'Les Lilas', 'materiels' => ['Urbanway 12']],
         ['ligne' => '341', 'depot' => 'Belliard', 'materiels' => ["Lion's City Hybride"]],
         ['ligne' => '388', 'depot' => 'Malakoff', 'materiels' => ['Irizar ie 12']],
-        ['ligne' => '283', 'depot' => 'Ivry', 'materiels' => ['Urbanway 18', 'Citelis 18']],
-        ['ligne' => '352', 'depot' => 'Aubervilliers', 'materiels' => ['Crossway Line GNV', 'Citelis 18']],
+        // OrlyBus (283) ferme le 3 mars 2025 et RoissyBus (352) ferme le 1 mars 2026 (dates de
+        // fermeture indiquees dans l'infobox Wikipedia elle-meme) : absentes du referentiel Ligne
+        // a juste titre (plus des lignes actives), pas un trou d'import - aucun tuple pour elles.
     ];
 
     /**
