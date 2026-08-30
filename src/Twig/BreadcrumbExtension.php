@@ -46,6 +46,7 @@ class BreadcrumbExtension extends AbstractExtension
         'plan' => ['Lieux', 'app_plan_index', 'Plans de secteur'],
         'plan_region' => ['Lieux', 'app_plan_region_index', 'Plans régionaux'],
         'point_de_vente' => ['Lieux', 'app_point_de_vente_index', 'Points de vente'],
+        'point_interet' => ['Lieux', 'app_point_interet_index', "Points d'intérêt"],
 
         // Accès
         'acces' => ['Accès', 'app_acces_index', 'Accès'],
@@ -62,6 +63,7 @@ class BreadcrumbExtension extends AbstractExtension
         'gestionnaire' => ['Exploitation', 'app_gestionnaire_index', 'Gestionnaires'],
         'raison' => ['Exploitation', 'app_raison_index', "Raisons d'inactivité"],
         'type_transport' => ['Exploitation', 'app_type_transport_index', 'Types de transport'],
+        'type_desserte' => ['Exploitation', 'app_type_desserte_index', 'Types de desserte'],
         'projet_arret' => ['Exploitation', 'app_projet_arret_index', "Projets d'arrêts"],
 
         // Suivi projet

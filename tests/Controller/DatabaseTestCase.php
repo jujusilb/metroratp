@@ -17,6 +17,7 @@ use App\Entity\MaterielDepot;
 use App\Entity\MaterielLigne;
 use App\Entity\Mission;
 use App\Entity\PeriodeOuverture;
+use App\Entity\PointInteret;
 use App\Entity\Raison;
 use App\Entity\Service;
 use App\Entity\Station;
@@ -66,6 +67,7 @@ abstract class DatabaseTestCase extends WebTestCase
             Acces::class,
             Service::class,
             TypeDesserte::class,
+            PointInteret::class,
             Station::class,
             Depot::class,
             Ville::class,

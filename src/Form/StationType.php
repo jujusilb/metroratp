@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Acces;
 use App\Entity\Plan;
+use App\Entity\PointInteret;
 use App\Entity\PoleEchange;
 use App\Entity\Station;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -40,6 +41,33 @@ class StationType extends AbstractType
                 // (Acces::stations, qui porte la cle etrangere reelle).
                 'by_reference' => false,
                 'help' => "Choisir un accès l'ajoute à la liste ; cliquer sur « Retirer » l'enlève.",
+            ])
+            ->add('pointsInteret', EntityType::class, [
+                'class' => PointInteret::class,
+                'label' => 'Lieux à proximité',
+                'choice_label' => 'label',
+                'multiple' => true,
+                'required' => false,
+                // "pointsInteret" n'a pas de "s" final (le pluriel est au milieu du mot compose) :
+                // Symfony ne peut pas deviner tout seul addPointInteret()/removePointInteret() a
+                // partir du nom de propriete (contrairement a "acces" -> "addAcce"/"removeAcce"
+                // juste au-dessus, ou la deduction naive fonctionne). getter/setter explicites,
+                // qui passent par ces methodes pour repercuter le changement cote proprietaire
+                // (PointInteret::stations, qui porte la cle etrangere reelle) plutot que de muter
+                // directement la collection.
+                'getter' => static fn (Station $station): iterable => $station->getPointsInteret(),
+                'setter' => static function (Station $station, iterable $pointsInteret): void {
+                    $nouveaux = $pointsInteret instanceof \Traversable ? iterator_to_array($pointsInteret) : $pointsInteret;
+                    foreach ($station->getPointsInteret()->toArray() as $existant) {
+                        if (!\in_array($existant, $nouveaux, true)) {
+                            $station->removePointInteret($existant);
+                        }
+                    }
+                    foreach ($nouveaux as $pointInteret) {
+                        $station->addPointInteret($pointInteret);
+                    }
+                },
+                'help' => "Choisir un lieu l'ajoute à la liste ; cliquer sur « Retirer » l'enlève.",
             ])
         ;
     }

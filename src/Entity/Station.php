@@ -562,6 +562,25 @@ class Station
         return $this->pointsInteret;
     }
 
+    public function addPointInteret(PointInteret $pointInteret): static
+    {
+        if (!$this->pointsInteret->contains($pointInteret)) {
+            $this->pointsInteret->add($pointInteret);
+            $pointInteret->addStation($this);
+        }
+
+        return $this;
+    }
+
+    public function removePointInteret(PointInteret $pointInteret): static
+    {
+        if ($this->pointsInteret->removeElement($pointInteret)) {
+            $pointInteret->removeStation($this);
+        }
+
+        return $this;
+    }
+
     /**
      * Active si au moins une Desserte existe et qu'au moins une d'entre elles est elle-meme
      * active (Desserte::estActive(), vide de Raison). Une Station sans aucune Desserte est donc

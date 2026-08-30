@@ -186,7 +186,7 @@
         {% if station.pointsInteret|length > 0 %}
             <ul>
                 {% for point_interet in station.pointsInteret %}
-                    <li>{{ point_interet.label }}</li>
+                    <li><a href="{{ path('app_point_interet_show', {'id': point_interet.id}) }}" class="link-body-emphasis">{{ point_interet.label }}</a></li>
                 {% endfor %}
             </ul>
         {% else %}

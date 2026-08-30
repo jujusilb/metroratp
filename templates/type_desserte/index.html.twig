@@ -1,39 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Types{% endblock %}
+{% block title %}Types de desserte{% endblock %}
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">Types</h1>
+        <h1 class="mb-4">Types de desserte</h1>
 
         {{ include('tools/filtre_alphabet.html.twig', {
-            'route': 'app_type_materiel_index',
+            'route': 'app_type_desserte_index',
             'lettreSelectionnee': lettre,
             'recherche': recherche,
             'libelleRecherche': 'un type',
         }) }}
         {{ include('tools/_onglets.html.twig', {onglets: [
             {label: 'Transport', route: 'app_type_transport_index', actif: false},
-            {label: 'Matériel', route: 'app_type_materiel_index', actif: true},
+            {label: 'Matériel', route: 'app_type_materiel_index', actif: false},
             {label: 'Tronçon', route: 'app_type_troncon_index', actif: false},
-            {label: 'Desserte', route: 'app_type_desserte_index', actif: false},
+            {label: 'Desserte', route: 'app_type_desserte_index', actif: true},
         ]}) }}
 
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>{{ knp_pagination_sortable(type_materiels, 'Label', 't.label') }}</th>
+                    <th>{{ knp_pagination_sortable(type_dessertes, 'Label', 't.label') }}</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-            {% for type_materiel in type_materiels %}
+            {% for type_desserte in type_dessertes %}
                 <tr>
-                    <td>{{ type_materiel.label }}</td>
+                    <td>{{ type_desserte.label }}</td>
                     <td>
-                        <a href="{{ path('app_type_materiel_show', {'id': type_materiel.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
+                        <a href="{{ path('app_type_desserte_show', {'id': type_desserte.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path('app_type_materiel_edit', {'id': type_materiel.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                            <a href="{{ path('app_type_desserte_edit', {'id': type_desserte.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
                         {% endif %}
                     </td>
                 </tr>
@@ -45,10 +45,10 @@
             </tbody>
         </table>
 
-        {{ knp_pagination_render(type_materiels) }}
+        {{ knp_pagination_render(type_dessertes) }}
 
         {% if is_granted('ROLE_ADMIN') %}
-            <a href="{{ path('app_type_materiel_new') }}" class="btn btn-primary">Créer nouveau type de matériel</a>
+            <a href="{{ path('app_type_desserte_new') }}" class="btn btn-primary">Créer nouveau type de desserte</a>
         {% endif %}
     </div>
 {% endblock %}

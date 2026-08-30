@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Points d'intérêt{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Points d'intérêt</h1>
+
+        {{ include('tools/filtre_alphabet.html.twig', {
+            'route': 'app_point_interet_index',
+            'lettreSelectionnee': lettre,
+            'recherche': recherche,
+            'libelleRecherche': 'un lieu',
+        }) }}
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>{{ knp_pagination_sortable(point_interets, 'Label', 'p.label') }}</th>
+                    <th>Stations</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for point_interet in point_interets %}
+                <tr>
+                    <td>{{ point_interet.label }}</td>
+                    <td>{{ point_interet.stations|length }}</td>
+                    <td>
+                        <a href="{{ path('app_point_interet_show', {'id': point_interet.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_point_interet_edit', {'id': point_interet.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(point_interets) }}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_point_interet_new') }}" class="btn btn-primary">Créer nouveau point d'intérêt</a>
+        {% endif %}
+    </div>
+{% endblock %}
