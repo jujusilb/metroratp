@@ -4,7 +4,6 @@ import 'bootstrap';
 // style arrondi de la Parisine (police propriete RATP, non disponible sous licence libre).
 import '@fontsource/baloo-2/700.css';
 import 'leaflet/dist/leaflet.css';
-import { initStyleStationPicker } from './js/style-station-picker';
 import { initTrajetCarte } from './js/trajet-carte';
 import { initTrajetAutocomplete } from './js/trajet-autocomplete';
 import { initCarteReseau } from './js/carte-reseau';
@@ -22,23 +21,18 @@ function auChargement(fn) {
 }
 
 auChargement(() => {
-    const styleStationDessertes = document.getElementById('style_station_dessertes');
-    if (styleStationDessertes) {
-        initStyleStationPicker(styleStationDessertes, {
-            placeholder: '-- Ajouter une station --',
-            removeLabel: 'Retirer',
-        });
-    }
-
-    // Formulaires imbriques (relations datees Materiel<->Ligne/Depot, Depot<->Ligne/Gestionnaire) :
-    // remplacent les anciennes pages CRUD dediees (voir TODO.md, simplification des tables de
-    // jointure). Chaque conteneur n'existe que sur la page ou son champ correspondant est present.
+    // Formulaires imbriques (relations datees Materiel<->Ligne/Depot, Depot<->Ligne/Gestionnaire,
+    // et saisie par id des Desserte de StyleStation/StyleEcriture) : remplacent les anciennes
+    // pages CRUD dediees (voir TODO.md, simplification des tables de jointure). Chaque conteneur
+    // n'existe que sur la page ou son champ correspondant est present.
     [
         ['depot_depotGestionnaires', 'Ajouter un gestionnaire'],
         ['depot_depotLignes', 'Ajouter une ligne'],
         ['depot_materielDepots', 'Ajouter un matériel'],
         ['materiel_materielLignes', 'Ajouter une ligne'],
         ['ligne_horaireLignes', 'Ajouter une plage horaire'],
+        ['style_station_dessertes', 'Ajouter une desserte'],
+        ['style_ecriture_dessertes', 'Ajouter une desserte'],
     ].forEach(([id, addButtonLabel]) => {
         const conteneur = document.getElementById(id);
         if (conteneur) {

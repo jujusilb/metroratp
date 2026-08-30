@@ -86,6 +86,10 @@ final class StyleEcritureControllerTest extends DatabaseTestCase
         self::assertSame('Something New', $fixture[0]->getLabel());
     }
 
+    /**
+     * Le CollectionType imbrique (voir StyleEcritureType) ne rend aucun champ quand la collection
+     * est vide - meme raisonnement que MaterielControllerTest::testEditAjouteUneLigneDatee().
+     */
     public function testEditAssigneDesDessertes(): void
     {
         $ligne = new Ligne();
@@ -116,10 +120,18 @@ final class StyleEcritureControllerTest extends DatabaseTestCase
         $this->manager->flush();
 
         $crawler = $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
+        $token = $crawler->filter('input[name="style_ecriture[_token]"]')->attr('value');
 
-        $form = $crawler->selectButton('Mettre à jour')->form();
-        $form['style_ecriture[dessertes]']->setValue([(string) $desserteA->getId(), (string) $desserteB->getId()]);
-        $this->client->submit($form);
+        $this->client->request('POST', sprintf('%s%s/edit', $this->path, $fixture->getId()), [
+            'style_ecriture' => [
+                'label' => $fixture->getLabel(),
+                'dessertes' => [
+                    0 => $desserteA->getId(),
+                    1 => $desserteB->getId(),
+                ],
+                '_token' => $token,
+            ],
+        ]);
 
         self::assertResponseRedirects('/style/ecriture');
 

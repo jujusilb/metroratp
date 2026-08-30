@@ -4,9 +4,8 @@ namespace App\Form;
 
 use App\Entity\Desserte;
 use App\Entity\StyleEcriture;
-use Doctrine\ORM\EntityRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,30 +15,25 @@ class StyleEcritureType extends AbstractType
     {
         $builder
             ->add('label')
-            ->add('dessertes', EntityType::class, [
-                'class' => Desserte::class,
-                'label' => 'Stations',
-                'multiple' => true,
-                'required' => false,
+            // CollectionType d'EntiteParIdentifiantType (pas un <select> EntityType) : Desserte a
+            // ~33600 lignes, bien trop pour un multi-select classique (fait planter le formulaire
+            // par epuisement memoire - bug reel trouve en verifiant RaisonType, voir TODO.md audit
+            // CRUD). Saisie par id brut ligne par ligne, meme widget d'ajout/suppression que les
+            // relations datees (Depot/Materiel, voir assets/js/collection-widget.js).
+            ->add('dessertes', CollectionType::class, [
+                'entry_type' => EntiteParIdentifiantType::class,
+                'entry_options' => [
+                    'class' => Desserte::class,
+                    'label' => false,
+                ],
+                'allow_add' => true,
+                'allow_delete' => true,
                 // Sans ca, Symfony mute directement la collection getDessertes() au lieu
                 // d'appeler addDesserte()/removeDesserte() : le cote proprietaire de la relation
                 // (Desserte::styleEcriture, qui porte la cle etrangere) ne serait alors jamais mis
                 // a jour et rien ne serait persiste.
                 'by_reference' => false,
-                // On precise la ligne devant le nom de la station : plusieurs stations
-                // (Chatelet, Nation, Republique...) desservent plusieurs lignes et seraient
-                // sinon indiscernables dans la liste.
-                'choice_label' => fn (Desserte $d): string => sprintf(
-                    '%s - %s',
-                    $d->getLigne()?->getLabel() ?? '?',
-                    $d->getStation()?->getLabel() ?? ('#' . $d->getId()),
-                ),
-                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('d')
-                    ->join('d.station', 's')->addSelect('s')
-                    ->join('d.ligne', 'l')->addSelect('l')
-                    ->orderBy('s.label', 'ASC')
-                    ->addOrderBy('l.label', 'ASC'),
-                'help' => "Choisir une station l'ajoute à la liste ; cliquer sur « Retirer » l'enlève.",
+                'label' => false,
             ])
         ;
     }

@@ -3,7 +3,9 @@
     MaterielLigne/MaterielDepot/DepotLigne/DepotGestionnaire) : une ligne par entree existante,
     chacune avec ses propres champs et un bouton "Retirer", plus data-prototype pour l'ajout
     dynamique en JS (voir assets/js/collection-widget.js). Generique : itere les champs de chaque
-    ligne un par un, quels qu'ils soient - pas besoin d'une variante par relation.
+    ligne un par un, quels qu'ils soient - pas besoin d'une variante par relation. Gere aussi le cas
+    d'une entree "feuille" sans sous-champs (ex: EntiteParIdentifiantType, saisie d'un id de
+    Desserte pour StyleStation/StyleEcriture).
 
     Parametres :
     - field : le champ CollectionType du formulaire (ex: form.depotGestionnaires)
@@ -15,9 +17,13 @@
     <div id="{{ id_html }}" data-prototype="{{ form_widget(field.vars.prototype)|e('html_attr') }}" class="mb-2">
         {% for row in field %}
             <div class="collection-ligne border rounded p-3 mb-2">
-                {% for child in row.children %}
-                    {{ form_row(child) }}
-                {% endfor %}
+                {% if row.children|length > 0 %}
+                    {% for child in row.children %}
+                        {{ form_row(child) }}
+                    {% endfor %}
+                {% else %}
+                    {{ form_row(row) }}
+                {% endif %}
                 <button type="button" class="btn btn-outline-danger btn-sm" data-role="retirer">Retirer cette ligne</button>
             </div>
         {% endfor %}
