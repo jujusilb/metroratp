@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Directions{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Directions</h1>
+
+        <p class="text-muted small">
+            Une nouvelle direction s'ajoute depuis la fiche d'une Ligne précise (bouton « Ajouter une direction »),
+            pas depuis cette liste.
+        </p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Ligne</th>
+                    <th>Terminus</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for direction in directions %}
+                <tr>
+                    <td>
+                        <a href="{{ path('app_ligne_show', {'id': direction.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ direction.ligne.couleur|default('#6c757d') }};"></span> {{ direction.ligne.label }}</a>
+                    </td>
+                    <td>{{ direction.station ? direction.station.label : '?' }}</td>
+                    <td>
+                        <a href="{{ path('app_direction_show', {'id': direction.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_direction_edit', {'id': direction.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(directions) }}
+    </div>
+{% endblock %}

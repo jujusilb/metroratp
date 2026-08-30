@@ -85,6 +85,12 @@ class Ligne
     private Collection $horaireLignes;
 
     /**
+     * @var Collection<int, Direction>
+     */
+    #[ORM\OneToMany(targetEntity: Direction::class, mappedBy: 'ligne')]
+    private Collection $directions;
+
+    /**
      * Date a laquelle la Ligne est devenue entierement automatique (conduite sans conducteur,
      * "GoA4") sur la totalite de son parcours - une propriete de la ligne entiere (materiel
      * roulant + signalisation), contrairement aux portes palieres qui s'installent quai par quai
@@ -102,6 +108,7 @@ class Ligne
         $this->documents = new ArrayCollection();
         $this->depotLignes = new ArrayCollection();
         $this->horaireLignes = new ArrayCollection();
+        $this->directions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -338,6 +345,14 @@ class Ligne
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Direction>
+     */
+    public function getDirections(): Collection
+    {
+        return $this->directions;
     }
 
     public function getNombreStations(): int

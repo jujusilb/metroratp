@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la direction{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Modifier la direction — ligne {{ direction.ligne.label }}</h1>
+
+        {{ include('direction/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+        <div class="d-flex gap-2 mt-3">
+            <a href="{{ path('app_ligne_show', {'id': direction.ligne.id}) }}" class="btn btn-secondary">Retour à la ligne</a>
+        </div>
+
+        {{ include('direction/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

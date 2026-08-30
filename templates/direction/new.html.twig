@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer nouvelle direction{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Créer nouvelle direction — ligne {{ ligne.label }}</h1>
+
+        {{ include('direction/_form.html.twig') }}
+
+        <a href="{{ path('app_ligne_show', {'id': ligne.id}) }}" class="btn btn-secondary mt-3">Retour à la ligne</a>
+    </div>
+{% endblock %}

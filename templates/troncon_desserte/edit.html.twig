@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le tronçon-desserte{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Modifier le tronçon-desserte — tronçon #{{ troncon_desserte.troncon.id }}</h1>
+
+        {{ include('troncon_desserte/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+        <div class="d-flex gap-2 mt-3">
+            <a href="{{ path('app_troncon_show', {'id': troncon_desserte.troncon.id}) }}" class="btn btn-secondary">Retour au tronçon</a>
+        </div>
+
+        {{ include('troncon_desserte/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

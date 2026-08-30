@@ -28,6 +28,8 @@ class BreadcrumbExtension extends AbstractExtension
         'periode_ouverture' => ['Réseau', 'app_periode_ouverture_index', "Périodes d'ouverture"],
         'correspondance' => ['Réseau', 'app_correspondance_index', 'Correspondances'],
         'troncon' => ['Réseau', 'app_troncon_index', 'Tronçons'],
+        'direction' => ['Réseau', 'app_direction_index', 'Directions'],
+        'troncon_desserte' => ['Réseau', 'app_troncon_desserte_index', 'Tronçons-dessertes'],
         'type_troncon' => ['Réseau', 'app_type_troncon_index', 'Types de tronçon'],
         'document_ligne' => ['Réseau', 'app_ligne_index', 'Lignes'],
 

@@ -91,6 +91,27 @@
             {% endif %}
         </div>
 
+        <h2 class="h5 mt-4">Directions</h2>
+        {% if ligne.directions|length > 0 %}
+            <ul class="list-group mb-3">
+                {% for direction in ligne.directions %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ path('app_direction_show', {'id': direction.id}) }}" class="link-body-emphasis">
+                            {{ direction.station ? direction.station.label : '?' }}
+                        </a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_direction_edit', {'id': direction.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucune direction enregistrée pour cette ligne.</p>
+        {% endif %}
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_direction_new', {'ligne': ligne.id}) }}" class="btn btn-outline-primary btn-sm mb-3">Ajouter une direction</a>
+        {% endif %}
+
         {% if ligne.documents|length > 0 %}
             <h2 class="h5 mt-4">Horaires et plans</h2>
             <ul>

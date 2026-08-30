@@ -20,7 +20,7 @@ class Direction
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'directions')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Ligne $ligne = null;
 

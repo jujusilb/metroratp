@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer nouveau tronçon-desserte{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Créer nouveau tronçon-desserte — tronçon #{{ troncon.id }}</h1>
+
+        {{ include('troncon_desserte/_form.html.twig') }}
+
+        <a href="{{ path('app_troncon_show', {'id': troncon.id}) }}" class="btn btn-secondary mt-3">Retour au tronçon</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tronçon-desserte{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">Tronçon-desserte</h1>
+            {% if is_granted('ROLE_ADMIN') %}
+                <div class="d-flex gap-2">
+                    <a href="{{ path('app_troncon_desserte_edit', {'id': troncon_desserte.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                    {{ include('troncon_desserte/_delete_form.html.twig') }}
+                </div>
+            {% endif %}
+        </div>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ troncon_desserte.id }}</td>
+                </tr>
+                <tr>
+                    <th>Tronçon</th>
+                    <td><a href="{{ path('app_troncon_show', {'id': troncon_desserte.troncon.id}) }}" class="link-body-emphasis">#{{ troncon_desserte.troncon.id }}</a></td>
+                </tr>
+                <tr>
+                    <th>Desserte</th>
+                    <td>
+                        {% if troncon_desserte.desserte and troncon_desserte.desserte.station %}
+                            <a href="{{ path('app_station_show', {'id': troncon_desserte.desserte.station.id}) }}" class="link-body-emphasis">{{ troncon_desserte.desserte.station.label }}</a>
+                            {% if troncon_desserte.desserte.ligne %}
+                                <a href="{{ path('app_ligne_show', {'id': troncon_desserte.desserte.ligne.id}) }}" class="link-body-emphasis text-decoration-none"><span class="pastille-ligne" style="--ligne-couleur: {{ troncon_desserte.desserte.ligne.couleur|default('#6c757d') }};"></span> {{ troncon_desserte.desserte.ligne.label }}</a>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Type</th>
+                    <td>{{ troncon_desserte.typeDesserte ? troncon_desserte.typeDesserte.label : '—' }}</td>
+                </tr>
+                <tr>
+                    <th>Durée réelle</th>
+                    <td>{{ troncon_desserte.dureeReelleSecondes ? troncon_desserte.dureeReelleSecondes ~ ' s' : '—' }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_troncon_show', {'id': troncon_desserte.troncon.id}) }}" class="btn btn-secondary">Retour au tronçon</a>
+    </div>
+{% endblock %}

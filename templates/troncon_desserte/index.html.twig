@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tronçons-dessertes{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Tronçons-dessertes</h1>
+
+        <p class="text-muted small">
+            Une nouvelle ligne s'ajoute depuis la fiche d'un Tronçon précis (bouton « Ajouter une desserte »),
+            pas depuis cette liste.
+        </p>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Tronçon</th>
+                    <th>Desserte</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for troncon_desserte in troncon_dessertes %}
+                <tr>
+                    <td><a href="{{ path('app_troncon_show', {'id': troncon_desserte.troncon.id}) }}" class="link-body-emphasis">#{{ troncon_desserte.troncon.id }}</a></td>
+                    <td>
+                        {% if troncon_desserte.desserte and troncon_desserte.desserte.station %}
+                            <a href="{{ path('app_station_show', {'id': troncon_desserte.desserte.station.id}) }}" class="link-body-emphasis">{{ troncon_desserte.desserte.station.label }}</a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ troncon_desserte.typeDesserte ? troncon_desserte.typeDesserte.label : '—' }}</td>
+                    <td>
+                        <a href="{{ path('app_troncon_desserte_show', {'id': troncon_desserte.id}) }}" class="btn btn-info btn-sm" title="Affichage" aria-label="Affichage"><i class="bi bi-eye"></i></a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_troncon_desserte_edit', {'id': troncon_desserte.id}) }}" class="btn btn-warning btn-sm" title="Modifier" aria-label="Modifier"><i class="bi bi-wrench"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(troncon_dessertes) }}
+    </div>
+{% endblock %}
