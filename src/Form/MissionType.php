@@ -21,15 +21,14 @@ class MissionType extends AbstractType
                 'class' => Service::class,
                 'choice_label' => 'id',
             ])
-            ->add('tronconDesserte', EntityType::class, [
+            // EntiteParIdentifiantType (pas EntityType) : TronconDesserte a ~129000 lignes, bien
+            // trop pour un <select> classique (fait planter le formulaire par epuisement
+            // memoire, voir EntiteParIdentifiantType/TODO.md). Saisie par id brut, le gabarit
+            // affiche le libelle lisible de la valeur actuelle a cote.
+            ->add('tronconDesserte', EntiteParIdentifiantType::class, [
                 'class' => TronconDesserte::class,
-                'label' => 'Troncon (depart)',
-                'choice_label' => fn (TronconDesserte $td): string => sprintf(
-                    'Troncon #%d - %s (%s)',
-                    $td->getTroncon()?->getId() ?? 0,
-                    $td->getDesserte()?->getStation()?->getLabel() ?? '?',
-                    $td->getTypeDesserte()?->getLabel() ?? '?',
-                ),
+                'label' => 'Troncon (depart), par id',
+                'help' => "Id de TronconDesserte - voir la fiche d'un Troncon ou d'une Desserte pour le retrouver.",
             ])
             ->add('direction', EntityType::class, [
                 'class' => Direction::class,

@@ -17,17 +17,6 @@ class CorrespondanceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $choiceLabel = fn (Desserte $d): string => sprintf(
-            '%s - %s',
-            $d->getLigne()?->getLabel() ?? '?',
-            $d->getStation()?->getLabel() ?? ('#' . $d->getId()),
-        );
-        $queryBuilder = fn (EntityRepository $er) => $er->createQueryBuilder('d')
-            ->join('d.station', 's')->addSelect('s')
-            ->join('d.ligne', 'l')->addSelect('l')
-            ->orderBy('s.label', 'ASC')
-            ->addOrderBy('l.label', 'ASC');
-
         $directionChoiceLabel = fn (Direction $d): string => sprintf(
             '%s - %s',
             $d->getLigne()?->getLabel() ?? '?',
@@ -41,11 +30,14 @@ class CorrespondanceType extends AbstractType
             ->addOrderBy('s.label', 'ASC');
 
         $builder
-            ->add('desserteA', EntityType::class, [
+            // EntiteParIdentifiantType (pas EntityType) : Desserte a ~33600 lignes, bien trop
+            // pour un <select> classique (fait planter le formulaire par epuisement memoire,
+            // voir EntiteParIdentifiantType/TODO.md). Saisie par id brut, le gabarit affiche le
+            // libelle lisible de la valeur actuelle a cote.
+            ->add('desserteA', EntiteParIdentifiantType::class, [
                 'class' => Desserte::class,
-                'label' => 'Première desserte',
-                'choice_label' => $choiceLabel,
-                'query_builder' => $queryBuilder,
+                'label' => 'Première desserte, par id',
+                'help' => "Id de Desserte - voir la fiche d'une Station pour le retrouver.",
             ])
             ->add('directionA', EntityType::class, [
                 'class' => Direction::class,
@@ -55,12 +47,10 @@ class CorrespondanceType extends AbstractType
                 'required' => false,
                 'placeholder' => 'Toutes directions (correspondance générale)',
             ])
-            ->add('desserteB', EntityType::class, [
+            ->add('desserteB', EntiteParIdentifiantType::class, [
                 'class' => Desserte::class,
-                'label' => 'Seconde desserte',
-                'choice_label' => $choiceLabel,
-                'query_builder' => $queryBuilder,
-                'help' => "L'ordre des deux dessertes n'a pas d'importance, il est normalisé automatiquement.",
+                'label' => 'Seconde desserte, par id',
+                'help' => "Id de Desserte - l'ordre des deux dessertes n'a pas d'importance, il est normalisé automatiquement.",
             ])
             ->add('directionB', EntityType::class, [
                 'class' => Direction::class,

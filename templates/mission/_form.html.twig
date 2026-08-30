@@ -3,6 +3,14 @@
     {{ form_row(form.numero) }}
     {{ form_row(form.service) }}
     {{ form_row(form.tronconDesserte) }}
+    {% if mission.tronconDesserte %}
+        {% set td = mission.tronconDesserte %}
+        <p class="text-muted small mt-n2">
+            Actuellement : Troncon #{{ td.troncon ? td.troncon.id : '?' }} -
+            {{ td.desserte and td.desserte.station ? td.desserte.station.label : '?' }}
+            ({{ td.typeDesserte ? td.typeDesserte.label : '?' }})
+        </p>
+    {% endif %}
     {{ form_row(form.direction) }}
 
     <button type="submit" class="btn btn-primary mt-2">{{ button_label|default('Enregistrer') }}</button>

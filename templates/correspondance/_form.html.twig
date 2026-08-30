@@ -1,8 +1,20 @@
 {{ form_start(form) }}
     {{ form_errors(form) }}
     {{ form_row(form.desserteA) }}
+    {% if correspondance.desserteA %}
+        <p class="text-muted small mt-n2">
+            Actuellement : {{ correspondance.desserteA.ligne ? correspondance.desserteA.ligne.label : '?' }} -
+            {{ correspondance.desserteA.station ? correspondance.desserteA.station.label : '?' }}
+        </p>
+    {% endif %}
     {{ form_row(form.directionA) }}
     {{ form_row(form.desserteB) }}
+    {% if correspondance.desserteB %}
+        <p class="text-muted small mt-n2">
+            Actuellement : {{ correspondance.desserteB.ligne ? correspondance.desserteB.ligne.label : '?' }} -
+            {{ correspondance.desserteB.station ? correspondance.desserteB.station.label : '?' }}
+        </p>
+    {% endif %}
     {{ form_row(form.directionB) }}
     {{ form_row(form.distance) }}
     {{ form_row(form.inZone) }}
