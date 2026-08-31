@@ -16,9 +16,21 @@
 
         <h2 class="h5">Stations ({{ pole_echange.stations|length }})</h2>
         {% if pole_echange.stations|length > 0 %}
-            <ul>
+            <ul class="list-unstyled">
                 {% for station in pole_echange.stations %}
-                    <li><a href="{{ path('app_station_show', {'id': station.id}) }}">{{ station.label }}</a>{% if station.ville %} <span class="text-muted">({{ station.ville }})</span>{% endif %}</li>
+                    {% set lignesStructurantes = station.dessertes|filter(d => d.ligne and d.ligne.typeTransport and d.ligne.typeTransport.label != 'Bus') %}
+                    <li class="mb-2">
+                        <a href="{{ path('app_station_show', {'id': station.id}) }}">{{ station.label }}</a>{% if station.ville %} <span class="text-muted">({{ station.ville }})</span>{% endif %}
+                        {% if lignesStructurantes|length > 0 %}
+                            <div class="d-flex flex-wrap column-gap-3 row-gap-1 mt-1">
+                                {% for desserte in lignesStructurantes %}
+                                    <a href="{{ path('app_ligne_show', {'id': desserte.ligne.id}) }}" class="link-body-emphasis text-decoration-none small"><span class="pastille-ligne" style="--ligne-couleur: {{ desserte.ligne.couleur|default('#6c757d') }};"></span> {{ desserte.ligne.label }}</a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <span class="badge text-bg-light text-muted border ms-1">Bus uniquement</span>
+                        {% endif %}
+                    </li>
                 {% endfor %}
             </ul>
         {% else %}
