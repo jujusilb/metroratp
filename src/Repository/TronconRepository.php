@@ -200,18 +200,49 @@ class TronconRepository extends ServiceEntityRepository
     }
 
     /**
+     * Juste les ids (aucune jointure) : le reseau actuel (~32000 troncons, apres la construction
+     * bus/RER/Transilien de cette session) est trop volumineux pour charger tous les troncons AVEC
+     * leurs jointures d'un coup (voir trouverAvecDetailsParIdsPourImportDurees()) - app:importer-durees-troncon
+     * traite donc par lots d'ids plutot qu'en une seule requete.
+     *
+     * @return int[]
+     */
+    public function findIdsPourImportDurees(): array
+    {
+        return array_column(
+            $this->createQueryBuilder('t')
+                ->select('t.id')
+                ->orderBy('t.id', 'ASC')
+                ->getQuery()
+                ->getScalarResult(),
+            'id',
+        );
+    }
+
+    /**
      * Meme forme que findAllWithDetails() mais SANS la chaine missions/direction/desserteTerminus
      * (inutile pour app:importer-durees-troncon, qui ne lit que depart/arrivee/station via
-     * Troncon::getSensCirculation()) : sur le reseau actuel (~32000 troncons, apres la
-     * construction bus/RER/Transilien de cette session), la jointure complete produisait un
-     * resultat trop volumineux pour l'hebergement mutuel de production ("MySQL server has gone
-     * away" a l'hydratation, alors que la meme commande passait en local avec plus de memoire).
+     * Troncon::getSensCirculation()), et filtree sur un lot d'ids plutot que la totalite du reseau
+     * (voir findIdsPourImportDurees()) : meme avec la chaine allegee, charger les ~32000 troncons
+     * du reseau actuel d'un coup epuisait la memoire (512 Mo par defaut) - deja arrive une premiere
+     * fois avant meme cette limitation par lot ("MySQL server has gone away" a l'hydratation sur
+     * l'hebergement de production, avec la chaine missions/direction/desserteTerminus complete de
+     * findAllWithDetails(), remplacee alors par cette version allegee - desormais elle-meme trop
+     * volumineuse d'un coup, d'ou le decoupage par lot).
+     *
+     * @param int[] $ids
      *
      * @return Troncon[]
      */
-    public function findAllPourImportDurees(): array
+    public function trouverAvecDetailsParIdsPourImportDurees(array $ids): array
     {
+        if ([] === $ids) {
+            return [];
+        }
+
         return $this->createQueryBuilder('t')
+            ->andWhere('t.id IN (:ids)')
+            ->setParameter('ids', $ids)
             ->leftJoin('t.tronconDessertes', 'td')->addSelect('td')
             ->leftJoin('td.desserte', 'd')->addSelect('d')
             ->leftJoin('d.station', 'station')->addSelect('station')

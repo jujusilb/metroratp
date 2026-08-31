@@ -100,72 +100,81 @@ class ImporterDureesTronconCommand extends Command
         fclose($fh);
         $io->writeln(sprintf('Paires de durees chargees depuis le CSV : %d', array_sum(array_map('count', $durees))));
 
-        $troncons = $this->tronconRepository->findAllPourImportDurees();
+        $ids = $this->tronconRepository->findIdsPourImportDurees();
         $matches = 0;
         $sansCorrespondance = [];
         $sensAsymetriques = 0;
 
-        foreach ($troncons as $troncon) {
-            $sens = $troncon->getSensCirculation();
-            $premier = $sens[0] ?? null;
-            if (null === $premier || null === $premier['depart'] || null === $premier['arrivee']) {
-                continue;
-            }
+        // Par lot (jamais tout le reseau en memoire d'un coup, voir le docblock de la methode de
+        // repository) : chaque lot est traite, flushe puis l'EntityManager est vide avant le
+        // suivant - aucune donnee du lot precedent n'est necessaire pour traiter celui d'apres
+        // (chaque Troncon est autonome, la boucle interne ne lit/ecrit que sur lui-meme).
+        foreach (array_chunk($ids, 1000) as $lot) {
+            $troncons = $this->tronconRepository->trouverAvecDetailsParIdsPourImportDurees($lot);
 
-            $stationA = $premier['depart']->getStation()?->getLabel();
-            $stationB = $premier['arrivee']->getStation()?->getLabel();
-            if (null === $stationA || null === $stationB) {
-                continue;
-            }
-
-            $nomA = $this->normaliser($stationA);
-            $nomB = $this->normaliser($stationB);
-
-            $trouve = $durees[$nomA][$nomB] ?? $durees[$nomB][$nomA] ?? null;
-            if (null === $trouve) {
-                $sansCorrespondance[] = "$stationA -> $stationB";
-                continue;
-            }
-
-            ++$matches;
-            if (!$dryRun) {
-                // Repli symetrique (utilise par TrajetFinder si un sens precis manque ci-dessous).
-                $troncon->setDureeReelleSecondes($trouve['secondes']);
-            }
-
-            // Par-dessus le repli : un sens precis (asymetrique) par TronconDesserte Depart,
-            // quand le CSV a bien ce sens exact (pas juste son inverse).
-            foreach ($sens as $unSens) {
-                if (null === $unSens['depart'] || null === $unSens['arrivee']) {
-                    continue;
-                }
-                $nomDepart = $this->normaliser($unSens['depart']->getStation()?->getLabel() ?? '');
-                $nomArrivee = $this->normaliser($unSens['arrivee']->getStation()?->getLabel() ?? '');
-                $trouveExact = $durees[$nomDepart][$nomArrivee] ?? null;
-                if (null === $trouveExact) {
+            foreach ($troncons as $troncon) {
+                $sens = $troncon->getSensCirculation();
+                $premier = $sens[0] ?? null;
+                if (null === $premier || null === $premier['depart'] || null === $premier['arrivee']) {
                     continue;
                 }
 
-                $tronconDesserteDepart = $this->trouverTronconDesserteDepart($troncon, $unSens['depart']);
-                if (null === $tronconDesserteDepart) {
+                $stationA = $premier['depart']->getStation()?->getLabel();
+                $stationB = $premier['arrivee']->getStation()?->getLabel();
+                if (null === $stationA || null === $stationB) {
                     continue;
                 }
 
+                $nomA = $this->normaliser($stationA);
+                $nomB = $this->normaliser($stationB);
+
+                $trouve = $durees[$nomA][$nomB] ?? $durees[$nomB][$nomA] ?? null;
+                if (null === $trouve) {
+                    $sansCorrespondance[] = "$stationA -> $stationB";
+                    continue;
+                }
+
+                ++$matches;
                 if (!$dryRun) {
-                    $tronconDesserteDepart->setDureeReelleSecondes($trouveExact['secondes']);
+                    // Repli symetrique (utilise par TrajetFinder si un sens precis manque ci-dessous).
+                    $troncon->setDureeReelleSecondes($trouve['secondes']);
                 }
-                ++$sensAsymetriques;
-            }
-        }
 
-        if (!$dryRun) {
-            $this->entityManager->flush();
+                // Par-dessus le repli : un sens precis (asymetrique) par TronconDesserte Depart,
+                // quand le CSV a bien ce sens exact (pas juste son inverse).
+                foreach ($sens as $unSens) {
+                    if (null === $unSens['depart'] || null === $unSens['arrivee']) {
+                        continue;
+                    }
+                    $nomDepart = $this->normaliser($unSens['depart']->getStation()?->getLabel() ?? '');
+                    $nomArrivee = $this->normaliser($unSens['arrivee']->getStation()?->getLabel() ?? '');
+                    $trouveExact = $durees[$nomDepart][$nomArrivee] ?? null;
+                    if (null === $trouveExact) {
+                        continue;
+                    }
+
+                    $tronconDesserteDepart = $this->trouverTronconDesserteDepart($troncon, $unSens['depart']);
+                    if (null === $tronconDesserteDepart) {
+                        continue;
+                    }
+
+                    if (!$dryRun) {
+                        $tronconDesserteDepart->setDureeReelleSecondes($trouveExact['secondes']);
+                    }
+                    ++$sensAsymetriques;
+                }
+            }
+
+            if (!$dryRun) {
+                $this->entityManager->flush();
+            }
+            $this->entityManager->clear();
         }
 
         $io->success(sprintf(
             '%d / %d troncons avec une duree reelle trouvee, dont %d sens precis (asymetriques ou non) sur TronconDesserte (%s)',
             $matches,
-            count($troncons),
+            count($ids),
             $sensAsymetriques,
             $dryRun ? 'dry-run, rien ecrit' : 'ecrit en base',
         ));
