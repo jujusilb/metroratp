@@ -100,7 +100,7 @@ class ImporterDureesTronconCommand extends Command
         fclose($fh);
         $io->writeln(sprintf('Paires de durees chargees depuis le CSV : %d', array_sum(array_map('count', $durees))));
 
-        $ids = $this->tronconRepository->findIdsPourImportDurees();
+        $ids = $this->tronconRepository->findIdsTousTroncons();
         $matches = 0;
         $sansCorrespondance = [];
         $sensAsymetriques = 0;
@@ -110,7 +110,7 @@ class ImporterDureesTronconCommand extends Command
         // suivant - aucune donnee du lot precedent n'est necessaire pour traiter celui d'apres
         // (chaque Troncon est autonome, la boucle interne ne lit/ecrit que sur lui-meme).
         foreach (array_chunk($ids, 1000) as $lot) {
-            $troncons = $this->tronconRepository->trouverAvecDetailsParIdsPourImportDurees($lot);
+            $troncons = $this->tronconRepository->trouverAvecDetailsSimplifiesParIds($lot);
 
             foreach ($troncons as $troncon) {
                 $sens = $troncon->getSensCirculation();

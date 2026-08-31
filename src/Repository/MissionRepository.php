@@ -20,32 +20,6 @@ class MissionRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Mission[]
-     */
-    public function findAllWithDetails(): array
-    {
-        return $this->createQueryBuilder('m')
-            ->innerJoin('m.service', 'service')->addSelect('service')
-            ->innerJoin('m.tronconDesserte', 'td')->addSelect('td')
-            ->innerJoin('td.troncon', 'troncon')->addSelect('troncon')
-            ->innerJoin('td.desserte', 'depart')->addSelect('depart')
-            ->innerJoin('depart.ligne', 'ligne')->addSelect('ligne')
-            ->innerJoin('depart.station', 'departStation')->addSelect('departStation')
-            ->innerJoin('m.direction', 'direction')->addSelect('direction')
-            ->innerJoin('direction.desserteTerminus', 'directionDesserte')->addSelect('directionDesserte')
-            ->innerJoin('directionDesserte.station', 'directionStation')->addSelect('directionStation')
-            ->leftJoin('troncon.tronconDessertes', 'allTd')->addSelect('allTd')
-            ->leftJoin('allTd.desserte', 'allTdDesserte')->addSelect('allTdDesserte')
-            ->leftJoin('allTdDesserte.station', 'allTdStation')->addSelect('allTdStation')
-            ->leftJoin('allTd.typeDesserte', 'allTdType')->addSelect('allTdType')
-            ->orderBy('ligne.id', 'ASC')
-            ->addOrderBy('m.numero', 'ASC')
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
-    /**
      * Lignes ayant au moins une mission, pour l'ecran de selection.
      *
      * @return Ligne[]

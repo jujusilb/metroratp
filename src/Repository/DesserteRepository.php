@@ -147,25 +147,6 @@ class DesserteRepository extends ServiceEntityRepository
         ;
     }
 
-    /**
-     * Pour l'index : evite le N+1 sur station/ligne/styleStation, affichees sur chaque ligne.
-     *
-     * @return Desserte[]
-     */
-    public function findAllWithDetails(): array
-    {
-        return $this->createQueryBuilder('d')
-            ->leftJoin('d.station', 'station')->addSelect('station')
-            ->leftJoin('d.ligne', 'ligne')->addSelect('ligne')
-            ->leftJoin('d.styleStation', 'styleStation')->addSelect('styleStation')
-            ->leftJoin('d.periodesOuverture', 'periodesOuverture')->addSelect('periodesOuverture')
-            ->orderBy('ligne.id', 'ASC')
-            ->addOrderBy('station.label', 'ASC')
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
 //    /**
 //     * @return Desserte[] Returns an array of Desserte objects
 //     */

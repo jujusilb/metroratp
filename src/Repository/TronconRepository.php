@@ -27,7 +27,7 @@ class TronconRepository extends ServiceEntityRepository
      * pour ne jamais multiplier les lignes SQL (un troncon a typiquement 4 tronconDessertes,
      * un JOIN les ferait apparaitre 4 fois et fausserait le compte total de la pagination) — voir
      * TronconController::index() pour le second temps (rechargement avec details, seulement pour
-     * les ids de la page courante, via findAllWithDetails()).
+     * les ids de la page courante, via trouverAvecDetailsParIds()).
      *
      * @param string[] $modes           cles Ligne::getModeFiltre() a inclure ; [] = aucun resultat
      * @param int[]    $gestionnaireIds identifiants Gestionnaire a inclure ; [] = pas de filtre
@@ -106,8 +106,9 @@ class TronconRepository extends ServiceEntityRepository
     }
 
     /**
-     * Recharge en une requete (avec toutes les jointures d'affichage, voir findAllWithDetails())
-     * les troncons de la page courante, dans l'ordre des ids donnes.
+     * Recharge en une requete (avec toutes les jointures d'affichage : typeTroncon, tronconDessertes
+     * -> desserte -> station/ligne, missions -> direction -> desserteTerminus -> station) les
+     * troncons de la page courante, dans l'ordre des ids donnes.
      *
      * @param int[] $ids
      *
@@ -148,8 +149,8 @@ class TronconRepository extends ServiceEntityRepository
      * Pour le fond de carte du calculateur de trajet (TrajetController) : chaque paire
      * depart/arrivee de chaque troncon avec les coordonnees geographiques des deux Stations et la
      * couleur de la Ligne - strictement ce dont la carte a besoin, en SQL brut plutot que via
-     * l'ORM (findAllWithDetails() charge tout le graphe missions/direction, inutile ici, et
-     * hydrater ~193000 entites pour ~7000 troncons prenait plus de 10s).
+     * l'ORM (charger tout le graphe missions/direction comme trouverAvecDetailsParIds() serait
+     * inutile ici, et hydrater ~193000 entites pour ~7000 troncons prenait plus de 10s).
      *
      * @return list<array{id_a: int, lat1: float, lon1: float, id_b: int, lat2: float, lon2: float, couleur: string}>
      */
@@ -175,39 +176,16 @@ class TronconRepository extends ServiceEntityRepository
     }
 
     /**
-     * Pour l'index/l'affichage : evite le N+1 sur le graphe depart/arrivee/direction
-     * (troncon_desserte -> desserte -> station/ligne, et missions -> direction -> station).
-     *
-     * @return Troncon[]
-     */
-    public function findAllWithDetails(): array
-    {
-        return $this->createQueryBuilder('t')
-            ->leftJoin('t.typeTroncon', 'typeTroncon')->addSelect('typeTroncon')
-            ->leftJoin('t.tronconDessertes', 'td')->addSelect('td')
-            ->leftJoin('td.desserte', 'd')->addSelect('d')
-            ->leftJoin('d.station', 'station')->addSelect('station')
-            ->leftJoin('d.ligne', 'ligne')->addSelect('ligne')
-            ->leftJoin('td.typeDesserte', 'typeDesserte')->addSelect('typeDesserte')
-            ->leftJoin('td.missions', 'missions')->addSelect('missions')
-            ->leftJoin('missions.direction', 'direction')->addSelect('direction')
-            ->leftJoin('direction.desserteTerminus', 'directionDesserte')->addSelect('directionDesserte')
-            ->leftJoin('directionDesserte.station', 'directionStation')->addSelect('directionStation')
-            ->orderBy('t.id', 'ASC')
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
-    /**
      * Juste les ids (aucune jointure) : le reseau actuel (~32000 troncons, apres la construction
      * bus/RER/Transilien de cette session) est trop volumineux pour charger tous les troncons AVEC
-     * leurs jointures d'un coup (voir trouverAvecDetailsParIdsPourImportDurees()) - app:importer-durees-troncon
-     * traite donc par lots d'ids plutot qu'en une seule requete.
+     * leurs jointures d'un coup (voir trouverAvecDetailsSimplifiesParIds()) - les commandes
+     * app:importer-durees-troncon et app:importer-distances-troncon (meme forme de traitement :
+     * tout le reseau, jointures depart/arrivee/station via Troncon::getSensCirculation()) traitent
+     * donc par lots d'ids plutot qu'en une seule requete.
      *
      * @return int[]
      */
-    public function findIdsPourImportDurees(): array
+    public function findIdsTousTroncons(): array
     {
         return array_column(
             $this->createQueryBuilder('t')
@@ -221,20 +199,20 @@ class TronconRepository extends ServiceEntityRepository
 
     /**
      * Meme forme que findAllWithDetails() mais SANS la chaine missions/direction/desserteTerminus
-     * (inutile pour app:importer-durees-troncon, qui ne lit que depart/arrivee/station via
-     * Troncon::getSensCirculation()), et filtree sur un lot d'ids plutot que la totalite du reseau
-     * (voir findIdsPourImportDurees()) : meme avec la chaine allegee, charger les ~32000 troncons
-     * du reseau actuel d'un coup epuisait la memoire (512 Mo par defaut) - deja arrive une premiere
-     * fois avant meme cette limitation par lot ("MySQL server has gone away" a l'hydratation sur
-     * l'hebergement de production, avec la chaine missions/direction/desserteTerminus complete de
-     * findAllWithDetails(), remplacee alors par cette version allegee - desormais elle-meme trop
-     * volumineuse d'un coup, d'ou le decoupage par lot).
+     * (inutile pour app:importer-durees-troncon/app:importer-distances-troncon, qui ne lisent que
+     * depart/arrivee/station via Troncon::getSensCirculation()), et filtree sur un lot d'ids plutot
+     * que la totalite du reseau (voir findIdsTousTroncons()) : meme avec la chaine allegee, charger
+     * les ~32000 troncons du reseau actuel d'un coup epuisait la memoire (512 Mo par defaut) - deja
+     * arrive une premiere fois avant meme cette limitation par lot ("MySQL server has gone away" a
+     * l'hydratation sur l'hebergement de production, avec la chaine missions/direction/desserteTerminus
+     * complete de findAllWithDetails(), remplacee alors par cette version allegee - desormais
+     * elle-meme trop volumineuse d'un coup, d'ou le decoupage par lot).
      *
      * @param int[] $ids
      *
      * @return Troncon[]
      */
-    public function trouverAvecDetailsParIdsPourImportDurees(array $ids): array
+    public function trouverAvecDetailsSimplifiesParIds(array $ids): array
     {
         if ([] === $ids) {
             return [];

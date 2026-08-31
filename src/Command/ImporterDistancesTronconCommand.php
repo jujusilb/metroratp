@@ -78,43 +78,51 @@ class ImporterDistancesTronconCommand extends Command
         fclose($fh);
         $io->writeln(sprintf('Paires de distances chargees depuis le CSV : %d', array_sum(array_map('count', $distances))));
 
-        $troncons = $this->tronconRepository->findAllWithDetails();
+        $ids = $this->tronconRepository->findIdsTousTroncons();
         $matches = 0;
         $sansCorrespondance = [];
 
-        foreach ($troncons as $troncon) {
-            $sens = $troncon->getSensCirculation();
-            $premier = $sens[0] ?? null;
-            if (null === $premier || null === $premier['depart'] || null === $premier['arrivee']) {
-                continue;
+        // Par lot (jamais tout le reseau en memoire d'un coup - voir le docblock de la methode de
+        // repository, meme raisonnement qu'app:importer-durees-troncon) : chaque lot est traite,
+        // flushe puis l'EntityManager est vide avant le suivant.
+        foreach (array_chunk($ids, 1000) as $lot) {
+            $troncons = $this->tronconRepository->trouverAvecDetailsSimplifiesParIds($lot);
+
+            foreach ($troncons as $troncon) {
+                $sens = $troncon->getSensCirculation();
+                $premier = $sens[0] ?? null;
+                if (null === $premier || null === $premier['depart'] || null === $premier['arrivee']) {
+                    continue;
+                }
+
+                $stationA = $premier['depart']->getStation()?->getLabel();
+                $stationB = $premier['arrivee']->getStation()?->getLabel();
+                if (null === $stationA || null === $stationB) {
+                    continue;
+                }
+
+                $nomA = $this->normaliser($stationA);
+                $nomB = $this->normaliser($stationB);
+
+                $trouve = $distances[$nomA][$nomB] ?? $distances[$nomB][$nomA] ?? null;
+                if (null === $trouve) {
+                    $sansCorrespondance[] = "$stationA -> $stationB";
+                    continue;
+                }
+
+                $matches++;
+                if (!$dryRun) {
+                    $troncon->setDistance($trouve['metres']);
+                }
             }
 
-            $stationA = $premier['depart']->getStation()?->getLabel();
-            $stationB = $premier['arrivee']->getStation()?->getLabel();
-            if (null === $stationA || null === $stationB) {
-                continue;
-            }
-
-            $nomA = $this->normaliser($stationA);
-            $nomB = $this->normaliser($stationB);
-
-            $trouve = $distances[$nomA][$nomB] ?? $distances[$nomB][$nomA] ?? null;
-            if (null === $trouve) {
-                $sansCorrespondance[] = "$stationA -> $stationB";
-                continue;
-            }
-
-            $matches++;
             if (!$dryRun) {
-                $troncon->setDistance($trouve['metres']);
+                $this->entityManager->flush();
             }
+            $this->entityManager->clear();
         }
 
-        if (!$dryRun) {
-            $this->entityManager->flush();
-        }
-
-        $io->success(sprintf('%d / %d troncons avec une distance reelle trouvee (%s)', $matches, count($troncons), $dryRun ? 'dry-run, rien ecrit' : 'ecrit en base'));
+        $io->success(sprintf('%d / %d troncons avec une distance reelle trouvee (%s)', $matches, count($ids), $dryRun ? 'dry-run, rien ecrit' : 'ecrit en base'));
 
         if (count($sansCorrespondance) > 0) {
             $io->section(sprintf('%d troncons sans correspondance GTFS (distance restera vide) :', count($sansCorrespondance)));
