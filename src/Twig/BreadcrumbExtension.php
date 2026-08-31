@@ -75,6 +75,7 @@ class BreadcrumbExtension extends AbstractExtension
 
         // Acces direct (pas de sous-menu)
         'utilisateur' => ['', 'app_utilisateur_index', 'Utilisateurs'],
+        'carte' => ['', 'app_carte_index', 'Carte'],
     ];
 
     private const ACTIONS_SANS_LIBELLE_PROPRE = ['index'];
