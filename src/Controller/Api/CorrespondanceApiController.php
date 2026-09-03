@@ -26,6 +26,6 @@ class CorrespondanceApiController extends AbstractApiController
                 SQL,
         )->fetchAllAssociative();
 
-        return $this->jsonListe($rows);
+        return $this->jsonListe($this->castBooleens($rows, ['inZone']));
     }
 }
