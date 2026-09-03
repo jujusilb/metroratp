@@ -49,6 +49,11 @@ security:
         - { path: ^/verifier/email, roles: PUBLIC_ACCESS }
         - { path: ^/mentions-legales, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS }
+        # API JSON en lecture seule (src/Controller/Api/) : donnees de referentiel transport public
+        # (memes donnees qu'IDFM/GTFS, deja publiques par nature), consommee par un client externe
+        # (portage Kotlin/Android) qui n'a pas de session navigateur - jamais de mutation possible
+        # ici (uniquement GET, verifie dans chaque contoleur Api).
+        - { path: ^/api, roles: PUBLIC_ACCESS }
         - { path: ^/mon-profil, roles: ROLE_USER }
         # Suivi de travail sur le projet (Tache/Etape/StatutTache) : pas une donnee du reseau de
         # transport, n'a pas vocation a etre visible par un utilisateur normal (contrairement au
